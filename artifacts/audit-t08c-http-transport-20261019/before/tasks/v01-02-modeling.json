@@ -1,0 +1,28 @@
+{
+  "schema_version": "1",
+  "id": "v01-02-modeling",
+  "objective": "实现受限数学表达式、安全SBML构建和导入静态检查。",
+  "context": "Python3.12，既有frozen dataclass契约。使用.venv已安装libsbml/roadrunner/numpy/scipy。只read/write/edit列出的文件，禁止todo_write、shell、目录扫描与联网。测试由Codex执行。",
+  "read_files": [
+    "src/biomodel_agent/domain/contracts.py"
+  ],
+  "write_files": [
+    "src/biomodel_agent/modeling.py",
+    "src/biomodel_agent/expressions.py",
+    "tests/test_modeling.py"
+  ],
+  "expected_files": [
+    "src/biomodel_agent/modeling.py",
+    "src/biomodel_agent/expressions.py",
+    "tests/test_modeling.py"
+  ],
+  "instructions": "API：expressions.parse_expression(text,allowed_symbols)返回Python AST；symbols(text)返回引用名称set；evaluate(text,environment)递归解释AST不eval/exec，支持+ - * / **（^替换为**），有限numeric常量，unary+/-，exp,log,ln,sqrt,sin,cos,abs,pow；函数名不能被当符号，任意attribute/subscript/comprehension/keywordcall/未声明变量拒绝。不允布尔常量。name time允许显式传入。表达式字符串长度<=4096,AST节点<=512，不做任意Python执行。\nmodeling.validate_draft(draft)->ValidationReport：重复rate目标、未声明符号、rate与reaction写同state、缺失parameter/initial、negative nonnegative初值、无环derived依赖、stoich引用、quantity_kind混用（reaction species必须amount或concentration；variable仅rate rule）检测。空/非法expression拒绝。每状态需动态定义（反应涉及或rate rule），允许constant states?初期没有constant state字段，导入可有。derived不能与state/parameter重复已契约检测。time允许。单位缺失返回unknown warning，不当dimensionless。\nmodeling.build_model(draft)->ModelArtifact：失败抛ValueError包含check，构建libSBML Level3Version2，compartment.constant=true size固定；state variable用SBMLparameterconstant=false rateRule；amount/concentration用Species明确hasOnlySubstanceUnits、initialAmount/initialConcentration、boundaryCondition=false constant=false。reaction kineticLaw是amount/time，浓度导数由SBML自动除体积。rate rule直接导数不除体积。derived用nonconstant Parameter assignment rule按拓扑排序（libSBML可自动）；其他parameter.constant=true；不写unknown单位为dimensionless。单位仅可靠SBML基础单位支持，未知标记在外部，不要伪造。id/time_unit/setmath处理libSBML返回码。注意libsbml.parseL3Formula接受^，log映射ln?表达式log表示自然对数，编译转ln；表达式**转^。返回element_map原样parent_ref。\nmodeling.validate_artifact(artifact)->ValidationReport：parseSBML并checkConsistency，区分structure error与unit warnings，getSeverity>=ERROR的真实结构失败阻止执行；缺失units返回unknown warning。ode固定singlecompartment，对 events/algebraicRules/delay/动态compartment/stoichiometryMath/fast reactions/conversion factors/required扩展package/constraints显式fail unsupported，不删除。合法纯表达式FunctionDefinition、LocalParameter和无环InitialAssignment可支持，因为RR原生语义；至少检测assignment+initial依赖循环和未知符号用libSBML一致性。不能只是XML可解析即pass。独立PDE入口用ModelArtifact.kind!='ode'/format!='sbml'→unsupported fail。\n测试：未声明、None、冲突rate/reaction、derived环、自引用、非法代码输入拒绝；正确rate rule draft和reaction draftSBML合法；amount/concentration非单位volume构建属性不同；单位unknown不能fully_pass；加SBML事件导入返回unsupported；合法嵌套derived正常。测试不能要求未知单位fullypassed。不要执行任何命令/规划工具，文件写完文字回复。",
+  "acceptance": [
+    "有依据的数学/语义检查，不支持则明确阻止",
+    "只交付文件，Codex独立验收"
+  ],
+  "verification_commands": [],
+  "budget": {
+    "total_ms": 600000
+  }
+}

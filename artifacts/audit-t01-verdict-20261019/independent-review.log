@@ -1,0 +1,196 @@
+...........FFFFFF                                                        [100%]
+=================================== FAILURES ===================================
+_________ test_incomplete_saved_facts_cannot_be_upgraded[missing_mode] _________
+
+variant = 'missing_mode'
+
+    @pytest.mark.parametrize('variant', ['missing_mode','unknown_mode','missing_convergence',
+        'duplicate_finite_unknown','other_blocking_unknown','missing_unit_review'])
+    def test_incomplete_saved_facts_cannot_be_upgraded(variant):
+        record = {'status':'succeeded','scientific_status':'not_verified','mode':'structured_execution',
+            'comparison':{'status':'pass'},'numeric_validation':{'checks':[
+                {'code':'finite','status':'pass','severity':'blocking'},
+                {'code':'convergence','status':'pass','severity':'blocking'}]}}
+        if variant=='missing_mode':
+            del record['mode']
+        elif variant=='unknown_mode':
+            record['mode']='unrecognized_profile'
+        elif variant=='missing_convergence':
+            record['numeric_validation']['checks'].pop()
+        elif variant=='duplicate_finite_unknown':
+            record['numeric_validation']['checks'].append({'code':'finite','status':'unknown','severity':'warning'})
+        elif variant=='other_blocking_unknown':
+            record['numeric_validation']['checks'].append({'code':'required_extra','status':'unknown','severity':'blocking'})
+        else:
+            record['mode']='strict_reproduction'
+            record['source_validation']={'status':'complete','semantic_support':'supported'}
+>       assert application.derive_scientific_status(record)=='not_verified'
+E       AssertionError: assert 'passed_structured_reference' == 'not_verified'
+E         
+E         - not_verified
+E         + passed_structured_reference
+
+artifacts/audit-t01-verdict-20261019/test_independent_acceptance.py:173: AssertionError
+_________ test_incomplete_saved_facts_cannot_be_upgraded[unknown_mode] _________
+
+variant = 'unknown_mode'
+
+    @pytest.mark.parametrize('variant', ['missing_mode','unknown_mode','missing_convergence',
+        'duplicate_finite_unknown','other_blocking_unknown','missing_unit_review'])
+    def test_incomplete_saved_facts_cannot_be_upgraded(variant):
+        record = {'status':'succeeded','scientific_status':'not_verified','mode':'structured_execution',
+            'comparison':{'status':'pass'},'numeric_validation':{'checks':[
+                {'code':'finite','status':'pass','severity':'blocking'},
+                {'code':'convergence','status':'pass','severity':'blocking'}]}}
+        if variant=='missing_mode':
+            del record['mode']
+        elif variant=='unknown_mode':
+            record['mode']='unrecognized_profile'
+        elif variant=='missing_convergence':
+            record['numeric_validation']['checks'].pop()
+        elif variant=='duplicate_finite_unknown':
+            record['numeric_validation']['checks'].append({'code':'finite','status':'unknown','severity':'warning'})
+        elif variant=='other_blocking_unknown':
+            record['numeric_validation']['checks'].append({'code':'required_extra','status':'unknown','severity':'blocking'})
+        else:
+            record['mode']='strict_reproduction'
+            record['source_validation']={'status':'complete','semantic_support':'supported'}
+>       assert application.derive_scientific_status(record)=='not_verified'
+E       AssertionError: assert 'passed_structured_reference' == 'not_verified'
+E         
+E         - not_verified
+E         + passed_structured_reference
+
+artifacts/audit-t01-verdict-20261019/test_independent_acceptance.py:173: AssertionError
+_____ test_incomplete_saved_facts_cannot_be_upgraded[missing_convergence] ______
+
+variant = 'missing_convergence'
+
+    @pytest.mark.parametrize('variant', ['missing_mode','unknown_mode','missing_convergence',
+        'duplicate_finite_unknown','other_blocking_unknown','missing_unit_review'])
+    def test_incomplete_saved_facts_cannot_be_upgraded(variant):
+        record = {'status':'succeeded','scientific_status':'not_verified','mode':'structured_execution',
+            'comparison':{'status':'pass'},'numeric_validation':{'checks':[
+                {'code':'finite','status':'pass','severity':'blocking'},
+                {'code':'convergence','status':'pass','severity':'blocking'}]}}
+        if variant=='missing_mode':
+            del record['mode']
+        elif variant=='unknown_mode':
+            record['mode']='unrecognized_profile'
+        elif variant=='missing_convergence':
+            record['numeric_validation']['checks'].pop()
+        elif variant=='duplicate_finite_unknown':
+            record['numeric_validation']['checks'].append({'code':'finite','status':'unknown','severity':'warning'})
+        elif variant=='other_blocking_unknown':
+            record['numeric_validation']['checks'].append({'code':'required_extra','status':'unknown','severity':'blocking'})
+        else:
+            record['mode']='strict_reproduction'
+            record['source_validation']={'status':'complete','semantic_support':'supported'}
+>       assert application.derive_scientific_status(record)=='not_verified'
+E       AssertionError: assert 'passed_structured_reference' == 'not_verified'
+E         
+E         - not_verified
+E         + passed_structured_reference
+
+artifacts/audit-t01-verdict-20261019/test_independent_acceptance.py:173: AssertionError
+___ test_incomplete_saved_facts_cannot_be_upgraded[duplicate_finite_unknown] ___
+
+variant = 'duplicate_finite_unknown'
+
+    @pytest.mark.parametrize('variant', ['missing_mode','unknown_mode','missing_convergence',
+        'duplicate_finite_unknown','other_blocking_unknown','missing_unit_review'])
+    def test_incomplete_saved_facts_cannot_be_upgraded(variant):
+        record = {'status':'succeeded','scientific_status':'not_verified','mode':'structured_execution',
+            'comparison':{'status':'pass'},'numeric_validation':{'checks':[
+                {'code':'finite','status':'pass','severity':'blocking'},
+                {'code':'convergence','status':'pass','severity':'blocking'}]}}
+        if variant=='missing_mode':
+            del record['mode']
+        elif variant=='unknown_mode':
+            record['mode']='unrecognized_profile'
+        elif variant=='missing_convergence':
+            record['numeric_validation']['checks'].pop()
+        elif variant=='duplicate_finite_unknown':
+            record['numeric_validation']['checks'].append({'code':'finite','status':'unknown','severity':'warning'})
+        elif variant=='other_blocking_unknown':
+            record['numeric_validation']['checks'].append({'code':'required_extra','status':'unknown','severity':'blocking'})
+        else:
+            record['mode']='strict_reproduction'
+            record['source_validation']={'status':'complete','semantic_support':'supported'}
+>       assert application.derive_scientific_status(record)=='not_verified'
+E       AssertionError: assert 'passed_structured_reference' == 'not_verified'
+E         
+E         - not_verified
+E         + passed_structured_reference
+
+artifacts/audit-t01-verdict-20261019/test_independent_acceptance.py:173: AssertionError
+____ test_incomplete_saved_facts_cannot_be_upgraded[other_blocking_unknown] ____
+
+variant = 'other_blocking_unknown'
+
+    @pytest.mark.parametrize('variant', ['missing_mode','unknown_mode','missing_convergence',
+        'duplicate_finite_unknown','other_blocking_unknown','missing_unit_review'])
+    def test_incomplete_saved_facts_cannot_be_upgraded(variant):
+        record = {'status':'succeeded','scientific_status':'not_verified','mode':'structured_execution',
+            'comparison':{'status':'pass'},'numeric_validation':{'checks':[
+                {'code':'finite','status':'pass','severity':'blocking'},
+                {'code':'convergence','status':'pass','severity':'blocking'}]}}
+        if variant=='missing_mode':
+            del record['mode']
+        elif variant=='unknown_mode':
+            record['mode']='unrecognized_profile'
+        elif variant=='missing_convergence':
+            record['numeric_validation']['checks'].pop()
+        elif variant=='duplicate_finite_unknown':
+            record['numeric_validation']['checks'].append({'code':'finite','status':'unknown','severity':'warning'})
+        elif variant=='other_blocking_unknown':
+            record['numeric_validation']['checks'].append({'code':'required_extra','status':'unknown','severity':'blocking'})
+        else:
+            record['mode']='strict_reproduction'
+            record['source_validation']={'status':'complete','semantic_support':'supported'}
+>       assert application.derive_scientific_status(record)=='not_verified'
+E       AssertionError: assert 'passed_structured_reference' == 'not_verified'
+E         
+E         - not_verified
+E         + passed_structured_reference
+
+artifacts/audit-t01-verdict-20261019/test_independent_acceptance.py:173: AssertionError
+_____ test_incomplete_saved_facts_cannot_be_upgraded[missing_unit_review] ______
+
+variant = 'missing_unit_review'
+
+    @pytest.mark.parametrize('variant', ['missing_mode','unknown_mode','missing_convergence',
+        'duplicate_finite_unknown','other_blocking_unknown','missing_unit_review'])
+    def test_incomplete_saved_facts_cannot_be_upgraded(variant):
+        record = {'status':'succeeded','scientific_status':'not_verified','mode':'structured_execution',
+            'comparison':{'status':'pass'},'numeric_validation':{'checks':[
+                {'code':'finite','status':'pass','severity':'blocking'},
+                {'code':'convergence','status':'pass','severity':'blocking'}]}}
+        if variant=='missing_mode':
+            del record['mode']
+        elif variant=='unknown_mode':
+            record['mode']='unrecognized_profile'
+        elif variant=='missing_convergence':
+            record['numeric_validation']['checks'].pop()
+        elif variant=='duplicate_finite_unknown':
+            record['numeric_validation']['checks'].append({'code':'finite','status':'unknown','severity':'warning'})
+        elif variant=='other_blocking_unknown':
+            record['numeric_validation']['checks'].append({'code':'required_extra','status':'unknown','severity':'blocking'})
+        else:
+            record['mode']='strict_reproduction'
+            record['source_validation']={'status':'complete','semantic_support':'supported'}
+>       assert application.derive_scientific_status(record)=='not_verified'
+E       AssertionError: assert 'passed_structured_reference' == 'not_verified'
+E         
+E         - not_verified
+E         + passed_structured_reference
+
+artifacts/audit-t01-verdict-20261019/test_independent_acceptance.py:173: AssertionError
+=========================== short test summary info ============================
+FAILED artifacts/audit-t01-verdict-20261019/test_independent_acceptance.py::test_incomplete_saved_facts_cannot_be_upgraded[missing_mode]
+FAILED artifacts/audit-t01-verdict-20261019/test_independent_acceptance.py::test_incomplete_saved_facts_cannot_be_upgraded[unknown_mode]
+FAILED artifacts/audit-t01-verdict-20261019/test_independent_acceptance.py::test_incomplete_saved_facts_cannot_be_upgraded[missing_convergence]
+FAILED artifacts/audit-t01-verdict-20261019/test_independent_acceptance.py::test_incomplete_saved_facts_cannot_be_upgraded[duplicate_finite_unknown]
+FAILED artifacts/audit-t01-verdict-20261019/test_independent_acceptance.py::test_incomplete_saved_facts_cannot_be_upgraded[other_blocking_unknown]
+FAILED artifacts/audit-t01-verdict-20261019/test_independent_acceptance.py::test_incomplete_saved_facts_cannot_be_upgraded[missing_unit_review]
+6 failed, 11 passed in 9.21s

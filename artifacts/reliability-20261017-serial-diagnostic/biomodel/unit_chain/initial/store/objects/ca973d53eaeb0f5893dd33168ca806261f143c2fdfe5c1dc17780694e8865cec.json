@@ -1,0 +1,1 @@
+{"kind":"claim","payload":{"claim_type":"paper_assumption","end":96,"page":1,"quote":"Time t is in minutes.","relation":"reported_as","review_status":"unverified","source_ref":"86db644e605b9337dc33d8e171200f5832373f76108e1b1ab71849959ec0bd6e","start":75,"statement":"time_unit"},"refs":["86db644e605b9337dc33d8e171200f5832373f76108e1b1ab71849959ec0bd6e"],"schema_version":"1"}

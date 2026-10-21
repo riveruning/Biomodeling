@@ -1,0 +1,210 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="16" skipped="0" tests="16" time="3.963" timestamp="2026-10-19T17:06:15.915308+08:00" hostname="LAPTOP-2QUP5P60"><testcase classname="tests.test_evidence_binding_acceptance" name="test_same_number_in_another_target_does_not_support_parameter[Buffer pH = 0.4.]" time="0.133"><failure message="AssertionError: assert 'ready' == 'invalid'&#10;  &#10;  - invalid&#10;  + ready">tmp_path = PosixPath('/tmp/biomodel-t05-baseline/test_same_number_in_another_ta0')
+parameter_quote = 'Buffer pH = 0.4.'
+
+    @pytest.mark.parametrize('parameter_quote', ['Buffer pH = 0.4.', 'Parameter q = 0.4.',
+        'Parameter k = 7; buffer pH = 0.4.', 'Initial k = 0.4.'])
+    def test_same_number_in_another_target_does_not_support_parameter(tmp_path, parameter_quote):
+        store, source, proposal = setup_case(tmp_path, parameter_quote=parameter_quote)
+        result = agent_tools.submit_draft(store, proposal, [source])
+&gt;       assert result['state'] == 'invalid'
+E       AssertionError: assert 'ready' == 'invalid'
+E         
+E         - invalid
+E         + ready
+
+tests/test_evidence_binding_acceptance.py:34: AssertionError</failure></testcase><testcase classname="tests.test_evidence_binding_acceptance" name="test_same_number_in_another_target_does_not_support_parameter[Parameter q = 0.4.]" time="0.115"><failure message="AssertionError: assert 'ready' == 'invalid'&#10;  &#10;  - invalid&#10;  + ready">tmp_path = PosixPath('/tmp/biomodel-t05-baseline/test_same_number_in_another_ta1')
+parameter_quote = 'Parameter q = 0.4.'
+
+    @pytest.mark.parametrize('parameter_quote', ['Buffer pH = 0.4.', 'Parameter q = 0.4.',
+        'Parameter k = 7; buffer pH = 0.4.', 'Initial k = 0.4.'])
+    def test_same_number_in_another_target_does_not_support_parameter(tmp_path, parameter_quote):
+        store, source, proposal = setup_case(tmp_path, parameter_quote=parameter_quote)
+        result = agent_tools.submit_draft(store, proposal, [source])
+&gt;       assert result['state'] == 'invalid'
+E       AssertionError: assert 'ready' == 'invalid'
+E         
+E         - invalid
+E         + ready
+
+tests/test_evidence_binding_acceptance.py:34: AssertionError</failure></testcase><testcase classname="tests.test_evidence_binding_acceptance" name="test_same_number_in_another_target_does_not_support_parameter[Parameter k = 7; buffer pH = 0.4.]" time="0.117"><failure message="AssertionError: assert 'ready' == 'invalid'&#10;  &#10;  - invalid&#10;  + ready">tmp_path = PosixPath('/tmp/biomodel-t05-baseline/test_same_number_in_another_ta2')
+parameter_quote = 'Parameter k = 7; buffer pH = 0.4.'
+
+    @pytest.mark.parametrize('parameter_quote', ['Buffer pH = 0.4.', 'Parameter q = 0.4.',
+        'Parameter k = 7; buffer pH = 0.4.', 'Initial k = 0.4.'])
+    def test_same_number_in_another_target_does_not_support_parameter(tmp_path, parameter_quote):
+        store, source, proposal = setup_case(tmp_path, parameter_quote=parameter_quote)
+        result = agent_tools.submit_draft(store, proposal, [source])
+&gt;       assert result['state'] == 'invalid'
+E       AssertionError: assert 'ready' == 'invalid'
+E         
+E         - invalid
+E         + ready
+
+tests/test_evidence_binding_acceptance.py:34: AssertionError</failure></testcase><testcase classname="tests.test_evidence_binding_acceptance" name="test_same_number_in_another_target_does_not_support_parameter[Initial k = 0.4.]" time="0.109"><failure message="AssertionError: assert 'ready' == 'invalid'&#10;  &#10;  - invalid&#10;  + ready">tmp_path = PosixPath('/tmp/biomodel-t05-baseline/test_same_number_in_another_ta3')
+parameter_quote = 'Initial k = 0.4.'
+
+    @pytest.mark.parametrize('parameter_quote', ['Buffer pH = 0.4.', 'Parameter q = 0.4.',
+        'Parameter k = 7; buffer pH = 0.4.', 'Initial k = 0.4.'])
+    def test_same_number_in_another_target_does_not_support_parameter(tmp_path, parameter_quote):
+        store, source, proposal = setup_case(tmp_path, parameter_quote=parameter_quote)
+        result = agent_tools.submit_draft(store, proposal, [source])
+&gt;       assert result['state'] == 'invalid'
+E       AssertionError: assert 'ready' == 'invalid'
+E         
+E         - invalid
+E         + ready
+
+tests/test_evidence_binding_acceptance.py:34: AssertionError</failure></testcase><testcase classname="tests.test_evidence_binding_acceptance" name="test_formula_or_lhs_mismatch_cannot_become_a_ready_draft[Equation dx/dt = -k*x*x.--k*x]" time="0.113"><failure message="AssertionError: assert ('ready' == 'invalid'&#10;  &#10;  - invalid&#10;  + ready)">tmp_path = PosixPath('/tmp/biomodel-t05-baseline/test_formula_or_lhs_mismatch_c0')
+quote = 'Equation dx/dt = -k*x*x.', expression = '-k*x'
+
+    @pytest.mark.parametrize('quote,expression', [('Equation dx/dt = -k*x*x.', '-k*x'),
+        ('Equation dx/dt = k*x.', '-k*x'), ('Equation dy/dt = -k*x.', '-k*x')])
+    def test_formula_or_lhs_mismatch_cannot_become_a_ready_draft(tmp_path, quote, expression):
+        store, source, proposal = setup_case(tmp_path, equation_quote=quote, expression=expression)
+        result = agent_tools.submit_draft(store, proposal, [source])
+&gt;       assert result['state'] == 'invalid' and not store.list('model') and not store.list('claim')
+E       AssertionError: assert ('ready' == 'invalid'
+E         
+E         - invalid
+E         + ready)
+
+tests/test_evidence_binding_acceptance.py:43: AssertionError</failure></testcase><testcase classname="tests.test_evidence_binding_acceptance" name="test_formula_or_lhs_mismatch_cannot_become_a_ready_draft[Equation dx/dt = k*x.--k*x]" time="0.115"><failure message="AssertionError: assert ('ready' == 'invalid'&#10;  &#10;  - invalid&#10;  + ready)">tmp_path = PosixPath('/tmp/biomodel-t05-baseline/test_formula_or_lhs_mismatch_c1')
+quote = 'Equation dx/dt = k*x.', expression = '-k*x'
+
+    @pytest.mark.parametrize('quote,expression', [('Equation dx/dt = -k*x*x.', '-k*x'),
+        ('Equation dx/dt = k*x.', '-k*x'), ('Equation dy/dt = -k*x.', '-k*x')])
+    def test_formula_or_lhs_mismatch_cannot_become_a_ready_draft(tmp_path, quote, expression):
+        store, source, proposal = setup_case(tmp_path, equation_quote=quote, expression=expression)
+        result = agent_tools.submit_draft(store, proposal, [source])
+&gt;       assert result['state'] == 'invalid' and not store.list('model') and not store.list('claim')
+E       AssertionError: assert ('ready' == 'invalid'
+E         
+E         - invalid
+E         + ready)
+
+tests/test_evidence_binding_acceptance.py:43: AssertionError</failure></testcase><testcase classname="tests.test_evidence_binding_acceptance" name="test_formula_or_lhs_mismatch_cannot_become_a_ready_draft[Equation dy/dt = -k*x.--k*x]" time="0.188"><failure message="AssertionError: assert ('ready' == 'invalid'&#10;  &#10;  - invalid&#10;  + ready)">tmp_path = PosixPath('/tmp/biomodel-t05-baseline/test_formula_or_lhs_mismatch_c2')
+quote = 'Equation dy/dt = -k*x.', expression = '-k*x'
+
+    @pytest.mark.parametrize('quote,expression', [('Equation dx/dt = -k*x*x.', '-k*x'),
+        ('Equation dx/dt = k*x.', '-k*x'), ('Equation dy/dt = -k*x.', '-k*x')])
+    def test_formula_or_lhs_mismatch_cannot_become_a_ready_draft(tmp_path, quote, expression):
+        store, source, proposal = setup_case(tmp_path, equation_quote=quote, expression=expression)
+        result = agent_tools.submit_draft(store, proposal, [source])
+&gt;       assert result['state'] == 'invalid' and not store.list('model') and not store.list('claim')
+E       AssertionError: assert ('ready' == 'invalid'
+E         
+E         - invalid
+E         + ready)
+
+tests/test_evidence_binding_acceptance.py:43: AssertionError</failure></testcase><testcase classname="tests.test_evidence_binding_acceptance" name="test_cropped_quote_cannot_hide_arithmetic_or_uncertainty[Total a + k = 0.4.-k = 0.4]" time="0.107"><failure message="AssertionError: assert ('ready' != 'ready')">tmp_path = PosixPath('/tmp/biomodel-t05-baseline/test_cropped_quote_cannot_hide0')
+page_text = 'Total a + k = 0.4.', quote = 'k = 0.4'
+
+    @pytest.mark.parametrize('page_text,quote', [('Total a + k = 0.4.', 'k = 0.4'),
+        ('Parameter k = 0.4/2.', 'Parameter k = 0.4'),
+        ('Maybe Parameter k = 0.4.', 'Parameter k = 0.4')])
+    def test_cropped_quote_cannot_hide_arithmetic_or_uncertainty(tmp_path, page_text, quote):
+        store, source, proposal = setup_case(tmp_path, parameter_quote=page_text)
+        proposal['evidence'][1]['quote'] = quote
+        result = agent_tools.submit_draft(store, proposal, [source])
+&gt;       assert result['state'] != 'ready' and result['artifact'] is None
+E       AssertionError: assert ('ready' != 'ready')
+
+tests/test_evidence_binding_acceptance.py:53: AssertionError</failure></testcase><testcase classname="tests.test_evidence_binding_acceptance" name="test_cropped_quote_cannot_hide_arithmetic_or_uncertainty[Parameter k = 0.4/2.-Parameter k = 0.4]" time="0.108"><failure message="AssertionError: assert ('ready' != 'ready')">tmp_path = PosixPath('/tmp/biomodel-t05-baseline/test_cropped_quote_cannot_hide1')
+page_text = 'Parameter k = 0.4/2.', quote = 'Parameter k = 0.4'
+
+    @pytest.mark.parametrize('page_text,quote', [('Total a + k = 0.4.', 'k = 0.4'),
+        ('Parameter k = 0.4/2.', 'Parameter k = 0.4'),
+        ('Maybe Parameter k = 0.4.', 'Parameter k = 0.4')])
+    def test_cropped_quote_cannot_hide_arithmetic_or_uncertainty(tmp_path, page_text, quote):
+        store, source, proposal = setup_case(tmp_path, parameter_quote=page_text)
+        proposal['evidence'][1]['quote'] = quote
+        result = agent_tools.submit_draft(store, proposal, [source])
+&gt;       assert result['state'] != 'ready' and result['artifact'] is None
+E       AssertionError: assert ('ready' != 'ready')
+
+tests/test_evidence_binding_acceptance.py:53: AssertionError</failure></testcase><testcase classname="tests.test_evidence_binding_acceptance" name="test_cropped_quote_cannot_hide_arithmetic_or_uncertainty[Maybe Parameter k = 0.4.-Parameter k = 0.4]" time="0.121"><failure message="AssertionError: assert ('ready' != 'ready')">tmp_path = PosixPath('/tmp/biomodel-t05-baseline/test_cropped_quote_cannot_hide2')
+page_text = 'Maybe Parameter k = 0.4.', quote = 'Parameter k = 0.4'
+
+    @pytest.mark.parametrize('page_text,quote', [('Total a + k = 0.4.', 'k = 0.4'),
+        ('Parameter k = 0.4/2.', 'Parameter k = 0.4'),
+        ('Maybe Parameter k = 0.4.', 'Parameter k = 0.4')])
+    def test_cropped_quote_cannot_hide_arithmetic_or_uncertainty(tmp_path, page_text, quote):
+        store, source, proposal = setup_case(tmp_path, parameter_quote=page_text)
+        proposal['evidence'][1]['quote'] = quote
+        result = agent_tools.submit_draft(store, proposal, [source])
+&gt;       assert result['state'] != 'ready' and result['artifact'] is None
+E       AssertionError: assert ('ready' != 'ready')
+
+tests/test_evidence_binding_acceptance.py:53: AssertionError</failure></testcase><testcase classname="tests.test_evidence_binding_acceptance" name="test_formula_prefix_cannot_hide_an_extra_factor" time="0.131"><failure message="AssertionError: assert ('ready' != 'ready')">tmp_path = PosixPath('/tmp/biomodel-t05-baseline/test_formula_prefix_cannot_hid0')
+
+    def test_formula_prefix_cannot_hide_an_extra_factor(tmp_path):
+        store, source, proposal = setup_case(tmp_path, equation_quote='Equation dx/dt = -k*x*x.')
+        proposal['evidence'][2]['quote'] = 'Equation dx/dt = -k*x'
+        result = agent_tools.submit_draft(store, proposal, [source])
+&gt;       assert result['state'] != 'ready' and not store.list('model')
+E       AssertionError: assert ('ready' != 'ready')
+
+tests/test_evidence_binding_acceptance.py:61: AssertionError</failure></testcase><testcase classname="tests.test_evidence_binding_acceptance" name="test_unsupported_wording_stays_unknown_and_requires_clarification" time="0.113"><failure message="AssertionError: assert ('ready' == 'awaiting_input'&#10;  &#10;  - awaiting_input&#10;  + ready)">tmp_path = PosixPath('/tmp/biomodel-t05-baseline/test_unsupported_wording_stays0')
+
+    def test_unsupported_wording_stays_unknown_and_requires_clarification(tmp_path):
+        store, source, proposal = setup_case(tmp_path, equation_quote='The response relaxes according to the displayed figure.')
+        result = agent_tools.submit_draft(store, proposal, [source])
+&gt;       assert result['state'] == 'awaiting_input' and not store.list('model')
+E       AssertionError: assert ('ready' == 'awaiting_input'
+E         
+E         - awaiting_input
+E         + ready)
+
+tests/test_evidence_binding_acceptance.py:67: AssertionError</failure></testcase><testcase classname="tests.test_evidence_binding_acceptance" name="test_valid_direct_bindings_preserve_source_positions_without_semantic_promotion" time="0.109"><failure message="KeyError: 'binding'">tmp_path = PosixPath('/tmp/biomodel-t05-baseline/test_valid_direct_bindings_pre0')
+
+    def test_valid_direct_bindings_preserve_source_positions_without_semantic_promotion(tmp_path):
+        store, source, proposal = setup_case(tmp_path)
+        result = agent_tools.submit_draft(store, proposal, [source])
+        assert result['state'] == 'ready'
+        for ref in store.list('claim'):
+            claim = store.get(ref)['payload']
+&gt;           binding = claim['binding']
+                      ^^^^^^^^^^^^^^^^
+E           KeyError: 'binding'
+
+tests/test_evidence_binding_acceptance.py:77: KeyError</failure></testcase><testcase classname="tests.test_evidence_binding_acceptance" name="test_explicit_symbol_mapping_is_checked_against_cited_declarations" time="0.057"><failure message="AssertionError: assert 'invalid' == 'ready'&#10;  &#10;  - ready&#10;  + invalid">tmp_path = PosixPath('/tmp/biomodel-t05-baseline/test_explicit_symbol_mapping_i0')
+
+    def test_explicit_symbol_mapping_is_checked_against_cited_declarations(tmp_path):
+        quote = 'Symbol X maps to x; Symbol a maps to k; Equation dX/dt = -a*X.'
+        store, source, proposal = setup_case(tmp_path, equation_quote=quote)
+        proposal['evidence'][2]['symbol_map'] = {'X': 'x', 'a': 'k'}
+        result = agent_tools.submit_draft(store, proposal, [source])
+&gt;       assert result['state'] == 'ready'
+E       AssertionError: assert 'invalid' == 'ready'
+E         
+E         - ready
+E         + invalid
+
+tests/test_evidence_binding_acceptance.py:93: AssertionError</failure></testcase><testcase classname="tests.test_evidence_binding_acceptance" name="test_asserted_mapping_without_source_witness_is_not_trusted" time="0.048"><failure message="AssertionError: assert ('invalid' == 'awaiting_input'&#10;  &#10;  - awaiting_input&#10;  + invalid)">tmp_path = PosixPath('/tmp/biomodel-t05-baseline/test_asserted_mapping_without_0')
+
+    def test_asserted_mapping_without_source_witness_is_not_trusted(tmp_path):
+        store, source, proposal = setup_case(tmp_path, equation_quote='Equation dX/dt = -a*X.')
+        proposal['evidence'][2]['symbol_map'] = {'X': 'x', 'a': 'k'}
+        result = agent_tools.submit_draft(store, proposal, [source])
+&gt;       assert result['state'] == 'awaiting_input' and not store.list('model') and not store.list('claim')
+E       AssertionError: assert ('invalid' == 'awaiting_input'
+E         
+E         - awaiting_input
+E         + invalid)
+
+tests/test_evidence_binding_acceptance.py:103: AssertionError</failure></testcase><testcase classname="tests.test_evidence_binding_acceptance" name="test_manually_built_model_cannot_bypass_wrong_binding_or_populate_cache" time="0.962"><failure message="Failed: DID NOT RAISE ValueError">tmp_path = PosixPath('/tmp/biomodel-t05-baseline/test_manually_built_model_cann0')
+
+    def test_manually_built_model_cannot_bypass_wrong_binding_or_populate_cache(tmp_path):
+        store, source, proposal = setup_case(tmp_path, parameter_quote='Buffer pH = 0.4.')
+        text = store.get(source)['payload']['pages'][0]['text']
+        links = {}
+        for item in proposal['evidence']:
+            start = text.index(item['quote'])
+            links[item['target']] = (evidence.add_claim(store, source, 1, start, start+len(item['quote']), item['target']),)
+        from dataclasses import replace
+        from biomodel_agent.domain.serialization import from_dict
+        draft = replace(from_dict(ModelDraft, proposal['draft']), element_map=FrozenMap(links))
+&gt;       with pytest.raises(ValueError, match='binding'):
+E       Failed: DID NOT RAISE ValueError
+
+tests/test_evidence_binding_acceptance.py:116: Failed</failure></testcase></testsuite></testsuites>

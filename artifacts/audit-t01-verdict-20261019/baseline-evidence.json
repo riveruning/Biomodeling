@@ -1,0 +1,26 @@
+{
+  "full_baseline": {
+    "tests": 715,
+    "passed": 715,
+    "source": "../architecture-audit-20261019/pytest.xml",
+    "production_files_match_audited_snapshot": true
+  },
+  "independent_red_baseline": {
+    "failed": 7,
+    "passed": 1,
+    "source": "independent-before.xml"
+  },
+  "dsh_first_sandbox_attempt": ".workflow/runs/audit-t01-verdict-1792376028580-c083c7f6",
+  "dsh_host_attempt": ".workflow/runs/audit-t01-verdict-1792376087057-cbd3603b",
+  "supervision_tests": {
+    "supervisor_passed": 15,
+    "runtime_passed": 3
+  },
+  "node_runtime": "/home/riveruning/.nvm/versions/node/v24.20.0/bin/node",
+  "dsh_scope_pause": {
+    "output": ".workflow/runs/audit-t01-verdict-1792376087057-cbd3603b",
+    "reason": "storage.py read not listed; no source writes",
+    "resolution": "added ordinary source read dependency and dispatched once with revised scope"
+  },
+  "dsh_revised_attempt": ".workflow/runs/audit-t01-verdict-1792376258456-7357fef8"
+}

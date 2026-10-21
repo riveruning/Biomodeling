@@ -1,0 +1,161 @@
+--- before/src/biomodel_agent/source_review.py
++++ after/src/biomodel_agent/source_review.py
+@@ -21,15 +21,31 @@
+ 
+ 
+ def _direct_assignment(line, match):
+-    """Do not interpret the last operand of an expression as its whole LHS.
++    """Do not mistake either side of an arithmetic expression for a literal.
+ 
+     This check only recognizes literal assignments; it does not solve sums,
+     products or ratios for a parameter. Leading Markdown list markers remain
+     valid declaration contexts.
+     """
+     before = line[:match.start()].rstrip()
+-    if before and before[-1] in '+-−*/^=<>≤≥≠×÷':
+-        return before in ('-', '*')
++    if before and before[-1] in '+-−*/^=<>≤≥≠×÷' and before not in ('-', '*'):
++        return False
++    if 'value' in match.re.groupindex:
++        unit = match.group('unit')
++        # A numeric regex can otherwise stop at 1 in "1/2", or at 1 in
++        # malformed "1e-". Never manufacture a numeric declaration from that
++        # prefix. Recognized time units include their own negative exponent.
++        value_end = match.end('value')
++        if not unit and re.match(r'[\w]|\.\d', line[value_end:]):
++            return False
++        end = match.end('unit') if unit else value_end
++        remainder = line[end:].lstrip()
++        if re.match(r'[+\-−*/^×÷%<>≤≥≠]', remainder):
++            return False
++        # Preserve the existing explicit unit-conversion notation, such as
++        # k = 0.1 per second = 6 per minute; it is not a bare numeric RHS.
++        if not unit and remainder.startswith('='):
++            return False
+     return True
+ 
+ 
+--- before/tests/test_source_literal_assignments.py
++++ after/tests/test_source_literal_assignments.py
+@@ -0,0 +1,71 @@
++"""Partial numeric tokens must not manufacture or resolve scientific facts."""
++import pytest
++
++from biomodel_agent import evidence
++from biomodel_agent.source_review import review_sources
++from biomodel_agent.storage import ArtifactStore
++
++
++def review(tmp_path, text, target='k/value'):
++    path = tmp_path / 'source.txt'
++    path.write_text(text)
++    store = ArtifactStore(tmp_path / 'store')
++    source = evidence.ingest_source(store, path)
++    return review_sources(store, [source], [target])
++
++
++@pytest.mark.parametrize('expression', ['1/2', '1 + 2', '1 - 2', '1*2', '1**2',
++                                       '1^2', '1%2', '1e-', '1e', '1.2.3',
++                                       '1x', '1 = 2'])
++def test_numeric_prefix_of_an_expression_is_not_a_new_parameter_fact(tmp_path, expression):
++    result = review(tmp_path, f'Parameter k = 0.5.\nExpression k = {expression}.')
++    assert not result['issues']
++    assert not result['resolutions']
++    assert result['semantic_support'] == 'unknown'
++
++
++@pytest.mark.parametrize('target, statement', [('k/value', 'Parameter k'), ('x/initial', 'Initial x')])
++def test_partial_expression_cannot_clear_an_explicit_missing_value(tmp_path, target, statement):
++    result = review(tmp_path, f'{statement} is missing.\nResearcher clarification:\n{statement} = 1/2.', target)
++    assert [i['kind'] for i in result['issues']] == ['missing_source_value']
++    assert not result['resolutions']
++
++
++def test_expression_cannot_erase_preexisting_direct_numeric_conflicts(tmp_path):
++    result = review(tmp_path, 'k = 0.5.\nk = 0.7.\nAuthor clarification:\nk = 1/2.')
++    assert [i['kind'] for i in result['issues']] == ['conflicting_declared_values']
++    assert not result['resolutions']
++
++
++@pytest.mark.parametrize('marker', ['', '- ', '* '])
++def test_markdown_bullets_do_not_exempt_arithmetic_rhs_from_checking(tmp_path, marker):
++    result = review(tmp_path, f'k is missing.\nAuthor clarification:\n{marker}k = 1/2.')
++    assert result['issues'] and not result['resolutions']
++
++
++@pytest.mark.parametrize('literal', ['0.5', '+0.5', '.5', '5e-1', '5E-1', '0.50'])
++def test_complete_decimal_and_scientific_literals_still_resolve_missing_values(tmp_path, literal):
++    result = review(tmp_path, f'k is missing.\nResearcher clarification:\nk = {literal}.')
++    assert not result['issues']
++    assert result['resolutions'][0]['evidence']['value'] == .5
++
++
++def test_negative_literal_and_time_unit_exponents_remain_supported(tmp_path):
++    result = review(tmp_path, 'k is missing.\nAuthor correction:\nk = -2.5e-3 min^-1.')
++    assert not result['issues']
++    facts = {r['target']: r['evidence'] for r in result['resolutions']}
++    assert facts['k/value']['value'] == -.0025
++    assert facts['k/unit']['unit'] == 'min^-1'
++
++
++def test_expression_after_unit_is_not_a_literal_rate_correction(tmp_path):
++    result = review(tmp_path, 'k = 0.2 per second.\nk = 0.2 per minute.\n'
++                    'Researcher correction:\nk = 0.2 per minute * 3.')
++    assert result['issues'] and not result['resolutions']
++
++
++def test_explicit_unit_conversion_chain_keeps_existing_supported_behavior(tmp_path):
++    result = review(tmp_path, 'k = 0.1 per minute.\nk = 0.1 per hour.\n'
++                    'Researcher correction:\nk = 0.1 per minute = 6 per hour.')
++    assert not result['issues']
++    assert {r['target'] for r in result['resolutions']} == {'k/value', 'k/unit'}
+--- before/README.md
++++ after/README.md
+@@ -17,6 +17,8 @@
+ 2026-10-18 冻结版外部诊断：[独立材料审核与五类小测对照](docs/holdout-pilot-evaluation.md)。复算 20 例参考，单列 6 例评分边界；完成五类材料的原生 Codex 对照和实际任务恢复。属于待领域专家审核的小样本诊断，未建立领先结论。
+ 
+ 2026-10-18 开发修复：[来源赋值识别与引用自修](docs/source-and-citation-recovery.md)。修复复合表达式尾项的虚假赋值、识别追加的研究者澄清标题，并把可自修引用错误交还模型。原始回答离线重放与完整回归分别留档，不更新冻结版评测成绩。
++
++2026-10-18 后续修复：[数值声明边界与验证状态](docs/literal-assignment-validation.md)。避免把分数、算式或残缺数值截为参数字面量；完整回归 350 项通过。真实模型验证因网络限制及外发授权审批而未完成，未产生新的性能结论。
+ 
+ ## 阅读顺序
+ 
+--- before/docs/literal-assignment-validation.md
++++ after/docs/literal-assignment-validation.md
+@@ -0,0 +1,36 @@
++# 数值声明边界与验证状态
++
++2026-10-18（北京时间）。承接同日的来源赋值与引用自修修复。本轮完成了新的离线修复；真实模型验证仍有授权阻塞，未更新任何性能成绩。
++
++## 修复内容
++
++原数值正则会把 `k = 1/2` 中的 `1` 当作完整参数声明。与另一处正确的 `k = 0.5` 并存时，这会制造虚假的来源冲突；放在澄清段里，又可能用截断值错误清除真正的缺失或冲突。
++
++现在检查数值后的完整边界：分数、加减乘除、幂、取模、算式后缀、残缺科学计数法以及直接黏连的额外字符，均不作为完整数值字面量。声明前的 Markdown 列表符号不会跳过右侧检查。完整小数、正负号、科学计数法及已支持的时间单位负指数继续识别；先前支持的显式时间单位换算链写法保持兼容。
++
++这只收紧显式声明的识别范围，不计算分数或代数表达式。忽略算式前缀并不验证整个来源，也不等于新增了通用表达式语义门禁；语义支持仍为 unknown。单位换算链维持原有有限识别，并未实现任意链式等式的完整一致性证明。
++
++## 验证
++
++- 修改前基线：323 项通过。
++- 新增 27 项开发回归，覆盖算式截断、不能凭算式解除缺值或真实冲突、Markdown 项目符号、合法数值及单位写法。
++- 针对性 80 项通过；完整 **350 项通过**。
++- 原 c13 恢复、c18 补全与恢复三份回答原字节离线重放，工具状态与上一轮相同：来源虚假冲突已消除，仍需模型修正引用。零次新增模型回答，不计为案例完成。
++
++源码前后快照、变更补丁、测试日志/XML、三份原回答的工具重放输出及文件哈希保存在 `artifacts/literal-assignment-validation-20261018/`。
++
++## 真实模型验证的状态
++
++在进一步修改代码前，先冻结上一轮候选（源码 SHA-256 `a79f24ec6a6ddbf623f290751c7d931087496e53a7eb3dde0accf026b72c299e`），预先安排四个尝试：c13、c18 各进行原任务恢复和补全新会话。原任务恢复从既有初始暂停点导出精确依赖闭包，继承已使用的 2 次调用；总调用 8、草稿修订 2、重试 2，未增加预算。每次请求前间隔 5 秒，沿用原 qwen3.8-chat、JSON 模式、4000 tokens 与 90 秒超时。
++
++模型进程仅挂载当前单阶段材料、其任务存储、冻结源码与 Python 环境；测试集答案、参考及宿主代码不挂载。无凭证探针验证隔离进程能导入科学计算库且看不到测试集目录。数值参考只由外部评分阶段读取。
++
++首个 c13 恢复尝试连续发生三次 `transport failure: ConnectError`，按原重试预算结束，**没有收到模型回答**。其余三项未运行。初始的环境失败、停止记录、冻结候选和输入指纹单独保留，不能当作科学任务表现来解释。
++
++不带凭证的连通性检查随后确认：默认沙箱无法连接，同一地址在允许网络的执行环境返回 401，证明服务地址可达，但该探针不验证身份认证或模型可用性。已为独立保存的完整四项网络诊断准备同一候选、材料和预算。
++
++随后，执行在线诊断的权限升级被自动审批拒绝。审批原因是：具体合成测试材料及原任务对话将发送到外部 USTC 模型服务，需要用户明确授权这些数据向该目的地发送。因此网络诊断尚未启动；不通过其他工具、地址或执行方式绕过拒绝。
++
++两组准备记录及失败现场保存在 `artifacts/source-citation-live-20261018/`。其中的运行脚本作为可审查记录保存，尚未经过完整在线验收。数据、凭证引用和服务沿用既有项目评测设置，凭证本身不写入记录。
++
++下一步可以继续离线开发；若要完成这四项在线验证，需用户明确允许将 c13/c18 的合成材料及对应任务对话发送到 `https://api.llm.ustc.edu.cn/v1`。后续如执行最新候选，应另建运行记录并冻结新源码，保留此次环境失败和未启动的诊断，不替换既有结果。

@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="45" time="25.383" timestamp="2026-10-19T10:38:04.859471+08:00" hostname="LAPTOP-2QUP5P60"><testcase classname="artifacts.audit-t01-verdict-20261019.test_independent_acceptance" name="test_real_negative_result_cannot_complete_or_lose_failure" time="1.180" /><testcase classname="artifacts.audit-t01-verdict-20261019.test_independent_acceptance" name="test_real_strict_reference_failure_is_failed_even_with_unknown_sources" time="0.981" /><testcase classname="artifacts.audit-t01-verdict-20261019.test_independent_acceptance" name="test_controlled_convergence_failure_wins_over_missing_source" time="0.562" /><testcase classname="artifacts.audit-t01-verdict-20261019.test_independent_acceptance" name="test_unknown_validation_is_not_a_failure_or_a_pass" time="0.934" /><testcase classname="artifacts.audit-t01-verdict-20261019.test_independent_acceptance" name="test_legacy_unknown_label_does_not_hide_explicit_failure[numeric]" time="0.245" /><testcase classname="artifacts.audit-t01-verdict-20261019.test_independent_acceptance" name="test_legacy_unknown_label_does_not_hide_explicit_failure[static]" time="0.237" /><testcase classname="artifacts.audit-t01-verdict-20261019.test_independent_acceptance" name="test_legacy_unknown_label_does_not_hide_explicit_failure[comparison]" time="0.229" /><testcase classname="artifacts.audit-t01-verdict-20261019.test_independent_acceptance" name="test_valid_but_unreviewed_run_remains_technically_complete" time="1.146" /><testcase classname="artifacts.audit-t01-verdict-20261019.test_independent_acceptance" name="test_valid_reference_pass_survives_cache_and_agent_summary" time="0.965" /><testcase classname="artifacts.audit-t01-verdict-20261019.test_independent_acceptance" name="test_reference_pass_with_missing_or_unknown_numeric_validation_stays_unknown[checks0]" time="0.941" /><testcase classname="artifacts.audit-t01-verdict-20261019.test_independent_acceptance" name="test_reference_pass_with_missing_or_unknown_numeric_validation_stays_unknown[checks1]" time="0.901" /><testcase classname="artifacts.audit-t01-verdict-20261019.test_independent_acceptance" name="test_incomplete_saved_facts_cannot_be_upgraded[missing_mode]" time="0.001" /><testcase classname="artifacts.audit-t01-verdict-20261019.test_independent_acceptance" name="test_incomplete_saved_facts_cannot_be_upgraded[unknown_mode]" time="0.000" /><testcase classname="artifacts.audit-t01-verdict-20261019.test_independent_acceptance" name="test_incomplete_saved_facts_cannot_be_upgraded[missing_convergence]" time="0.000" /><testcase classname="artifacts.audit-t01-verdict-20261019.test_independent_acceptance" name="test_incomplete_saved_facts_cannot_be_upgraded[duplicate_finite_unknown]" time="0.000" /><testcase classname="artifacts.audit-t01-verdict-20261019.test_independent_acceptance" name="test_incomplete_saved_facts_cannot_be_upgraded[other_blocking_unknown]" time="0.000" /><testcase classname="artifacts.audit-t01-verdict-20261019.test_independent_acceptance" name="test_incomplete_saved_facts_cannot_be_upgraded[missing_unit_review]" time="0.012" /><testcase classname="tests.test_run_verdict" name="test_strict_nonneg_failure_is_failed_not_masked" time="0.928" /><testcase classname="tests.test_run_verdict" name="test_strict_reference_mismatch_is_failed" time="0.950" /><testcase classname="tests.test_run_verdict" name="test_controlled_convergence_failure_is_failed" time="0.102" /><testcase classname="tests.test_run_verdict" name="test_unknown_checks_stay_not_verified_and_cli_exit_2" time="0.085" /><testcase classname="tests.test_run_verdict" name="test_source_unknown_controls_stay_not_verified" time="1.868" /><testcase classname="tests.test_run_verdict" name="test_stored_not_verified_with_blocking_numeric_failure_is_failed" time="0.002" /><testcase classname="tests.test_run_verdict" name="test_stored_failed_with_unknown_facts_is_failed" time="0.001" /><testcase classname="tests.test_run_verdict" name="test_stored_pass_with_blocking_static_failure_is_failed" time="0.002" /><testcase classname="tests.test_run_verdict" name="test_execution_status_failure_is_failed" time="0.001" /><testcase classname="tests.test_run_verdict" name="test_clean_succeeded_record_stays_not_verified" time="0.001" /><testcase classname="tests.test_run_verdict" name="test_cache_reuse_cannot_remask_explicit_failure" time="0.000" /><testcase classname="tests.test_run_verdict" name="test_cache_reuse_keeps_genuine_reference_pass" time="0.967" /><testcase classname="tests.test_run_verdict" name="test_agent_finish_incomplete_on_stored_failed" time="0.105" /><testcase classname="tests.test_run_verdict" name="test_agent_finish_incomplete_on_numeric_failure_facts" time="1.048" /><testcase classname="tests.test_run_verdict" name="test_cli_exit_codes_for_failed_and_unverified" time="0.094" /><testcase classname="tests.test_run_verdict" name="test_verdict_priority_and_basis_shape" time="0.001"><failure message="ImportError: cannot import name 'serialization' from 'biomodel_agent' (/home/riveruning/biologymodel_agent/src/biomodel_agent/__init__.py)">def test_verdict_priority_and_basis_shape():
+        from biomodel_agent.application import (
+            Check,
+            ValidationReport,
+            blocking_verdict_basis,
+            derive_scientific_status,
+            initial_scientific_status,
+        )
+    
+        ok_source = {"status": "complete", "semantic_support": "supported", "units_unknown": False}
+        bad_source = {"status": "incomplete", "semantic_support": "unknown", "units_unknown": True}
+    
+        # 1. explicit failure beats everything, including a pass-looking comparison.
+        r1 = derive_scientific_status({
+            "status": "succeeded", "scientific_status": "not_verified",
+            "static_validation": {"checks": []},
+            "numeric_validation": {"checks": [
+                {"code": "finite", "status": "pass", "severity": "blocking", "message": ""},
+                {"code": "nonnegative", "status": "fail", "severity": "blocking", "message": "neg"}]},
+            "comparison": {"status": "pass"},
+        })
+        assert r1 == "failed"
+    
+        # 2. no failure, missing provenance -&gt; not_verified, empty basis.
+        r2 = derive_scientific_status({
+            "status": "succeeded", "scientific_status": "not_verified",
+            "numeric_validation": {"checks": [
+                {"code": "finite", "status": "pass", "severity": "blocking", "message": ""}]},
+            "comparison": {"status": "not_run"},
+        })
+        assert r2 == "not_verified" and blocking_verdict_basis({"status": "succeeded"}) == {}
+    
+        # 3. non-blocking/warning fails are not failures.
+        r3 = derive_scientific_status({
+            "status": "succeeded",
+            "numeric_validation": {"checks": [
+                {"code": "convergence", "status": "fail", "severity": "warning", "message": ""}]},
+            "comparison": {"status": "not_run"},
+        })
+        assert r3 == "not_verified"
+    
+        # 4. initial status: strict pass requires real comparison + required
+        #    numeric pass + supported sources; unknown source -&gt; not_verified.
+        #    numeric_ok is used directly below so the dataclass path and the
+        #    serialized-record path can be checked against each other.
+        numeric_ok = ValidationReport((
+            Check("finite", "pass", severity="blocking"),
+            Check("convergence", "pass", severity="blocking"),
+        ))
+        assert initial_scientific_status("succeeded", (), numeric_ok, "pass", ok_source, True) == "passed_structured_reference"
+        assert initial_scientific_status("succeeded", (), numeric_ok, "pass", bad_source, True) == "not_verified"
+        assert initial_scientific_status("succeeded", (), numeric_ok, "not_run", ok_source, True) == "not_verified"
+        # Normal mode: numerical pass label; reference fail is a failure.
+        assert initial_scientific_status("succeeded", (), numeric_ok, "pass", bad_source, False) == "passed_structured_reference"
+        assert initial_scientific_status("succeeded", (), numeric_ok, "fail", ok_source, False) == "failed"
+        # Execution failure dominates.
+        assert initial_scientific_status("failed", (), (), "pass", ok_source, True) == "failed"
+    
+        # 5. shared kernel: initial and derive agree on identical facts.  The
+        #    record below serializes exactly what initial_scientific_status is
+        #    given, so the two paths must produce the same verdict.
+&gt;       from biomodel_agent import serialization
+E       ImportError: cannot import name 'serialization' from 'biomodel_agent' (/home/riveruning/biologymodel_agent/src/biomodel_agent/__init__.py)
+
+tests/test_run_verdict.py:590: ImportError</failure></testcase><testcase classname="tests.test_research_workflows" name="test_frozen_run_cache_replay_and_comparison" time="3.778" /><testcase classname="tests.test_research_workflows" name="test_failed_reference_is_not_success" time="0.904" /><testcase classname="tests.test_research_workflows" name="test_numeric_failure_cli_and_agent_cannot_claim_completion" time="0.229" /><testcase classname="tests.test_research_workflows" name="test_report_uses_authoritative_sbml_math_and_hash" time="0.977" /><testcase classname="tests.test_research_workflows" name="test_fit_constants_not_state_initials_and_holdout_protected" time="1.966" /><testcase classname="tests.test_research_workflows" name="test_equivalent_training_mechanisms_and_different_intervention" time="0.060" /><testcase classname="tests.test_research_workflows" name="test_agent_complete_trace_and_no_fabricated_sources" time="1.175" /><testcase classname="tests.test_research_workflows" name="test_agent_tools_cannot_expand_scope[shell-args0]" time="0.106" /><testcase classname="tests.test_research_workflows" name="test_agent_tools_cannot_expand_scope[inspect_source-args1]" time="0.140" /><testcase classname="tests.test_research_workflows" name="test_llm_real_wire_schema_and_redacted_errors" time="0.003" /><testcase classname="tests.test_research_workflows" name="test_exact_quotes_resolve_offsets_without_llm_counting" time="0.163" /><testcase classname="tests.test_research_workflows" name="test_export_verified_closure_and_empty_report_is_not_proof" time="0.319" /></testsuite></testsuites>

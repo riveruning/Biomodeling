@@ -1,0 +1,12 @@
+{
+  "root_ref": "f5af19e1d5cc0fb76a23bbc49e89c94162753e08418ceb48fb997c5c1e801352",
+  "command": [
+    ".venv/bin/python",
+    "-m",
+    "biomodel_agent",
+    "replay",
+    "f5af19e1d5cc0fb76a23bbc49e89c94162753e08418ceb48fb997c5c1e801352",
+    "--store",
+    "artifacts/v0.1/final-bundle"
+  ]
+}

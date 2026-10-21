@@ -1,0 +1,118 @@
+{
+  "state": "awaiting_input",
+  "facts": {
+    "k1/value": {
+      "value": 1.0,
+      "evidence": [
+        {
+          "source_id": "assisted",
+          "quote": "e021: k1 = 1.0; k3 = 1.0; k5 = 1.0."
+        }
+      ]
+    },
+    "k2/value": {
+      "value": 0.1,
+      "evidence": [
+        {
+          "source_id": "assisted",
+          "quote": "e022: k2 = 0.1; k4 = 0.1; k6 = 0.1."
+        }
+      ]
+    },
+    "k3/value": {
+      "value": 1.0,
+      "evidence": [
+        {
+          "source_id": "assisted",
+          "quote": "e021: k1 = 1.0; k3 = 1.0; k5 = 1.0."
+        }
+      ]
+    },
+    "k4/value": {
+      "value": 0.1,
+      "evidence": [
+        {
+          "source_id": "assisted",
+          "quote": "e022: k2 = 0.1; k4 = 0.1; k6 = 0.1."
+        }
+      ]
+    },
+    "k5/value": {
+      "value": 1.0,
+      "evidence": [
+        {
+          "source_id": "assisted",
+          "quote": "e021: k1 = 1.0; k3 = 1.0; k5 = 1.0."
+        }
+      ]
+    },
+    "k6/value": {
+      "value": 0.1,
+      "evidence": [
+        {
+          "source_id": "assisted",
+          "quote": "e022: k2 = 0.1; k4 = 0.1; k6 = 0.1."
+        }
+      ]
+    },
+    "Ki/value": {
+      "value": 1.0,
+      "evidence": [
+        {
+          "source_id": "assisted",
+          "quote": "e023: Ki = 1.0."
+        }
+      ]
+    },
+    "n/value": {
+      "value": 10,
+      "evidence": [
+        {
+          "source_id": "assisted",
+          "quote": "e024: n = 10."
+        }
+      ]
+    },
+    "X/initial": {
+      "value": null,
+      "evidence": []
+    },
+    "Y/initial": {
+      "value": null,
+      "evidence": []
+    },
+    "Z/initial": {
+      "value": null,
+      "evidence": []
+    },
+    "rule:X/expression": {
+      "value": "k1*Ki^n/(Ki^n + Z^n) - k2*X",
+      "evidence": [
+        {
+          "source_id": "assisted",
+          "quote": "dX/dt = k1*Ki^n/(Ki^n + Z^n) - k2*X."
+        }
+      ]
+    },
+    "rule:Y/expression": {
+      "value": "k3*X - k4*Y",
+      "evidence": [
+        {
+          "source_id": "assisted",
+          "quote": "dY/dt = k3*X - k4*Y."
+        }
+      ]
+    },
+    "rule:Z/expression": {
+      "value": "k5*Y - k6*Z",
+      "evidence": [
+        {
+          "source_id": "assisted",
+          "quote": "dZ/dt = k5*Y - k6*Z."
+        }
+      ]
+    }
+  },
+  "proposal_status": "last_attempt_not_necessarily_accepted",
+  "duplicate_targets": []
+}

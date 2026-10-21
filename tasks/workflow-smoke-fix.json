@@ -1,0 +1,13 @@
+{
+  "schema_version": "1",
+  "id": "workflow-smoke-fix",
+  "objective": "修复上一轮文件交付中遗漏的末尾换行，验证 Codex 反馈到 DSH 的修复闭环。",
+  "context": "文件已存在，内容为 DSH_WORKFLOW_READY，共18字节；验收要求19字节，最后一个字节必须是 LF(0x0A)。",
+  "read_files": ["artifacts/development/dsh-smoke.txt"],
+  "write_files": ["artifacts/development/dsh-smoke.txt"],
+  "expected_files": ["artifacts/development/dsh-smoke.txt"],
+  "instructions": "直接用 write 工具覆盖这一个文件。工具 content 参数的 JSON 表达应为 \"DSH_WORKFLOW_READY\\n\"：字符串最后是实际换行 U+000A，不是字面反斜线和n。不要调用shell/glob或其他工具，写入后简短回复。",
+  "acceptance": ["文件精确等于 ASCII 字节 DSH_WORKFLOW_READY 后加一个 LF，共19字节"],
+  "verification_commands": [],
+  "budget": {"first_activity_ms":120000,"idle_ms":120000,"first_write_ms":180000,"write_idle_ms":180000,"total_ms":240000}
+}

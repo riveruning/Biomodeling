@@ -1,0 +1,109 @@
+{
+  "schema_version": "1",
+  "version": "0.1.0",
+  "finished_at": "2026-10-15T00:57:42.560791+00:00",
+  "decision": "accepted_scoped_research_prototype",
+  "scope": "ODE numerical foundation, constrained A extraction/execution and synthetic bounded B comparison",
+  "tests": {
+    "python": {
+      "tests": 151,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "command": ".venv/bin/python -m pytest -q --junitxml=artifacts/v0.1/pytest.xml"
+    },
+    "development_workflow": {
+      "tests": 18,
+      "passed": 18,
+      "commands": [
+        "node scripts/tests/dsh-supervisor.test.mjs",
+        "node scripts/tests/dsh-runtime.test.mjs"
+      ]
+    }
+  },
+  "environment": {
+    "python": "3.12.3",
+    "python_full": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]",
+    "implementation": "CPython",
+    "platform": "Linux-6.6.87.2-microsoft-standard-WSL2-x86_64-with-glibc2.39",
+    "machine": "x86_64",
+    "packages": {
+      "libroadrunner": "2.10.0",
+      "roadrunner": "absent",
+      "python-libsbml": "5.21.2",
+      "libsbml": "absent",
+      "numpy": "2.5.4",
+      "scipy": "1.18.1",
+      "pypdf": "6.20.1",
+      "biomodel-agent": "0.1.0"
+    },
+    "modules": {
+      "__init__.py": "3ebbb4065141012142168ecc70776886d2a452d80c3c3c1b19fc94665136fd5c",
+      "__main__.py": "11e716d1f66f25a0dd6ee566cb9bff3452624a3f47b8e009c3631ab2a9b01630",
+      "agent.py": "948e6fc4b58cd8f8ea629931713ccfc5d09a13ba467794d84eb0c014b34486e5",
+      "agent_tools.py": "abe06c2c67548389f32d7f47b901407b8463940434e5251678fe17ca691fe905",
+      "application.py": "efdb3812341f794985e5857f0b9c04782a1ec3543022b28c956a2d35cfdc27c1",
+      "bundles.py": "e3d710814a0205fc84fd66e5699ed5335a3bbe4d1910fc3c7f688d7ad6a49acd",
+      "cli.py": "21f4dc409bdf209ab3b42facda51e166a72a3c133da51165b2cc150cc38b17d3",
+      "domain/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "domain/contracts.py": "0c9711fb6500a00cbb4c5be748db77b7b4a8a32a0f54d76d04fc80be424f8366",
+      "domain/serialization.py": "35cd7eac8aa83a8bb7e41e0ea7f568abe34a570d38b8484c017ccf9b37d7e395",
+      "evidence.py": "020c4e0653bdbd9e06734ed060b89984dda013a9e7810ec132b51d5bf794b79f",
+      "expressions.py": "972ce61a74b747af2fcb92893b6c98bf9371408ff9737f68f22fe36e043fc8ea",
+      "fitting.py": "099546d69f8735c6b6357d23e9b4618025fc59f5ac8f655406e52db1325291b1",
+      "hypotheses.py": "22fcc3ecb93e6845b8aa484e396885bf2b56b6eb8d64e47fed7519e717f828b7",
+      "llm.py": "8e47c8eee713c29e40360c70c2076eae2eb30ddbaef4108ffa9200abb4176ab8",
+      "modeling.py": "69cafa82bffe977ee4a0b1e3b77c29c1bb48fd0e48d58f4644fcd045eb43c44e",
+      "reporting.py": "8316c78fa5628b8da82813f07b0c334d92fc3c73c2edbc7b55ba0bec969cf20d",
+      "simulation.py": "5ce58365e6adb77e801719a519aef488a938654bc50ca34c9dd6c2189e509f18",
+      "storage.py": "8fdfff97a2477666515664e71e2122eb2a4885d79f16c8fbb1a04735461a3062",
+      "validation.py": "a358aa2ecf7c460f3f263fbf5eb08188068f493f21f4a2a69bb1afe90faebb86"
+    },
+    "modules_sha256": "fc43afe3571084db690de97984265ff1837b3798908b7f328d36191f58877eb8",
+    "provenance": "content_hash_of_src_biomodel_agent_py (no git metadata available)"
+  },
+  "requirements_lock_sha256": "0e49554486764e4ccd8dc4a194ecbf87b58e4c7f4407fd08ed4567ce2e954aef",
+  "benchmarks": {
+    "structured_models": 4,
+    "all_comparisons": "pass",
+    "threshold": 0.001,
+    "synthetic_b_winner": "cand_feedforward",
+    "training_only": "indistinguishable_from_training"
+  },
+  "live_agent": {
+    "status": "completed",
+    "agent_ref": "204aee8883a861fafe6781ce27961907760e3a59a8bb2a26dbc60e83d5276baa",
+    "run_ref": "15f16a4c654a5bcbc6673aed21526561b514c3697cbc3551f2a067e56b4b6c21",
+    "model": "claude-sonnet-4-6",
+    "calls": 5,
+    "repairs": 1,
+    "usage_total_tokens": 9589,
+    "scope": "one live extraction/execution of a curated synthetic specification; not a paper benchmark or baseline advantage proof"
+  },
+  "final_replay": {
+    "ref": "673751f489b21d5ffdb163d57d5643f6d4850c34c8787a9c14592abbd6ff3082",
+    "status": "succeeded",
+    "scientific_status": "passed_structured_reference",
+    "comparison": "pass"
+  },
+  "not_run": [
+    "real-paper extraction benchmark",
+    "fair generic-LLM/fixed-workflow/agent baselines",
+    "fresh-machine environment rebuild"
+  ],
+  "limits": [
+    "No biological mechanism truth claim",
+    "No full dimensional proof or semantic source approval",
+    "No general reaction fitting/PDE/events/delay",
+    "No fitting one-command replay or automatic agent resume"
+  ],
+  "evidence_files": {
+    "pytest.xml": "9baae13a17c5e5db356c22ae6d44f2fe48fe49aa0e1db98521e0e42316198495",
+    "pytest.log": "a50b7ba8e9144ee40bba4c3dbb32f4cbc5ad0a902f824e9c9a6cfc11f7a3ff78",
+    "node-tests.log": "58d1d13e648e4a0af91f0c5e0ddd7add54d961077c60fe6db73e57423a1298a3",
+    "evaluation.json": "7b99fcd0709bc58bfc2095fda8965e258900460058b35b36e2d1b0a5798c8a36",
+    "evaluate.log": "cc9b6fe429db8fefe5248bb431a5089d03fdc8ba915f921937805581e7ae3356",
+    "live-agent.json": "e6f6b8f9df839efc03f1c6b13727922c2bc836889c9252772bc1ca4a9167fe9a",
+    "final-replay.json": "06d0fa02b4cf1b9ba9e4a1840c9d4d040f7ba11a403c4782f65ab233802a13e8"
+  }
+}

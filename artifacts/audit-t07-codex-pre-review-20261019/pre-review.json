@@ -1,0 +1,661 @@
+{
+  "schema_version": 1,
+  "task": "T07b_codex_pre_review",
+  "status": "ai_development_pre_review_complete",
+  "reviewer": "Codex",
+  "reviewer_kind": "AI development self-review",
+  "reviewed_at": "2026-10-19T12:30:21.241506+00:00",
+  "independence": "not_independent_of_Codex_annotation_author",
+  "human_or_expert_approval": false,
+  "formal_review_decisions_written": false,
+  "source_packet": "artifacts/audit-t07-retrieval-review-20261019/review-pack/packet.json",
+  "source_packet_file_sha256": "494b90b51b31cb44af4661460e0c5f1d931f36326b43d77176a49a06464921c3",
+  "source_packet_content_sha256": "30e14eada284021edf06338f5ad2af32289ca03ed227d414a7637fb9a65fc821",
+  "candidate_packet_content_sha256": "7529e191078a292085b29c95a5968bae47628dc68a136212cc036272a0eed51d",
+  "summary": {
+    "cases": 18,
+    "recommendations": {
+      "retain_candidate": 17,
+      "revise_annotation": 1
+    },
+    "exact_source_spans": 21,
+    "source_span_mismatches": 0,
+    "changed_candidate_cases": [
+      "clarification_scope"
+    ],
+    "new_papers": 0,
+    "human_approved_cases": 0
+  },
+  "original_packet_audit": {
+    "cases": 18,
+    "paper_families": 1,
+    "documents": 21,
+    "required_spans": 21,
+    "review_status": {
+      "pending": 18
+    },
+    "reviewed_comparison_ready": false,
+    "real_paper_count": 0,
+    "semantic_support": "unknown"
+  },
+  "candidate_packet_audit": {
+    "cases": 18,
+    "paper_families": 1,
+    "documents": 21,
+    "required_spans": 21,
+    "review_status": {
+      "pending": 18
+    },
+    "reviewed_comparison_ready": false,
+    "real_paper_count": 0,
+    "semantic_support": "unknown"
+  },
+  "old_review_form_for_candidate": {
+    "refused": true,
+    "error": "stale or incompatible review form"
+  },
+  "scientific_review_method": "Read all provided case texts and target statements; preserve conditions, units, symbols, provenance, missingness and conflicting scopes. Exact spans and hashes checked deterministically.",
+  "cases": [
+    {
+      "id": "parameter_late",
+      "recommendation": "retain_candidate",
+      "answer": "条件 A 下 k_deg = 0.12 min^-1。",
+      "reason": "声明完整包含参数名、数值、时间倒数单位及条件 A；页首只是指向结果部分，不能代替数值声明。",
+      "scope_limit": "不能转用于其他条件；本例没有状态量定义、其他参数或实验数据，不支持整模型复现。",
+      "checks": {
+        "source_span": true,
+        "target_scope": true,
+        "answerability": true,
+        "paper_grouping": true
+      },
+      "original_case_sha256": "d85810d7bb650ee22612df572f5822464c424699f4248c192d355ed8820e0172",
+      "original_expectation": "answerable",
+      "original_category": "parameter",
+      "anchor_evidence": [
+        {
+          "source_id": "paper",
+          "page": 1,
+          "start": 2298,
+          "end": 2363,
+          "quote": "The degradation parameter k_deg = 0.12 per minute in condition A.",
+          "id": "a1",
+          "role": "support_candidate",
+          "exact_source_slice": true
+        }
+      ],
+      "source_pages_sha256": {
+        "paper": "d1a616d2212b4ba75878e8f14981431d4feed5a0c6f4ed9729209cd4dfb9ca1f"
+      }
+    },
+    {
+      "id": "initial_late",
+      "recommendation": "retain_candidate",
+      "answer": "刺激前 X(0) 的物质量为 2.5 nmol。",
+      "reason": "引文给出 X、初始时刻、物质量和刺激前限定；没有把页首 observations 当成初值。",
+      "scope_limit": "nmol 是物质量；没有体积不能转换为浓度，也不能移用作刺激后的状态。",
+      "checks": {
+        "source_span": true,
+        "target_scope": true,
+        "answerability": true,
+        "paper_grouping": true
+      },
+      "original_case_sha256": "5494b4143546b05a7c387c3c6bd4dd648bfe4b6334380674c80382140a3ab823",
+      "original_expectation": "answerable",
+      "original_category": "initial",
+      "anchor_evidence": [
+        {
+          "source_id": "paper",
+          "page": 1,
+          "start": 2301,
+          "end": 2356,
+          "quote": "The initial amount X(0) = 2.5 nmol before the stimulus.",
+          "id": "a1",
+          "role": "support_candidate",
+          "exact_source_slice": true
+        }
+      ],
+      "source_pages_sha256": {
+        "paper": "4bb218266edea7fa0f9cd9de74a4a8a75c42e8f7be10e1ec2a07656dbf1b0dde"
+      }
+    },
+    {
+      "id": "unit_late",
+      "recommendation": "retain_candidate",
+      "answer": "原文将 k_on 的单位写为 litre per mole per second，即 L mol^-1 s^-1。",
+      "reason": "变量和完整单位出现在同一句，足以回答单位查询。",
+      "scope_limit": "这是材料中报告的单位；没有速率方程与状态单位，无法核验整个模型的量纲，也不能补出 k_on 的数值。",
+      "checks": {
+        "source_span": true,
+        "target_scope": true,
+        "answerability": true,
+        "paper_grouping": true
+      },
+      "original_case_sha256": "87a0bf1961d19511310967724c77152eea803e24bcb909a48db47b166f961fb5",
+      "original_expectation": "answerable",
+      "original_category": "unit",
+      "anchor_evidence": [
+        {
+          "source_id": "paper",
+          "page": 1,
+          "start": 2293,
+          "end": 2347,
+          "quote": "The parameter k_on has unit litre per mole per second.",
+          "id": "a1",
+          "role": "support_candidate",
+          "exact_source_slice": true
+        }
+      ],
+      "source_pages_sha256": {
+        "paper": "f672f885090bf092fb977f20f8db5504af0372900a92fec8d00f7301f8a2a75d"
+      }
+    },
+    {
+      "id": "formula_late",
+      "recommendation": "retain_candidate",
+      "answer": "dX/dt = k_in - k_out*X。",
+      "reason": "公式左端对应 X，右端的流入项、负号和乘积均包含在候选片段内。",
+      "scope_limit": "未给出 X 的量纲、初值、参数数值或时间单位；检索到公式不等于具备执行条件。",
+      "checks": {
+        "source_span": true,
+        "target_scope": true,
+        "answerability": true,
+        "paper_grouping": true
+      },
+      "original_case_sha256": "7b6f3e4e3ff4bbdfcab6192dbb5e5351c40b7ee99c066ab96f3a91061e9d0552",
+      "original_expectation": "answerable",
+      "original_category": "formula",
+      "anchor_evidence": [
+        {
+          "source_id": "paper",
+          "page": 1,
+          "start": 2290,
+          "end": 2346,
+          "quote": "The state X follows the equation dX/dt = k_in - k_out*X.",
+          "id": "a1",
+          "role": "support_candidate",
+          "exact_source_slice": true
+        }
+      ],
+      "source_pages_sha256": {
+        "paper": "3fa1c285f639e1a2659d09c8cfde915b07700829e70a5017c2dc53f8037bab3a"
+      }
+    },
+    {
+      "id": "qualifier",
+      "recommendation": "retain_candidate",
+      "answer": "仅未处理细胞的 k_cat = 0.8 s^-1；原文禁止用于已处理细胞。",
+      "reason": "必需片段同时包含数值与两处条件限定，避免只截取 0.8 丢失适用范围。",
+      "scope_limit": "未指定细胞处理条件的执行任务仍需澄清；材料没有提供已处理细胞的 k_cat。",
+      "checks": {
+        "source_span": true,
+        "target_scope": true,
+        "answerability": true,
+        "paper_grouping": true
+      },
+      "original_case_sha256": "df3f0d8774b3c99e157dada39d9bf3ac000c470fb8116bdd5db4d0565a86960f",
+      "original_expectation": "answerable",
+      "original_category": "parameter",
+      "anchor_evidence": [
+        {
+          "source_id": "paper",
+          "page": 1,
+          "start": 2289,
+          "end": 2399,
+          "quote": "For untreated cells only, the parameter k_cat = 0.8 per second; this value must not be used for treated cells.",
+          "id": "a1",
+          "role": "support_candidate",
+          "exact_source_slice": true
+        }
+      ],
+      "source_pages_sha256": {
+        "paper": "9e7b705bb322194a42e2ecf98926a50e1e8ab273712528b5a639888b6aef46ed"
+      }
+    },
+    {
+      "id": "supplement",
+      "recommendation": "retain_candidate",
+      "answer": "补充材料 Table S2 报告结合实验的 k_bind = 0.07 s^-1。",
+      "reason": "正文只指向补充表，数值位于已授权补充材料页 2；主文与补充属于同一开发家庭。",
+      "scope_limit": "不能仅凭 bind 名称推断反应级数、改写为二级结合常数或补充浓度单位；这里只确认报告内容。",
+      "checks": {
+        "source_span": true,
+        "target_scope": true,
+        "answerability": true,
+        "paper_grouping": true
+      },
+      "original_case_sha256": "440a0ebd1f88674d11e4130c1608e6e1dcb5b10dada7497e32195016ae411c74",
+      "original_expectation": "answerable",
+      "original_category": "supplement",
+      "anchor_evidence": [
+        {
+          "source_id": "supplement",
+          "page": 2,
+          "start": 0,
+          "end": 71,
+          "quote": "Table S2: the parameter k_bind = 0.07 per second for the binding assay.",
+          "id": "a1",
+          "role": "support_candidate",
+          "exact_source_slice": true
+        }
+      ],
+      "source_pages_sha256": {
+        "main": "aaad14ed9250eadd0363b0b81939a1db3879f951566c58f617920e72e3c38256",
+        "supplement": "977668f43b65d900950d87fb047b5bd80b30acb2f4785b6c1a3106b6a1d24775"
+      }
+    },
+    {
+      "id": "conflict_same_page",
+      "recommendation": "retain_candidate",
+      "answer": "同页 Methods 报告 k_decay = 0.1 s^-1，Figure 2 报告 0.3 s^-1，且文字显式称二者冲突。",
+      "reason": "两侧具有相同变量和单位；材料明确声明冲突，候选片段覆盖两侧，支持作为合成冲突检索控制。",
+      "scope_limit": "没有实验条件细节或更正来源，不能决定采用哪个值；不能将人工写出的冲突句当成真实论文矛盾的独立验证。",
+      "checks": {
+        "source_span": true,
+        "target_scope": true,
+        "answerability": true,
+        "paper_grouping": true
+      },
+      "original_case_sha256": "39fe32c57524b55bbb83bbbe45fc26b0594d29cf5c331b1b41da53d35325d016",
+      "original_expectation": "conflicting",
+      "original_category": "conflict",
+      "anchor_evidence": [
+        {
+          "source_id": "paper",
+          "page": 3,
+          "start": 0,
+          "end": 54,
+          "quote": "The parameter k_decay = 0.1 per second in the Methods.",
+          "id": "a1",
+          "role": "conflict_candidate",
+          "exact_source_slice": true
+        },
+        {
+          "source_id": "paper",
+          "page": 3,
+          "start": 2298,
+          "end": 2378,
+          "quote": "The parameter k_decay = 0.3 per second in Figure 2; this conflicts with Methods.",
+          "id": "a2",
+          "role": "conflict_candidate",
+          "exact_source_slice": true
+        }
+      ],
+      "source_pages_sha256": {
+        "paper": "770824d9e92a5129add050bf2479c5b0ae25d52df1216712059d808440712f71"
+      }
+    },
+    {
+      "id": "conflict_two_sources",
+      "recommendation": "retain_candidate",
+      "answer": "正文 Methods 报告 k_decay = 0.1 s^-1，补充来源报告 Figure 2 的 0.3 s^-1，后者显式称与 Methods 冲突。",
+      "reason": "与同页冲突相同的两条声明跨两个授权来源；必须检索两侧，不能把主文和补充分到不同划分。",
+      "scope_limit": "这里只验证跨来源候选覆盖；材料与 conflict_same_page 复制了相同句子，不能算两个独立科学样本，也不能自行选一个值。",
+      "checks": {
+        "source_span": true,
+        "target_scope": true,
+        "answerability": true,
+        "paper_grouping": true
+      },
+      "original_case_sha256": "ffabf36a1a4a234333e1bf0a4194cf4b3b4b208f25bae4c5946f98e95ca2f8e6",
+      "original_expectation": "conflicting",
+      "original_category": "conflict",
+      "anchor_evidence": [
+        {
+          "source_id": "main",
+          "page": 1,
+          "start": 0,
+          "end": 54,
+          "quote": "The parameter k_decay = 0.1 per second in the Methods.",
+          "id": "a1",
+          "role": "conflict_candidate",
+          "exact_source_slice": true
+        },
+        {
+          "source_id": "supplement",
+          "page": 1,
+          "start": 0,
+          "end": 80,
+          "quote": "The parameter k_decay = 0.3 per second in Figure 2; this conflicts with Methods.",
+          "id": "a2",
+          "role": "conflict_candidate",
+          "exact_source_slice": true
+        }
+      ],
+      "source_pages_sha256": {
+        "main": "1b17985a30af6def2c3e89268ba134410f592ec441bf7cb805ef794feec1690a",
+        "supplement": "809d416e665f72491ea46d1f8478719d2899c1982221662483555dba8dd4e54f"
+      }
+    },
+    {
+      "id": "symbol_substring",
+      "recommendation": "retain_candidate",
+      "answer": "页 2 的损失常数 k = 0.2 h^-1。",
+      "reason": "页 1 的 kcat、kcat2 明确是其他参数，不是 k；短符号查询应保留变量边界。",
+      "scope_limit": "不应仅凭子串建立变量别名关系；材料没有授权 k 与 kcat 或 kcat2 的等价映射。",
+      "checks": {
+        "source_span": true,
+        "target_scope": true,
+        "answerability": true,
+        "paper_grouping": true
+      },
+      "original_case_sha256": "9ce366532d6e190dbde0d09400e99664bfda8e931f25a1adc23aebbeb88a5e04",
+      "original_expectation": "answerable",
+      "original_category": "parameter",
+      "anchor_evidence": [
+        {
+          "source_id": "paper",
+          "page": 2,
+          "start": 0,
+          "end": 35,
+          "quote": "The loss constant k = 0.2 per hour.",
+          "id": "a1",
+          "role": "support_candidate",
+          "exact_source_slice": true
+        }
+      ],
+      "source_pages_sha256": {
+        "paper": "ae81cf488e53d94747b36c7aaec736eb78e57236e3e491d52769c3c84402018e"
+      }
+    },
+    {
+      "id": "underscore_symbol",
+      "recommendation": "retain_candidate",
+      "answer": "页 4 将 Na_K pump rate 报告为 3.0 s^-1。",
+      "reason": "Na_K 与页 1 明确无关的 NaK 不同；完整候选声明保留了下划线变量。",
+      "scope_limit": "pump rate 的物理定义未给出，不能据此确定是周转率、通量还是浓度变化率；不要自动补 nmol/s 或把 Na_K 映射为 NaK。",
+      "checks": {
+        "source_span": true,
+        "target_scope": true,
+        "answerability": true,
+        "paper_grouping": true
+      },
+      "original_case_sha256": "3a07c4bbd6193bba77efd912061b586c42cb68b2eeefeaa23ea16465db730b66",
+      "original_expectation": "answerable",
+      "original_category": "parameter",
+      "anchor_evidence": [
+        {
+          "source_id": "paper",
+          "page": 4,
+          "start": 0,
+          "end": 37,
+          "quote": "The Na_K pump rate is 3.0 per second.",
+          "id": "a1",
+          "role": "support_candidate",
+          "exact_source_slice": true
+        }
+      ],
+      "source_pages_sha256": {
+        "paper": "7589fd41ab17d7feb553ae1eb6d1977068ed2d53126140258c3c48d1a3792457"
+      }
+    },
+    {
+      "id": "unicode_offsets",
+      "recommendation": "retain_candidate",
+      "answer": "β_decay 的报告单位为 min^-1，保留 β 字符。",
+      "reason": "候选片段对应 β_decay 而非其他名称；İstanbul、Straße 等前文不改变原始 Unicode 字符偏移的定义。",
+      "scope_limit": "大小写折叠或 UTF-8 字节长度不能用于替代原文字符偏移；没有任何数值可供补全。",
+      "checks": {
+        "source_span": true,
+        "target_scope": true,
+        "answerability": true,
+        "paper_grouping": true
+      },
+      "original_case_sha256": "ecbc973f674620a309d5ddb6a21aa438fd40aef2e9c86a2a2c8410b24c7d3b85",
+      "original_expectation": "answerable",
+      "original_category": "unit",
+      "anchor_evidence": [
+        {
+          "source_id": "paper",
+          "page": 1,
+          "start": 2319,
+          "end": 2392,
+          "quote": "The β_decay parameter has unit minute^-1; preserve the original β symbol.",
+          "id": "a1",
+          "role": "support_candidate",
+          "exact_source_slice": true
+        }
+      ],
+      "source_pages_sha256": {
+        "paper": "a88c6ea35fa88b3d469d9e37e82372297689fbd5293490f06325cbb78039eda6"
+      }
+    },
+    {
+      "id": "no_match",
+      "recommendation": "retain_candidate",
+      "answer": "在本例提供的单页授权文本内没有 missing_token 的目标或数值声明。",
+      "reason": "无候选片段且全文不含查询目标，可作为本材料范围内的未定位控制。",
+      "scope_limit": "只能报告授权文本内未定位；不是整个研究领域没有该变量，也不是已经搜索真实论文及全部补充材料的证明。",
+      "checks": {
+        "source_span": true,
+        "target_scope": true,
+        "answerability": true,
+        "paper_grouping": true
+      },
+      "original_case_sha256": "b5db23c1589b48084c793ed02899241554c10b29071d1970f5599ef9aac7f94b",
+      "original_expectation": "not_located",
+      "original_category": "no_match",
+      "anchor_evidence": [],
+      "source_pages_sha256": {
+        "paper": "62f9d936268983fe3fa33ea84588170144ea19e4baf4f9f75ae92516bdfd4080"
+      }
+    },
+    {
+      "id": "untrusted_instructions",
+      "recommendation": "retain_candidate",
+      "answer": "报告的 X 方程为 dX/dt = -0.5*X；材料称未报告其他项。",
+      "reason": "方程声明与页首要求更改预算的文字分开；来源中的指令只是待检索文本，不具有工作流指令权限。",
+      "scope_limit": "0.5 的时间单位、初值及 X 的量纲未给出；确定性检索返回正确公式也不能证明真实 LLM 抵抗提示注入。",
+      "checks": {
+        "source_span": true,
+        "target_scope": true,
+        "answerability": true,
+        "paper_grouping": true
+      },
+      "original_case_sha256": "a68bb198125aa82cccc263b1f9223e3916eac1b2ac3dc4a7640501320f76d398",
+      "original_expectation": "answerable",
+      "original_category": "formula",
+      "anchor_evidence": [
+        {
+          "source_id": "paper",
+          "page": 1,
+          "start": 2331,
+          "end": 2397,
+          "quote": "The model equation is dX/dt = -0.5*X; no other terms are reported.",
+          "id": "a1",
+          "role": "support_candidate",
+          "exact_source_slice": true
+        }
+      ],
+      "source_pages_sha256": {
+        "paper": "69cf89b66a2259a3153314b9cea05b3ee69be8099998f95168f3f72aa810ecb4"
+      }
+    },
+    {
+      "id": "multiple_initials",
+      "recommendation": "retain_candidate",
+      "answer": "本材料明确给出 X(0) = 2 nmol、Y(0) = 4 nmol 两项初始状态。",
+      "reason": "initial state 是宽泛查询，两项都相关，分属同页远处，要求覆盖两项合理。",
+      "scope_limit": "未提供完整状态列表、方程、刺激时刻或实验条件，不能宣称这就是完整可运行模型的全部初值。",
+      "checks": {
+        "source_span": true,
+        "target_scope": true,
+        "answerability": true,
+        "paper_grouping": true
+      },
+      "original_case_sha256": "0334669b35c5e4c573e99ddf7f95481e6dff955c609321afcb136661f3c5a579",
+      "original_expectation": "answerable",
+      "original_category": "initial",
+      "anchor_evidence": [
+        {
+          "source_id": "paper",
+          "page": 1,
+          "start": 0,
+          "end": 32,
+          "quote": "The initial state X(0) = 2 nmol.",
+          "id": "a1",
+          "role": "support_candidate",
+          "exact_source_slice": true
+        },
+        {
+          "source_id": "paper",
+          "page": 1,
+          "start": 2276,
+          "end": 2308,
+          "quote": "The initial state Y(0) = 4 nmol.",
+          "id": "a2",
+          "role": "support_candidate",
+          "exact_source_slice": true
+        }
+      ],
+      "source_pages_sha256": {
+        "paper": "a643da708c2943d3425bc3e8e849f89977cb9a47942a764b6de0a876eeebd2db"
+      }
+    },
+    {
+      "id": "missing_is_evidence",
+      "recommendation": "retain_candidate",
+      "answer": "原文明确称 k_missing 未报告，仍未知。",
+      "reason": "显式未报告句本身是应检索的缺口证据；页首提到参数所在章节不能当成参数值。",
+      "scope_limit": "保留 unknown，不应设为 0 或默认值；缺口证据检索成功不能记成数值参数提取成功。",
+      "checks": {
+        "source_span": true,
+        "target_scope": true,
+        "answerability": true,
+        "paper_grouping": true
+      },
+      "original_case_sha256": "f4bc187bd6329f7e88ab9c4f1df56c482436ebd6e0ac7f0c746a1264b19314a9",
+      "original_expectation": "explicit_missing",
+      "original_category": "missing",
+      "anchor_evidence": [
+        {
+          "source_id": "paper",
+          "page": 1,
+          "start": 2306,
+          "end": 2367,
+          "quote": "The parameter k_missing was not reported; it remains unknown.",
+          "id": "a1",
+          "role": "missing_statement",
+          "exact_source_slice": true
+        }
+      ],
+      "source_pages_sha256": {
+        "paper": "337b1d1ae025121d2498ef894aaf81661dcf0dc7391be2e36c4ed63da0e9a022"
+      }
+    },
+    {
+      "id": "lexical_gap",
+      "recommendation": "retain_candidate",
+      "answer": "起始种群 N(0) = 12 cells；原文将 N 定义为 dN/dt = r*N 中的状态。",
+      "reason": "t=0 与初始时刻、cells 与种群的对应由同一句中的状态定义支持；没有共享查询词仍可语义相关。",
+      "scope_limit": "该人工指定的同义例不足以证明通用语义检索能力；没有 r 的数值、时间单位或其他条件。",
+      "checks": {
+        "source_span": true,
+        "target_scope": true,
+        "answerability": true,
+        "paper_grouping": true
+      },
+      "original_case_sha256": "dd3c44e680c1bcb66c580b3e86ee812c3e2dfddca0fc5b46d2eb05cb1c2da9a9",
+      "original_expectation": "answerable",
+      "original_category": "wording_gap",
+      "anchor_evidence": [
+        {
+          "source_id": "paper",
+          "page": 1,
+          "start": 0,
+          "end": 55,
+          "quote": "At t=0, N=12 cells; N is the state used in dN/dt = r*N.",
+          "id": "a1",
+          "role": "support_candidate",
+          "exact_source_slice": true
+        }
+      ],
+      "source_pages_sha256": {
+        "paper": "fd105e783278780041d21e211a37485c7f36ca62d01176a829a37f259c48df80"
+      }
+    },
+    {
+      "id": "long_paragraph",
+      "recommendation": "retain_candidate",
+      "answer": "X 的初始浓度为 1.2 micromolar，时间单位为分钟。",
+      "reason": "候选片段是完整声明，包含浓度与时钟限定；前后 filler 没有其他科学声明，不能因窗口裁剪而删除该必需证据。",
+      "scope_limit": "浓度不能直接当作 nmol 物质量；未给体积、状态方程或参数。此合成长段只检验边界，不代表真实排版覆盖。",
+      "checks": {
+        "source_span": true,
+        "target_scope": true,
+        "answerability": true,
+        "paper_grouping": true
+      },
+      "original_case_sha256": "0ff8468ae2d372a23d233035b42fc0bf22d29c8b28117fc768e7ce4de1160231",
+      "original_expectation": "answerable",
+      "original_category": "initial",
+      "anchor_evidence": [
+        {
+          "source_id": "paper",
+          "page": 7,
+          "start": 630,
+          "end": 707,
+          "quote": "The initial X concentration is 1.2 micromolar, with time measured in minutes.",
+          "id": "a1",
+          "role": "support_candidate",
+          "exact_source_slice": true
+        }
+      ],
+      "source_pages_sha256": {
+        "paper": "8c725728e8763e06d2483e6ac41375b56a897e7fdb6cbcc1fa0a4244ed5678ad"
+      }
+    },
+    {
+      "id": "clarification_scope",
+      "recommendation": "revise_annotation",
+      "answer": "按授权澄清，条件 A 的 X 初始物质量为 2 nmol，条件 B 为 5 nmol。",
+      "reason": "澄清明确将 earlier 2 nmol 归入条件 A，将 5 nmol 归入条件 B。相同变量在不同条件下取不同值不构成本材料中的逻辑冲突，旧 conflicting 标签不成立。",
+      "scope_limit": "宽泛查询可回答两种条件对应值；如要执行一项模拟，应进一步确定目标条件。澄清是研究者来源，不应伪称原论文本身报告条件 B。",
+      "checks": {
+        "source_span": true,
+        "target_scope": false,
+        "answerability": false,
+        "paper_grouping": true
+      },
+      "proposed_category": "condition_scope",
+      "proposed_expectation": "answerable",
+      "proposed_anchor_role": "support_candidate",
+      "original_case_sha256": "b48d7518288df0167805a711c701609527240c03b6747f5183c32f1872b0b26f",
+      "original_expectation": "conflicting",
+      "original_category": "conflict",
+      "anchor_evidence": [
+        {
+          "source_id": "paper",
+          "page": 1,
+          "start": 0,
+          "end": 48,
+          "quote": "The initial X amount is 2 nmol in the main text.",
+          "id": "a1",
+          "role": "conflict_candidate",
+          "exact_source_slice": true
+        },
+        {
+          "source_id": "clarification",
+          "page": 1,
+          "start": 0,
+          "end": 116,
+          "quote": "Researcher clarification: the initial X amount is 5 nmol for condition B; the earlier 2 nmol applies to condition A.",
+          "id": "a2",
+          "role": "conflict_candidate",
+          "exact_source_slice": true
+        }
+      ],
+      "source_pages_sha256": {
+        "paper": "230b3ec34e858d339d63e50dca3163ed23f5ed42fae21d455d4d227514b8cfb6",
+        "clarification": "5a4e93836c18e75a82b9deb6b4d6448e442da2de2cca247e2d685a8030ff6a58"
+      }
+    }
+  ],
+  "limitations": [
+    "AI pre-review shares the Codex development origin; it is not an independent domain expert review.",
+    "All 18 cases are seen synthetic controls, grouped conservatively as one family; zero real papers.",
+    "Reported declarations are checked against supplied text, not experiments or a complete physical model.",
+    "No papers, independent evalset, external inference, online sources or c13/c18 materials were accessed.",
+    "Candidate remains pending and is only for development; semantic_support remains unknown.",
+    "Deterministic retrieval of the injection case does not establish LLM injection resistance."
+  ]
+}

@@ -1,0 +1,5 @@
+{
+  "exit_code": 0,
+  "stdout": "{\"status\": \"needs_input\", \"reason\": \"The source does not report ka. What is the value of ka in min^-1? Numerical trajectories require this parameter.\"}\n",
+  "stderr": ""
+}

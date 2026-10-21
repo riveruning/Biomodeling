@@ -1,0 +1,1 @@
+{"kind":"evaluation_response","payload":{"content":"{\"action\": \"ask_researcher\", \"args\": {\"question\": \"What is the initial P value?\"}}","returned_model":"scripted-fixture","trial_id":"fixed_workflow--translation--0--initial","usage":{}},"refs":["f19a995dbac9c06c2c8492cccd52a53d272116e729e320e3b8190428eef7dace"],"schema_version":"1"}

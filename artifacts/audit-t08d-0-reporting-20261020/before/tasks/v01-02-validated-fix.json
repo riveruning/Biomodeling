@@ -1,0 +1,31 @@
+{
+  "schema_version": "1",
+  "id": "v01-02-validated-fix",
+  "objective": "实现受限数学表达式、安全SBML构建和导入静态检查。",
+  "context": "Python3.12，既有frozen dataclass契约。使用.venv已安装libsbml/roadrunner/numpy/scipy。只read/write/edit列出的文件，禁止todo_write、shell、目录扫描与联网。测试由Codex执行。",
+  "read_files": [
+    "src/biomodel_agent/domain/contracts.py"
+  ],
+  "write_files": [
+    "src/biomodel_agent/modeling.py",
+    "src/biomodel_agent/expressions.py",
+    "tests/test_modeling.py"
+  ],
+  "expected_files": [
+    "src/biomodel_agent/modeling.py",
+    "src/biomodel_agent/expressions.py",
+    "tests/test_modeling.py"
+  ],
+  "instructions": "独立测试发现20fails16passed，前一批领域/存储66passed。仅修复以下实证问题并交付test：\nexpressions.py重写约100行递归check/eval/generator：parse_expression语法限制AST Expression/BinOp允许AddSubMultDivPow/UnaryUAddUSub/Constantnumericfinite/Name字母ID/Call白名单无keyword，递归处理children而不要ast.walk忘记operator leaf（目前Add/Mult也被拒绝）。symbol名必须大小写敏感，SBML X!=x，不得lower或默认time=0。函数只能Call位，plain functionname当变量拒绝；time需environment明确提供，symbols保留time引用；_RESERVED供modeling使用。完整to_sbml_formula每二元/一元都加括号，避免(k-d)*x被改成k-d*x。log函数映射ln，自然对数。eval递归AST安全且finite输出，不任意eval/exec。\nmodeling.py可以压缩但保留API：实测libsbml常量为LIBSBML_SEV_ERROR而非SBML_SEV_ERROR（这是Codex先前指令笔误）。Compartment用getConstant()而非isConstant。doc.checkConsistency()返回诊断数量不是操作返回码；不能对非零就raise，因为合法unknownunits会warning。结构check调用checkConsistency(排除单位后真实结构errorfail)，units一致性单独返回unknown/failwarning，不作blocking结构拒绝；不能仅判断isSetUnits便宣称量纲正确。model.getListOfRules用isRate/isAssignment/isAlgebraic。parseSBMLFromString不存在，readSBMLFromString正确。docparseerror即sbml_parsefail，invalidxml modelNone明确fail。\nUNIT definitions只创建实际使用的minute/hour单位，从second multiplier60/3600，不创建一堆无关litre/mole_per_liter非法定义。SBML内建units canonical \"litre\",\"metre\",\"dimensionless\"、\"mole\",\"second\"。unknown不设置也不替换dimensionless。Compartmentdimensionless size固定允许但空间维数?明确spatialDimensions=3时dimensionless单位不合法，可为纯数学variable models设spatialDimensions=0 compartmentunitdimensionless；反应物理compartmentdim3且unitunknown或litre。amountState.substanceUnits可mole；concentrationStateunitmole_per_liter只有compunitlitre才map substanceUnits=mole，否则unknown而不伪造。Species.setSubstanceUnits，不是unit到species当concentration。\nvalidate_draft不许RateRule.state未知且避免symbol reserved conflicts；可以对amount/concentration都用rate规则SBMLnative支持，初期拒绝有声明profile说明；混合amount/conc无需拒绝，至少各state编码独立。未知param/initial None阻止。allowunitwarning不阻止explore。\nvalidate_artifact必须实际checkConsistency，支持L2V3/L2V4/L3V1/L3V2。fixedcomp size若未设且无initialassignment拒绝；无param值但存在assignment/initial可；未定义rate/reaction symbols由libSBMLcheck阻止。动态compartment任意ruletargetcomp阻止（不能只getConstant flag）。requiredpackages：doc.getPlugin(i).getPackageName()，doc.getPackageRequired(name)，非required且name layout/render允许（原始toggle render声明少required原fileparseerror必须failed；render-fixedvariant可执行），所有其它package即使optional涉及数学语义都拒绝。不要把任何plugin一律fail。检测delay必须包含函数定义中的AST；constraints/events/algebraic/fast/stoichmath/conversionFactorsunsupported。文档不修改不删除。\n重写tests/test_modeling.py约150行，准确覆盖数学precedence解析、case敏感、未知target、cycles、placeholder缺失、event/delayunsupported、bodyactualbuilderreadlibSBMLrate-rule/reaction、volumeamountconcentration、noemptyxmlpass、unitunknownnotfullypass。兼容之前解析默认time测试改为显式env。禁止虚构getNumDelays/getNumAssignmentRules/isConstant等API，不测试假API。最后文字回复完成，每文件一次整体写/一遍自审，避免几十次edit。",
+  "acceptance": [
+    "有依据的数学/语义检查，不支持则明确阻止",
+    "只交付文件，Codex独立验收"
+  ],
+  "verification_commands": [],
+  "budget": {
+    "idle_ms": 360000,
+    "first_write_ms": 480000,
+    "write_idle_ms": 360000,
+    "total_ms": 900000
+  }
+}

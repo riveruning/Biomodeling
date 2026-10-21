@@ -1,0 +1,14 @@
+{
+  "command": [
+    ".venv/bin/python",
+    "-m",
+    "biomodel_agent",
+    "replay",
+    "fc272080ca5f5e9b7820f4a186299496a2d09d4041fea0b2f9c267412a1bd219",
+    "--store",
+    "artifacts/comparison-pilot-20261017/biomodel/complete/store"
+  ],
+  "exit_code": 0,
+  "stdout": "{\"ref\": \"25b7efdfcc7c515338c070a7efb44ca763243c040e600a6ea9f33dd26a46bdc8\", \"status\": \"succeeded\", \"scientific_status\": \"not_verified\", \"comparison\": \"not_run\"}\n",
+  "stderr": ""
+}

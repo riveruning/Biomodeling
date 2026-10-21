@@ -1,0 +1,361 @@
+FFFFFFFFFFFFF                                                            [100%]
+=================================== FAILURES ===================================
+____ test_mature_backend_preserves_pages_bytes_and_immutable_engine_output _____
+
+tmp_path = PosixPath('/tmp/biomodel-t06-baseline/test_mature_backend_preserves_0')
+
+    def test_mature_backend_preserves_pages_bytes_and_immutable_engine_output(tmp_path):
+>       store, ref, raw = ingested(tmp_path)
+                          ^^^^^^^^^^^^^^^^^^
+
+tests/test_pdf_adapter_acceptance.py:22: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+tmp_path = PosixPath('/tmp/biomodel-t06-baseline/test_mature_backend_preserves_0')
+texts = None, options = {}
+
+    def ingested(tmp_path, texts=None, **options):
+        path = tmp_path/'paper.pdf'
+        raw = _write_pdf(path, texts or ['Initial x = 1.', 'Parameter k = 0.4.'])
+        store = ArtifactStore(tmp_path/'store')
+>       ref = evidence.ingest_source(store, path, pdf_parser='pymupdf', **options)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       TypeError: ingest_source() got an unexpected keyword argument 'pdf_parser'
+
+tests/test_pdf_adapter_acceptance.py:17: TypeError
+_ test_claim_locator_reaches_original_pdf_and_export_without_changing_offsets __
+
+tmp_path = PosixPath('/tmp/biomodel-t06-baseline/test_claim_locator_reaches_ori0')
+
+    def test_claim_locator_reaches_original_pdf_and_export_without_changing_offsets(tmp_path):
+>       store, ref, raw = ingested(tmp_path)
+                          ^^^^^^^^^^^^^^^^^^
+
+tests/test_pdf_adapter_acceptance.py:39: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+tmp_path = PosixPath('/tmp/biomodel-t06-baseline/test_claim_locator_reaches_ori0')
+texts = None, options = {}
+
+    def ingested(tmp_path, texts=None, **options):
+        path = tmp_path/'paper.pdf'
+        raw = _write_pdf(path, texts or ['Initial x = 1.', 'Parameter k = 0.4.'])
+        store = ArtifactStore(tmp_path/'store')
+>       ref = evidence.ingest_source(store, path, pdf_parser='pymupdf', **options)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       TypeError: ingest_source() got an unexpected keyword argument 'pdf_parser'
+
+tests/test_pdf_adapter_acceptance.py:17: TypeError
+_____________ test_textless_page_is_preserved_without_made_up_ocr ______________
+
+tmp_path = PosixPath('/tmp/biomodel-t06-baseline/test_textless_page_is_preserve0')
+
+    def test_textless_page_is_preserved_without_made_up_ocr(tmp_path):
+>       store, ref, _ = ingested(tmp_path, ['Page one.', None])
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_pdf_adapter_acceptance.py:56: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+tmp_path = PosixPath('/tmp/biomodel-t06-baseline/test_textless_page_is_preserve0')
+texts = ['Page one.', None], options = {}
+
+    def ingested(tmp_path, texts=None, **options):
+        path = tmp_path/'paper.pdf'
+        raw = _write_pdf(path, texts or ['Initial x = 1.', 'Parameter k = 0.4.'])
+        store = ArtifactStore(tmp_path/'store')
+>       ref = evidence.ingest_source(store, path, pdf_parser='pymupdf', **options)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       TypeError: ingest_source() got an unexpected keyword argument 'pdf_parser'
+
+tests/test_pdf_adapter_acceptance.py:17: TypeError
+__ test_output_limits_refuse_incomplete_sources_but_preserve_raw_pdf[limits0] __
+
+tmp_path = PosixPath('/tmp/biomodel-t06-baseline/test_output_limits_refuse_inco0')
+limits = {'max_pages': 1}
+
+    @pytest.mark.parametrize('limits', [{'max_pages': 1}, {'max_chars': 3}, {'max_blocks': 1}])
+    def test_output_limits_refuse_incomplete_sources_but_preserve_raw_pdf(tmp_path, limits):
+        path = tmp_path/'paper.pdf'
+        raw = _write_pdf(path, ['Page one.', 'Page two.'])
+        store = ArtifactStore(tmp_path/'store')
+        with pytest.raises(ValueError, match='limit|budget'):
+>           evidence.ingest_source(store, path, pdf_parser='pymupdf', pdf_limits=limits)
+E           TypeError: ingest_source() got an unexpected keyword argument 'pdf_parser'
+
+tests/test_pdf_adapter_acceptance.py:72: TypeError
+__ test_output_limits_refuse_incomplete_sources_but_preserve_raw_pdf[limits1] __
+
+tmp_path = PosixPath('/tmp/biomodel-t06-baseline/test_output_limits_refuse_inco1')
+limits = {'max_chars': 3}
+
+    @pytest.mark.parametrize('limits', [{'max_pages': 1}, {'max_chars': 3}, {'max_blocks': 1}])
+    def test_output_limits_refuse_incomplete_sources_but_preserve_raw_pdf(tmp_path, limits):
+        path = tmp_path/'paper.pdf'
+        raw = _write_pdf(path, ['Page one.', 'Page two.'])
+        store = ArtifactStore(tmp_path/'store')
+        with pytest.raises(ValueError, match='limit|budget'):
+>           evidence.ingest_source(store, path, pdf_parser='pymupdf', pdf_limits=limits)
+E           TypeError: ingest_source() got an unexpected keyword argument 'pdf_parser'
+
+tests/test_pdf_adapter_acceptance.py:72: TypeError
+__ test_output_limits_refuse_incomplete_sources_but_preserve_raw_pdf[limits2] __
+
+tmp_path = PosixPath('/tmp/biomodel-t06-baseline/test_output_limits_refuse_inco2')
+limits = {'max_blocks': 1}
+
+    @pytest.mark.parametrize('limits', [{'max_pages': 1}, {'max_chars': 3}, {'max_blocks': 1}])
+    def test_output_limits_refuse_incomplete_sources_but_preserve_raw_pdf(tmp_path, limits):
+        path = tmp_path/'paper.pdf'
+        raw = _write_pdf(path, ['Page one.', 'Page two.'])
+        store = ArtifactStore(tmp_path/'store')
+        with pytest.raises(ValueError, match='limit|budget'):
+>           evidence.ingest_source(store, path, pdf_parser='pymupdf', pdf_limits=limits)
+E           TypeError: ingest_source() got an unexpected keyword argument 'pdf_parser'
+
+tests/test_pdf_adapter_acceptance.py:72: TypeError
+_________________ test_invalid_limits_are_not_coerced[limits0] _________________
+
+tmp_path = PosixPath('/tmp/biomodel-t06-baseline/test_invalid_limits_are_not_co0')
+limits = {'max_pages': True}
+
+    @pytest.mark.parametrize('limits', [{'max_pages': True}, {'max_chars': 0}, {'max_cells': -1}, {'other': 1}])
+    def test_invalid_limits_are_not_coerced(tmp_path, limits):
+        with pytest.raises(ValueError, match='limit'):
+>           ingested(tmp_path, pdf_limits=limits)
+
+tests/test_pdf_adapter_acceptance.py:81: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+tmp_path = PosixPath('/tmp/biomodel-t06-baseline/test_invalid_limits_are_not_co0')
+texts = None, options = {'pdf_limits': {'max_pages': True}}
+
+    def ingested(tmp_path, texts=None, **options):
+        path = tmp_path/'paper.pdf'
+        raw = _write_pdf(path, texts or ['Initial x = 1.', 'Parameter k = 0.4.'])
+        store = ArtifactStore(tmp_path/'store')
+>       ref = evidence.ingest_source(store, path, pdf_parser='pymupdf', **options)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       TypeError: ingest_source() got an unexpected keyword argument 'pdf_parser'
+
+tests/test_pdf_adapter_acceptance.py:17: TypeError
+_________________ test_invalid_limits_are_not_coerced[limits1] _________________
+
+tmp_path = PosixPath('/tmp/biomodel-t06-baseline/test_invalid_limits_are_not_co1')
+limits = {'max_chars': 0}
+
+    @pytest.mark.parametrize('limits', [{'max_pages': True}, {'max_chars': 0}, {'max_cells': -1}, {'other': 1}])
+    def test_invalid_limits_are_not_coerced(tmp_path, limits):
+        with pytest.raises(ValueError, match='limit'):
+>           ingested(tmp_path, pdf_limits=limits)
+
+tests/test_pdf_adapter_acceptance.py:81: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+tmp_path = PosixPath('/tmp/biomodel-t06-baseline/test_invalid_limits_are_not_co1')
+texts = None, options = {'pdf_limits': {'max_chars': 0}}
+
+    def ingested(tmp_path, texts=None, **options):
+        path = tmp_path/'paper.pdf'
+        raw = _write_pdf(path, texts or ['Initial x = 1.', 'Parameter k = 0.4.'])
+        store = ArtifactStore(tmp_path/'store')
+>       ref = evidence.ingest_source(store, path, pdf_parser='pymupdf', **options)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       TypeError: ingest_source() got an unexpected keyword argument 'pdf_parser'
+
+tests/test_pdf_adapter_acceptance.py:17: TypeError
+_________________ test_invalid_limits_are_not_coerced[limits2] _________________
+
+tmp_path = PosixPath('/tmp/biomodel-t06-baseline/test_invalid_limits_are_not_co2')
+limits = {'max_cells': -1}
+
+    @pytest.mark.parametrize('limits', [{'max_pages': True}, {'max_chars': 0}, {'max_cells': -1}, {'other': 1}])
+    def test_invalid_limits_are_not_coerced(tmp_path, limits):
+        with pytest.raises(ValueError, match='limit'):
+>           ingested(tmp_path, pdf_limits=limits)
+
+tests/test_pdf_adapter_acceptance.py:81: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+tmp_path = PosixPath('/tmp/biomodel-t06-baseline/test_invalid_limits_are_not_co2')
+texts = None, options = {'pdf_limits': {'max_cells': -1}}
+
+    def ingested(tmp_path, texts=None, **options):
+        path = tmp_path/'paper.pdf'
+        raw = _write_pdf(path, texts or ['Initial x = 1.', 'Parameter k = 0.4.'])
+        store = ArtifactStore(tmp_path/'store')
+>       ref = evidence.ingest_source(store, path, pdf_parser='pymupdf', **options)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       TypeError: ingest_source() got an unexpected keyword argument 'pdf_parser'
+
+tests/test_pdf_adapter_acceptance.py:17: TypeError
+_________________ test_invalid_limits_are_not_coerced[limits3] _________________
+
+tmp_path = PosixPath('/tmp/biomodel-t06-baseline/test_invalid_limits_are_not_co3')
+limits = {'other': 1}
+
+    @pytest.mark.parametrize('limits', [{'max_pages': True}, {'max_chars': 0}, {'max_cells': -1}, {'other': 1}])
+    def test_invalid_limits_are_not_coerced(tmp_path, limits):
+        with pytest.raises(ValueError, match='limit'):
+>           ingested(tmp_path, pdf_limits=limits)
+
+tests/test_pdf_adapter_acceptance.py:81: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+tmp_path = PosixPath('/tmp/biomodel-t06-baseline/test_invalid_limits_are_not_co3')
+texts = None, options = {'pdf_limits': {'other': 1}}
+
+    def ingested(tmp_path, texts=None, **options):
+        path = tmp_path/'paper.pdf'
+        raw = _write_pdf(path, texts or ['Initial x = 1.', 'Parameter k = 0.4.'])
+        store = ArtifactStore(tmp_path/'store')
+>       ref = evidence.ingest_source(store, path, pdf_parser='pymupdf', **options)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       TypeError: ingest_source() got an unexpected keyword argument 'pdf_parser'
+
+tests/test_pdf_adapter_acceptance.py:17: TypeError
+____________ test_unrecognized_backend_does_not_silently_fall_back _____________
+
+tmp_path = PosixPath('/tmp/biomodel-t06-baseline/test_unrecognized_backend_does0')
+
+    def test_unrecognized_backend_does_not_silently_fall_back(tmp_path):
+        path = tmp_path/'paper.pdf'
+        _write_pdf(path, ['Native text.'])
+        store = ArtifactStore(tmp_path/'store')
+        with pytest.raises(ValueError, match='parser'):
+>           evidence.ingest_source(store, path, pdf_parser='cloud_guess')
+E           TypeError: ingest_source() got an unexpected keyword argument 'pdf_parser'
+
+tests/test_pdf_adapter_acceptance.py:89: TypeError
+_____________ test_invalid_pdf_does_not_become_a_successful_source _____________
+
+tmp_path = PosixPath('/tmp/biomodel-t06-baseline/test_invalid_pdf_does_not_beco0')
+
+    def test_invalid_pdf_does_not_become_a_successful_source(tmp_path):
+        path = tmp_path/'bad.pdf'; path.write_bytes(b'%PDF-1.7\nnot a document')
+        store = ArtifactStore(tmp_path/'store')
+        with pytest.raises(ValueError, match='PDF|pdf'):
+>           evidence.ingest_source(store, path, pdf_parser='pymupdf')
+E           TypeError: ingest_source() got an unexpected keyword argument 'pdf_parser'
+
+tests/test_pdf_adapter_acceptance.py:97: TypeError
+______________ test_offline_cli_ingests_without_provider_settings ______________
+
+self = ArgumentParser(prog='biomodel_agent', usage=None, description='Fact-driven biology model reproduction CLI', formatter_class=<class 'argparse.HelpFormatter'>, conflict_handler='error', add_help=True)
+args = ['source-ingest', '/tmp/biomodel-t06-baseline/test_offline_cli_ingests_witho0/paper.pdf', '--pdf-parser', 'pymupdf', '--store', '/tmp/biomodel-t06-baseline/test_offline_cli_ingests_witho0/store']
+namespace = Namespace(command=None)
+
+    def parse_known_args(self, args=None, namespace=None):
+        if args is None:
+            # args default to the system args
+            args = _sys.argv[1:]
+        else:
+            # make sure that args are mutable
+            args = list(args)
+    
+        # default Namespace built from parser defaults
+        if namespace is None:
+            namespace = Namespace()
+    
+        # add any action defaults that aren't present
+        for action in self._actions:
+            if action.dest is not SUPPRESS:
+                if not hasattr(namespace, action.dest):
+                    if action.default is not SUPPRESS:
+                        setattr(namespace, action.dest, action.default)
+    
+        # add any parser defaults that aren't present
+        for dest in self._defaults:
+            if not hasattr(namespace, dest):
+                setattr(namespace, dest, self._defaults[dest])
+    
+        # parse the arguments and exit if there are any errors
+        if self.exit_on_error:
+            try:
+>               namespace, args = self._parse_known_args(args, namespace)
+                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+/usr/lib/python3.12/argparse.py:1941: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/usr/lib/python3.12/argparse.py:2144: in _parse_known_args
+    positionals_end_index = consume_positionals(start_index)
+                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.12/argparse.py:2121: in consume_positionals
+    take_action(action, args)
+/usr/lib/python3.12/argparse.py:2001: in take_action
+    argument_values = self._get_values(action, argument_strings)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.12/argparse.py:2554: in _get_values
+    self._check_value(action, value[0])
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = ArgumentParser(prog='biomodel_agent', usage=None, description='Fact-driven biology model reproduction CLI', formatter_class=<class 'argparse.HelpFormatter'>, conflict_handler='error', add_help=True)
+action = _SubParsersAction(option_strings=[], dest='command', nargs='A...', const=None, default=None, type=None, choices={'vali...ss=<class 'argparse.HelpFormatter'>, conflict_handler='error', add_help=True)}, required=True, help=None, metavar=None)
+value = 'source-ingest'
+
+    def _check_value(self, action, value):
+        # converted value must be one of the choices (if specified)
+        if action.choices is not None and value not in action.choices:
+            args = {'value': value,
+                    'choices': ', '.join(map(repr, action.choices))}
+            msg = _('invalid choice: %(value)r (choose from %(choices)s)')
+>           raise ArgumentError(action, msg % args)
+E           argparse.ArgumentError: argument command: invalid choice: 'source-ingest' (choose from 'validate', 'run', 'replay', 'report', 'agent', 'agent-resume', 'agent-recovery-status', 'agent-recover', 'hypothesis', 'export', 'memory-add', 'memory-search', 'memory-retract', 'source-search', 'study-prepare', 'study-run')
+
+/usr/lib/python3.12/argparse.py:2600: ArgumentError
+
+During handling of the above exception, another exception occurred:
+
+tmp_path = PosixPath('/tmp/biomodel-t06-baseline/test_offline_cli_ingests_witho0')
+capsys = <_pytest.capture.CaptureFixture object at 0x7b7b147111f0>
+
+    def test_offline_cli_ingests_without_provider_settings(tmp_path, capsys):
+        path = tmp_path/'paper.pdf'; _write_pdf(path, ['Initial x = 1.'])
+>       code = cli.main(['source-ingest', str(path), '--pdf-parser', 'pymupdf', '--store', str(tmp_path/'store')])
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_pdf_adapter_acceptance.py:103: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+src/biomodel_agent/cli.py:534: in main
+    args = parser.parse_args(argv)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.12/argparse.py:1908: in parse_args
+    args, argv = self.parse_known_args(args, namespace)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.12/argparse.py:1943: in parse_known_args
+    self.error(str(err))
+/usr/lib/python3.12/argparse.py:2677: in error
+    self.exit(2, _('%(prog)s: error: %(message)s\n') % args)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = ArgumentParser(prog='biomodel_agent', usage=None, description='Fact-driven biology model reproduction CLI', formatter_class=<class 'argparse.HelpFormatter'>, conflict_handler='error', add_help=True)
+status = 2
+message = "biomodel_agent: error: argument command: invalid choice: 'source-ingest' (choose from 'validate', 'run', 'replay', 'r...pothesis', 'export', 'memory-add', 'memory-search', 'memory-retract', 'source-search', 'study-prepare', 'study-run')\n"
+
+    def exit(self, status=0, message=None):
+        if message:
+            self._print_message(message, _sys.stderr)
+>       _sys.exit(status)
+E       SystemExit: 2
+
+/usr/lib/python3.12/argparse.py:2664: SystemExit
+----------------------------- Captured stderr call -----------------------------
+usage: biomodel_agent [-h]
+                      {validate,run,replay,report,agent,agent-resume,agent-recovery-status,agent-recover,hypothesis,export,memory-add,memory-search,memory-retract,source-search,study-prepare,study-run}
+                      ...
+biomodel_agent: error: argument command: invalid choice: 'source-ingest' (choose from 'validate', 'run', 'replay', 'report', 'agent', 'agent-resume', 'agent-recovery-status', 'agent-recover', 'hypothesis', 'export', 'memory-add', 'memory-search', 'memory-retract', 'source-search', 'study-prepare', 'study-run')
+=========================== short test summary info ============================
+FAILED tests/test_pdf_adapter_acceptance.py::test_mature_backend_preserves_pages_bytes_and_immutable_engine_output
+FAILED tests/test_pdf_adapter_acceptance.py::test_claim_locator_reaches_original_pdf_and_export_without_changing_offsets
+FAILED tests/test_pdf_adapter_acceptance.py::test_textless_page_is_preserved_without_made_up_ocr
+FAILED tests/test_pdf_adapter_acceptance.py::test_output_limits_refuse_incomplete_sources_but_preserve_raw_pdf[limits0]
+FAILED tests/test_pdf_adapter_acceptance.py::test_output_limits_refuse_incomplete_sources_but_preserve_raw_pdf[limits1]
+FAILED tests/test_pdf_adapter_acceptance.py::test_output_limits_refuse_incomplete_sources_but_preserve_raw_pdf[limits2]
+FAILED tests/test_pdf_adapter_acceptance.py::test_invalid_limits_are_not_coerced[limits0]
+FAILED tests/test_pdf_adapter_acceptance.py::test_invalid_limits_are_not_coerced[limits1]
+FAILED tests/test_pdf_adapter_acceptance.py::test_invalid_limits_are_not_coerced[limits2]
+FAILED tests/test_pdf_adapter_acceptance.py::test_invalid_limits_are_not_coerced[limits3]
+FAILED tests/test_pdf_adapter_acceptance.py::test_unrecognized_backend_does_not_silently_fall_back
+FAILED tests/test_pdf_adapter_acceptance.py::test_invalid_pdf_does_not_become_a_successful_source
+FAILED tests/test_pdf_adapter_acceptance.py::test_offline_cli_ingests_without_provider_settings
+13 failed in 0.99s

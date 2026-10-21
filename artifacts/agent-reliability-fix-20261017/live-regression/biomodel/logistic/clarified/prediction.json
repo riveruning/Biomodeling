@@ -1,0 +1,43 @@
+{
+  "state": "completed",
+  "facts": {
+    "r/value": {
+      "value": 0.8,
+      "evidence": [
+        {
+          "source_id": "case",
+          "quote": "Parameter r = 0.8."
+        }
+      ]
+    },
+    "K/value": {
+      "value": 2.0,
+      "evidence": [
+        {
+          "source_id": "case",
+          "quote": "Parameter K = 2.0."
+        }
+      ]
+    },
+    "X/initial": {
+      "value": 0.2,
+      "evidence": [
+        {
+          "source_id": "case",
+          "quote": "Initial X = 0.2."
+        }
+      ]
+    },
+    "rule:X/expression": {
+      "value": "r*X*(1-X/K)",
+      "evidence": [
+        {
+          "source_id": "case",
+          "quote": "The author confirms the intended equation is dX/dt = r*X*(1-X/K)."
+        }
+      ]
+    }
+  },
+  "proposal_status": "last_attempt_not_necessarily_accepted",
+  "duplicate_targets": []
+}

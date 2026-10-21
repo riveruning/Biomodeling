@@ -1,0 +1,580 @@
+{
+  "files": [
+    {
+      "system": "talk2biomodels",
+      "repository": "VirtualPatientEngine/AIAgents4Pharma",
+      "commit": "4b9990b708102bd237939bcb668b476d70a1c79d",
+      "path": "LICENSE",
+      "sha256": "21c21bc81d47ca4e590da874dd5350bc991b364da1901083a90f2ab670af0784"
+    },
+    {
+      "system": "talk2biomodels",
+      "repository": "VirtualPatientEngine/AIAgents4Pharma",
+      "commit": "4b9990b708102bd237939bcb668b476d70a1c79d",
+      "path": "README.md",
+      "sha256": "35beed5600d8dac80177ca8201da347fa11c9084adc68827460a3da9509d4129"
+    },
+    {
+      "system": "talk2biomodels",
+      "repository": "VirtualPatientEngine/AIAgents4Pharma",
+      "commit": "4b9990b708102bd237939bcb668b476d70a1c79d",
+      "path": "aiagents4pharma/__init__.py",
+      "sha256": "07eb4b4426d682d8be8e50a75bfaa49cd2ab1b88f5b7d9e105bfa05dacf45ad8"
+    },
+    {
+      "system": "talk2biomodels",
+      "repository": "VirtualPatientEngine/AIAgents4Pharma",
+      "commit": "4b9990b708102bd237939bcb668b476d70a1c79d",
+      "path": "aiagents4pharma/talk2biomodels/README.md",
+      "sha256": "d1e1b18fb8f18bf2eb0af5fee08e0aad0bfeed3da2be8de9a8bb251bbb2e6829"
+    },
+    {
+      "system": "talk2biomodels",
+      "repository": "VirtualPatientEngine/AIAgents4Pharma",
+      "commit": "4b9990b708102bd237939bcb668b476d70a1c79d",
+      "path": "aiagents4pharma/talk2biomodels/__init__.py",
+      "sha256": "0f1011649bbdd66e161d6e0f05266f94c6f53026e3be4660d585276095cc0520"
+    },
+    {
+      "system": "talk2biomodels",
+      "repository": "VirtualPatientEngine/AIAgents4Pharma",
+      "commit": "4b9990b708102bd237939bcb668b476d70a1c79d",
+      "path": "aiagents4pharma/talk2biomodels/agents/__init__.py",
+      "sha256": "e303f2ea1591264b17eb3f2a5f57158c572d64ba6c8daf0932780a1ea9f8f4de"
+    },
+    {
+      "system": "talk2biomodels",
+      "repository": "VirtualPatientEngine/AIAgents4Pharma",
+      "commit": "4b9990b708102bd237939bcb668b476d70a1c79d",
+      "path": "aiagents4pharma/talk2biomodels/agents/t2b_agent.py",
+      "sha256": "85ff894f371a39020c1bdeea25bec429efa37a18211a2c976db77da921c55489"
+    },
+    {
+      "system": "talk2biomodels",
+      "repository": "VirtualPatientEngine/AIAgents4Pharma",
+      "commit": "4b9990b708102bd237939bcb668b476d70a1c79d",
+      "path": "aiagents4pharma/talk2biomodels/api/__init__.py",
+      "sha256": "286a24f6609ae914fcc210e3de34f791ca453b5c87c64e6f543f08131b08e417"
+    },
+    {
+      "system": "talk2biomodels",
+      "repository": "VirtualPatientEngine/AIAgents4Pharma",
+      "commit": "4b9990b708102bd237939bcb668b476d70a1c79d",
+      "path": "aiagents4pharma/talk2biomodels/api/ols.py",
+      "sha256": "412bdbb03d15d3bfb0d0e53ec0f438132a578bd6e7ff1974372962650c51bc25"
+    },
+    {
+      "system": "talk2biomodels",
+      "repository": "VirtualPatientEngine/AIAgents4Pharma",
+      "commit": "4b9990b708102bd237939bcb668b476d70a1c79d",
+      "path": "aiagents4pharma/talk2biomodels/api/uniprot.py",
+      "sha256": "8d7a3277b06121003d24d6863153f3391a50e64d48c7d89861db8cbfa606ee1c"
+    },
+    {
+      "system": "talk2biomodels",
+      "repository": "VirtualPatientEngine/AIAgents4Pharma",
+      "commit": "4b9990b708102bd237939bcb668b476d70a1c79d",
+      "path": "aiagents4pharma/talk2biomodels/configs/__init__.py",
+      "sha256": "5a01996c4b5989547c11525e1f788827a2f104615a7c08df09fb69b674e6d83b"
+    },
+    {
+      "system": "talk2biomodels",
+      "repository": "VirtualPatientEngine/AIAgents4Pharma",
+      "commit": "4b9990b708102bd237939bcb668b476d70a1c79d",
+      "path": "aiagents4pharma/talk2biomodels/configs/agents/__init__.py",
+      "sha256": "e827e0275e7eb26499e073f8b88964dd081f573ce90ee9c164ebaaa6ecfd0886"
+    },
+    {
+      "system": "talk2biomodels",
+      "repository": "VirtualPatientEngine/AIAgents4Pharma",
+      "commit": "4b9990b708102bd237939bcb668b476d70a1c79d",
+      "path": "aiagents4pharma/talk2biomodels/configs/agents/t2b_agent/__init__.py",
+      "sha256": "7ea410f8695171bcebbb62a6124de83266b447afd2cc633c74e5f361e538a150"
+    },
+    {
+      "system": "talk2biomodels",
+      "repository": "VirtualPatientEngine/AIAgents4Pharma",
+      "commit": "4b9990b708102bd237939bcb668b476d70a1c79d",
+      "path": "aiagents4pharma/talk2biomodels/configs/agents/t2b_agent/default.yaml",
+      "sha256": "a0c0bb38adedd6d308d8b2c91c971041cb5e3a8a8eea0475d9a2895b2674f3f1"
+    },
+    {
+      "system": "talk2biomodels",
+      "repository": "VirtualPatientEngine/AIAgents4Pharma",
+      "commit": "4b9990b708102bd237939bcb668b476d70a1c79d",
+      "path": "aiagents4pharma/talk2biomodels/configs/app/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "system": "talk2biomodels",
+      "repository": "VirtualPatientEngine/AIAgents4Pharma",
+      "commit": "4b9990b708102bd237939bcb668b476d70a1c79d",
+      "path": "aiagents4pharma/talk2biomodels/configs/app/frontend/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "system": "talk2biomodels",
+      "repository": "VirtualPatientEngine/AIAgents4Pharma",
+      "commit": "4b9990b708102bd237939bcb668b476d70a1c79d",
+      "path": "aiagents4pharma/talk2biomodels/configs/app/frontend/default.yaml",
+      "sha256": "7409cbc80f29774d8aa3d214461df17984e66c2e112bd8f592e65027050fa964"
+    },
+    {
+      "system": "talk2biomodels",
+      "repository": "VirtualPatientEngine/AIAgents4Pharma",
+      "commit": "4b9990b708102bd237939bcb668b476d70a1c79d",
+      "path": "aiagents4pharma/talk2biomodels/configs/config.yaml",
+      "sha256": "f48f4bf7d8f60f10f7333357dc287ec78437f27b0ace1df74ab02abfa7eda679"
+    },
+    {
+      "system": "talk2biomodels",
+      "repository": "VirtualPatientEngine/AIAgents4Pharma",
+      "commit": "4b9990b708102bd237939bcb668b476d70a1c79d",
+      "path": "aiagents4pharma/talk2biomodels/configs/tools/__init__.py",
+      "sha256": "9b72afbdcd18372276fee88ba4154998426f2745b2a0fadda24751ed32904792"
+    },
+    {
+      "system": "talk2biomodels",
+      "repository": "VirtualPatientEngine/AIAgents4Pharma",
+      "commit": "4b9990b708102bd237939bcb668b476d70a1c79d",
+      "path": "aiagents4pharma/talk2biomodels/configs/tools/ask_question/__init__.py",
+      "sha256": "7ea410f8695171bcebbb62a6124de83266b447afd2cc633c74e5f361e538a150"
+    },
+    {
+      "system": "talk2biomodels",
+      "repository": "VirtualPatientEngine/AIAgents4Pharma",
+      "commit": "4b9990b708102bd237939bcb668b476d70a1c79d",
+      "path": "aiagents4pharma/talk2biomodels/configs/tools/ask_question/default.yaml",
+      "sha256": "f4095281f6fa5d215a1f737cd01310f82708ff1f9959f17ee7640d82976d9611"
+    },
+    {
+      "system": "talk2biomodels",
+      "repository": "VirtualPatientEngine/AIAgents4Pharma",
+      "commit": "4b9990b708102bd237939bcb668b476d70a1c79d",
+      "path": "aiagents4pharma/talk2biomodels/configs/tools/custom_plotter/__init__.py",
+      "sha256": "7ea410f8695171bcebbb62a6124de83266b447afd2cc633c74e5f361e538a150"
+    },
+    {
+      "system": "talk2biomodels",
+      "repository": "VirtualPatientEngine/AIAgents4Pharma",
+      "commit": "4b9990b708102bd237939bcb668b476d70a1c79d",
+      "path": "aiagents4pharma/talk2biomodels/configs/tools/custom_plotter/default.yaml",
+      "sha256": "cb09b7b8d7d6ae52c67a54cf1be651660f58266110dc1500902c49dbe16d8f4c"
+    },
+    {
+      "system": "talk2biomodels",
+      "repository": "VirtualPatientEngine/AIAgents4Pharma",
+      "commit": "4b9990b708102bd237939bcb668b476d70a1c79d",
+      "path": "aiagents4pharma/talk2biomodels/configs/tools/get_annotation/__init__.py",
+      "sha256": "7ea410f8695171bcebbb62a6124de83266b447afd2cc633c74e5f361e538a150"
+    },
+    {
+      "system": "talk2biomodels",
+      "repository": "VirtualPatientEngine/AIAgents4Pharma",
+      "commit": "4b9990b708102bd237939bcb668b476d70a1c79d",
+      "path": "aiagents4pharma/talk2biomodels/configs/tools/get_annotation/default.yaml",
+      "sha256": "1efe6be5ea726d3fe6a7565a8c11623fe210d98b62317487a3159d18fae35059"
+    },
+    {
+      "system": "talk2biomodels",
+      "repository": "VirtualPatientEngine/AIAgents4Pharma",
+      "commit": "4b9990b708102bd237939bcb668b476d70a1c79d",
+      "path": "aiagents4pharma/talk2biomodels/install.md",
+      "sha256": "f58004796fef1b986fed688c9cd13380a408815c879e993520859783f8e12f11"
+    },
+    {
+      "system": "talk2biomodels",
+      "repository": "VirtualPatientEngine/AIAgents4Pharma",
+      "commit": "4b9990b708102bd237939bcb668b476d70a1c79d",
+      "path": "aiagents4pharma/talk2biomodels/models/__init__.py",
+      "sha256": "ca4bab5abbce024c78a28927820b2ee918b37c22d3d69e5a12e3b837958d5677"
+    },
+    {
+      "system": "talk2biomodels",
+      "repository": "VirtualPatientEngine/AIAgents4Pharma",
+      "commit": "4b9990b708102bd237939bcb668b476d70a1c79d",
+      "path": "aiagents4pharma/talk2biomodels/models/basico_model.py",
+      "sha256": "33d2959cb0cd0167ccd0c031483a4024a22ad51f1ece30d6d42dc2f682ec44d5"
+    },
+    {
+      "system": "talk2biomodels",
+      "repository": "VirtualPatientEngine/AIAgents4Pharma",
+      "commit": "4b9990b708102bd237939bcb668b476d70a1c79d",
+      "path": "aiagents4pharma/talk2biomodels/models/sys_bio_model.py",
+      "sha256": "770a012bf83b69756fec1f7b0aa20b4efb311846cd1ff88f2d64354a83e0e1c8"
+    },
+    {
+      "system": "talk2biomodels",
+      "repository": "VirtualPatientEngine/AIAgents4Pharma",
+      "commit": "4b9990b708102bd237939bcb668b476d70a1c79d",
+      "path": "aiagents4pharma/talk2biomodels/states/__init__.py",
+      "sha256": "4717bae162e070d2a729a1083efdeb5e6c01514ae5d523fe07a1785277fbdb7c"
+    },
+    {
+      "system": "talk2biomodels",
+      "repository": "VirtualPatientEngine/AIAgents4Pharma",
+      "commit": "4b9990b708102bd237939bcb668b476d70a1c79d",
+      "path": "aiagents4pharma/talk2biomodels/states/state_talk2biomodels.py",
+      "sha256": "34b6e45d2f7ce7b2aa29d8d979903f44c7ae95184be0f1be9d28d5388cd80fc7"
+    },
+    {
+      "system": "talk2biomodels",
+      "repository": "VirtualPatientEngine/AIAgents4Pharma",
+      "commit": "4b9990b708102bd237939bcb668b476d70a1c79d",
+      "path": "aiagents4pharma/talk2biomodels/tools/__init__.py",
+      "sha256": "be2ab1e3be45479fa03f5d2599583bbbcc005946521d77b76db43317937da0c9"
+    },
+    {
+      "system": "talk2biomodels",
+      "repository": "VirtualPatientEngine/AIAgents4Pharma",
+      "commit": "4b9990b708102bd237939bcb668b476d70a1c79d",
+      "path": "aiagents4pharma/talk2biomodels/tools/ask_question.py",
+      "sha256": "21ba2533acdb60a1ddfd409f2cc6bc6dac2df5f247e7d70252d90b07fc2dc4a2"
+    },
+    {
+      "system": "talk2biomodels",
+      "repository": "VirtualPatientEngine/AIAgents4Pharma",
+      "commit": "4b9990b708102bd237939bcb668b476d70a1c79d",
+      "path": "aiagents4pharma/talk2biomodels/tools/custom_plotter.py",
+      "sha256": "764e475263f0493211a76b1b77c43cfff7f0484f26d7752c7a89ef729c83b34d"
+    },
+    {
+      "system": "talk2biomodels",
+      "repository": "VirtualPatientEngine/AIAgents4Pharma",
+      "commit": "4b9990b708102bd237939bcb668b476d70a1c79d",
+      "path": "aiagents4pharma/talk2biomodels/tools/get_annotation.py",
+      "sha256": "a071111dd6382a29d0160f6e76e7c48093f7b44df1d20b68596cb82a76bd1fbf"
+    },
+    {
+      "system": "talk2biomodels",
+      "repository": "VirtualPatientEngine/AIAgents4Pharma",
+      "commit": "4b9990b708102bd237939bcb668b476d70a1c79d",
+      "path": "aiagents4pharma/talk2biomodels/tools/get_modelinfo.py",
+      "sha256": "99502a3b64d1588943f7766c32082cd8ddfadbdb311d95a73a2b16eebff2054d"
+    },
+    {
+      "system": "talk2biomodels",
+      "repository": "VirtualPatientEngine/AIAgents4Pharma",
+      "commit": "4b9990b708102bd237939bcb668b476d70a1c79d",
+      "path": "aiagents4pharma/talk2biomodels/tools/load_arguments.py",
+      "sha256": "2d940d9008a45e11b400a4677cb52aaa96b984d0325464b03d0e3f9c1bbe0d2c"
+    },
+    {
+      "system": "talk2biomodels",
+      "repository": "VirtualPatientEngine/AIAgents4Pharma",
+      "commit": "4b9990b708102bd237939bcb668b476d70a1c79d",
+      "path": "aiagents4pharma/talk2biomodels/tools/load_biomodel.py",
+      "sha256": "d36e7e139aa8dae88956f1c8872783875b5f9974de220b92812d0a218d0b8b26"
+    },
+    {
+      "system": "talk2biomodels",
+      "repository": "VirtualPatientEngine/AIAgents4Pharma",
+      "commit": "4b9990b708102bd237939bcb668b476d70a1c79d",
+      "path": "aiagents4pharma/talk2biomodels/tools/parameter_scan.py",
+      "sha256": "1efab88a02b45c1438e58c6166954d9151d699aba6ed5dc71ad21a696f0ffd2d"
+    },
+    {
+      "system": "talk2biomodels",
+      "repository": "VirtualPatientEngine/AIAgents4Pharma",
+      "commit": "4b9990b708102bd237939bcb668b476d70a1c79d",
+      "path": "aiagents4pharma/talk2biomodels/tools/query_article.py",
+      "sha256": "7f628c84ab965eab3c3227593b7ebb244b171c82bc36c3a6fd852ccc7eaac293"
+    },
+    {
+      "system": "talk2biomodels",
+      "repository": "VirtualPatientEngine/AIAgents4Pharma",
+      "commit": "4b9990b708102bd237939bcb668b476d70a1c79d",
+      "path": "aiagents4pharma/talk2biomodels/tools/save_model.py",
+      "sha256": "d93127cdbb79cfdf2a8cbf5e4599d76d2d39886b82ed0ca533ee751cc7eb8cd1"
+    },
+    {
+      "system": "talk2biomodels",
+      "repository": "VirtualPatientEngine/AIAgents4Pharma",
+      "commit": "4b9990b708102bd237939bcb668b476d70a1c79d",
+      "path": "aiagents4pharma/talk2biomodels/tools/search_models.py",
+      "sha256": "0d60b86c70e73a2281a79df830d30dfc0275adcdb5757b7bebc4af3112fa9ab5"
+    },
+    {
+      "system": "talk2biomodels",
+      "repository": "VirtualPatientEngine/AIAgents4Pharma",
+      "commit": "4b9990b708102bd237939bcb668b476d70a1c79d",
+      "path": "aiagents4pharma/talk2biomodels/tools/simulate_model.py",
+      "sha256": "e10534dd7a7e014fef6b441719064dedbb67fc387e00bad90372b526a0d71ffe"
+    },
+    {
+      "system": "talk2biomodels",
+      "repository": "VirtualPatientEngine/AIAgents4Pharma",
+      "commit": "4b9990b708102bd237939bcb668b476d70a1c79d",
+      "path": "aiagents4pharma/talk2biomodels/tools/steady_state.py",
+      "sha256": "ccd6d20ce213c3da28984a86491a88db6e23646b0cc3c2c191afb6ac6de6a31b"
+    },
+    {
+      "system": "talk2biomodels",
+      "repository": "VirtualPatientEngine/AIAgents4Pharma",
+      "commit": "4b9990b708102bd237939bcb668b476d70a1c79d",
+      "path": "aiagents4pharma/talk2biomodels/tools/utils.py",
+      "sha256": "6e956d4bee7fa0319d8236ec2de21570ea35049bd2fe9ca0f0f0e0f73d9d1b94"
+    },
+    {
+      "system": "talk2biomodels",
+      "repository": "VirtualPatientEngine/AIAgents4Pharma",
+      "commit": "4b9990b708102bd237939bcb668b476d70a1c79d",
+      "path": "pyproject.toml",
+      "sha256": "b533ea1173642cdc401458ecb6c67474c8d7aa884f66cf7c94f5866e38fea5dd"
+    },
+    {
+      "system": "kinmodgpt",
+      "repository": "kmaeda16/KinModGPT",
+      "commit": "2b337a3d472e7d482ddb34bb25743d7618285430",
+      "path": "Conversion/1. text-davinci-003_only/Instruction.txt",
+      "sha256": "e284a10ae5fe637fb36d56664f3767a048b09c09106ad5650e96d64547007732"
+    },
+    {
+      "system": "kinmodgpt",
+      "repository": "kmaeda16/KinModGPT",
+      "commit": "2b337a3d472e7d482ddb34bb25743d7618285430",
+      "path": "Conversion/1. text-davinci-003_only/env.yml",
+      "sha256": "fd86ec5e821ee98e569fb14f6583f2e003ab8c9bac17ac7040bfb4505cad30f6"
+    },
+    {
+      "system": "kinmodgpt",
+      "repository": "kmaeda16/KinModGPT",
+      "commit": "2b337a3d472e7d482ddb34bb25743d7618285430",
+      "path": "Conversion/1. text-davinci-003_only/main.py",
+      "sha256": "826165e1ed0136b9bd14bdefe875899c4ab9045f61e8f5ea56bee5e574d4fdd6"
+    },
+    {
+      "system": "kinmodgpt",
+      "repository": "kmaeda16/KinModGPT",
+      "commit": "2b337a3d472e7d482ddb34bb25743d7618285430",
+      "path": "Conversion/2. gpt-3.5-turbo_only/Instruction.txt",
+      "sha256": "e284a10ae5fe637fb36d56664f3767a048b09c09106ad5650e96d64547007732"
+    },
+    {
+      "system": "kinmodgpt",
+      "repository": "kmaeda16/KinModGPT",
+      "commit": "2b337a3d472e7d482ddb34bb25743d7618285430",
+      "path": "Conversion/2. gpt-3.5-turbo_only/env.yml",
+      "sha256": "fd86ec5e821ee98e569fb14f6583f2e003ab8c9bac17ac7040bfb4505cad30f6"
+    },
+    {
+      "system": "kinmodgpt",
+      "repository": "kmaeda16/KinModGPT",
+      "commit": "2b337a3d472e7d482ddb34bb25743d7618285430",
+      "path": "Conversion/2. gpt-3.5-turbo_only/main.py",
+      "sha256": "f778d1df24c82003c4d920719ca7ac72345b4357444fba39aff34f8d38ec3c7a"
+    },
+    {
+      "system": "kinmodgpt",
+      "repository": "kmaeda16/KinModGPT",
+      "commit": "2b337a3d472e7d482ddb34bb25743d7618285430",
+      "path": "Conversion/3. gpt-4_only/Instruction.txt",
+      "sha256": "e284a10ae5fe637fb36d56664f3767a048b09c09106ad5650e96d64547007732"
+    },
+    {
+      "system": "kinmodgpt",
+      "repository": "kmaeda16/KinModGPT",
+      "commit": "2b337a3d472e7d482ddb34bb25743d7618285430",
+      "path": "Conversion/3. gpt-4_only/env.yml",
+      "sha256": "fd86ec5e821ee98e569fb14f6583f2e003ab8c9bac17ac7040bfb4505cad30f6"
+    },
+    {
+      "system": "kinmodgpt",
+      "repository": "kmaeda16/KinModGPT",
+      "commit": "2b337a3d472e7d482ddb34bb25743d7618285430",
+      "path": "Conversion/3. gpt-4_only/main.py",
+      "sha256": "30a9315ab274e6e8085fe9abed51cbea41e662e5d99f1ae4d4d03e5b90510421"
+    },
+    {
+      "system": "kinmodgpt",
+      "repository": "kmaeda16/KinModGPT",
+      "commit": "2b337a3d472e7d482ddb34bb25743d7618285430",
+      "path": "Conversion/4. KinModGPT_text-davinci-003/Instruction.txt",
+      "sha256": "e866a220bc8f0bf80686e3582e299a7671a5bd27101c3b7a95118ac768e20dc0"
+    },
+    {
+      "system": "kinmodgpt",
+      "repository": "kmaeda16/KinModGPT",
+      "commit": "2b337a3d472e7d482ddb34bb25743d7618285430",
+      "path": "Conversion/4. KinModGPT_text-davinci-003/KinModGPT.py",
+      "sha256": "01f203769fc596949b950fe057bc496b1df62ccf807a944aeeae94da24fcc537"
+    },
+    {
+      "system": "kinmodgpt",
+      "repository": "kmaeda16/KinModGPT",
+      "commit": "2b337a3d472e7d482ddb34bb25743d7618285430",
+      "path": "Conversion/4. KinModGPT_text-davinci-003/env.yml",
+      "sha256": "fd86ec5e821ee98e569fb14f6583f2e003ab8c9bac17ac7040bfb4505cad30f6"
+    },
+    {
+      "system": "kinmodgpt",
+      "repository": "kmaeda16/KinModGPT",
+      "commit": "2b337a3d472e7d482ddb34bb25743d7618285430",
+      "path": "Conversion/4. KinModGPT_text-davinci-003/main.py",
+      "sha256": "32f2312125e59f6b0e47b9af860e115cf3145216819ed0b1d66004071f8b7942"
+    },
+    {
+      "system": "kinmodgpt",
+      "repository": "kmaeda16/KinModGPT",
+      "commit": "2b337a3d472e7d482ddb34bb25743d7618285430",
+      "path": "Conversion/5. KinModGPT_gpt-3.5-turbo/Instruction.txt",
+      "sha256": "e866a220bc8f0bf80686e3582e299a7671a5bd27101c3b7a95118ac768e20dc0"
+    },
+    {
+      "system": "kinmodgpt",
+      "repository": "kmaeda16/KinModGPT",
+      "commit": "2b337a3d472e7d482ddb34bb25743d7618285430",
+      "path": "Conversion/5. KinModGPT_gpt-3.5-turbo/KinModGPT.py",
+      "sha256": "5fda076b83668464dda0a061baf2154092ea79018bce96a665ebeb35e8e1d27a"
+    },
+    {
+      "system": "kinmodgpt",
+      "repository": "kmaeda16/KinModGPT",
+      "commit": "2b337a3d472e7d482ddb34bb25743d7618285430",
+      "path": "Conversion/5. KinModGPT_gpt-3.5-turbo/env.yml",
+      "sha256": "fd86ec5e821ee98e569fb14f6583f2e003ab8c9bac17ac7040bfb4505cad30f6"
+    },
+    {
+      "system": "kinmodgpt",
+      "repository": "kmaeda16/KinModGPT",
+      "commit": "2b337a3d472e7d482ddb34bb25743d7618285430",
+      "path": "Conversion/5. KinModGPT_gpt-3.5-turbo/main.py",
+      "sha256": "1cb21d8436f8b6f5f2de603eac3c8e08a98e046e9d74b6ed0ebc3a2fa752be28"
+    },
+    {
+      "system": "kinmodgpt",
+      "repository": "kmaeda16/KinModGPT",
+      "commit": "2b337a3d472e7d482ddb34bb25743d7618285430",
+      "path": "Conversion/6. KinModGPT_gpt-4/Instruction.txt",
+      "sha256": "e866a220bc8f0bf80686e3582e299a7671a5bd27101c3b7a95118ac768e20dc0"
+    },
+    {
+      "system": "kinmodgpt",
+      "repository": "kmaeda16/KinModGPT",
+      "commit": "2b337a3d472e7d482ddb34bb25743d7618285430",
+      "path": "Conversion/6. KinModGPT_gpt-4/KinModGPT.py",
+      "sha256": "ccc6a353f29c195405db8972934b526faa71ac46eba85e0b1dd85d54b2902454"
+    },
+    {
+      "system": "kinmodgpt",
+      "repository": "kmaeda16/KinModGPT",
+      "commit": "2b337a3d472e7d482ddb34bb25743d7618285430",
+      "path": "Conversion/6. KinModGPT_gpt-4/env.yml",
+      "sha256": "fd86ec5e821ee98e569fb14f6583f2e003ab8c9bac17ac7040bfb4505cad30f6"
+    },
+    {
+      "system": "kinmodgpt",
+      "repository": "kmaeda16/KinModGPT",
+      "commit": "2b337a3d472e7d482ddb34bb25743d7618285430",
+      "path": "Conversion/6. KinModGPT_gpt-4/main.py",
+      "sha256": "1cb21d8436f8b6f5f2de603eac3c8e08a98e046e9d74b6ed0ebc3a2fa752be28"
+    },
+    {
+      "system": "kinmodgpt",
+      "repository": "kmaeda16/KinModGPT",
+      "commit": "2b337a3d472e7d482ddb34bb25743d7618285430",
+      "path": "Conversion/7. INDRA/env.yml",
+      "sha256": "e60ce43aef32a718a07be85f293f2eb8ac636046d1f1903db97dbb1c626ae172"
+    },
+    {
+      "system": "kinmodgpt",
+      "repository": "kmaeda16/KinModGPT",
+      "commit": "2b337a3d472e7d482ddb34bb25743d7618285430",
+      "path": "Conversion/7. INDRA/main.py",
+      "sha256": "f8a1d65e03433f9c7199f7e7125c55b1ae242b558cd080ba63b3987a85960d3d"
+    },
+    {
+      "system": "kinmodgpt",
+      "repository": "kmaeda16/KinModGPT",
+      "commit": "2b337a3d472e7d482ddb34bb25743d7618285430",
+      "path": "Conversion/README.md",
+      "sha256": "ac9db67c97709723acbc3ed7d4a4deeb5365f1cda241acc4f7e6fc27493bbfd5"
+    },
+    {
+      "system": "kinmodgpt",
+      "repository": "kmaeda16/KinModGPT",
+      "commit": "2b337a3d472e7d482ddb34bb25743d7618285430",
+      "path": "Conversion/input/decay/decay.txt",
+      "sha256": "f1222780563fe18ed30400bae4d15e61c896261ae5de3067965f3f0bd55240b1"
+    },
+    {
+      "system": "kinmodgpt",
+      "repository": "kmaeda16/KinModGPT",
+      "commit": "2b337a3d472e7d482ddb34bb25743d7618285430",
+      "path": "Conversion/input/heat_shock_response/heat_shock_response-1.txt",
+      "sha256": "c7eb0e8d71e8089e5000a19be9bab55ebf376cf2992588737a1e4c53f1c4cecc"
+    },
+    {
+      "system": "kinmodgpt",
+      "repository": "kmaeda16/KinModGPT",
+      "commit": "2b337a3d472e7d482ddb34bb25743d7618285430",
+      "path": "Conversion/input/heat_shock_response/heat_shock_response-2.txt",
+      "sha256": "535c0de008bf516f247f34bdb9bbe56ca007967334f5dfecca19b150cb2538fa"
+    },
+    {
+      "system": "kinmodgpt",
+      "repository": "kmaeda16/KinModGPT",
+      "commit": "2b337a3d472e7d482ddb34bb25743d7618285430",
+      "path": "Conversion/input/hiv/hiv.txt",
+      "sha256": "d5eda11a3a8fa3cf063f069bad36e382499e0e465d0402f38ddc9ec452a0e769"
+    },
+    {
+      "system": "kinmodgpt",
+      "repository": "kmaeda16/KinModGPT",
+      "commit": "2b337a3d472e7d482ddb34bb25743d7618285430",
+      "path": "Conversion/input/three-step/three-step.txt",
+      "sha256": "5bba600ae517ebc48e5d9a70b0ea04dfe585f8133b8206d26e35d2a2c800f64f"
+    },
+    {
+      "system": "kinmodgpt",
+      "repository": "kmaeda16/KinModGPT",
+      "commit": "2b337a3d472e7d482ddb34bb25743d7618285430",
+      "path": "LICENSE",
+      "sha256": "65edf4f4364862ccaf4b225fbf8207b5df9f5f37e52d9cf06ec9b44096aa1bb7"
+    },
+    {
+      "system": "kinmodgpt",
+      "repository": "kmaeda16/KinModGPT",
+      "commit": "2b337a3d472e7d482ddb34bb25743d7618285430",
+      "path": "README.md",
+      "sha256": "4a8d721a45e3a12dfc7cdf489ab78c4ca926d7403e8e04dc753771128b1830aa"
+    },
+    {
+      "system": "kinmodgpt",
+      "repository": "kmaeda16/KinModGPT",
+      "commit": "2b337a3d472e7d482ddb34bb25743d7618285430",
+      "path": "Simulation/README.md",
+      "sha256": "4b31772d6c5a93b8a2980d3a0238dbd81b047b92b3f3c620c9910197a1a7900f"
+    },
+    {
+      "system": "kinmodgpt",
+      "repository": "kmaeda16/KinModGPT",
+      "commit": "2b337a3d472e7d482ddb34bb25743d7618285430",
+      "path": "Simulation/decay/main.py",
+      "sha256": "09f4e63d3e63cff44b80f65e8b32fe97a78817baa7697ffdc70012b428365ca1"
+    },
+    {
+      "system": "kinmodgpt",
+      "repository": "kmaeda16/KinModGPT",
+      "commit": "2b337a3d472e7d482ddb34bb25743d7618285430",
+      "path": "Simulation/heat_shock_response/main.py",
+      "sha256": "3f4b6d7087337fc74b7f62cb4b2aefc5484615ade09ebb6c71eeaa65e9fafa09"
+    },
+    {
+      "system": "kinmodgpt",
+      "repository": "kmaeda16/KinModGPT",
+      "commit": "2b337a3d472e7d482ddb34bb25743d7618285430",
+      "path": "Simulation/hiv/main.py",
+      "sha256": "2a6f44aa59f4dce1f3bfc078f9ae94c2729934ad2630ff3ee47488263820738e"
+    },
+    {
+      "system": "kinmodgpt",
+      "repository": "kmaeda16/KinModGPT",
+      "commit": "2b337a3d472e7d482ddb34bb25743d7618285430",
+      "path": "Simulation/three-step/main.py",
+      "sha256": "1437bb935d2953ca540e570e23fb5cc50c66845cac10678a51128b10d9c94060"
+    }
+  ],
+  "download": "official codeload pinned archives",
+  "note": "T2B last commit by publication date, not a verified original benchmark release"
+}

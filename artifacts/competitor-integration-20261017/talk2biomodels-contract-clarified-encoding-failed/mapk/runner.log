@@ -1,0 +1,35 @@
+INFO:aiagents4pharma.talk2biomodels.agents.t2b_agent:Load Hydra configuration for Talk2BioModels agent.
+INFO:aiagents4pharma.talk2biomodels.agents.t2b_agent:state_modifier: You are Talk2BioModels agent. If the user asks for the uploaded model, then pass the use_uploaded_model argument as True. If the user asks for simulation or param_scan or steady state, suggest a value for the `experiment_name` argument.
+If the user asks question related to the uploaded document/pdf/article/document, use the tool `query_article` to answer the question. Please note that the `experiment_name` argument may be unrelated to the question asked.
+
+INFO:aiagents4pharma.talk2biomodels.agents.t2b_agent:Compiled the graph with thread_id integration-mapk and llm_model callbacks=[<__main__.run.<locals>.Audit object at 0x7959f2373aa0>] client=<openai.resources.chat.completions.completions.Completions object at 0x7959e4cb8f80> async_client=<openai.resources.chat.completions.completions.AsyncCompletions object at 0x7959e41de330> root_client=<openai.OpenAI object at 0x7959e4b76330> root_async_client=<openai.AsyncOpenAI object at 0x7959e44244d0> model_name='qwen3.8-chat' temperature=0.0 model_kwargs={} openai_api_key=SecretStr('**********') openai_api_base='https://api.llm.ustc.edu.cn/v1' request_timeout=90.0 max_retries=0 max_tokens=4000 http_client=<httpx.Client object at 0x7959f1a51d30>
+INFO:aiagents4pharma.talk2biomodels.agents.t2b_agent:Calling t2b_agent node with thread_id integration-mapk
+INFO:httpx:HTTP Request: POST https://api.llm.ustc.edu.cn/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:aiagents4pharma.talk2biomodels.tools.simulate_model:Calling simulate_model tool biomodel_id=None use_uploaded_sbml_file=True, ArgumentData(experiment_name='uploaded_model_0_1800_120intervals', time_data=TimeData(duration=1800.0, interval=120), species_to_be_analyzed_before_experiment=None, reocurring_data=None)
+INFO:aiagents4pharma.talk2biomodels.tools.simulate_model:Following species/parameters updated in the model {}
+INFO:aiagents4pharma.talk2biomodels.tools.simulate_model:Simulation results ready with shape (121, 9)
+INFO:httpx:HTTP Request: POST https://api.llm.ustc.edu.cn/v1/chat/completions "HTTP/1.1 200 OK"
+Traceback (most recent call last):
+  File "/home/riveruning/biologymodel_agent/benchmarks/development/run_t2b_competitor.py", line 97, in run
+    write_json(dest/'audit.json',audit)
+  File "/home/riveruning/biologymodel_agent/benchmarks/development/competitor_common.py", line 12, in write_json
+    Path(path).write_text(json.dumps(value,indent=2,ensure_ascii=False,allow_nan=False)+'\n')
+  File "/usr/lib/python3.12/pathlib.py", line 1050, in write_text
+    return f.write(data)
+           ^^^^^^^^^^^^^
+UnicodeEncodeError: 'ascii' codec can't encode character '\u2192' in position 10068: ordinal not in range(128)
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/riveruning/biologymodel_agent/benchmarks/development/run_t2b_competitor.py", line 121, in <module>
+    args=parser.parse_args();run(args.case,args.model,args.key_env,args.offline_smoke,args.clarify_contract)
+                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/riveruning/biologymodel_agent/benchmarks/development/run_t2b_competitor.py", line 107, in run
+    write_json(dest/'audit.json',audit)
+  File "/home/riveruning/biologymodel_agent/benchmarks/development/competitor_common.py", line 12, in write_json
+    Path(path).write_text(json.dumps(value,indent=2,ensure_ascii=False,allow_nan=False)+'\n')
+  File "/usr/lib/python3.12/pathlib.py", line 1050, in write_text
+    return f.write(data)
+           ^^^^^^^^^^^^^
+UnicodeEncodeError: 'ascii' codec can't encode character '\u2192' in position 10068: ordinal not in range(128)

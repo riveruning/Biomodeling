@@ -1,0 +1,20 @@
+{
+  "status": "ready",
+  "parameters": [
+    {"id": "Vmax", "value": 0.9, "unit": "a.u. per minute"},
+    {"id": "Km", "value": 1.5, "unit": "a.u."},
+    {"id": "KI", "value": 0.8, "unit": "a.u."}
+  ],
+  "states": [
+    {"id": "S", "initial": 1.0}
+  ],
+  "equations": [
+    {"state": "S", "expression": "-Vmax*S/(Km + S + S^2/KI)"}
+  ],
+  "questions": [],
+  "limitations": [
+    "S is measured in a.u. and time in minutes; the compartment size is 1 (dimensionless).",
+    "KI = 0.8 a.u. is supplied by the authoritative researcher clarification embedded in source.txt.",
+    "The simulation has not been executed in this run, as requested."
+  ]
+}

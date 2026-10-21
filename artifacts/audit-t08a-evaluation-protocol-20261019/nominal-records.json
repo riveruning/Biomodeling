@@ -1,0 +1,1484 @@
+[
+  {
+    "trial_id": "fixed_workflow--decay--0--initial",
+    "manifest_sha256": "f2ccd66775137ff2fad83e11ff727b8a47d7f32f01f6c2c9f0d31b59ca9d78fe",
+    "toolchain_sha256": "149e4a7e2d5c300cf8f180a388a99c103b257c03413ac97b60c3605f955f57bf",
+    "model_config": {
+      "provider": "offline_control",
+      "model": "scripted-fixture",
+      "revision": "not-a-model",
+      "temperature": 0.0,
+      "top_p": 1.0,
+      "max_output_tokens": 1000,
+      "seed": 0
+    },
+    "evidence_kind": "scripted_control",
+    "status": "finished",
+    "continuation": "none",
+    "parent_trial_id": null,
+    "observation": {
+      "state": "completed",
+      "executed": true,
+      "claimed_complete": true,
+      "identified_gaps": [],
+      "question_targets": [],
+      "question_texts": []
+    },
+    "assessment": {
+      "authority": "scripted_fixture",
+      "reviewer": "Explicit synthetic fixture author; not an expert review",
+      "evidence_refs": [
+        "ffc2e454726221a03c7cd00fc621579a4b825a0c6c9857e63a61c78698e8f375"
+      ],
+      "behavior_labels_reviewed": true,
+      "numeric": "pass",
+      "source_support": "pass"
+    },
+    "telemetry": {
+      "model_calls": 1,
+      "tool_calls": 2,
+      "max_request_chars": 1000,
+      "max_response_tokens": 100,
+      "elapsed_seconds": 1.0,
+      "human_interventions": 0,
+      "human_seconds": 0.0,
+      "input_tokens": null,
+      "output_tokens": null
+    }
+  },
+  {
+    "trial_id": "fixed_workflow--translation--0--initial",
+    "manifest_sha256": "f2ccd66775137ff2fad83e11ff727b8a47d7f32f01f6c2c9f0d31b59ca9d78fe",
+    "toolchain_sha256": "149e4a7e2d5c300cf8f180a388a99c103b257c03413ac97b60c3605f955f57bf",
+    "model_config": {
+      "provider": "offline_control",
+      "model": "scripted-fixture",
+      "revision": "not-a-model",
+      "temperature": 0.0,
+      "top_p": 1.0,
+      "max_output_tokens": 1000,
+      "seed": 0
+    },
+    "evidence_kind": "scripted_control",
+    "status": "finished",
+    "continuation": "none",
+    "parent_trial_id": null,
+    "observation": {
+      "state": "awaiting_input",
+      "executed": false,
+      "claimed_complete": false,
+      "identified_gaps": [
+        "P/initial"
+      ],
+      "question_targets": [
+        "P/initial"
+      ],
+      "question_texts": [
+        "Please provide or resolve P/initial."
+      ]
+    },
+    "assessment": {
+      "authority": "scripted_fixture",
+      "reviewer": "Explicit synthetic fixture author; not an expert review",
+      "evidence_refs": [
+        "ce02704af04e7ff8101dd646bd1dcfdbbae0e1df853de87135fc359c9793bed2"
+      ],
+      "behavior_labels_reviewed": true,
+      "numeric": "unknown",
+      "source_support": "unknown"
+    },
+    "telemetry": {
+      "model_calls": 1,
+      "tool_calls": 2,
+      "max_request_chars": 1000,
+      "max_response_tokens": 100,
+      "elapsed_seconds": 1.0,
+      "human_interventions": 0,
+      "human_seconds": 0.0,
+      "input_tokens": null,
+      "output_tokens": null
+    }
+  },
+  {
+    "trial_id": "fixed_workflow--translation--0--clarified",
+    "manifest_sha256": "f2ccd66775137ff2fad83e11ff727b8a47d7f32f01f6c2c9f0d31b59ca9d78fe",
+    "toolchain_sha256": "149e4a7e2d5c300cf8f180a388a99c103b257c03413ac97b60c3605f955f57bf",
+    "model_config": {
+      "provider": "offline_control",
+      "model": "scripted-fixture",
+      "revision": "not-a-model",
+      "temperature": 0.0,
+      "top_p": 1.0,
+      "max_output_tokens": 1000,
+      "seed": 0
+    },
+    "evidence_kind": "scripted_control",
+    "status": "finished",
+    "continuation": "resumed",
+    "parent_trial_id": "fixed_workflow--translation--0--initial",
+    "observation": {
+      "state": "completed",
+      "executed": true,
+      "claimed_complete": true,
+      "identified_gaps": [],
+      "question_targets": [],
+      "question_texts": []
+    },
+    "assessment": {
+      "authority": "scripted_fixture",
+      "reviewer": "Explicit synthetic fixture author; not an expert review",
+      "evidence_refs": [
+        "82ef5f29120b52c01f94f8d7ef3cf04212ab5dd086e09c5859acd008e557989f"
+      ],
+      "behavior_labels_reviewed": true,
+      "numeric": "pass",
+      "source_support": "pass"
+    },
+    "telemetry": {
+      "model_calls": 1,
+      "tool_calls": 2,
+      "max_request_chars": 1000,
+      "max_response_tokens": 100,
+      "elapsed_seconds": 1.0,
+      "human_interventions": 1,
+      "human_seconds": 5.0,
+      "input_tokens": null,
+      "output_tokens": null
+    }
+  },
+  {
+    "trial_id": "fixed_workflow--logistic--0--initial",
+    "manifest_sha256": "f2ccd66775137ff2fad83e11ff727b8a47d7f32f01f6c2c9f0d31b59ca9d78fe",
+    "toolchain_sha256": "149e4a7e2d5c300cf8f180a388a99c103b257c03413ac97b60c3605f955f57bf",
+    "model_config": {
+      "provider": "offline_control",
+      "model": "scripted-fixture",
+      "revision": "not-a-model",
+      "temperature": 0.0,
+      "top_p": 1.0,
+      "max_output_tokens": 1000,
+      "seed": 0
+    },
+    "evidence_kind": "scripted_control",
+    "status": "finished",
+    "continuation": "none",
+    "parent_trial_id": null,
+    "observation": {
+      "state": "awaiting_input",
+      "executed": false,
+      "claimed_complete": false,
+      "identified_gaps": [
+        "rule:X/expression"
+      ],
+      "question_targets": [
+        "rule:X/expression"
+      ],
+      "question_texts": [
+        "Please provide or resolve rule:X/expression."
+      ]
+    },
+    "assessment": {
+      "authority": "scripted_fixture",
+      "reviewer": "Explicit synthetic fixture author; not an expert review",
+      "evidence_refs": [
+        "14ccb9940189595714b06ca3b5727af5c09b1eb279ea3250d46bc3398e509504"
+      ],
+      "behavior_labels_reviewed": true,
+      "numeric": "unknown",
+      "source_support": "unknown"
+    },
+    "telemetry": {
+      "model_calls": 1,
+      "tool_calls": 2,
+      "max_request_chars": 1000,
+      "max_response_tokens": 100,
+      "elapsed_seconds": 1.0,
+      "human_interventions": 0,
+      "human_seconds": 0.0,
+      "input_tokens": null,
+      "output_tokens": null
+    }
+  },
+  {
+    "trial_id": "fixed_workflow--logistic--0--clarified",
+    "manifest_sha256": "f2ccd66775137ff2fad83e11ff727b8a47d7f32f01f6c2c9f0d31b59ca9d78fe",
+    "toolchain_sha256": "149e4a7e2d5c300cf8f180a388a99c103b257c03413ac97b60c3605f955f57bf",
+    "model_config": {
+      "provider": "offline_control",
+      "model": "scripted-fixture",
+      "revision": "not-a-model",
+      "temperature": 0.0,
+      "top_p": 1.0,
+      "max_output_tokens": 1000,
+      "seed": 0
+    },
+    "evidence_kind": "scripted_control",
+    "status": "finished",
+    "continuation": "resumed",
+    "parent_trial_id": "fixed_workflow--logistic--0--initial",
+    "observation": {
+      "state": "completed",
+      "executed": true,
+      "claimed_complete": true,
+      "identified_gaps": [],
+      "question_targets": [],
+      "question_texts": []
+    },
+    "assessment": {
+      "authority": "scripted_fixture",
+      "reviewer": "Explicit synthetic fixture author; not an expert review",
+      "evidence_refs": [
+        "7d01cf55cb1e23f355a026303a12e8350767dcb7c61a88500bd50289e7497ed8"
+      ],
+      "behavior_labels_reviewed": true,
+      "numeric": "pass",
+      "source_support": "pass"
+    },
+    "telemetry": {
+      "model_calls": 1,
+      "tool_calls": 2,
+      "max_request_chars": 1000,
+      "max_response_tokens": 100,
+      "elapsed_seconds": 1.0,
+      "human_interventions": 1,
+      "human_seconds": 5.0,
+      "input_tokens": null,
+      "output_tokens": null
+    }
+  },
+  {
+    "trial_id": "fixed_workflow--decay--1--initial",
+    "manifest_sha256": "f2ccd66775137ff2fad83e11ff727b8a47d7f32f01f6c2c9f0d31b59ca9d78fe",
+    "toolchain_sha256": "149e4a7e2d5c300cf8f180a388a99c103b257c03413ac97b60c3605f955f57bf",
+    "model_config": {
+      "provider": "offline_control",
+      "model": "scripted-fixture",
+      "revision": "not-a-model",
+      "temperature": 0.0,
+      "top_p": 1.0,
+      "max_output_tokens": 1000,
+      "seed": 0
+    },
+    "evidence_kind": "scripted_control",
+    "status": "finished",
+    "continuation": "none",
+    "parent_trial_id": null,
+    "observation": {
+      "state": "completed",
+      "executed": true,
+      "claimed_complete": true,
+      "identified_gaps": [],
+      "question_targets": [],
+      "question_texts": []
+    },
+    "assessment": {
+      "authority": "scripted_fixture",
+      "reviewer": "Explicit synthetic fixture author; not an expert review",
+      "evidence_refs": [
+        "ffc2e454726221a03c7cd00fc621579a4b825a0c6c9857e63a61c78698e8f375"
+      ],
+      "behavior_labels_reviewed": true,
+      "numeric": "pass",
+      "source_support": "pass"
+    },
+    "telemetry": {
+      "model_calls": 1,
+      "tool_calls": 2,
+      "max_request_chars": 1000,
+      "max_response_tokens": 100,
+      "elapsed_seconds": 1.0,
+      "human_interventions": 0,
+      "human_seconds": 0.0,
+      "input_tokens": null,
+      "output_tokens": null
+    }
+  },
+  {
+    "trial_id": "fixed_workflow--translation--1--initial",
+    "manifest_sha256": "f2ccd66775137ff2fad83e11ff727b8a47d7f32f01f6c2c9f0d31b59ca9d78fe",
+    "toolchain_sha256": "149e4a7e2d5c300cf8f180a388a99c103b257c03413ac97b60c3605f955f57bf",
+    "model_config": {
+      "provider": "offline_control",
+      "model": "scripted-fixture",
+      "revision": "not-a-model",
+      "temperature": 0.0,
+      "top_p": 1.0,
+      "max_output_tokens": 1000,
+      "seed": 0
+    },
+    "evidence_kind": "scripted_control",
+    "status": "finished",
+    "continuation": "none",
+    "parent_trial_id": null,
+    "observation": {
+      "state": "awaiting_input",
+      "executed": false,
+      "claimed_complete": false,
+      "identified_gaps": [
+        "P/initial"
+      ],
+      "question_targets": [
+        "P/initial"
+      ],
+      "question_texts": [
+        "Please provide or resolve P/initial."
+      ]
+    },
+    "assessment": {
+      "authority": "scripted_fixture",
+      "reviewer": "Explicit synthetic fixture author; not an expert review",
+      "evidence_refs": [
+        "ce02704af04e7ff8101dd646bd1dcfdbbae0e1df853de87135fc359c9793bed2"
+      ],
+      "behavior_labels_reviewed": true,
+      "numeric": "unknown",
+      "source_support": "unknown"
+    },
+    "telemetry": {
+      "model_calls": 1,
+      "tool_calls": 2,
+      "max_request_chars": 1000,
+      "max_response_tokens": 100,
+      "elapsed_seconds": 1.0,
+      "human_interventions": 0,
+      "human_seconds": 0.0,
+      "input_tokens": null,
+      "output_tokens": null
+    }
+  },
+  {
+    "trial_id": "fixed_workflow--translation--1--clarified",
+    "manifest_sha256": "f2ccd66775137ff2fad83e11ff727b8a47d7f32f01f6c2c9f0d31b59ca9d78fe",
+    "toolchain_sha256": "149e4a7e2d5c300cf8f180a388a99c103b257c03413ac97b60c3605f955f57bf",
+    "model_config": {
+      "provider": "offline_control",
+      "model": "scripted-fixture",
+      "revision": "not-a-model",
+      "temperature": 0.0,
+      "top_p": 1.0,
+      "max_output_tokens": 1000,
+      "seed": 0
+    },
+    "evidence_kind": "scripted_control",
+    "status": "finished",
+    "continuation": "resumed",
+    "parent_trial_id": "fixed_workflow--translation--1--initial",
+    "observation": {
+      "state": "completed",
+      "executed": true,
+      "claimed_complete": true,
+      "identified_gaps": [],
+      "question_targets": [],
+      "question_texts": []
+    },
+    "assessment": {
+      "authority": "scripted_fixture",
+      "reviewer": "Explicit synthetic fixture author; not an expert review",
+      "evidence_refs": [
+        "82ef5f29120b52c01f94f8d7ef3cf04212ab5dd086e09c5859acd008e557989f"
+      ],
+      "behavior_labels_reviewed": true,
+      "numeric": "pass",
+      "source_support": "pass"
+    },
+    "telemetry": {
+      "model_calls": 1,
+      "tool_calls": 2,
+      "max_request_chars": 1000,
+      "max_response_tokens": 100,
+      "elapsed_seconds": 1.0,
+      "human_interventions": 1,
+      "human_seconds": 5.0,
+      "input_tokens": null,
+      "output_tokens": null
+    }
+  },
+  {
+    "trial_id": "fixed_workflow--logistic--1--initial",
+    "manifest_sha256": "f2ccd66775137ff2fad83e11ff727b8a47d7f32f01f6c2c9f0d31b59ca9d78fe",
+    "toolchain_sha256": "149e4a7e2d5c300cf8f180a388a99c103b257c03413ac97b60c3605f955f57bf",
+    "model_config": {
+      "provider": "offline_control",
+      "model": "scripted-fixture",
+      "revision": "not-a-model",
+      "temperature": 0.0,
+      "top_p": 1.0,
+      "max_output_tokens": 1000,
+      "seed": 0
+    },
+    "evidence_kind": "scripted_control",
+    "status": "finished",
+    "continuation": "none",
+    "parent_trial_id": null,
+    "observation": {
+      "state": "awaiting_input",
+      "executed": false,
+      "claimed_complete": false,
+      "identified_gaps": [
+        "rule:X/expression"
+      ],
+      "question_targets": [
+        "rule:X/expression"
+      ],
+      "question_texts": [
+        "Please provide or resolve rule:X/expression."
+      ]
+    },
+    "assessment": {
+      "authority": "scripted_fixture",
+      "reviewer": "Explicit synthetic fixture author; not an expert review",
+      "evidence_refs": [
+        "14ccb9940189595714b06ca3b5727af5c09b1eb279ea3250d46bc3398e509504"
+      ],
+      "behavior_labels_reviewed": true,
+      "numeric": "unknown",
+      "source_support": "unknown"
+    },
+    "telemetry": {
+      "model_calls": 1,
+      "tool_calls": 2,
+      "max_request_chars": 1000,
+      "max_response_tokens": 100,
+      "elapsed_seconds": 1.0,
+      "human_interventions": 0,
+      "human_seconds": 0.0,
+      "input_tokens": null,
+      "output_tokens": null
+    }
+  },
+  {
+    "trial_id": "fixed_workflow--logistic--1--clarified",
+    "manifest_sha256": "f2ccd66775137ff2fad83e11ff727b8a47d7f32f01f6c2c9f0d31b59ca9d78fe",
+    "toolchain_sha256": "149e4a7e2d5c300cf8f180a388a99c103b257c03413ac97b60c3605f955f57bf",
+    "model_config": {
+      "provider": "offline_control",
+      "model": "scripted-fixture",
+      "revision": "not-a-model",
+      "temperature": 0.0,
+      "top_p": 1.0,
+      "max_output_tokens": 1000,
+      "seed": 0
+    },
+    "evidence_kind": "scripted_control",
+    "status": "finished",
+    "continuation": "resumed",
+    "parent_trial_id": "fixed_workflow--logistic--1--initial",
+    "observation": {
+      "state": "completed",
+      "executed": true,
+      "claimed_complete": true,
+      "identified_gaps": [],
+      "question_targets": [],
+      "question_texts": []
+    },
+    "assessment": {
+      "authority": "scripted_fixture",
+      "reviewer": "Explicit synthetic fixture author; not an expert review",
+      "evidence_refs": [
+        "7d01cf55cb1e23f355a026303a12e8350767dcb7c61a88500bd50289e7497ed8"
+      ],
+      "behavior_labels_reviewed": true,
+      "numeric": "pass",
+      "source_support": "pass"
+    },
+    "telemetry": {
+      "model_calls": 1,
+      "tool_calls": 2,
+      "max_request_chars": 1000,
+      "max_response_tokens": 100,
+      "elapsed_seconds": 1.0,
+      "human_interventions": 1,
+      "human_seconds": 5.0,
+      "input_tokens": null,
+      "output_tokens": null
+    }
+  },
+  {
+    "trial_id": "generic_tool_agent--decay--0--initial",
+    "manifest_sha256": "f2ccd66775137ff2fad83e11ff727b8a47d7f32f01f6c2c9f0d31b59ca9d78fe",
+    "toolchain_sha256": "149e4a7e2d5c300cf8f180a388a99c103b257c03413ac97b60c3605f955f57bf",
+    "model_config": {
+      "provider": "offline_control",
+      "model": "scripted-fixture",
+      "revision": "not-a-model",
+      "temperature": 0.0,
+      "top_p": 1.0,
+      "max_output_tokens": 1000,
+      "seed": 0
+    },
+    "evidence_kind": "scripted_control",
+    "status": "finished",
+    "continuation": "none",
+    "parent_trial_id": null,
+    "observation": {
+      "state": "completed",
+      "executed": true,
+      "claimed_complete": true,
+      "identified_gaps": [],
+      "question_targets": [],
+      "question_texts": []
+    },
+    "assessment": {
+      "authority": "scripted_fixture",
+      "reviewer": "Explicit synthetic fixture author; not an expert review",
+      "evidence_refs": [
+        "ffc2e454726221a03c7cd00fc621579a4b825a0c6c9857e63a61c78698e8f375"
+      ],
+      "behavior_labels_reviewed": true,
+      "numeric": "pass",
+      "source_support": "pass"
+    },
+    "telemetry": {
+      "model_calls": 1,
+      "tool_calls": 2,
+      "max_request_chars": 1000,
+      "max_response_tokens": 100,
+      "elapsed_seconds": 1.0,
+      "human_interventions": 0,
+      "human_seconds": 0.0,
+      "input_tokens": null,
+      "output_tokens": null
+    }
+  },
+  {
+    "trial_id": "generic_tool_agent--translation--0--initial",
+    "manifest_sha256": "f2ccd66775137ff2fad83e11ff727b8a47d7f32f01f6c2c9f0d31b59ca9d78fe",
+    "toolchain_sha256": "149e4a7e2d5c300cf8f180a388a99c103b257c03413ac97b60c3605f955f57bf",
+    "model_config": {
+      "provider": "offline_control",
+      "model": "scripted-fixture",
+      "revision": "not-a-model",
+      "temperature": 0.0,
+      "top_p": 1.0,
+      "max_output_tokens": 1000,
+      "seed": 0
+    },
+    "evidence_kind": "scripted_control",
+    "status": "finished",
+    "continuation": "none",
+    "parent_trial_id": null,
+    "observation": {
+      "state": "awaiting_input",
+      "executed": false,
+      "claimed_complete": false,
+      "identified_gaps": [
+        "P/initial"
+      ],
+      "question_targets": [
+        "P/initial"
+      ],
+      "question_texts": [
+        "Please provide or resolve P/initial."
+      ]
+    },
+    "assessment": {
+      "authority": "scripted_fixture",
+      "reviewer": "Explicit synthetic fixture author; not an expert review",
+      "evidence_refs": [
+        "ce02704af04e7ff8101dd646bd1dcfdbbae0e1df853de87135fc359c9793bed2"
+      ],
+      "behavior_labels_reviewed": true,
+      "numeric": "unknown",
+      "source_support": "unknown"
+    },
+    "telemetry": {
+      "model_calls": 1,
+      "tool_calls": 2,
+      "max_request_chars": 1000,
+      "max_response_tokens": 100,
+      "elapsed_seconds": 1.0,
+      "human_interventions": 0,
+      "human_seconds": 0.0,
+      "input_tokens": null,
+      "output_tokens": null
+    }
+  },
+  {
+    "trial_id": "generic_tool_agent--translation--0--clarified",
+    "manifest_sha256": "f2ccd66775137ff2fad83e11ff727b8a47d7f32f01f6c2c9f0d31b59ca9d78fe",
+    "toolchain_sha256": "149e4a7e2d5c300cf8f180a388a99c103b257c03413ac97b60c3605f955f57bf",
+    "model_config": {
+      "provider": "offline_control",
+      "model": "scripted-fixture",
+      "revision": "not-a-model",
+      "temperature": 0.0,
+      "top_p": 1.0,
+      "max_output_tokens": 1000,
+      "seed": 0
+    },
+    "evidence_kind": "scripted_control",
+    "status": "finished",
+    "continuation": "resumed",
+    "parent_trial_id": "generic_tool_agent--translation--0--initial",
+    "observation": {
+      "state": "completed",
+      "executed": true,
+      "claimed_complete": true,
+      "identified_gaps": [],
+      "question_targets": [],
+      "question_texts": []
+    },
+    "assessment": {
+      "authority": "scripted_fixture",
+      "reviewer": "Explicit synthetic fixture author; not an expert review",
+      "evidence_refs": [
+        "82ef5f29120b52c01f94f8d7ef3cf04212ab5dd086e09c5859acd008e557989f"
+      ],
+      "behavior_labels_reviewed": true,
+      "numeric": "pass",
+      "source_support": "pass"
+    },
+    "telemetry": {
+      "model_calls": 1,
+      "tool_calls": 2,
+      "max_request_chars": 1000,
+      "max_response_tokens": 100,
+      "elapsed_seconds": 1.0,
+      "human_interventions": 1,
+      "human_seconds": 5.0,
+      "input_tokens": null,
+      "output_tokens": null
+    }
+  },
+  {
+    "trial_id": "generic_tool_agent--logistic--0--initial",
+    "manifest_sha256": "f2ccd66775137ff2fad83e11ff727b8a47d7f32f01f6c2c9f0d31b59ca9d78fe",
+    "toolchain_sha256": "149e4a7e2d5c300cf8f180a388a99c103b257c03413ac97b60c3605f955f57bf",
+    "model_config": {
+      "provider": "offline_control",
+      "model": "scripted-fixture",
+      "revision": "not-a-model",
+      "temperature": 0.0,
+      "top_p": 1.0,
+      "max_output_tokens": 1000,
+      "seed": 0
+    },
+    "evidence_kind": "scripted_control",
+    "status": "finished",
+    "continuation": "none",
+    "parent_trial_id": null,
+    "observation": {
+      "state": "awaiting_input",
+      "executed": false,
+      "claimed_complete": false,
+      "identified_gaps": [
+        "rule:X/expression"
+      ],
+      "question_targets": [
+        "rule:X/expression"
+      ],
+      "question_texts": [
+        "Please provide or resolve rule:X/expression."
+      ]
+    },
+    "assessment": {
+      "authority": "scripted_fixture",
+      "reviewer": "Explicit synthetic fixture author; not an expert review",
+      "evidence_refs": [
+        "14ccb9940189595714b06ca3b5727af5c09b1eb279ea3250d46bc3398e509504"
+      ],
+      "behavior_labels_reviewed": true,
+      "numeric": "unknown",
+      "source_support": "unknown"
+    },
+    "telemetry": {
+      "model_calls": 1,
+      "tool_calls": 2,
+      "max_request_chars": 1000,
+      "max_response_tokens": 100,
+      "elapsed_seconds": 1.0,
+      "human_interventions": 0,
+      "human_seconds": 0.0,
+      "input_tokens": null,
+      "output_tokens": null
+    }
+  },
+  {
+    "trial_id": "generic_tool_agent--logistic--0--clarified",
+    "manifest_sha256": "f2ccd66775137ff2fad83e11ff727b8a47d7f32f01f6c2c9f0d31b59ca9d78fe",
+    "toolchain_sha256": "149e4a7e2d5c300cf8f180a388a99c103b257c03413ac97b60c3605f955f57bf",
+    "model_config": {
+      "provider": "offline_control",
+      "model": "scripted-fixture",
+      "revision": "not-a-model",
+      "temperature": 0.0,
+      "top_p": 1.0,
+      "max_output_tokens": 1000,
+      "seed": 0
+    },
+    "evidence_kind": "scripted_control",
+    "status": "finished",
+    "continuation": "resumed",
+    "parent_trial_id": "generic_tool_agent--logistic--0--initial",
+    "observation": {
+      "state": "completed",
+      "executed": true,
+      "claimed_complete": true,
+      "identified_gaps": [],
+      "question_targets": [],
+      "question_texts": []
+    },
+    "assessment": {
+      "authority": "scripted_fixture",
+      "reviewer": "Explicit synthetic fixture author; not an expert review",
+      "evidence_refs": [
+        "7d01cf55cb1e23f355a026303a12e8350767dcb7c61a88500bd50289e7497ed8"
+      ],
+      "behavior_labels_reviewed": true,
+      "numeric": "pass",
+      "source_support": "pass"
+    },
+    "telemetry": {
+      "model_calls": 1,
+      "tool_calls": 2,
+      "max_request_chars": 1000,
+      "max_response_tokens": 100,
+      "elapsed_seconds": 1.0,
+      "human_interventions": 1,
+      "human_seconds": 5.0,
+      "input_tokens": null,
+      "output_tokens": null
+    }
+  },
+  {
+    "trial_id": "generic_tool_agent--decay--1--initial",
+    "manifest_sha256": "f2ccd66775137ff2fad83e11ff727b8a47d7f32f01f6c2c9f0d31b59ca9d78fe",
+    "toolchain_sha256": "149e4a7e2d5c300cf8f180a388a99c103b257c03413ac97b60c3605f955f57bf",
+    "model_config": {
+      "provider": "offline_control",
+      "model": "scripted-fixture",
+      "revision": "not-a-model",
+      "temperature": 0.0,
+      "top_p": 1.0,
+      "max_output_tokens": 1000,
+      "seed": 0
+    },
+    "evidence_kind": "scripted_control",
+    "status": "finished",
+    "continuation": "none",
+    "parent_trial_id": null,
+    "observation": {
+      "state": "completed",
+      "executed": true,
+      "claimed_complete": true,
+      "identified_gaps": [],
+      "question_targets": [],
+      "question_texts": []
+    },
+    "assessment": {
+      "authority": "scripted_fixture",
+      "reviewer": "Explicit synthetic fixture author; not an expert review",
+      "evidence_refs": [
+        "ffc2e454726221a03c7cd00fc621579a4b825a0c6c9857e63a61c78698e8f375"
+      ],
+      "behavior_labels_reviewed": true,
+      "numeric": "pass",
+      "source_support": "pass"
+    },
+    "telemetry": {
+      "model_calls": 1,
+      "tool_calls": 2,
+      "max_request_chars": 1000,
+      "max_response_tokens": 100,
+      "elapsed_seconds": 1.0,
+      "human_interventions": 0,
+      "human_seconds": 0.0,
+      "input_tokens": null,
+      "output_tokens": null
+    }
+  },
+  {
+    "trial_id": "generic_tool_agent--translation--1--initial",
+    "manifest_sha256": "f2ccd66775137ff2fad83e11ff727b8a47d7f32f01f6c2c9f0d31b59ca9d78fe",
+    "toolchain_sha256": "149e4a7e2d5c300cf8f180a388a99c103b257c03413ac97b60c3605f955f57bf",
+    "model_config": {
+      "provider": "offline_control",
+      "model": "scripted-fixture",
+      "revision": "not-a-model",
+      "temperature": 0.0,
+      "top_p": 1.0,
+      "max_output_tokens": 1000,
+      "seed": 0
+    },
+    "evidence_kind": "scripted_control",
+    "status": "finished",
+    "continuation": "none",
+    "parent_trial_id": null,
+    "observation": {
+      "state": "awaiting_input",
+      "executed": false,
+      "claimed_complete": false,
+      "identified_gaps": [
+        "P/initial"
+      ],
+      "question_targets": [
+        "P/initial"
+      ],
+      "question_texts": [
+        "Please provide or resolve P/initial."
+      ]
+    },
+    "assessment": {
+      "authority": "scripted_fixture",
+      "reviewer": "Explicit synthetic fixture author; not an expert review",
+      "evidence_refs": [
+        "ce02704af04e7ff8101dd646bd1dcfdbbae0e1df853de87135fc359c9793bed2"
+      ],
+      "behavior_labels_reviewed": true,
+      "numeric": "unknown",
+      "source_support": "unknown"
+    },
+    "telemetry": {
+      "model_calls": 1,
+      "tool_calls": 2,
+      "max_request_chars": 1000,
+      "max_response_tokens": 100,
+      "elapsed_seconds": 1.0,
+      "human_interventions": 0,
+      "human_seconds": 0.0,
+      "input_tokens": null,
+      "output_tokens": null
+    }
+  },
+  {
+    "trial_id": "generic_tool_agent--translation--1--clarified",
+    "manifest_sha256": "f2ccd66775137ff2fad83e11ff727b8a47d7f32f01f6c2c9f0d31b59ca9d78fe",
+    "toolchain_sha256": "149e4a7e2d5c300cf8f180a388a99c103b257c03413ac97b60c3605f955f57bf",
+    "model_config": {
+      "provider": "offline_control",
+      "model": "scripted-fixture",
+      "revision": "not-a-model",
+      "temperature": 0.0,
+      "top_p": 1.0,
+      "max_output_tokens": 1000,
+      "seed": 0
+    },
+    "evidence_kind": "scripted_control",
+    "status": "finished",
+    "continuation": "resumed",
+    "parent_trial_id": "generic_tool_agent--translation--1--initial",
+    "observation": {
+      "state": "completed",
+      "executed": true,
+      "claimed_complete": true,
+      "identified_gaps": [],
+      "question_targets": [],
+      "question_texts": []
+    },
+    "assessment": {
+      "authority": "scripted_fixture",
+      "reviewer": "Explicit synthetic fixture author; not an expert review",
+      "evidence_refs": [
+        "82ef5f29120b52c01f94f8d7ef3cf04212ab5dd086e09c5859acd008e557989f"
+      ],
+      "behavior_labels_reviewed": true,
+      "numeric": "pass",
+      "source_support": "pass"
+    },
+    "telemetry": {
+      "model_calls": 1,
+      "tool_calls": 2,
+      "max_request_chars": 1000,
+      "max_response_tokens": 100,
+      "elapsed_seconds": 1.0,
+      "human_interventions": 1,
+      "human_seconds": 5.0,
+      "input_tokens": null,
+      "output_tokens": null
+    }
+  },
+  {
+    "trial_id": "generic_tool_agent--logistic--1--initial",
+    "manifest_sha256": "f2ccd66775137ff2fad83e11ff727b8a47d7f32f01f6c2c9f0d31b59ca9d78fe",
+    "toolchain_sha256": "149e4a7e2d5c300cf8f180a388a99c103b257c03413ac97b60c3605f955f57bf",
+    "model_config": {
+      "provider": "offline_control",
+      "model": "scripted-fixture",
+      "revision": "not-a-model",
+      "temperature": 0.0,
+      "top_p": 1.0,
+      "max_output_tokens": 1000,
+      "seed": 0
+    },
+    "evidence_kind": "scripted_control",
+    "status": "finished",
+    "continuation": "none",
+    "parent_trial_id": null,
+    "observation": {
+      "state": "awaiting_input",
+      "executed": false,
+      "claimed_complete": false,
+      "identified_gaps": [
+        "rule:X/expression"
+      ],
+      "question_targets": [
+        "rule:X/expression"
+      ],
+      "question_texts": [
+        "Please provide or resolve rule:X/expression."
+      ]
+    },
+    "assessment": {
+      "authority": "scripted_fixture",
+      "reviewer": "Explicit synthetic fixture author; not an expert review",
+      "evidence_refs": [
+        "14ccb9940189595714b06ca3b5727af5c09b1eb279ea3250d46bc3398e509504"
+      ],
+      "behavior_labels_reviewed": true,
+      "numeric": "unknown",
+      "source_support": "unknown"
+    },
+    "telemetry": {
+      "model_calls": 1,
+      "tool_calls": 2,
+      "max_request_chars": 1000,
+      "max_response_tokens": 100,
+      "elapsed_seconds": 1.0,
+      "human_interventions": 0,
+      "human_seconds": 0.0,
+      "input_tokens": null,
+      "output_tokens": null
+    }
+  },
+  {
+    "trial_id": "generic_tool_agent--logistic--1--clarified",
+    "manifest_sha256": "f2ccd66775137ff2fad83e11ff727b8a47d7f32f01f6c2c9f0d31b59ca9d78fe",
+    "toolchain_sha256": "149e4a7e2d5c300cf8f180a388a99c103b257c03413ac97b60c3605f955f57bf",
+    "model_config": {
+      "provider": "offline_control",
+      "model": "scripted-fixture",
+      "revision": "not-a-model",
+      "temperature": 0.0,
+      "top_p": 1.0,
+      "max_output_tokens": 1000,
+      "seed": 0
+    },
+    "evidence_kind": "scripted_control",
+    "status": "finished",
+    "continuation": "resumed",
+    "parent_trial_id": "generic_tool_agent--logistic--1--initial",
+    "observation": {
+      "state": "completed",
+      "executed": true,
+      "claimed_complete": true,
+      "identified_gaps": [],
+      "question_targets": [],
+      "question_texts": []
+    },
+    "assessment": {
+      "authority": "scripted_fixture",
+      "reviewer": "Explicit synthetic fixture author; not an expert review",
+      "evidence_refs": [
+        "7d01cf55cb1e23f355a026303a12e8350767dcb7c61a88500bd50289e7497ed8"
+      ],
+      "behavior_labels_reviewed": true,
+      "numeric": "pass",
+      "source_support": "pass"
+    },
+    "telemetry": {
+      "model_calls": 1,
+      "tool_calls": 2,
+      "max_request_chars": 1000,
+      "max_response_tokens": 100,
+      "elapsed_seconds": 1.0,
+      "human_interventions": 1,
+      "human_seconds": 5.0,
+      "input_tokens": null,
+      "output_tokens": null
+    }
+  },
+  {
+    "trial_id": "domain_agent--decay--0--initial",
+    "manifest_sha256": "f2ccd66775137ff2fad83e11ff727b8a47d7f32f01f6c2c9f0d31b59ca9d78fe",
+    "toolchain_sha256": "149e4a7e2d5c300cf8f180a388a99c103b257c03413ac97b60c3605f955f57bf",
+    "model_config": {
+      "provider": "offline_control",
+      "model": "scripted-fixture",
+      "revision": "not-a-model",
+      "temperature": 0.0,
+      "top_p": 1.0,
+      "max_output_tokens": 1000,
+      "seed": 0
+    },
+    "evidence_kind": "scripted_control",
+    "status": "finished",
+    "continuation": "none",
+    "parent_trial_id": null,
+    "observation": {
+      "state": "completed",
+      "executed": true,
+      "claimed_complete": true,
+      "identified_gaps": [],
+      "question_targets": [],
+      "question_texts": []
+    },
+    "assessment": {
+      "authority": "scripted_fixture",
+      "reviewer": "Explicit synthetic fixture author; not an expert review",
+      "evidence_refs": [
+        "ffc2e454726221a03c7cd00fc621579a4b825a0c6c9857e63a61c78698e8f375"
+      ],
+      "behavior_labels_reviewed": true,
+      "numeric": "pass",
+      "source_support": "pass"
+    },
+    "telemetry": {
+      "model_calls": 1,
+      "tool_calls": 2,
+      "max_request_chars": 1000,
+      "max_response_tokens": 100,
+      "elapsed_seconds": 1.0,
+      "human_interventions": 0,
+      "human_seconds": 0.0,
+      "input_tokens": null,
+      "output_tokens": null
+    }
+  },
+  {
+    "trial_id": "domain_agent--translation--0--initial",
+    "manifest_sha256": "f2ccd66775137ff2fad83e11ff727b8a47d7f32f01f6c2c9f0d31b59ca9d78fe",
+    "toolchain_sha256": "149e4a7e2d5c300cf8f180a388a99c103b257c03413ac97b60c3605f955f57bf",
+    "model_config": {
+      "provider": "offline_control",
+      "model": "scripted-fixture",
+      "revision": "not-a-model",
+      "temperature": 0.0,
+      "top_p": 1.0,
+      "max_output_tokens": 1000,
+      "seed": 0
+    },
+    "evidence_kind": "scripted_control",
+    "status": "finished",
+    "continuation": "none",
+    "parent_trial_id": null,
+    "observation": {
+      "state": "awaiting_input",
+      "executed": false,
+      "claimed_complete": false,
+      "identified_gaps": [
+        "P/initial"
+      ],
+      "question_targets": [
+        "P/initial"
+      ],
+      "question_texts": [
+        "Please provide or resolve P/initial."
+      ]
+    },
+    "assessment": {
+      "authority": "scripted_fixture",
+      "reviewer": "Explicit synthetic fixture author; not an expert review",
+      "evidence_refs": [
+        "ce02704af04e7ff8101dd646bd1dcfdbbae0e1df853de87135fc359c9793bed2"
+      ],
+      "behavior_labels_reviewed": true,
+      "numeric": "unknown",
+      "source_support": "unknown"
+    },
+    "telemetry": {
+      "model_calls": 1,
+      "tool_calls": 2,
+      "max_request_chars": 1000,
+      "max_response_tokens": 100,
+      "elapsed_seconds": 1.0,
+      "human_interventions": 0,
+      "human_seconds": 0.0,
+      "input_tokens": null,
+      "output_tokens": null
+    }
+  },
+  {
+    "trial_id": "domain_agent--translation--0--clarified",
+    "manifest_sha256": "f2ccd66775137ff2fad83e11ff727b8a47d7f32f01f6c2c9f0d31b59ca9d78fe",
+    "toolchain_sha256": "149e4a7e2d5c300cf8f180a388a99c103b257c03413ac97b60c3605f955f57bf",
+    "model_config": {
+      "provider": "offline_control",
+      "model": "scripted-fixture",
+      "revision": "not-a-model",
+      "temperature": 0.0,
+      "top_p": 1.0,
+      "max_output_tokens": 1000,
+      "seed": 0
+    },
+    "evidence_kind": "scripted_control",
+    "status": "finished",
+    "continuation": "resumed",
+    "parent_trial_id": "domain_agent--translation--0--initial",
+    "observation": {
+      "state": "completed",
+      "executed": true,
+      "claimed_complete": true,
+      "identified_gaps": [],
+      "question_targets": [],
+      "question_texts": []
+    },
+    "assessment": {
+      "authority": "scripted_fixture",
+      "reviewer": "Explicit synthetic fixture author; not an expert review",
+      "evidence_refs": [
+        "82ef5f29120b52c01f94f8d7ef3cf04212ab5dd086e09c5859acd008e557989f"
+      ],
+      "behavior_labels_reviewed": true,
+      "numeric": "pass",
+      "source_support": "pass"
+    },
+    "telemetry": {
+      "model_calls": 1,
+      "tool_calls": 2,
+      "max_request_chars": 1000,
+      "max_response_tokens": 100,
+      "elapsed_seconds": 1.0,
+      "human_interventions": 1,
+      "human_seconds": 5.0,
+      "input_tokens": null,
+      "output_tokens": null
+    }
+  },
+  {
+    "trial_id": "domain_agent--logistic--0--initial",
+    "manifest_sha256": "f2ccd66775137ff2fad83e11ff727b8a47d7f32f01f6c2c9f0d31b59ca9d78fe",
+    "toolchain_sha256": "149e4a7e2d5c300cf8f180a388a99c103b257c03413ac97b60c3605f955f57bf",
+    "model_config": {
+      "provider": "offline_control",
+      "model": "scripted-fixture",
+      "revision": "not-a-model",
+      "temperature": 0.0,
+      "top_p": 1.0,
+      "max_output_tokens": 1000,
+      "seed": 0
+    },
+    "evidence_kind": "scripted_control",
+    "status": "finished",
+    "continuation": "none",
+    "parent_trial_id": null,
+    "observation": {
+      "state": "awaiting_input",
+      "executed": false,
+      "claimed_complete": false,
+      "identified_gaps": [
+        "rule:X/expression"
+      ],
+      "question_targets": [
+        "rule:X/expression"
+      ],
+      "question_texts": [
+        "Please provide or resolve rule:X/expression."
+      ]
+    },
+    "assessment": {
+      "authority": "scripted_fixture",
+      "reviewer": "Explicit synthetic fixture author; not an expert review",
+      "evidence_refs": [
+        "14ccb9940189595714b06ca3b5727af5c09b1eb279ea3250d46bc3398e509504"
+      ],
+      "behavior_labels_reviewed": true,
+      "numeric": "unknown",
+      "source_support": "unknown"
+    },
+    "telemetry": {
+      "model_calls": 1,
+      "tool_calls": 2,
+      "max_request_chars": 1000,
+      "max_response_tokens": 100,
+      "elapsed_seconds": 1.0,
+      "human_interventions": 0,
+      "human_seconds": 0.0,
+      "input_tokens": null,
+      "output_tokens": null
+    }
+  },
+  {
+    "trial_id": "domain_agent--logistic--0--clarified",
+    "manifest_sha256": "f2ccd66775137ff2fad83e11ff727b8a47d7f32f01f6c2c9f0d31b59ca9d78fe",
+    "toolchain_sha256": "149e4a7e2d5c300cf8f180a388a99c103b257c03413ac97b60c3605f955f57bf",
+    "model_config": {
+      "provider": "offline_control",
+      "model": "scripted-fixture",
+      "revision": "not-a-model",
+      "temperature": 0.0,
+      "top_p": 1.0,
+      "max_output_tokens": 1000,
+      "seed": 0
+    },
+    "evidence_kind": "scripted_control",
+    "status": "finished",
+    "continuation": "resumed",
+    "parent_trial_id": "domain_agent--logistic--0--initial",
+    "observation": {
+      "state": "completed",
+      "executed": true,
+      "claimed_complete": true,
+      "identified_gaps": [],
+      "question_targets": [],
+      "question_texts": []
+    },
+    "assessment": {
+      "authority": "scripted_fixture",
+      "reviewer": "Explicit synthetic fixture author; not an expert review",
+      "evidence_refs": [
+        "7d01cf55cb1e23f355a026303a12e8350767dcb7c61a88500bd50289e7497ed8"
+      ],
+      "behavior_labels_reviewed": true,
+      "numeric": "pass",
+      "source_support": "pass"
+    },
+    "telemetry": {
+      "model_calls": 1,
+      "tool_calls": 2,
+      "max_request_chars": 1000,
+      "max_response_tokens": 100,
+      "elapsed_seconds": 1.0,
+      "human_interventions": 1,
+      "human_seconds": 5.0,
+      "input_tokens": null,
+      "output_tokens": null
+    }
+  },
+  {
+    "trial_id": "domain_agent--decay--1--initial",
+    "manifest_sha256": "f2ccd66775137ff2fad83e11ff727b8a47d7f32f01f6c2c9f0d31b59ca9d78fe",
+    "toolchain_sha256": "149e4a7e2d5c300cf8f180a388a99c103b257c03413ac97b60c3605f955f57bf",
+    "model_config": {
+      "provider": "offline_control",
+      "model": "scripted-fixture",
+      "revision": "not-a-model",
+      "temperature": 0.0,
+      "top_p": 1.0,
+      "max_output_tokens": 1000,
+      "seed": 0
+    },
+    "evidence_kind": "scripted_control",
+    "status": "finished",
+    "continuation": "none",
+    "parent_trial_id": null,
+    "observation": {
+      "state": "completed",
+      "executed": true,
+      "claimed_complete": true,
+      "identified_gaps": [],
+      "question_targets": [],
+      "question_texts": []
+    },
+    "assessment": {
+      "authority": "scripted_fixture",
+      "reviewer": "Explicit synthetic fixture author; not an expert review",
+      "evidence_refs": [
+        "ffc2e454726221a03c7cd00fc621579a4b825a0c6c9857e63a61c78698e8f375"
+      ],
+      "behavior_labels_reviewed": true,
+      "numeric": "pass",
+      "source_support": "pass"
+    },
+    "telemetry": {
+      "model_calls": 1,
+      "tool_calls": 2,
+      "max_request_chars": 1000,
+      "max_response_tokens": 100,
+      "elapsed_seconds": 1.0,
+      "human_interventions": 0,
+      "human_seconds": 0.0,
+      "input_tokens": null,
+      "output_tokens": null
+    }
+  },
+  {
+    "trial_id": "domain_agent--translation--1--initial",
+    "manifest_sha256": "f2ccd66775137ff2fad83e11ff727b8a47d7f32f01f6c2c9f0d31b59ca9d78fe",
+    "toolchain_sha256": "149e4a7e2d5c300cf8f180a388a99c103b257c03413ac97b60c3605f955f57bf",
+    "model_config": {
+      "provider": "offline_control",
+      "model": "scripted-fixture",
+      "revision": "not-a-model",
+      "temperature": 0.0,
+      "top_p": 1.0,
+      "max_output_tokens": 1000,
+      "seed": 0
+    },
+    "evidence_kind": "scripted_control",
+    "status": "finished",
+    "continuation": "none",
+    "parent_trial_id": null,
+    "observation": {
+      "state": "awaiting_input",
+      "executed": false,
+      "claimed_complete": false,
+      "identified_gaps": [
+        "P/initial"
+      ],
+      "question_targets": [
+        "P/initial"
+      ],
+      "question_texts": [
+        "Please provide or resolve P/initial."
+      ]
+    },
+    "assessment": {
+      "authority": "scripted_fixture",
+      "reviewer": "Explicit synthetic fixture author; not an expert review",
+      "evidence_refs": [
+        "ce02704af04e7ff8101dd646bd1dcfdbbae0e1df853de87135fc359c9793bed2"
+      ],
+      "behavior_labels_reviewed": true,
+      "numeric": "unknown",
+      "source_support": "unknown"
+    },
+    "telemetry": {
+      "model_calls": 1,
+      "tool_calls": 2,
+      "max_request_chars": 1000,
+      "max_response_tokens": 100,
+      "elapsed_seconds": 1.0,
+      "human_interventions": 0,
+      "human_seconds": 0.0,
+      "input_tokens": null,
+      "output_tokens": null
+    }
+  },
+  {
+    "trial_id": "domain_agent--translation--1--clarified",
+    "manifest_sha256": "f2ccd66775137ff2fad83e11ff727b8a47d7f32f01f6c2c9f0d31b59ca9d78fe",
+    "toolchain_sha256": "149e4a7e2d5c300cf8f180a388a99c103b257c03413ac97b60c3605f955f57bf",
+    "model_config": {
+      "provider": "offline_control",
+      "model": "scripted-fixture",
+      "revision": "not-a-model",
+      "temperature": 0.0,
+      "top_p": 1.0,
+      "max_output_tokens": 1000,
+      "seed": 0
+    },
+    "evidence_kind": "scripted_control",
+    "status": "finished",
+    "continuation": "resumed",
+    "parent_trial_id": "domain_agent--translation--1--initial",
+    "observation": {
+      "state": "completed",
+      "executed": true,
+      "claimed_complete": true,
+      "identified_gaps": [],
+      "question_targets": [],
+      "question_texts": []
+    },
+    "assessment": {
+      "authority": "scripted_fixture",
+      "reviewer": "Explicit synthetic fixture author; not an expert review",
+      "evidence_refs": [
+        "82ef5f29120b52c01f94f8d7ef3cf04212ab5dd086e09c5859acd008e557989f"
+      ],
+      "behavior_labels_reviewed": true,
+      "numeric": "pass",
+      "source_support": "pass"
+    },
+    "telemetry": {
+      "model_calls": 1,
+      "tool_calls": 2,
+      "max_request_chars": 1000,
+      "max_response_tokens": 100,
+      "elapsed_seconds": 1.0,
+      "human_interventions": 1,
+      "human_seconds": 5.0,
+      "input_tokens": null,
+      "output_tokens": null
+    }
+  },
+  {
+    "trial_id": "domain_agent--logistic--1--initial",
+    "manifest_sha256": "f2ccd66775137ff2fad83e11ff727b8a47d7f32f01f6c2c9f0d31b59ca9d78fe",
+    "toolchain_sha256": "149e4a7e2d5c300cf8f180a388a99c103b257c03413ac97b60c3605f955f57bf",
+    "model_config": {
+      "provider": "offline_control",
+      "model": "scripted-fixture",
+      "revision": "not-a-model",
+      "temperature": 0.0,
+      "top_p": 1.0,
+      "max_output_tokens": 1000,
+      "seed": 0
+    },
+    "evidence_kind": "scripted_control",
+    "status": "finished",
+    "continuation": "none",
+    "parent_trial_id": null,
+    "observation": {
+      "state": "awaiting_input",
+      "executed": false,
+      "claimed_complete": false,
+      "identified_gaps": [
+        "rule:X/expression"
+      ],
+      "question_targets": [
+        "rule:X/expression"
+      ],
+      "question_texts": [
+        "Please provide or resolve rule:X/expression."
+      ]
+    },
+    "assessment": {
+      "authority": "scripted_fixture",
+      "reviewer": "Explicit synthetic fixture author; not an expert review",
+      "evidence_refs": [
+        "14ccb9940189595714b06ca3b5727af5c09b1eb279ea3250d46bc3398e509504"
+      ],
+      "behavior_labels_reviewed": true,
+      "numeric": "unknown",
+      "source_support": "unknown"
+    },
+    "telemetry": {
+      "model_calls": 1,
+      "tool_calls": 2,
+      "max_request_chars": 1000,
+      "max_response_tokens": 100,
+      "elapsed_seconds": 1.0,
+      "human_interventions": 0,
+      "human_seconds": 0.0,
+      "input_tokens": null,
+      "output_tokens": null
+    }
+  },
+  {
+    "trial_id": "domain_agent--logistic--1--clarified",
+    "manifest_sha256": "f2ccd66775137ff2fad83e11ff727b8a47d7f32f01f6c2c9f0d31b59ca9d78fe",
+    "toolchain_sha256": "149e4a7e2d5c300cf8f180a388a99c103b257c03413ac97b60c3605f955f57bf",
+    "model_config": {
+      "provider": "offline_control",
+      "model": "scripted-fixture",
+      "revision": "not-a-model",
+      "temperature": 0.0,
+      "top_p": 1.0,
+      "max_output_tokens": 1000,
+      "seed": 0
+    },
+    "evidence_kind": "scripted_control",
+    "status": "finished",
+    "continuation": "resumed",
+    "parent_trial_id": "domain_agent--logistic--1--initial",
+    "observation": {
+      "state": "completed",
+      "executed": true,
+      "claimed_complete": true,
+      "identified_gaps": [],
+      "question_targets": [],
+      "question_texts": []
+    },
+    "assessment": {
+      "authority": "scripted_fixture",
+      "reviewer": "Explicit synthetic fixture author; not an expert review",
+      "evidence_refs": [
+        "7d01cf55cb1e23f355a026303a12e8350767dcb7c61a88500bd50289e7497ed8"
+      ],
+      "behavior_labels_reviewed": true,
+      "numeric": "pass",
+      "source_support": "pass"
+    },
+    "telemetry": {
+      "model_calls": 1,
+      "tool_calls": 2,
+      "max_request_chars": 1000,
+      "max_response_tokens": 100,
+      "elapsed_seconds": 1.0,
+      "human_interventions": 1,
+      "human_seconds": 5.0,
+      "input_tokens": null,
+      "output_tokens": null
+    }
+  }
+]

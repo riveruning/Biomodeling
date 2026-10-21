@@ -1,0 +1,28 @@
+{
+  "id": "chatcmpl-bb28c82c-53ce-4bc1-aee5-80faa210e5a4",
+  "created": 1792238259,
+  "model": "qwen3.8-chat",
+  "object": "chat.completion",
+  "choices": [
+    {
+      "finish_reason": "stop",
+      "index": 0,
+      "message": {
+        "content": "{\"action\": \"submit_draft\", \"args\": {\"draft\": {\"id\": \"synthetic_ode\", \"states\": [{\"id\": \"M\", \"initial\": 0.5, \"unit\": \"dimensionless\", \"quantity_kind\": \"variable\", \"nonnegative\": false}], \"parameters\": [{\"id\": \"s\", \"value\": 1.2, \"unit\": \"unknown\", \"origin\": \"analyst\"}, {\"id\": \"d\", \"value\": 0.3, \"unit\": \"unknown\", \"origin\": \"analyst\"}], \"compartment\": {\"id\": \"C\", \"size\": 1, \"unit\": \"dimensionless\"}, \"reactions\": [], \"rate_rules\": [{\"state\": \"M\", \"expression\": \"s-d*M\"}], \"derived\": [], \"time_unit\": \"minutes\"}, \"evidence\": [{\"target\": \"M/initial\", \"source_ref\": \"a350f0c1322f7c821ae6f742080661417ce67944f79ed2abca43a9485d1461c1\", \"page\": 1, \"quote\": \"Initial M = 0.5.\"}, {\"target\": \"s/value\", \"source_ref\": \"a350f0c1322f7c821ae6f742080661417ce67944f79ed2abca43a9485d1461c1\", \"page\": 1, \"quote\": \"Parameter s = 1.2.\"}, {\"target\": \"d/value\", \"source_ref\": \"a350f0c1322f7c821ae6f742080661417ce67944f79ed2abca43a9485d1461c1\", \"page\": 1, \"quote\": \"Parameter d = 0.3.\"}, {\"target\": \"rule:M/expression\", \"source_ref\": \"a350f0c1322f7c821ae6f742080661417ce67944f79ed2abca43a9485d1461c1\", \"page\": 1, \"quote\": \"Equation dM/dt = s-d*M.\"}, {\"target\": \"time_unit\", \"source_ref\": \"a350f0c1322f7c821ae6f742080661417ce67944f79ed2abca43a9485d1461c1\", \"page\": 1, \"quote\": \"Time t is in minutes.\"}, {\"target\": \"C/size\", \"source_ref\": \"a350f0c1322f7c821ae6f742080661417ce67944f79ed2abca43a9485d1461c1\", \"page\": 1, \"quote\": \"The fixed compartment has size 1 dimensionless.\"}], \"mechanism\": \"linear ODE dM/dt = s - d*M\"}, \"reason\": \"Source fully specifies a single ODE with parameters and initial condition.\"}}",
+        "role": "assistant",
+        "provider_specific_fields": {
+          "refusal": null
+        }
+      },
+      "provider_specific_fields": {}
+    }
+  ],
+  "usage": {
+    "completion_tokens": 769,
+    "prompt_tokens": 1211,
+    "total_tokens": 1980,
+    "prompt_tokens_details": {
+      "cached_tokens": 0
+    }
+  }
+}

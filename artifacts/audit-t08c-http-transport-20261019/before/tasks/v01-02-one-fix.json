@@ -1,0 +1,19 @@
+{
+  "schema_version": "1",
+  "id": "v01-02-one-fix",
+  "objective": "精准删除不存在的libsbml.checkUnitConsistency调用。",
+  "context": "pytest目前29passed，首个失败仅在modeling.py第851行。保留已实现的doc.checkConsistency和unit_log，不修改其它语义。",
+  "read_files": [],
+  "write_files": [
+    "src/biomodel_agent/modeling.py"
+  ],
+  "expected_files": [
+    "src/biomodel_agent/modeling.py"
+  ],
+  "instructions": "只read modeling.py第840到870行，删除if model.getNumCompartments() > 0 and not unit_log: libsbml.checkUnitConsistency(model, True)整个3行块（及紧邻误导注释），因为这个全局API不存在且doc.checkConsistency已检查单位。不增加替代假API，不读取其它文件，不整文件重写，只这1处edit后最后文字完成，禁止todo/shell。",
+  "acceptance": [
+    "不存在的API删除",
+    "不改其它逻辑"
+  ],
+  "verification_commands": []
+}

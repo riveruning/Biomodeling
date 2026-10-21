@@ -1,0 +1,24 @@
+{
+  "status": "ready",
+  "parameters": [
+    {"id": "s", "value": 1.0, "unit": "min^-1"},
+    {"id": "K", "value": 1.0, "unit": "dimensionless"},
+    {"id": "dr", "value": 0.4, "unit": "min^-1"},
+    {"id": "kp", "value": 0.7, "unit": "min^-1"},
+    {"id": "dp", "value": 0.3, "unit": "min^-1"}
+  ],
+  "states": [
+    {"id": "R", "initial": 0.2},
+    {"id": "P", "initial": 0.1}
+  ],
+  "equations": [
+    {"state": "R", "expression": "s/(1+(P/K)**2)-dr*R"},
+    {"state": "P", "expression": "kp*R-dp*P"}
+  ],
+  "questions": [],
+  "limitations": [
+    "The author clarification selects the exponent-two R equation and supersedes the earlier unresolved alternatives.",
+    "Parameter units are inferred dimensionally from dimensionless states and time in minutes.",
+    "Numerical simulation code has not been executed during this task."
+  ]
+}

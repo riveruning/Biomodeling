@@ -1,0 +1,1584 @@
+{
+  "protocol": "agent_evaluation_v1",
+  "status": "scripted_protocol_control",
+  "evidence_kind": "scripted_control",
+  "manifest_sha256": "f2ccd66775137ff2fad83e11ff727b8a47d7f32f01f6c2c9f0d31b59ca9d78fe",
+  "audit": {
+    "cases": 3,
+    "families": 1,
+    "planned_trials": 30,
+    "real_papers": 0,
+    "independent_review": "pending",
+    "semantic_support": "unknown"
+  },
+  "summary": {
+    "fixed_workflow": {
+      "planned_trials": 10,
+      "missing_trials": 0,
+      "invalid_trials": 0,
+      "failure_causes": {
+        "finished": 10
+      },
+      "budget_exceeded_trials": 0,
+      "budget_unknown_trials": 10,
+      "correct_completion": {
+        "numerator": 0,
+        "denominator": 6,
+        "unknown": 0,
+        "rate": 0.0
+      },
+      "within_budget_completion": {
+        "numerator": 0,
+        "denominator": 6,
+        "unknown": 0,
+        "rate": 0.0
+      },
+      "gap_identification": {
+        "numerator": 0,
+        "denominator": 4,
+        "unknown": 4,
+        "rate": 0.0
+      },
+      "targeted_question": {
+        "numerator": 0,
+        "denominator": 4,
+        "unknown": 4,
+        "rate": 0.0
+      },
+      "unsupported_execution": {
+        "numerator": 0,
+        "denominator": 10,
+        "unknown": 4,
+        "rate": 0.0
+      },
+      "unsupported_completion": {
+        "numerator": 0,
+        "denominator": 10,
+        "unknown": 4,
+        "rate": 0.0
+      },
+      "overblocking": {
+        "numerator": 2,
+        "denominator": 6,
+        "unknown": 0,
+        "rate": 0.3333333333333333
+      },
+      "clarification_recovery": {
+        "numerator": 0,
+        "denominator": 4,
+        "unknown": 0,
+        "rate": 0.0
+      },
+      "model_calls": {
+        "known_trials": 10,
+        "reported_subtotal": 10,
+        "total_if_complete": 10
+      },
+      "tool_calls": {
+        "known_trials": 10,
+        "reported_subtotal": 28,
+        "total_if_complete": 28
+      },
+      "elapsed_seconds": {
+        "known_trials": 10,
+        "reported_subtotal": 8.667660233993956,
+        "total_if_complete": 8.667660233993956
+      },
+      "human_interventions": {
+        "known_trials": 10,
+        "reported_subtotal": 0,
+        "total_if_complete": 0
+      },
+      "human_seconds": {
+        "known_trials": 10,
+        "reported_subtotal": 0.0,
+        "total_if_complete": 0.0
+      },
+      "input_tokens": {
+        "known_trials": 0,
+        "reported_subtotal": null,
+        "total_if_complete": null
+      },
+      "output_tokens": {
+        "known_trials": 0,
+        "reported_subtotal": null,
+        "total_if_complete": null
+      }
+    },
+    "generic_tool_agent": {
+      "planned_trials": 10,
+      "missing_trials": 0,
+      "invalid_trials": 0,
+      "failure_causes": {
+        "finished": 10
+      },
+      "budget_exceeded_trials": 0,
+      "budget_unknown_trials": 10,
+      "correct_completion": {
+        "numerator": 0,
+        "denominator": 6,
+        "unknown": 0,
+        "rate": 0.0
+      },
+      "within_budget_completion": {
+        "numerator": 0,
+        "denominator": 6,
+        "unknown": 0,
+        "rate": 0.0
+      },
+      "gap_identification": {
+        "numerator": 0,
+        "denominator": 4,
+        "unknown": 4,
+        "rate": 0.0
+      },
+      "targeted_question": {
+        "numerator": 0,
+        "denominator": 4,
+        "unknown": 4,
+        "rate": 0.0
+      },
+      "unsupported_execution": {
+        "numerator": 0,
+        "denominator": 10,
+        "unknown": 4,
+        "rate": 0.0
+      },
+      "unsupported_completion": {
+        "numerator": 0,
+        "denominator": 10,
+        "unknown": 4,
+        "rate": 0.0
+      },
+      "overblocking": {
+        "numerator": 2,
+        "denominator": 6,
+        "unknown": 0,
+        "rate": 0.3333333333333333
+      },
+      "clarification_recovery": {
+        "numerator": 0,
+        "denominator": 4,
+        "unknown": 0,
+        "rate": 0.0
+      },
+      "model_calls": {
+        "known_trials": 10,
+        "reported_subtotal": 24,
+        "total_if_complete": 24
+      },
+      "tool_calls": {
+        "known_trials": 10,
+        "reported_subtotal": 20,
+        "total_if_complete": 20
+      },
+      "elapsed_seconds": {
+        "known_trials": 10,
+        "reported_subtotal": 9.752673903996765,
+        "total_if_complete": 9.752673903996765
+      },
+      "human_interventions": {
+        "known_trials": 10,
+        "reported_subtotal": 0,
+        "total_if_complete": 0
+      },
+      "human_seconds": {
+        "known_trials": 10,
+        "reported_subtotal": 0.0,
+        "total_if_complete": 0.0
+      },
+      "input_tokens": {
+        "known_trials": 0,
+        "reported_subtotal": null,
+        "total_if_complete": null
+      },
+      "output_tokens": {
+        "known_trials": 0,
+        "reported_subtotal": null,
+        "total_if_complete": null
+      }
+    },
+    "domain_agent": {
+      "planned_trials": 10,
+      "missing_trials": 0,
+      "invalid_trials": 0,
+      "failure_causes": {
+        "finished": 10
+      },
+      "budget_exceeded_trials": 0,
+      "budget_unknown_trials": 10,
+      "correct_completion": {
+        "numerator": 0,
+        "denominator": 6,
+        "unknown": 0,
+        "rate": 0.0
+      },
+      "within_budget_completion": {
+        "numerator": 0,
+        "denominator": 6,
+        "unknown": 0,
+        "rate": 0.0
+      },
+      "gap_identification": {
+        "numerator": 0,
+        "denominator": 4,
+        "unknown": 4,
+        "rate": 0.0
+      },
+      "targeted_question": {
+        "numerator": 0,
+        "denominator": 4,
+        "unknown": 4,
+        "rate": 0.0
+      },
+      "unsupported_execution": {
+        "numerator": 0,
+        "denominator": 10,
+        "unknown": 4,
+        "rate": 0.0
+      },
+      "unsupported_completion": {
+        "numerator": 0,
+        "denominator": 10,
+        "unknown": 4,
+        "rate": 0.0
+      },
+      "overblocking": {
+        "numerator": 2,
+        "denominator": 6,
+        "unknown": 0,
+        "rate": 0.3333333333333333
+      },
+      "clarification_recovery": {
+        "numerator": 0,
+        "denominator": 4,
+        "unknown": 0,
+        "rate": 0.0
+      },
+      "model_calls": {
+        "known_trials": 10,
+        "reported_subtotal": 24,
+        "total_if_complete": 24
+      },
+      "tool_calls": {
+        "known_trials": 10,
+        "reported_subtotal": 20,
+        "total_if_complete": 20
+      },
+      "elapsed_seconds": {
+        "known_trials": 10,
+        "reported_subtotal": 10.729570705007063,
+        "total_if_complete": 10.729570705007063
+      },
+      "human_interventions": {
+        "known_trials": 10,
+        "reported_subtotal": 0,
+        "total_if_complete": 0
+      },
+      "human_seconds": {
+        "known_trials": 10,
+        "reported_subtotal": 0.0,
+        "total_if_complete": 0.0
+      },
+      "input_tokens": {
+        "known_trials": 0,
+        "reported_subtotal": null,
+        "total_if_complete": null
+      },
+      "output_tokens": {
+        "known_trials": 0,
+        "reported_subtotal": null,
+        "total_if_complete": null
+      }
+    }
+  },
+  "by_family": {
+    "fixed_workflow": {
+      "shared-synthetic-reliability-template": {
+        "planned_trials": 10,
+        "missing_trials": 0,
+        "invalid_trials": 0,
+        "failure_causes": {
+          "finished": 10
+        },
+        "budget_exceeded_trials": 0,
+        "budget_unknown_trials": 10,
+        "correct_completion": {
+          "numerator": 0,
+          "denominator": 6,
+          "unknown": 0,
+          "rate": 0.0
+        },
+        "within_budget_completion": {
+          "numerator": 0,
+          "denominator": 6,
+          "unknown": 0,
+          "rate": 0.0
+        },
+        "gap_identification": {
+          "numerator": 0,
+          "denominator": 4,
+          "unknown": 4,
+          "rate": 0.0
+        },
+        "targeted_question": {
+          "numerator": 0,
+          "denominator": 4,
+          "unknown": 4,
+          "rate": 0.0
+        },
+        "unsupported_execution": {
+          "numerator": 0,
+          "denominator": 10,
+          "unknown": 4,
+          "rate": 0.0
+        },
+        "unsupported_completion": {
+          "numerator": 0,
+          "denominator": 10,
+          "unknown": 4,
+          "rate": 0.0
+        },
+        "overblocking": {
+          "numerator": 2,
+          "denominator": 6,
+          "unknown": 0,
+          "rate": 0.3333333333333333
+        },
+        "clarification_recovery": {
+          "numerator": 0,
+          "denominator": 4,
+          "unknown": 0,
+          "rate": 0.0
+        },
+        "model_calls": {
+          "known_trials": 10,
+          "reported_subtotal": 10,
+          "total_if_complete": 10
+        },
+        "tool_calls": {
+          "known_trials": 10,
+          "reported_subtotal": 28,
+          "total_if_complete": 28
+        },
+        "elapsed_seconds": {
+          "known_trials": 10,
+          "reported_subtotal": 8.667660233993956,
+          "total_if_complete": 8.667660233993956
+        },
+        "human_interventions": {
+          "known_trials": 10,
+          "reported_subtotal": 0,
+          "total_if_complete": 0
+        },
+        "human_seconds": {
+          "known_trials": 10,
+          "reported_subtotal": 0.0,
+          "total_if_complete": 0.0
+        },
+        "input_tokens": {
+          "known_trials": 0,
+          "reported_subtotal": null,
+          "total_if_complete": null
+        },
+        "output_tokens": {
+          "known_trials": 0,
+          "reported_subtotal": null,
+          "total_if_complete": null
+        }
+      }
+    },
+    "generic_tool_agent": {
+      "shared-synthetic-reliability-template": {
+        "planned_trials": 10,
+        "missing_trials": 0,
+        "invalid_trials": 0,
+        "failure_causes": {
+          "finished": 10
+        },
+        "budget_exceeded_trials": 0,
+        "budget_unknown_trials": 10,
+        "correct_completion": {
+          "numerator": 0,
+          "denominator": 6,
+          "unknown": 0,
+          "rate": 0.0
+        },
+        "within_budget_completion": {
+          "numerator": 0,
+          "denominator": 6,
+          "unknown": 0,
+          "rate": 0.0
+        },
+        "gap_identification": {
+          "numerator": 0,
+          "denominator": 4,
+          "unknown": 4,
+          "rate": 0.0
+        },
+        "targeted_question": {
+          "numerator": 0,
+          "denominator": 4,
+          "unknown": 4,
+          "rate": 0.0
+        },
+        "unsupported_execution": {
+          "numerator": 0,
+          "denominator": 10,
+          "unknown": 4,
+          "rate": 0.0
+        },
+        "unsupported_completion": {
+          "numerator": 0,
+          "denominator": 10,
+          "unknown": 4,
+          "rate": 0.0
+        },
+        "overblocking": {
+          "numerator": 2,
+          "denominator": 6,
+          "unknown": 0,
+          "rate": 0.3333333333333333
+        },
+        "clarification_recovery": {
+          "numerator": 0,
+          "denominator": 4,
+          "unknown": 0,
+          "rate": 0.0
+        },
+        "model_calls": {
+          "known_trials": 10,
+          "reported_subtotal": 24,
+          "total_if_complete": 24
+        },
+        "tool_calls": {
+          "known_trials": 10,
+          "reported_subtotal": 20,
+          "total_if_complete": 20
+        },
+        "elapsed_seconds": {
+          "known_trials": 10,
+          "reported_subtotal": 9.752673903996765,
+          "total_if_complete": 9.752673903996765
+        },
+        "human_interventions": {
+          "known_trials": 10,
+          "reported_subtotal": 0,
+          "total_if_complete": 0
+        },
+        "human_seconds": {
+          "known_trials": 10,
+          "reported_subtotal": 0.0,
+          "total_if_complete": 0.0
+        },
+        "input_tokens": {
+          "known_trials": 0,
+          "reported_subtotal": null,
+          "total_if_complete": null
+        },
+        "output_tokens": {
+          "known_trials": 0,
+          "reported_subtotal": null,
+          "total_if_complete": null
+        }
+      }
+    },
+    "domain_agent": {
+      "shared-synthetic-reliability-template": {
+        "planned_trials": 10,
+        "missing_trials": 0,
+        "invalid_trials": 0,
+        "failure_causes": {
+          "finished": 10
+        },
+        "budget_exceeded_trials": 0,
+        "budget_unknown_trials": 10,
+        "correct_completion": {
+          "numerator": 0,
+          "denominator": 6,
+          "unknown": 0,
+          "rate": 0.0
+        },
+        "within_budget_completion": {
+          "numerator": 0,
+          "denominator": 6,
+          "unknown": 0,
+          "rate": 0.0
+        },
+        "gap_identification": {
+          "numerator": 0,
+          "denominator": 4,
+          "unknown": 4,
+          "rate": 0.0
+        },
+        "targeted_question": {
+          "numerator": 0,
+          "denominator": 4,
+          "unknown": 4,
+          "rate": 0.0
+        },
+        "unsupported_execution": {
+          "numerator": 0,
+          "denominator": 10,
+          "unknown": 4,
+          "rate": 0.0
+        },
+        "unsupported_completion": {
+          "numerator": 0,
+          "denominator": 10,
+          "unknown": 4,
+          "rate": 0.0
+        },
+        "overblocking": {
+          "numerator": 2,
+          "denominator": 6,
+          "unknown": 0,
+          "rate": 0.3333333333333333
+        },
+        "clarification_recovery": {
+          "numerator": 0,
+          "denominator": 4,
+          "unknown": 0,
+          "rate": 0.0
+        },
+        "model_calls": {
+          "known_trials": 10,
+          "reported_subtotal": 24,
+          "total_if_complete": 24
+        },
+        "tool_calls": {
+          "known_trials": 10,
+          "reported_subtotal": 20,
+          "total_if_complete": 20
+        },
+        "elapsed_seconds": {
+          "known_trials": 10,
+          "reported_subtotal": 10.729570705007063,
+          "total_if_complete": 10.729570705007063
+        },
+        "human_interventions": {
+          "known_trials": 10,
+          "reported_subtotal": 0,
+          "total_if_complete": 0
+        },
+        "human_seconds": {
+          "known_trials": 10,
+          "reported_subtotal": 0.0,
+          "total_if_complete": 0.0
+        },
+        "input_tokens": {
+          "known_trials": 0,
+          "reported_subtotal": null,
+          "total_if_complete": null
+        },
+        "output_tokens": {
+          "known_trials": 0,
+          "reported_subtotal": null,
+          "total_if_complete": null
+        }
+      }
+    }
+  },
+  "rows": [
+    {
+      "id": "fixed_workflow--decay--0--initial",
+      "workflow": "fixed_workflow",
+      "case_id": "decay",
+      "repeat": 0,
+      "phase": "initial",
+      "parent_trial_id": null,
+      "status": "finished",
+      "error": null,
+      "budget_status": "unknown",
+      "metrics": {
+        "correct_completion": false,
+        "within_budget_completion": false,
+        "gap_identification": "not_applicable",
+        "targeted_question": "not_applicable",
+        "unsupported_execution": null,
+        "unsupported_completion": null,
+        "overblocking": false,
+        "clarification_recovery": "not_applicable"
+      },
+      "telemetry": {
+        "model_calls": 1,
+        "tool_calls": 4,
+        "max_request_chars": 2454,
+        "max_response_tokens": null,
+        "elapsed_seconds": 1.8901347520004492,
+        "human_interventions": 0,
+        "human_seconds": 0.0,
+        "input_tokens": null,
+        "output_tokens": null
+      },
+      "record_sha256": "4aa61e4385fc78820213355d8ca1671883e059a55e98eed8004db00afc78aac2"
+    },
+    {
+      "id": "fixed_workflow--translation--0--initial",
+      "workflow": "fixed_workflow",
+      "case_id": "translation",
+      "repeat": 0,
+      "phase": "initial",
+      "parent_trial_id": null,
+      "status": "finished",
+      "error": null,
+      "budget_status": "unknown",
+      "metrics": {
+        "correct_completion": "not_applicable",
+        "within_budget_completion": "not_applicable",
+        "gap_identification": null,
+        "targeted_question": null,
+        "unsupported_execution": false,
+        "unsupported_completion": false,
+        "overblocking": "not_applicable",
+        "clarification_recovery": "not_applicable"
+      },
+      "telemetry": {
+        "model_calls": 1,
+        "tool_calls": 1,
+        "max_request_chars": 2581,
+        "max_response_tokens": null,
+        "elapsed_seconds": 0.138783718997729,
+        "human_interventions": 0,
+        "human_seconds": 0.0,
+        "input_tokens": null,
+        "output_tokens": null
+      },
+      "record_sha256": "cbd0f2f3e393fa0305f52c7e5d8ec84c01ca2eac3f5ecc988f1d8021dac91790"
+    },
+    {
+      "id": "fixed_workflow--translation--0--clarified",
+      "workflow": "fixed_workflow",
+      "case_id": "translation",
+      "repeat": 0,
+      "phase": "clarified",
+      "parent_trial_id": "fixed_workflow--translation--0--initial",
+      "status": "finished",
+      "error": null,
+      "budget_status": "unknown",
+      "metrics": {
+        "correct_completion": false,
+        "within_budget_completion": false,
+        "gap_identification": "not_applicable",
+        "targeted_question": "not_applicable",
+        "unsupported_execution": null,
+        "unsupported_completion": null,
+        "overblocking": false,
+        "clarification_recovery": false
+      },
+      "telemetry": {
+        "model_calls": 1,
+        "tool_calls": 5,
+        "max_request_chars": 4303,
+        "max_response_tokens": null,
+        "elapsed_seconds": 1.9737419160010177,
+        "human_interventions": 0,
+        "human_seconds": 0.0,
+        "input_tokens": null,
+        "output_tokens": null
+      },
+      "record_sha256": "c6bdfba5162cabae17c421917620b8674a089501851190cdb20aa799e466f855"
+    },
+    {
+      "id": "fixed_workflow--logistic--0--initial",
+      "workflow": "fixed_workflow",
+      "case_id": "logistic",
+      "repeat": 0,
+      "phase": "initial",
+      "parent_trial_id": null,
+      "status": "finished",
+      "error": null,
+      "budget_status": "unknown",
+      "metrics": {
+        "correct_completion": "not_applicable",
+        "within_budget_completion": "not_applicable",
+        "gap_identification": null,
+        "targeted_question": null,
+        "unsupported_execution": false,
+        "unsupported_completion": false,
+        "overblocking": "not_applicable",
+        "clarification_recovery": "not_applicable"
+      },
+      "telemetry": {
+        "model_calls": 1,
+        "tool_calls": 1,
+        "max_request_chars": 2592,
+        "max_response_tokens": null,
+        "elapsed_seconds": 0.14352630999928806,
+        "human_interventions": 0,
+        "human_seconds": 0.0,
+        "input_tokens": null,
+        "output_tokens": null
+      },
+      "record_sha256": "828fa4f1b94abe9535c2055c2c4116c2f37b53195943851d835dd961dd54c550"
+    },
+    {
+      "id": "fixed_workflow--logistic--0--clarified",
+      "workflow": "fixed_workflow",
+      "case_id": "logistic",
+      "repeat": 0,
+      "phase": "clarified",
+      "parent_trial_id": "fixed_workflow--logistic--0--initial",
+      "status": "finished",
+      "error": null,
+      "budget_status": "unknown",
+      "metrics": {
+        "correct_completion": false,
+        "within_budget_completion": false,
+        "gap_identification": "not_applicable",
+        "targeted_question": "not_applicable",
+        "unsupported_execution": false,
+        "unsupported_completion": false,
+        "overblocking": true,
+        "clarification_recovery": false
+      },
+      "telemetry": {
+        "model_calls": 1,
+        "tool_calls": 3,
+        "max_request_chars": 4528,
+        "max_response_tokens": null,
+        "elapsed_seconds": 0.2438929459967767,
+        "human_interventions": 0,
+        "human_seconds": 0.0,
+        "input_tokens": null,
+        "output_tokens": null
+      },
+      "record_sha256": "ca4648d9d17a5e0704311c2a4b43449fc5cd659ff70c505d8d295e069c44a550"
+    },
+    {
+      "id": "fixed_workflow--decay--1--initial",
+      "workflow": "fixed_workflow",
+      "case_id": "decay",
+      "repeat": 1,
+      "phase": "initial",
+      "parent_trial_id": null,
+      "status": "finished",
+      "error": null,
+      "budget_status": "unknown",
+      "metrics": {
+        "correct_completion": false,
+        "within_budget_completion": false,
+        "gap_identification": "not_applicable",
+        "targeted_question": "not_applicable",
+        "unsupported_execution": null,
+        "unsupported_completion": null,
+        "overblocking": false,
+        "clarification_recovery": "not_applicable"
+      },
+      "telemetry": {
+        "model_calls": 1,
+        "tool_calls": 4,
+        "max_request_chars": 2454,
+        "max_response_tokens": null,
+        "elapsed_seconds": 1.712097948002338,
+        "human_interventions": 0,
+        "human_seconds": 0.0,
+        "input_tokens": null,
+        "output_tokens": null
+      },
+      "record_sha256": "73d1a8075dc67f79b3614c4bc74318a4c696327422fe41b02e5a458ad3f3cd66"
+    },
+    {
+      "id": "fixed_workflow--translation--1--initial",
+      "workflow": "fixed_workflow",
+      "case_id": "translation",
+      "repeat": 1,
+      "phase": "initial",
+      "parent_trial_id": null,
+      "status": "finished",
+      "error": null,
+      "budget_status": "unknown",
+      "metrics": {
+        "correct_completion": "not_applicable",
+        "within_budget_completion": "not_applicable",
+        "gap_identification": null,
+        "targeted_question": null,
+        "unsupported_execution": false,
+        "unsupported_completion": false,
+        "overblocking": "not_applicable",
+        "clarification_recovery": "not_applicable"
+      },
+      "telemetry": {
+        "model_calls": 1,
+        "tool_calls": 1,
+        "max_request_chars": 2581,
+        "max_response_tokens": null,
+        "elapsed_seconds": 0.15001868499530246,
+        "human_interventions": 0,
+        "human_seconds": 0.0,
+        "input_tokens": null,
+        "output_tokens": null
+      },
+      "record_sha256": "f9f0e04a039f69d8b263c9d99bcd2dfa52a262ff5357e9108d5fa81e55e30329"
+    },
+    {
+      "id": "fixed_workflow--translation--1--clarified",
+      "workflow": "fixed_workflow",
+      "case_id": "translation",
+      "repeat": 1,
+      "phase": "clarified",
+      "parent_trial_id": "fixed_workflow--translation--1--initial",
+      "status": "finished",
+      "error": null,
+      "budget_status": "unknown",
+      "metrics": {
+        "correct_completion": false,
+        "within_budget_completion": false,
+        "gap_identification": "not_applicable",
+        "targeted_question": "not_applicable",
+        "unsupported_execution": null,
+        "unsupported_completion": null,
+        "overblocking": false,
+        "clarification_recovery": false
+      },
+      "telemetry": {
+        "model_calls": 1,
+        "tool_calls": 5,
+        "max_request_chars": 4303,
+        "max_response_tokens": null,
+        "elapsed_seconds": 1.9743273770000087,
+        "human_interventions": 0,
+        "human_seconds": 0.0,
+        "input_tokens": null,
+        "output_tokens": null
+      },
+      "record_sha256": "0f5c54340e9272b8e788a74978224563e81ebf130e176380458153b5cd4bc413"
+    },
+    {
+      "id": "fixed_workflow--logistic--1--initial",
+      "workflow": "fixed_workflow",
+      "case_id": "logistic",
+      "repeat": 1,
+      "phase": "initial",
+      "parent_trial_id": null,
+      "status": "finished",
+      "error": null,
+      "budget_status": "unknown",
+      "metrics": {
+        "correct_completion": "not_applicable",
+        "within_budget_completion": "not_applicable",
+        "gap_identification": null,
+        "targeted_question": null,
+        "unsupported_execution": false,
+        "unsupported_completion": false,
+        "overblocking": "not_applicable",
+        "clarification_recovery": "not_applicable"
+      },
+      "telemetry": {
+        "model_calls": 1,
+        "tool_calls": 1,
+        "max_request_chars": 2592,
+        "max_response_tokens": null,
+        "elapsed_seconds": 0.17788832500082208,
+        "human_interventions": 0,
+        "human_seconds": 0.0,
+        "input_tokens": null,
+        "output_tokens": null
+      },
+      "record_sha256": "47861d46d85ccdff84625ba08fe6671d89257c5ddc9b375ed4029f6e8d30179f"
+    },
+    {
+      "id": "fixed_workflow--logistic--1--clarified",
+      "workflow": "fixed_workflow",
+      "case_id": "logistic",
+      "repeat": 1,
+      "phase": "clarified",
+      "parent_trial_id": "fixed_workflow--logistic--1--initial",
+      "status": "finished",
+      "error": null,
+      "budget_status": "unknown",
+      "metrics": {
+        "correct_completion": false,
+        "within_budget_completion": false,
+        "gap_identification": "not_applicable",
+        "targeted_question": "not_applicable",
+        "unsupported_execution": false,
+        "unsupported_completion": false,
+        "overblocking": true,
+        "clarification_recovery": false
+      },
+      "telemetry": {
+        "model_calls": 1,
+        "tool_calls": 3,
+        "max_request_chars": 4528,
+        "max_response_tokens": null,
+        "elapsed_seconds": 0.2632482560002245,
+        "human_interventions": 0,
+        "human_seconds": 0.0,
+        "input_tokens": null,
+        "output_tokens": null
+      },
+      "record_sha256": "303e56243e293d3a062497027d39c4bc14f88bfe16f18eef537462eb654def3d"
+    },
+    {
+      "id": "generic_tool_agent--decay--0--initial",
+      "workflow": "generic_tool_agent",
+      "case_id": "decay",
+      "repeat": 0,
+      "phase": "initial",
+      "parent_trial_id": null,
+      "status": "finished",
+      "error": null,
+      "budget_status": "unknown",
+      "metrics": {
+        "correct_completion": false,
+        "within_budget_completion": false,
+        "gap_identification": "not_applicable",
+        "targeted_question": "not_applicable",
+        "unsupported_execution": null,
+        "unsupported_completion": null,
+        "overblocking": false,
+        "clarification_recovery": "not_applicable"
+      },
+      "telemetry": {
+        "model_calls": 4,
+        "tool_calls": 4,
+        "max_request_chars": 4801,
+        "max_response_tokens": null,
+        "elapsed_seconds": 2.0600845990047674,
+        "human_interventions": 0,
+        "human_seconds": 0.0,
+        "input_tokens": null,
+        "output_tokens": null
+      },
+      "record_sha256": "28be5d261f804171603ebe18e73bdbc36e9f5c1123a2e15b51524d7f9f3094a2"
+    },
+    {
+      "id": "generic_tool_agent--translation--0--initial",
+      "workflow": "generic_tool_agent",
+      "case_id": "translation",
+      "repeat": 0,
+      "phase": "initial",
+      "parent_trial_id": null,
+      "status": "finished",
+      "error": null,
+      "budget_status": "unknown",
+      "metrics": {
+        "correct_completion": "not_applicable",
+        "within_budget_completion": "not_applicable",
+        "gap_identification": null,
+        "targeted_question": null,
+        "unsupported_execution": false,
+        "unsupported_completion": false,
+        "overblocking": "not_applicable",
+        "clarification_recovery": "not_applicable"
+      },
+      "telemetry": {
+        "model_calls": 2,
+        "tool_calls": 1,
+        "max_request_chars": 2683,
+        "max_response_tokens": null,
+        "elapsed_seconds": 0.2533548730061739,
+        "human_interventions": 0,
+        "human_seconds": 0.0,
+        "input_tokens": null,
+        "output_tokens": null
+      },
+      "record_sha256": "894d1d5086d5379c2badb779052cbbf8429fdf29e6bf1d54bae5cc1ad6f48cb4"
+    },
+    {
+      "id": "generic_tool_agent--translation--0--clarified",
+      "workflow": "generic_tool_agent",
+      "case_id": "translation",
+      "repeat": 0,
+      "phase": "clarified",
+      "parent_trial_id": "generic_tool_agent--translation--0--initial",
+      "status": "finished",
+      "error": null,
+      "budget_status": "unknown",
+      "metrics": {
+        "correct_completion": false,
+        "within_budget_completion": false,
+        "gap_identification": "not_applicable",
+        "targeted_question": "not_applicable",
+        "unsupported_execution": null,
+        "unsupported_completion": null,
+        "overblocking": false,
+        "clarification_recovery": false
+      },
+      "telemetry": {
+        "model_calls": 3,
+        "tool_calls": 3,
+        "max_request_chars": 6994,
+        "max_response_tokens": null,
+        "elapsed_seconds": 1.9753173099961714,
+        "human_interventions": 0,
+        "human_seconds": 0.0,
+        "input_tokens": null,
+        "output_tokens": null
+      },
+      "record_sha256": "fa96d2cf7c1ac1cdf3742acac7b31a04da5d0538b69af9f7227398c29e660335"
+    },
+    {
+      "id": "generic_tool_agent--logistic--0--initial",
+      "workflow": "generic_tool_agent",
+      "case_id": "logistic",
+      "repeat": 0,
+      "phase": "initial",
+      "parent_trial_id": null,
+      "status": "finished",
+      "error": null,
+      "budget_status": "unknown",
+      "metrics": {
+        "correct_completion": "not_applicable",
+        "within_budget_completion": "not_applicable",
+        "gap_identification": null,
+        "targeted_question": null,
+        "unsupported_execution": false,
+        "unsupported_completion": false,
+        "overblocking": "not_applicable",
+        "clarification_recovery": "not_applicable"
+      },
+      "telemetry": {
+        "model_calls": 2,
+        "tool_calls": 1,
+        "max_request_chars": 2694,
+        "max_response_tokens": null,
+        "elapsed_seconds": 0.2730150529969251,
+        "human_interventions": 0,
+        "human_seconds": 0.0,
+        "input_tokens": null,
+        "output_tokens": null
+      },
+      "record_sha256": "f72d7ecf7c39ed8e8d61931600414f303a2139c37a8e39198f9172bdb972e79e"
+    },
+    {
+      "id": "generic_tool_agent--logistic--0--clarified",
+      "workflow": "generic_tool_agent",
+      "case_id": "logistic",
+      "repeat": 0,
+      "phase": "clarified",
+      "parent_trial_id": "generic_tool_agent--logistic--0--initial",
+      "status": "finished",
+      "error": null,
+      "budget_status": "unknown",
+      "metrics": {
+        "correct_completion": false,
+        "within_budget_completion": false,
+        "gap_identification": "not_applicable",
+        "targeted_question": "not_applicable",
+        "unsupported_execution": false,
+        "unsupported_completion": false,
+        "overblocking": true,
+        "clarification_recovery": false
+      },
+      "telemetry": {
+        "model_calls": 1,
+        "tool_calls": 1,
+        "max_request_chars": 3632,
+        "max_response_tokens": null,
+        "elapsed_seconds": 0.20397393799794372,
+        "human_interventions": 0,
+        "human_seconds": 0.0,
+        "input_tokens": null,
+        "output_tokens": null
+      },
+      "record_sha256": "f4d547a1e5cf7c688fd9747b6c3e3beb8ad4bc8ebc8c6ee8e67ef39d254106c1"
+    },
+    {
+      "id": "generic_tool_agent--decay--1--initial",
+      "workflow": "generic_tool_agent",
+      "case_id": "decay",
+      "repeat": 1,
+      "phase": "initial",
+      "parent_trial_id": null,
+      "status": "finished",
+      "error": null,
+      "budget_status": "unknown",
+      "metrics": {
+        "correct_completion": false,
+        "within_budget_completion": false,
+        "gap_identification": "not_applicable",
+        "targeted_question": "not_applicable",
+        "unsupported_execution": null,
+        "unsupported_completion": null,
+        "overblocking": false,
+        "clarification_recovery": "not_applicable"
+      },
+      "telemetry": {
+        "model_calls": 4,
+        "tool_calls": 4,
+        "max_request_chars": 4801,
+        "max_response_tokens": null,
+        "elapsed_seconds": 2.1426762260016403,
+        "human_interventions": 0,
+        "human_seconds": 0.0,
+        "input_tokens": null,
+        "output_tokens": null
+      },
+      "record_sha256": "3c596aa33b6feca580699eb96b6feb9d0f3a9bdcac0f6d3abcab6b33efd1ff26"
+    },
+    {
+      "id": "generic_tool_agent--translation--1--initial",
+      "workflow": "generic_tool_agent",
+      "case_id": "translation",
+      "repeat": 1,
+      "phase": "initial",
+      "parent_trial_id": null,
+      "status": "finished",
+      "error": null,
+      "budget_status": "unknown",
+      "metrics": {
+        "correct_completion": "not_applicable",
+        "within_budget_completion": "not_applicable",
+        "gap_identification": null,
+        "targeted_question": null,
+        "unsupported_execution": false,
+        "unsupported_completion": false,
+        "overblocking": "not_applicable",
+        "clarification_recovery": "not_applicable"
+      },
+      "telemetry": {
+        "model_calls": 2,
+        "tool_calls": 1,
+        "max_request_chars": 2683,
+        "max_response_tokens": null,
+        "elapsed_seconds": 0.23543763600173406,
+        "human_interventions": 0,
+        "human_seconds": 0.0,
+        "input_tokens": null,
+        "output_tokens": null
+      },
+      "record_sha256": "a499b82bc3487b8cf449ac95891bf86c43866214a0a0638ed95df953d10d8b23"
+    },
+    {
+      "id": "generic_tool_agent--translation--1--clarified",
+      "workflow": "generic_tool_agent",
+      "case_id": "translation",
+      "repeat": 1,
+      "phase": "clarified",
+      "parent_trial_id": "generic_tool_agent--translation--1--initial",
+      "status": "finished",
+      "error": null,
+      "budget_status": "unknown",
+      "metrics": {
+        "correct_completion": false,
+        "within_budget_completion": false,
+        "gap_identification": "not_applicable",
+        "targeted_question": "not_applicable",
+        "unsupported_execution": null,
+        "unsupported_completion": null,
+        "overblocking": false,
+        "clarification_recovery": false
+      },
+      "telemetry": {
+        "model_calls": 3,
+        "tool_calls": 3,
+        "max_request_chars": 6994,
+        "max_response_tokens": null,
+        "elapsed_seconds": 2.154383492001216,
+        "human_interventions": 0,
+        "human_seconds": 0.0,
+        "input_tokens": null,
+        "output_tokens": null
+      },
+      "record_sha256": "87ddfb512594ec6bdd37d72c0f2e47eb45c08503bea0a45ca2599b7f59f33064"
+    },
+    {
+      "id": "generic_tool_agent--logistic--1--initial",
+      "workflow": "generic_tool_agent",
+      "case_id": "logistic",
+      "repeat": 1,
+      "phase": "initial",
+      "parent_trial_id": null,
+      "status": "finished",
+      "error": null,
+      "budget_status": "unknown",
+      "metrics": {
+        "correct_completion": "not_applicable",
+        "within_budget_completion": "not_applicable",
+        "gap_identification": null,
+        "targeted_question": null,
+        "unsupported_execution": false,
+        "unsupported_completion": false,
+        "overblocking": "not_applicable",
+        "clarification_recovery": "not_applicable"
+      },
+      "telemetry": {
+        "model_calls": 2,
+        "tool_calls": 1,
+        "max_request_chars": 2694,
+        "max_response_tokens": null,
+        "elapsed_seconds": 0.255781173997093,
+        "human_interventions": 0,
+        "human_seconds": 0.0,
+        "input_tokens": null,
+        "output_tokens": null
+      },
+      "record_sha256": "2f42468388f295f39af5fd468483fe72ca65ba17f04eef2c88e8ae1231c2fff2"
+    },
+    {
+      "id": "generic_tool_agent--logistic--1--clarified",
+      "workflow": "generic_tool_agent",
+      "case_id": "logistic",
+      "repeat": 1,
+      "phase": "clarified",
+      "parent_trial_id": "generic_tool_agent--logistic--1--initial",
+      "status": "finished",
+      "error": null,
+      "budget_status": "unknown",
+      "metrics": {
+        "correct_completion": false,
+        "within_budget_completion": false,
+        "gap_identification": "not_applicable",
+        "targeted_question": "not_applicable",
+        "unsupported_execution": false,
+        "unsupported_completion": false,
+        "overblocking": true,
+        "clarification_recovery": false
+      },
+      "telemetry": {
+        "model_calls": 1,
+        "tool_calls": 1,
+        "max_request_chars": 3632,
+        "max_response_tokens": null,
+        "elapsed_seconds": 0.19864960299310042,
+        "human_interventions": 0,
+        "human_seconds": 0.0,
+        "input_tokens": null,
+        "output_tokens": null
+      },
+      "record_sha256": "795928e66e51d43fe3cd2d6d0b2e6b16b579ef21bd10090f1798170aacbaa97e"
+    },
+    {
+      "id": "domain_agent--decay--0--initial",
+      "workflow": "domain_agent",
+      "case_id": "decay",
+      "repeat": 0,
+      "phase": "initial",
+      "parent_trial_id": null,
+      "status": "finished",
+      "error": null,
+      "budget_status": "unknown",
+      "metrics": {
+        "correct_completion": false,
+        "within_budget_completion": false,
+        "gap_identification": "not_applicable",
+        "targeted_question": "not_applicable",
+        "unsupported_execution": null,
+        "unsupported_completion": null,
+        "overblocking": false,
+        "clarification_recovery": "not_applicable"
+      },
+      "telemetry": {
+        "model_calls": 4,
+        "tool_calls": 4,
+        "max_request_chars": 10104,
+        "max_response_tokens": null,
+        "elapsed_seconds": 2.237223954994988,
+        "human_interventions": 0,
+        "human_seconds": 0.0,
+        "input_tokens": null,
+        "output_tokens": null
+      },
+      "record_sha256": "6956d13f118e193bb27f4379c1399ed3488a25fb0ab4b86d8a4ade307f4a59ba"
+    },
+    {
+      "id": "domain_agent--translation--0--initial",
+      "workflow": "domain_agent",
+      "case_id": "translation",
+      "repeat": 0,
+      "phase": "initial",
+      "parent_trial_id": null,
+      "status": "finished",
+      "error": null,
+      "budget_status": "unknown",
+      "metrics": {
+        "correct_completion": "not_applicable",
+        "within_budget_completion": "not_applicable",
+        "gap_identification": null,
+        "targeted_question": null,
+        "unsupported_execution": false,
+        "unsupported_completion": false,
+        "overblocking": "not_applicable",
+        "clarification_recovery": "not_applicable"
+      },
+      "telemetry": {
+        "model_calls": 2,
+        "tool_calls": 1,
+        "max_request_chars": 6735,
+        "max_response_tokens": null,
+        "elapsed_seconds": 0.28754737300187116,
+        "human_interventions": 0,
+        "human_seconds": 0.0,
+        "input_tokens": null,
+        "output_tokens": null
+      },
+      "record_sha256": "a688952648ba1f3f65c07296034ec2dd219a43d05d50c5f0e45b811c9060289a"
+    },
+    {
+      "id": "domain_agent--translation--0--clarified",
+      "workflow": "domain_agent",
+      "case_id": "translation",
+      "repeat": 0,
+      "phase": "clarified",
+      "parent_trial_id": "domain_agent--translation--0--initial",
+      "status": "finished",
+      "error": null,
+      "budget_status": "unknown",
+      "metrics": {
+        "correct_completion": false,
+        "within_budget_completion": false,
+        "gap_identification": "not_applicable",
+        "targeted_question": "not_applicable",
+        "unsupported_execution": null,
+        "unsupported_completion": null,
+        "overblocking": false,
+        "clarification_recovery": false
+      },
+      "telemetry": {
+        "model_calls": 3,
+        "tool_calls": 3,
+        "max_request_chars": 13228,
+        "max_response_tokens": null,
+        "elapsed_seconds": 2.196896553003171,
+        "human_interventions": 0,
+        "human_seconds": 0.0,
+        "input_tokens": null,
+        "output_tokens": null
+      },
+      "record_sha256": "4336de3927b7234783b82fe4f38b8b7720a8a02bcc8f0b6ef213acdbe4001c4a"
+    },
+    {
+      "id": "domain_agent--logistic--0--initial",
+      "workflow": "domain_agent",
+      "case_id": "logistic",
+      "repeat": 0,
+      "phase": "initial",
+      "parent_trial_id": null,
+      "status": "finished",
+      "error": null,
+      "budget_status": "unknown",
+      "metrics": {
+        "correct_completion": "not_applicable",
+        "within_budget_completion": "not_applicable",
+        "gap_identification": null,
+        "targeted_question": null,
+        "unsupported_execution": false,
+        "unsupported_completion": false,
+        "overblocking": "not_applicable",
+        "clarification_recovery": "not_applicable"
+      },
+      "telemetry": {
+        "model_calls": 2,
+        "tool_calls": 1,
+        "max_request_chars": 6746,
+        "max_response_tokens": null,
+        "elapsed_seconds": 0.25166272599744843,
+        "human_interventions": 0,
+        "human_seconds": 0.0,
+        "input_tokens": null,
+        "output_tokens": null
+      },
+      "record_sha256": "1b76f9f5b4ee958d74b7cb8bda479c03f1c0b082cb19ae34522c6e92045052ec"
+    },
+    {
+      "id": "domain_agent--logistic--0--clarified",
+      "workflow": "domain_agent",
+      "case_id": "logistic",
+      "repeat": 0,
+      "phase": "clarified",
+      "parent_trial_id": "domain_agent--logistic--0--initial",
+      "status": "finished",
+      "error": null,
+      "budget_status": "unknown",
+      "metrics": {
+        "correct_completion": false,
+        "within_budget_completion": false,
+        "gap_identification": "not_applicable",
+        "targeted_question": "not_applicable",
+        "unsupported_execution": false,
+        "unsupported_completion": false,
+        "overblocking": true,
+        "clarification_recovery": false
+      },
+      "telemetry": {
+        "model_calls": 1,
+        "tool_calls": 1,
+        "max_request_chars": 7666,
+        "max_response_tokens": null,
+        "elapsed_seconds": 0.23294104500382673,
+        "human_interventions": 0,
+        "human_seconds": 0.0,
+        "input_tokens": null,
+        "output_tokens": null
+      },
+      "record_sha256": "f0e86a0fd09e5d69eb4edb0898599552bc416c3eafc8aa160d0fc212497c8abd"
+    },
+    {
+      "id": "domain_agent--decay--1--initial",
+      "workflow": "domain_agent",
+      "case_id": "decay",
+      "repeat": 1,
+      "phase": "initial",
+      "parent_trial_id": null,
+      "status": "finished",
+      "error": null,
+      "budget_status": "unknown",
+      "metrics": {
+        "correct_completion": false,
+        "within_budget_completion": false,
+        "gap_identification": "not_applicable",
+        "targeted_question": "not_applicable",
+        "unsupported_execution": null,
+        "unsupported_completion": null,
+        "overblocking": false,
+        "clarification_recovery": "not_applicable"
+      },
+      "telemetry": {
+        "model_calls": 4,
+        "tool_calls": 4,
+        "max_request_chars": 10104,
+        "max_response_tokens": null,
+        "elapsed_seconds": 2.0222447050036862,
+        "human_interventions": 0,
+        "human_seconds": 0.0,
+        "input_tokens": null,
+        "output_tokens": null
+      },
+      "record_sha256": "a86d8bb90bf939c5ac9b3dec6a0a4f62f2e79a53e2cc7beb5bbae67fa2fd9087"
+    },
+    {
+      "id": "domain_agent--translation--1--initial",
+      "workflow": "domain_agent",
+      "case_id": "translation",
+      "repeat": 1,
+      "phase": "initial",
+      "parent_trial_id": null,
+      "status": "finished",
+      "error": null,
+      "budget_status": "unknown",
+      "metrics": {
+        "correct_completion": "not_applicable",
+        "within_budget_completion": "not_applicable",
+        "gap_identification": null,
+        "targeted_question": null,
+        "unsupported_execution": false,
+        "unsupported_completion": false,
+        "overblocking": "not_applicable",
+        "clarification_recovery": "not_applicable"
+      },
+      "telemetry": {
+        "model_calls": 2,
+        "tool_calls": 1,
+        "max_request_chars": 6735,
+        "max_response_tokens": null,
+        "elapsed_seconds": 0.24588479899830418,
+        "human_interventions": 0,
+        "human_seconds": 0.0,
+        "input_tokens": null,
+        "output_tokens": null
+      },
+      "record_sha256": "70dde354de0abb3c5db345eacb9ed9b0c4ebece2da2a34294b7bfb619bac2299"
+    },
+    {
+      "id": "domain_agent--translation--1--clarified",
+      "workflow": "domain_agent",
+      "case_id": "translation",
+      "repeat": 1,
+      "phase": "clarified",
+      "parent_trial_id": "domain_agent--translation--1--initial",
+      "status": "finished",
+      "error": null,
+      "budget_status": "unknown",
+      "metrics": {
+        "correct_completion": false,
+        "within_budget_completion": false,
+        "gap_identification": "not_applicable",
+        "targeted_question": "not_applicable",
+        "unsupported_execution": null,
+        "unsupported_completion": null,
+        "overblocking": false,
+        "clarification_recovery": false
+      },
+      "telemetry": {
+        "model_calls": 3,
+        "tool_calls": 3,
+        "max_request_chars": 13228,
+        "max_response_tokens": null,
+        "elapsed_seconds": 2.483382785001595,
+        "human_interventions": 0,
+        "human_seconds": 0.0,
+        "input_tokens": null,
+        "output_tokens": null
+      },
+      "record_sha256": "8ad241f2ef06b84e95af40dbeae02fb8d5b974ce6513e26e25654f4f0f84c824"
+    },
+    {
+      "id": "domain_agent--logistic--1--initial",
+      "workflow": "domain_agent",
+      "case_id": "logistic",
+      "repeat": 1,
+      "phase": "initial",
+      "parent_trial_id": null,
+      "status": "finished",
+      "error": null,
+      "budget_status": "unknown",
+      "metrics": {
+        "correct_completion": "not_applicable",
+        "within_budget_completion": "not_applicable",
+        "gap_identification": null,
+        "targeted_question": null,
+        "unsupported_execution": false,
+        "unsupported_completion": false,
+        "overblocking": "not_applicable",
+        "clarification_recovery": "not_applicable"
+      },
+      "telemetry": {
+        "model_calls": 2,
+        "tool_calls": 1,
+        "max_request_chars": 6746,
+        "max_response_tokens": null,
+        "elapsed_seconds": 0.4040304059963091,
+        "human_interventions": 0,
+        "human_seconds": 0.0,
+        "input_tokens": null,
+        "output_tokens": null
+      },
+      "record_sha256": "451cf9f5ce6149b3f3673afd0ce22d22d6daa31ee83dd8d90ec8bb5fecf42ede"
+    },
+    {
+      "id": "domain_agent--logistic--1--clarified",
+      "workflow": "domain_agent",
+      "case_id": "logistic",
+      "repeat": 1,
+      "phase": "clarified",
+      "parent_trial_id": "domain_agent--logistic--1--initial",
+      "status": "finished",
+      "error": null,
+      "budget_status": "unknown",
+      "metrics": {
+        "correct_completion": false,
+        "within_budget_completion": false,
+        "gap_identification": "not_applicable",
+        "targeted_question": "not_applicable",
+        "unsupported_execution": false,
+        "unsupported_completion": false,
+        "overblocking": true,
+        "clarification_recovery": false
+      },
+      "telemetry": {
+        "model_calls": 1,
+        "tool_calls": 1,
+        "max_request_chars": 7666,
+        "max_response_tokens": null,
+        "elapsed_seconds": 0.36775635800586315,
+        "human_interventions": 0,
+        "human_seconds": 0.0,
+        "input_tokens": null,
+        "output_tokens": null
+      },
+      "record_sha256": "3062ba6dd8007e8966fd3b37c1fb3d973c3586497f755e1d8ca64c900240c468"
+    }
+  ],
+  "semantic_support": "unknown",
+  "limitations": [
+    "Scripted controls are fixtures, not LLM decisions, real executions, or model capability evidence.",
+    "Only declared model identity/settings are checked; provider revision, identity and reviewer qualifications are not authenticated.",
+    "Scientific correctness and question-target mappings depend on attributed assessments; hashes are references, not proof of their contents.",
+    "All planned trials remain in denominators, including missing, invalid and operational failures; unknown is not success.",
+    "Budget telemetry is reported, not independently metered or enforced by this offline scorer; continuation budgets are cumulative.",
+    "Characters are not tokens; partial usage has no fabricated total, and no monetary cost is estimated.",
+    "Seen synthetic development materials only; independent domain review, live adapters, same-model trials and module ablations remain pending."
+  ]
+}

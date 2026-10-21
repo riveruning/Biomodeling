@@ -1,0 +1,106 @@
+{
+  "status": "accepted",
+  "created_at": "2026-10-18T15:57:32.061053+00:00",
+  "scope": "frozen adaptation study plan and agent fitting/holdout-comparison tool with CLI, skill routing, reports and evaluation",
+  "baseline_tests": 613,
+  "new_regressions": 46,
+  "tests": {
+    "tests": 659,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "test_exit_code": 0,
+  "test_command": "PYTHONDONTWRITEBYTECODE=1 .venv/bin/python -m pytest -q -p no:cacheprovider --basetemp=/tmp/agent-study-full-final --junitxml=artifacts/agent-study-development/pytest.xml",
+  "files": [
+    {
+      "path": "src/biomodel_agent/studies.py",
+      "before_sha256": null,
+      "after_sha256": "126ef142eecf28878f6a4e32cc66cdedade8089b20bf08798d3d014fd5cd06d1"
+    },
+    {
+      "path": "src/biomodel_agent/agent.py",
+      "before_sha256": "93d45df5dbaed7028381b6245c29e1bd11c60a90dbca592af340edd0ab08f4ac",
+      "after_sha256": "85ae80a9c0e634106be52892af4b7af1a334f3637f1e21278e3ae57711b6c68e"
+    },
+    {
+      "path": "src/biomodel_agent/cli.py",
+      "before_sha256": "136830633c57423e7ea7fbfbaa623a3f3a098630e39585e09ff525a9b517d0cf",
+      "after_sha256": "42f1648901d59727972a24e1071406b7fa1328195478279e42782bdac1c42711"
+    },
+    {
+      "path": "src/biomodel_agent/llm.py",
+      "before_sha256": "c630b8b2f07c229d8d541a0df8ac3fff8556e0798f92eb83209a7b1f053c77b8",
+      "after_sha256": "77183d6fbea3056ee07e188df7429f864a4e68419c327631dc6bc52aca0d54a4"
+    },
+    {
+      "path": "src/biomodel_agent/skills.py",
+      "before_sha256": "cb096521596b083f4a9baf0fefd3aca9e444efcf889980b31f482ffad2af3413",
+      "after_sha256": "382ffd9c56f6e7362d965c7a9c3031f49f5047993d8ab0cad835f3d3f3099dd2"
+    },
+    {
+      "path": "src/biomodel_agent/reporting.py",
+      "before_sha256": "575328b3e0d8016de89963afa3d4eaad792ef56014f622d50c1c693df4f0ed45",
+      "after_sha256": "0c1a79fbbd3c9237a37c645c20da37f8950f101a090488ffd39bd6fb63d2a157"
+    },
+    {
+      "path": "tests/test_agent_studies.py",
+      "before_sha256": null,
+      "after_sha256": "e34b577e8b4943d970a7f4651fb79a10072ffb220cc1821d5f6977dca4dc1833"
+    },
+    {
+      "path": "benchmarks/development/demo_agent_study.py",
+      "before_sha256": null,
+      "after_sha256": "a9929ba065d57390d94869f93d5629143baf507f747ca24966984817dde10756"
+    },
+    {
+      "path": "docs/agent-study-tool.md",
+      "before_sha256": null,
+      "after_sha256": "c5d93b5f2cba3a3f3f15a9b078c2f1a798a65b671e11a5bfa5f1eecb7b124865"
+    },
+    {
+      "path": "docs/v0.1.md",
+      "before_sha256": "452bbcd9f901cda5d1fc869367c523b4ce46a91e1da0bb7693a1371d44e421d6",
+      "after_sha256": "b747ba02710725bfeadec60141b891d4d5a5cc01e7531e2c327abd52533a0f8c"
+    },
+    {
+      "path": "README.md",
+      "before_sha256": "e9f36e7ff1213d642b66ee4ae5dbf709a8260d04b7ddc32930af6b4de83bdf68",
+      "after_sha256": "95591fe92a8b67cf012afb0164f7e1b3502d145a3af17ba456cd1c6e58735796"
+    }
+  ],
+  "demo_final_source_environment_matches": true,
+  "demo": {
+    "path": "offline-demo-final/results.json",
+    "type": "scripted_actions_with_real_fitting",
+    "state": "completed",
+    "scripted_actions": 2,
+    "winner": "cand_feedback",
+    "feedback_training_weighted_rmse": 2.0542668008747743e-08,
+    "feedforward_training_weighted_rmse": 4.844804766733239e-08,
+    "feedback_holdout_scaled_rmse": 6.906939272239231e-10,
+    "feedforward_holdout_scaled_rmse": 0.3178210303415662,
+    "scientific_status": "not_verified",
+    "new_model_requests": 0
+  },
+  "old_checkpoint_scripted_compatibility": {
+    "completed": 3,
+    "new_model_requests": 0
+  },
+  "product_model_calls": 0,
+  "independent_evaluation_modified": false,
+  "autonomous_model_performance_measured": false,
+  "dependencies_added": [],
+  "development_delegated_this_round": false,
+  "snapshot_notes": {
+    "docs/v0.1.md": "before reconstructed by removing the single known supplemental paragraph; historical body unchanged"
+  },
+  "limitations": [
+    "fixed adaptation templates, observation and fitting bounds; no open mechanism discovery",
+    "explicit roles do not prove scientifically independent data splitting",
+    "per-fit timeout is not a global study wall-clock deadline",
+    "execution limit is per agent branch, not a global cross-task lock",
+    "scripted actor with real fitting does not measure autonomous model planning",
+    "numeric model compatibility is not biological truth or full unit verification"
+  ]
+}

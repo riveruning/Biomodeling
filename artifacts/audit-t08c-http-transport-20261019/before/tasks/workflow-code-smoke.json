@@ -1,0 +1,37 @@
+{
+  "schema_version": "1",
+  "id": "workflow-code-smoke",
+  "objective": "实现一个独立的小函数及测试，验证 DSH 编码、辅助审批和 Codex 独立执行测试的完整链路。",
+  "context": "这只是开发协作测试，不是完整业务实现。Python 3.12 与 pytest 已在项目 .venv 安装。 Codex已经创建两个空目标文件，可以直接read然后write。",
+  "read_files": [],
+  "write_files": [
+    "artifacts/development/dsh_grid.py",
+    "artifacts/development/test_dsh_grid.py"
+  ],
+  "expected_files": [
+    "artifacts/development/dsh_grid.py",
+    "artifacts/development/test_dsh_grid.py"
+  ],
+  "instructions": "编写 normalize_time_grid(values)：将数值序列转成 float tuple，非空、全部有限且严格递增；空、重复、逆序、NaN/Inf 均抛 ValueError；不要修改原始序列。只用Python标准库。测试文件直接 from dsh_grid import normalize_time_grid，覆盖正常非均匀网格、单点、空序列、重复、逆序、NaN和正负Inf、输入不被修改。所有文件合计控制在80行以内，只用write/edit工具，不运行测试。Codex会用项目 .venv/bin/python -m pytest执行验收。 两个目标文件已存在且为空，请先read确认，然后写入实现与测试。",
+  "acceptance": [
+    "函数满足所述行为",
+    "测试由 Codex 独立执行通过",
+    "工具操作经过现有辅助审批"
+  ],
+  "verification_commands": [
+    [
+      ".venv/bin/python",
+      "-m",
+      "pytest",
+      "artifacts/development/test_dsh_grid.py",
+      "-q"
+    ]
+  ],
+  "budget": {
+    "first_activity_ms": 120000,
+    "idle_ms": 120000,
+    "first_write_ms": 180000,
+    "write_idle_ms": 180000,
+    "total_ms": 240000
+  }
+}

@@ -1,0 +1,978 @@
+--- a/benchmarks/development/comparison_transport.py
++++ b/benchmarks/development/comparison_transport.py
+@@ -0,0 +1,302 @@
++"""Shared bounded Chat Completions HTTP transport and offline preparation.
++
++Importing, constructing, preparing and checking do not read credentials or
++open a connection. Only an explicit network transport.request() can do so.
++The CLI deliberately supports preparation/checking only, never execution.
++"""
++from __future__ import annotations
++
++import argparse
++from copy import deepcopy
++import hashlib
++import importlib.util
++import json
++import math
++import os
++from pathlib import Path
++import re
++import time
++from urllib.parse import urlparse
++
++import httpx
++
++from biomodel_agent.llm import ProviderError, _retry_after
++
++_spec = importlib.util.spec_from_file_location('http_comparison_driver', Path(__file__).with_name('run_agent_comparison.py'))
++driver = importlib.util.module_from_spec(_spec)
++_spec.loader.exec_module(driver)
++protocol = driver.protocol
++PROFILE = 'chat_completions_comparison_v1'
++
++
++def _model_config(value):
++    protocol._fields(value, 'provider model revision temperature top_p max_output_tokens seed')
++    for key in ('provider', 'model', 'revision'):
++        protocol._text(value[key], 200)
++    protocol._number(value['temperature'], 0, 2)
++    protocol._number(value['top_p'], .000001, 1)
++    protocol._integer(value['max_output_tokens'], 1, 32000)
++    if value['seed'] is not None:
++        protocol._integer(value['seed'], 0, 2**32-1)
++    return deepcopy(value)
++
++
++def _config(value):
++    protocol._fields(value, 'base_url api_key_env request_timeout_s max_response_bytes')
++    base = value['base_url']
++    if not isinstance(base, str) or not 1 <= len(base) <= 2000 or any(c.isspace() or ord(c) < 32 for c in base):
++        raise ValueError('invalid comparison endpoint')
++    try:
++        parsed = urlparse(base)
++        local = parsed.hostname in ('localhost', '127.0.0.1', '::1')
++        valid = (parsed.scheme == 'https' or parsed.scheme == 'http' and local)
++        if (not valid or not parsed.hostname or parsed.username is not None or parsed.password is not None
++                or parsed.query or parsed.fragment or '?' in base or '#' in base or '\\' in base
++                or '%' in parsed.netloc or parsed.port == 0 or parsed.path.rstrip('/').endswith('/chat/completions')):
++            raise ValueError('invalid comparison endpoint')
++        base = str(httpx.URL(base)).rstrip('/')
++    except (ValueError, httpx.InvalidURL):
++        raise ValueError('endpoint requires HTTPS (or local HTTP), without credentials, query or fragment') from None
++    name = value['api_key_env']
++    if not isinstance(name, str) or not re.fullmatch(r'[A-Za-z_][A-Za-z0-9_]{0,99}', name):
++        raise ValueError('invalid credential environment variable name')
++    protocol._number(value['request_timeout_s'], .01, 3600)
++    protocol._integer(value['max_response_bytes'], 1024, 8_000_000)
++    return {**deepcopy(value), 'base_url': base}
++
++
++def _implementation():
++    folder = Path(__file__).parent
++    return {'toolchain_sha256': protocol.implementation_fingerprint(), 'httpx_version': httpx.__version__,
++            **{name: hashlib.sha256((folder/name).read_bytes()).hexdigest() for name in (
++                'comparison_transport.py', 'workflow_adapters.py', 'run_agent_comparison.py', 'agent_evaluation.py')}}
++
++
++def _envelope(raw):
++    def unique(pairs):
++        out = {}
++        for key, value in pairs:
++            if key in out:
++                raise ValueError('duplicate envelope key')
++            out[key] = value
++        return out
++    def reject(_):
++        raise ValueError('nonfinite envelope number')
++    def finite(value):
++        number = float(value)
++        if not math.isfinite(number):
++            reject(value)
++        return number
++    try:
++        body = json.loads(raw.decode('utf-8'), object_pairs_hook=unique,
++                          parse_constant=reject, parse_float=finite)
++        pending = [(body, 0)]
++        while pending:
++            value, depth = pending.pop()
++            if depth > 64:
++                raise ValueError('envelope nesting limit')
++            if isinstance(value, dict):
++                pending.extend((v, depth+1) for v in value.values())
++            elif isinstance(value, list):
++                pending.extend((v, depth+1) for v in value)
++        if not isinstance(body, dict) or not isinstance(body.get('choices'), list) or len(body['choices']) != 1:
++            raise ValueError('one completion required')
++        choice = body['choices'][0]
++        if (not isinstance(choice, dict) or choice.get('finish_reason') != 'stop'
++                or type(choice.get('index')) is not int or choice['index'] != 0):
++            raise ValueError('completion did not stop normally')
++        message = choice.get('message')
++        if (not isinstance(message, dict) or message.get('role') != 'assistant'
++                or not isinstance(message.get('content'), str) or message.get('refusal') not in (None, '')
++                or message.get('tool_calls') not in (None, []) or message.get('function_call') is not None):
++            raise ValueError('unsupported completion message')
++        return body
++    except (ValueError, TypeError, UnicodeError, RecursionError, OverflowError):
++        raise ProviderError('invalid comparison response envelope', kind='response_envelope', retryable=False) from None
++
++
++class ChatCompletionTransport:
++    """One HTTP attempt, no retries/fallbacks. A MockTransport stays scripted."""
++
++    def __init__(self, model_config, config, *, http_transport=None):
++        self._model = _model_config(model_config)
++        self._config = _config(config)
++        if http_transport is not None and type(http_transport) is not httpx.MockTransport:
++            raise ValueError('only an explicit in-memory MockTransport may replace network HTTP')
++        self._http_transport = http_transport
++        self._last_exchange = None
++
++    @property
++    def evidence_kind(self):
++        return 'scripted_control' if self._http_transport is not None else 'live_model'
++
++    @property
++    def model_config(self):
++        return deepcopy(self._model)
++
++    @property
++    def comparison_identity(self):
++        return {'profile': PROFILE, 'mode': 'mock_http' if self._http_transport is not None else 'network_http',
++                'config': deepcopy(self._config), 'model_config_sha256': protocol.digest(self._model),
++                'implementation': _implementation()}
++
++    def exchange_audit(self):
++        return deepcopy(self._last_exchange)
++
++    def _payload(self, payload):
++        expected = {'model': self._model['model'], 'temperature': self._model['temperature'],
++                    'top_p': self._model['top_p'], 'max_tokens': self._model['max_output_tokens']}
++        if self._model['seed'] is not None:
++            expected['seed'] = self._model['seed']
++        protocol._fields(payload, ' '.join([*expected, 'messages']))
++        if any(type(payload[k]) is bool or payload[k] != v for k, v in expected.items()):
++            raise ValueError('HTTP payload differs from frozen model settings')
++        protocol._integer(payload['max_tokens'], 1, 32000)
++        if 'seed' in payload:
++            protocol._integer(payload['seed'], 0, 2**32-1)
++        messages = payload['messages']
++        if not isinstance(messages, list) or not messages or len(messages) > 1000:
++            raise ValueError('bounded message list required')
++        for message in messages:
++            protocol._fields(message, 'role content')
++            if message['role'] not in ('system', 'user', 'assistant') or not isinstance(message['content'], str):
++                raise ValueError('unsupported HTTP message')
++        raw = json.dumps(payload, ensure_ascii=False, sort_keys=True,
++                         separators=(',', ':'), allow_nan=False).encode('utf-8')
++        if len(raw) > 8_000_000:
++            raise ValueError('HTTP request byte limit exceeded')
++        return raw
++
++    def request(self, payload, timeout_s):
++        self._last_exchange = None
++        protocol._number(timeout_s, .000001, 3600)
++        raw = self._payload(payload)
++        limit = min(timeout_s, self._config['request_timeout_s'])
++        deadline = time.monotonic()+limit
++        self._last_exchange = {'schema_version': 1, 'identity_sha256': protocol.digest(self.comparison_identity),
++            'request_body_sha256': hashlib.sha256(raw).hexdigest(), 'http_status': None,
++            'response_bytes': 0, 'outcome': 'pending', 'retry_after_s': None, 'system_fingerprint_sha256': None}
++        audit = self._last_exchange
++        def remaining():
++            if time.monotonic() >= deadline:
++                raise TimeoutError('comparison HTTP request deadline')
++        try:
++            if self._http_transport is not None:
++                key = 'offline-http-control'
++            else:
++                key = os.environ.get(self._config['api_key_env'])
++                if not isinstance(key, str) or not key.strip() or len(key) > 16000 or '\r' in key or '\n' in key:
++                    audit['outcome'] = 'missing_credential'
++                    raise ProviderError('comparison credential unavailable', kind='configuration', retryable=False)
++                key = key.strip()
++            remaining()
++            with httpx.Client(trust_env=False, follow_redirects=False, timeout=limit, transport=self._http_transport) as client:
++                with client.stream('POST', self._config['base_url']+'/chat/completions', content=raw,
++                        headers={'Authorization': 'Bearer '+key, 'Content-Type': 'application/json',
++                                 'Accept': 'application/json', 'Accept-Encoding': 'identity'}) as response:
++                    audit['http_status'] = response.status_code
++                    remaining()
++                    if not 200 <= response.status_code < 300:
++                        audit['outcome'] = 'http_error'
++                        audit['retry_after_s'] = _retry_after(response.headers.get('Retry-After'))
++                        # Do not read, persist or interpolate an HTTP error body.
++                        raise ProviderError('comparison HTTP status '+str(response.status_code),
++                                            kind='http', retryable=False, retry_after_s=audit['retry_after_s'])
++                    chunks = []
++                    for chunk in response.iter_bytes(chunk_size=8192):
++                        remaining()
++                        audit['response_bytes'] += len(chunk)
++                        if audit['response_bytes'] > self._config['max_response_bytes']:
++                            audit['outcome'] = 'response_too_large'
++                            raise ProviderError('comparison response byte limit exceeded', kind='response_envelope', retryable=False)
++                        chunks.append(chunk)
++                    body = _envelope(b''.join(chunks))
++                    remaining()
++                    fingerprint = body.get('system_fingerprint')
++                    if isinstance(fingerprint, str) and len(fingerprint) <= 1000:
++                        audit['system_fingerprint_sha256'] = hashlib.sha256(fingerprint.encode()).hexdigest()
++                    audit['outcome'] = 'ok'
++                    return body
++        except (TimeoutError, httpx.TimeoutException):
++            audit['outcome'] = 'timeout'
++            raise TimeoutError('comparison HTTP timeout') from None
++        except ProviderError as exc:
++            if audit['outcome'] == 'pending':
++                audit['outcome'] = 'invalid_envelope' if exc.kind == 'response_envelope' else 'provider_error'
++            raise
++        except Exception:
++            audit['outcome'] = 'transport_error'
++            raise ProviderError('comparison HTTP transport failure', kind='transport', retryable=False) from None
++
++
++def _description(manifest, config, root):
++    audit = protocol.validate_manifest(manifest, root)
++    if manifest['evidence_kind'] != 'live_model':
++        raise ValueError('preparation requires a new explicit live-model manifest')
++    transport = ChatCompletionTransport(manifest['model_config'], config)
++    materials = []
++    for case in manifest['cases']:
++        for phase in case['phases']:
++            for entry in phase['files']:
++                text = protocol._source(entry, root)
++                materials.append({'case_id': case['id'], 'phase': phase['id'], **entry,
++                                  'utf8_bytes': len(text.encode('utf-8')), 'chars': len(text)})
++    return {'schema_version': 1, 'status': 'prepared_only_no_authorization',
++            'manifest_sha256': protocol.digest(manifest), 'planned_trials': audit['planned_trials'],
++            'transport_identity': transport.comparison_identity, 'materials': materials,
++            'runtime_data_categories': ['task and tool instructions', 'authorized source excerpts and prerecorded replies',
++                                        'model outputs and conversation history', 'scientific tool feedback'],
++            'private_rubric_in_workflow_projection': False, 'online_inference_calls': 0,
++            'actual_model_revision_authenticated': False,
++            'note': 'This package freezes a proposed scope, not a human authorization or a model capability result.'}
++
++
++def prepare_comparison(manifest, config, output, *, root=protocol.ROOT):
++    config = _config(config)
++    description = _description(manifest, config, root)
++    output = Path(output)
++    if output.exists():
++        raise ValueError('use a new preparation output directory')
++    output.mkdir(parents=True, exist_ok=False)
++    driver.adapters._write(output/'manifest.json', manifest)
++    driver.adapters._write(output/'transport.json', config)
++    driver.adapters._write(output/'preflight.json', description)
++    return description
++
++
++def validate_preparation(directory, *, root=protocol.ROOT):
++    directory = Path(directory)
++    manifest = protocol._read(directory/'manifest.json')
++    config = protocol._read(directory/'transport.json')
++    report = protocol._read(directory/'preflight.json')
++    expected = _description(manifest, _config(config), root)
++    if report != expected:
++        raise ValueError('preparation is stale or was changed; freeze a new package')
++    return report
++
++
++def main(argv=None):
++    parser = argparse.ArgumentParser(description=__doc__)
++    commands = parser.add_subparsers(dest='command', required=True)
++    prepare = commands.add_parser('prepare')
++    prepare.add_argument('--manifest', required=True, type=Path)
++    prepare.add_argument('--transport', required=True, type=Path)
++    prepare.add_argument('--output', required=True, type=Path)
++    check = commands.add_parser('check')
++    check.add_argument('directory', type=Path)
++    args = parser.parse_args(argv)
++    try:
++        if args.command == 'prepare':
++            report = prepare_comparison(protocol._read(args.manifest), protocol._read(args.transport), args.output)
++        else:
++            report = validate_preparation(args.directory)
++        print(json.dumps({'status': report['status'], 'manifest_sha256': report['manifest_sha256'],
++                          'planned_trials': report['planned_trials'], 'online_inference_calls': 0}))
++        return 0
++    except (OSError, ValueError, TypeError, KeyError, ProviderError):
++        print(json.dumps({'status': 'refused', 'online_inference_calls': 0}))
++        return 2
++
++
++if __name__ == '__main__':
++    raise SystemExit(main())
+--- a/benchmarks/development/workflow_adapters.py
++++ b/benchmarks/development/workflow_adapters.py
+@@ -121,8 +121,12 @@
+ 
+ 
+ def _transport_identity(transport,p):
+-    return {'class':type(transport).__module__+'.'+type(transport).__qualname__,
+-            'config_sha256':protocol.digest(p['model_config']), 'evidence_kind':transport.evidence_kind}
++    identity={'class':type(transport).__module__+'.'+type(transport).__qualname__,
++              'config_sha256':protocol.digest(p['model_config']), 'evidence_kind':transport.evidence_kind}
++    extra=getattr(transport,'comparison_identity',None)
++    if extra is not None:
++        identity['transport_sha256']=protocol.digest(extra)
++    return identity
+ 
+ 
+ def _parent(store,ref,p,identity):
+@@ -150,7 +154,7 @@
+         self.p=p; self.store=store; self.directory=Path(directory); self.started=time.monotonic()
+         self.base=deepcopy(parent['meter_totals']) if parent else {'model_calls':0,'tool_calls':0,'run_attempts':0,'elapsed_seconds':0.}
+         self.counts={'model_calls':0,'tool_calls':0,'run_attempts':0}
+-        self.request_refs=[]; self.response_refs=[]; self.usage=[]; self.reservations=[]
++        self.request_refs=[]; self.response_refs=[]; self.transport_refs=[]; self.usage=[]; self.reservations=[]
+         self.provider_status=None; self.stop_reason=None
+         self.snapshot()
+     def elapsed(self): return max(0.,time.monotonic()-self.started)
+@@ -163,7 +167,8 @@
+                 'elapsed_seconds':self.base['elapsed_seconds']+self.elapsed()}
+     def snapshot(self):
+         _write(self.directory/'meter.json',{'base':self.base,'counts':self.counts,'request_refs':self.request_refs,
+-            'response_refs':self.response_refs,'usage':self.usage,'reservation_refs':self.reservations,
++            'response_refs':self.response_refs,'transport_exchange_refs':self.transport_refs,
++            'usage':self.usage,'reservation_refs':self.reservations,
+             'provider_status':self.provider_status,'stop_reason':self.stop_reason,'elapsed_seconds':self.elapsed()})
+     def reserve(self,name):
+         self.remaining(); costs=CHARGES.get(name,[])
+@@ -199,6 +204,14 @@
+         self.p=p; self.transport=transport; self.meter=meter; self.model=p['model_config']['model']
+         self.max_tokens=p['model_config']['max_output_tokens']; self.timeout_s=p['budget']['max_elapsed_seconds']; self.json_mode=False
+         self.last_usage={}
++    def _transport_receipt(self,request_ref):
++        getter=getattr(self.transport,'exchange_audit',None)
++        if not callable(getter): return
++        receipt=getter()
++        if receipt is None: return
++        ref=self.meter.store.put('evaluation_transport_exchange',{
++            'trial_id':self.p['trial']['id'],'exchange':receipt},refs=(request_ref,))
++        self.meter.transport_refs.append(ref); self.meter.snapshot()
+     def respond(self,messages):
+         config=self.p['model_config']; packet=deepcopy(messages)
+         if not packet or packet[0].get('role')!='system': raise ModelResponseError('system instructions required')
+@@ -216,9 +229,12 @@
+         try: body=self.transport.request(deepcopy(request),self.meter.remaining())
+         except StopExecution: raise
+         except Exception as exc:
+-            self.meter.provider_status='timeout' if isinstance(exc,TimeoutError) else 'provider_error'
++            self.meter.provider_status=('timeout' if isinstance(exc,TimeoutError) else 'invalid_output'
++                if isinstance(exc,ProviderError) and exc.kind in ('response_envelope','model_response') else 'provider_error')
+             self.meter.snapshot()
+             raise ProviderError('evaluation transport failed: '+type(exc).__name__,kind='transport',retryable=False) from None
++        finally:
++            self._transport_receipt(ref)
+         usage={}
+         if isinstance(body,dict) and isinstance(body.get('usage'),dict):
+             usage={k:v for k,v in body['usage'].items() if k in ('prompt_tokens','completion_tokens','total_tokens') and type(v) is int and v>=0}
+@@ -477,7 +493,7 @@
+     state['meter_totals']={**{k:snapshot['base'][k]+snapshot['counts'][k] for k in ('model_calls','tool_calls','run_attempts')},
+                            'elapsed_seconds':base_elapsed+elapsed}
+     state['parent_session_ref']=parent_session_ref
+-    session=store.put('evaluation_session',state,refs=tuple(r for r in [parent_session_ref,state['native_agent_run_ref'],state['task_ref'],state['model_ref'],state['draft_ref'],state['run_ref'],*state['source_refs'],*snapshot['reservation_refs'],*snapshot['request_refs'],*snapshot['response_refs']] if r))
++    session=store.put('evaluation_session',state,refs=tuple(r for r in [parent_session_ref,state['native_agent_run_ref'],state['task_ref'],state['model_ref'],state['draft_ref'],state['run_ref'],*state['source_refs'],*snapshot['reservation_refs'],*snapshot['request_refs'],*snapshot['response_refs'],*snapshot.get('transport_exchange_refs',[])] if r))
+     requests=[store.get(r)['payload'] for r in snapshot['request_refs']]
+     usage=snapshot['usage']; calls=snapshot['counts']['model_calls']
+     def tokens(name):
+@@ -498,6 +514,7 @@
+             'input_tokens':tokens('prompt_tokens'),'output_tokens':tokens('completion_tokens')}}
+     audit={'supervised':True,'stop_reason':reason,'run_ref':state['run_ref'],'native_agent_run_ref':state['native_agent_run_ref'],
+            'request_refs':snapshot['request_refs'],'response_refs':snapshot['response_refs'],
++           'transport_exchange_refs':snapshot.get('transport_exchange_refs',[]),
+            'reservation_refs':snapshot['reservation_refs'],'clarification_origin':'prerecorded_protocol' if resumed else None,
+            'runtime_adapter_sha256':protocol.hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
+            'scientific_support':'unknown','same_returned_model_verified':bool(snapshot['response_refs']) and all(
+--- a/tests/test_comparison_transport.py
++++ b/tests/test_comparison_transport.py
+@@ -0,0 +1,430 @@
++"""T08c HTTP controls: fixtures never represent a real model invocation."""
++from copy import deepcopy
++import importlib.util
++import json
++from pathlib import Path
++import time
++
++import httpx
++import pytest
++
++from biomodel_agent.llm import ProviderError
++from biomodel_agent.storage import ArtifactStore
++from test_workflow_adapters import action, projection, translation_proposal
++
++ROOT = Path(__file__).resolve().parents[1]
++
++
++@pytest.fixture
++def transport_module():
++    spec = importlib.util.spec_from_file_location('comparison_transport_acceptance',
++        ROOT/'benchmarks/development/comparison_transport.py')
++    module = importlib.util.module_from_spec(spec)
++    spec.loader.exec_module(module)
++    return module
++
++
++def config():
++    return {'base_url': 'https://comparison.invalid/v1', 'api_key_env': 'BIOMODEL_API_KEY',
++            'request_timeout_s': 10., 'max_response_bytes': 2_000_000}
++
++
++def model(module):
++    return module.driver.protocol.development_manifest(ROOT)['model_config']
++
++
++def packet(settings):
++    value = {'model': settings['model'], 'messages': [{'role': 'system', 'content': '中文 HTTP control'}],
++             'temperature': settings['temperature'], 'top_p': settings['top_p'],
++             'max_tokens': settings['max_output_tokens']}
++    if settings['seed'] is not None:
++        value['seed'] = settings['seed']
++    return value
++
++
++def envelope(settings, content=None, usage=None):
++    return {'model': settings['model'], 'system_fingerprint': 'fixture-backend',
++            'choices': [{'index': 0, 'finish_reason': 'stop', 'message': {'role': 'assistant',
++                'content': content or json.dumps({'action': 'ask_researcher', 'args': {'question': 'Clarify the task.'}})}}],
++            'usage': usage}
++
++
++def test_http_request_preserves_the_frozen_payload_and_uses_no_real_key(transport_module, monkeypatch):
++    module = transport_module
++    settings = model(module)
++    payload = packet(settings)
++    seen = []
++    original = module.os.environ.get
++    def forbid_key(name, *args):
++        assert name != 'BIOMODEL_API_KEY', 'Mock HTTP read a real credential'
++        return original(name, *args)
++    monkeypatch.setattr(module.os.environ, 'get', forbid_key)
++    def handler(request):
++        seen.append(json.loads(request.content))
++        assert str(request.url) == config()['base_url']+'/chat/completions'
++        assert request.headers['authorization'] == 'Bearer offline-http-control'
++        assert request.extensions['timeout']['read'] == pytest.approx(.25)
++        return httpx.Response(200, json=envelope(settings))
++    transport = module.ChatCompletionTransport(settings, config(), http_transport=httpx.MockTransport(handler))
++    result = transport.request(payload, .25)
++    assert result['model'] == settings['model'] and seen == [payload]
++    assert transport.evidence_kind == 'scripted_control'
++    assert transport.exchange_audit()['http_status'] == 200
++    assert transport.exchange_audit()['request_body_sha256'] == module.protocol.digest(payload)
++
++
++def test_preparation_is_offline_frozen_and_never_authorizes_egress(transport_module, tmp_path, monkeypatch):
++    module = transport_module
++    manifest = module.driver.protocol.development_manifest(ROOT)
++    manifest['evidence_kind'] = 'live_model'
++    manifest['model_config'].update(provider='example-not-selected', model='example-not-selected', revision='example-not-selected')
++    def forbidden(*args, **kwargs):
++        pytest.fail('offline preparation tried to create an HTTP client')
++    monkeypatch.setattr(module.httpx, 'Client', forbidden)
++    report = module.prepare_comparison(manifest, config(), tmp_path/'prepared', root=ROOT)
++    assert report['status'] == 'prepared_only_no_authorization'
++    assert report['planned_trials'] == 30 and report['online_inference_calls'] == 0
++    assert len(report['materials']) == 10
++    assert module.validate_preparation(tmp_path/'prepared', root=ROOT) == report
++    assert report['manifest_sha256'] == module.driver.protocol.digest(manifest)
++
++
++@pytest.mark.parametrize('endpoint', [
++    'http://public.invalid/v1', 'https://name:secret@comparison.invalid/v1',
++    'https://comparison.invalid/v1?key=secret', 'https://comparison.invalid/v1#secret',
++    'https://comparison.invalid/v1?', 'https://comparison.invalid:bad/v1',
++    'https://comparison.invalid:0/v1', 'https://comparison.invalid/ v1',
++    'https://comparison.invalid/v1/chat/completions', 'file:///tmp/endpoint',
++])
++def test_endpoint_validation_precedes_clients_or_credentials(transport_module, endpoint, monkeypatch):
++    module = transport_module
++    settings = model(module)
++    monkeypatch.setattr(module.httpx, 'Client', lambda *a, **kw: pytest.fail('invalid endpoint created a client'))
++    with pytest.raises(ValueError):
++        module.ChatCompletionTransport(settings, {**config(), 'base_url': endpoint})
++
++
++@pytest.mark.parametrize('field,value', [('model', 'other'), ('seed', 7), ('temperature', True),
++                                       ('max_tokens', 1001), ('max_tokens', 1000.0), ('stream', True)])
++def test_wire_settings_cannot_change_or_gain_unreviewed_fields(transport_module, field, value):
++    module = transport_module
++    settings = model(module)
++    payload = packet(settings)
++    payload[field] = value
++    transport = module.ChatCompletionTransport(settings, config(),
++        http_transport=httpx.MockTransport(lambda _: pytest.fail('invalid payload reached HTTP')))
++    with pytest.raises(ValueError):
++        transport.request(payload, 1)
++
++
++def test_no_seed_is_injected_and_configuration_is_copied(transport_module):
++    module = transport_module
++    settings = model(module)
++    settings['seed'] = None
++    seen = []
++    def handler(request):
++        seen.append(json.loads(request.content))
++        return httpx.Response(200, json=envelope(transport.model_config))
++    transport = module.ChatCompletionTransport(settings, config(), http_transport=httpx.MockTransport(handler))
++    original = packet(settings)
++    settings['model'] = 'changed outside constructor'
++    transport.model_config['model'] = 'changed returned copy'
++    transport.request(original, 1)
++    assert seen == [original] and 'seed' not in seen[0]
++
++
++@pytest.mark.parametrize('status', [302, 401, 408, 429, 500, 503])
++def test_http_failures_do_not_redirect_read_error_body_or_retry(transport_module, status):
++    module = transport_module
++    settings = model(module)
++    calls = []
++    def handler(request):
++        calls.append(request)
++        return httpx.Response(status, headers={'Retry-After': '2', 'Location': 'https://other.invalid'},
++                              content=b'SECRET-HTTP-error-body')
++    transport = module.ChatCompletionTransport(settings, config(), http_transport=httpx.MockTransport(handler))
++    with pytest.raises(ProviderError) as error:
++        transport.request(packet(settings), 1)
++    assert len(calls) == 1 and error.value.retryable is False
++    audit = transport.exchange_audit()
++    assert audit['http_status'] == status and audit['retry_after_s'] == 2
++    assert audit['response_bytes'] == 0 and audit['outcome'] == 'http_error'
++    assert 'SECRET' not in str(error.value)+json.dumps(audit)
++
++
++@pytest.mark.parametrize('defect', ['truncated', 'refusal', 'tool_calls', 'wrong_role',
++                                  'choices', 'null_message', 'not_json', 'duplicate', 'nonfinite', 'overflow',
++                                  'wrong_index', 'no_index', 'invalid_refusal', 'invalid_tool_calls', 'function_call'])
++def test_invalid_http_envelopes_never_become_actions(transport_module, defect):
++    module = transport_module
++    settings = model(module)
++    body = envelope(settings)
++    choice = body['choices'][0]
++    if defect == 'truncated': choice['finish_reason'] = 'length'
++    elif defect == 'refusal': choice['message']['refusal'] = 'declined'
++    elif defect == 'tool_calls': choice['message']['tool_calls'] = [{'type': 'function'}]
++    elif defect == 'wrong_role': choice['message']['role'] = 'user'
++    elif defect == 'choices': body['choices'].append(deepcopy(choice))
++    elif defect == 'null_message': choice['message'] = None
++    elif defect == 'wrong_index': choice['index'] = True
++    elif defect == 'no_index': del choice['index']
++    elif defect == 'invalid_refusal': choice['message']['refusal'] = False
++    elif defect == 'invalid_tool_calls': choice['message']['tool_calls'] = False
++    elif defect == 'function_call': choice['message']['function_call'] = {}
++    raw = json.dumps(body).encode()
++    if defect == 'not_json': raw = b'<html>SECRET error</html>'
++    elif defect == 'duplicate': raw = b'{"model":"x","model":"y","choices":[]}'
++    elif defect == 'nonfinite': raw = b'{"unused":NaN}'
++    elif defect == 'overflow': raw = b'{"unused":1e99999}'
++    transport = module.ChatCompletionTransport(settings, config(),
++        http_transport=httpx.MockTransport(lambda _: httpx.Response(200, content=raw)))
++    with pytest.raises(ProviderError) as error:
++        transport.request(packet(settings), 1)
++    assert error.value.kind == 'response_envelope'
++    assert transport.exchange_audit()['outcome'] == 'invalid_envelope'
++    assert 'SECRET' not in str(error.value)
++
++
++def test_response_bytes_are_bounded_before_json_decoding(transport_module):
++    module = transport_module
++    settings = model(module)
++    transport = module.ChatCompletionTransport(settings, {**config(), 'max_response_bytes': 1024},
++        http_transport=httpx.MockTransport(lambda _: httpx.Response(200, content=b'x'*5000)))
++    with pytest.raises(ProviderError):
++        transport.request(packet(settings), 1)
++    assert transport.exchange_audit()['outcome'] == 'response_too_large'
++
++
++def test_timeout_and_connection_error_are_sanitized_without_retry(transport_module):
++    module = transport_module
++    settings = model(module)
++    for exception, expected, outcome in [(httpx.ReadTimeout('SECRET timeout'), TimeoutError, 'timeout'),
++                                         (httpx.ConnectError('SECRET connection'), ProviderError, 'transport_error')]:
++        calls = []
++        def handler(request):
++            calls.append(request)
++            raise exception
++        transport = module.ChatCompletionTransport(settings, config(), http_transport=httpx.MockTransport(handler))
++        with pytest.raises(expected) as error:
++            transport.request(packet(settings), 1)
++        assert len(calls) == 1 and transport.exchange_audit()['outcome'] == outcome
++        assert 'SECRET' not in str(error.value)+json.dumps(transport.exchange_audit())
++
++
++def test_network_path_uses_only_explicit_fake_key_and_disables_proxies_and_redirects(transport_module, monkeypatch):
++    module = transport_module
++    settings = model(module)
++    monkeypatch.setenv('T08C_FAKE_KEY', 'fake-key-used-only-in-unit-control')
++    original = module.httpx.Client
++    seen = []
++    def handler(request):
++        seen.append(request)
++        assert request.headers['Authorization'] == 'Bearer fake-key-used-only-in-unit-control'
++        return httpx.Response(200, json=envelope(settings))
++    def client(**kwargs):
++        assert kwargs['trust_env'] is False and kwargs['follow_redirects'] is False
++        assert kwargs['transport'] is None
++        return original(**{**kwargs, 'transport': httpx.MockTransport(handler)})
++    monkeypatch.setattr(module.httpx, 'Client', client)
++    transport = module.ChatCompletionTransport(settings, {**config(), 'api_key_env': 'T08C_FAKE_KEY'})
++    transport.request(packet(settings), 1)
++    assert len(seen) == 1 and transport.evidence_kind == 'live_model'
++    assert 'fake-key-used-only' not in json.dumps(transport.comparison_identity)+json.dumps(transport.exchange_audit())
++
++
++def fixture_transport(module, p, actions, *, endpoint=None, usage=None, status=200, error=None):
++    scripted = module.driver.ScriptedTransport(p, actions)
++    def handler(request):
++        if error is not None: raise error
++        if status != 200:
++            return httpx.Response(status, content=b'SECRET provider body', headers={'Retry-After': '60'})
++        result = scripted.request(json.loads(request.content), 1)
++        result['choices'][0].update(index=0, finish_reason='stop')
++        result['choices'][0]['message']['role'] = 'assistant'
++        result['usage'] = usage
++        return httpx.Response(200, json=result)
++    return module.ChatCompletionTransport(p['model_config'], {**config(), **({'base_url': endpoint} if endpoint else {})},
++        http_transport=httpx.MockTransport(handler))
++
++
++def literal_decay(module, workflow):
++    # These literal actions use only request-visible source placeholders.
++    from biomodel_agent.domain.contracts import ModelDraft, Parameter, RateRule, State
++    from biomodel_agent.domain.serialization import to_dict
++    draft = ModelDraft('decay', (State('A', 2.),), (Parameter('k', .4),),
++                       rate_rules=(RateRule('A', '-k*A'),), time_unit='minute')
++    proposal = action('submit_draft', {'draft': to_dict(draft), 'evidence': [
++        {'target': target, 'source_ref': '$main', 'page': 1, 'quote': quote} for target, quote in [
++            ('A/initial', 'Initial A = 2.0.'), ('k/value', 'Parameter k = 0.4.'),
++            ('rule:A/expression', 'Equation dA/dt = -k*A.')]]})
++    return [proposal] if workflow == 'fixed_workflow' else [proposal, action('run'), action('finish')]
++
++
++@pytest.mark.parametrize('workflow', ['fixed_workflow', 'generic_tool_agent', 'domain_agent'])
++@pytest.mark.parametrize('usage', [None, {'prompt_tokens': 11, 'completion_tokens': 7, 'total_tokens': 18}])
++def test_real_shared_tools_through_http_keep_usage_and_linked_receipts(transport_module, tmp_path, workflow, usage):
++    module = transport_module
++    adapters = module.driver.adapters
++    p = projection(adapters, workflow)
++    transport = fixture_transport(module, p, literal_decay(module, workflow), usage=usage)
++    out = adapters.run_trial(p, transport, tmp_path/'phase')
++    assert out['record']['status'] == 'finished' and out['record']['observation']['state'] == 'completed'
++    calls = out['record']['telemetry']['model_calls']
++    assert calls == (1 if workflow == 'fixed_workflow' else 3)
++    assert out['record']['telemetry']['output_tokens'] == (None if usage is None else 7*calls)
++    assert len(out['audit']['transport_exchange_refs']) == calls
++    store = ArtifactStore(out['store_root'])
++    for ref in out['audit']['transport_exchange_refs']:
++        exchange = store.get(ref)
++        assert exchange['kind'] == 'evaluation_transport_exchange'
++        assert exchange['payload']['exchange']['outcome'] == 'ok'
++        assert exchange['payload']['exchange']['http_status'] == 200
++        assert set(exchange['refs']) <= set(out['audit']['request_refs'])
++    run = store.get(out['audit']['run_ref'])['payload']
++    assert run['source_validation']['semantic_support'] == 'unknown'
++    assert out['record']['evidence_kind'] == 'scripted_control'
++
++
++@pytest.mark.parametrize('workflow', ['fixed_workflow', 'generic_tool_agent', 'domain_agent'])
++@pytest.mark.parametrize('fault', ['http_error', 'timeout', 'invalid_envelope'])
++def test_http_failures_are_charged_and_persisted_once_per_workflow(transport_module, tmp_path, workflow, fault):
++    module = transport_module
++    adapters = module.driver.adapters
++    p = projection(adapters, workflow)
++    if fault == 'invalid_envelope':
++        transport = module.ChatCompletionTransport(p['model_config'], config(),
++            http_transport=httpx.MockTransport(lambda _: httpx.Response(200, content=b'not JSON SECRET')))
++    else:
++        transport = fixture_transport(module, p, [], status=429 if fault == 'http_error' else 200,
++            error=httpx.ReadTimeout('SECRET timeout') if fault == 'timeout' else None)
++    out = adapters.run_trial(p, transport, tmp_path/'phase')
++    expected = {'http_error': 'provider_error', 'timeout': 'timeout', 'invalid_envelope': 'invalid_output'}[fault]
++    assert out['record']['status'] == expected
++    assert out['record']['telemetry']['model_calls'] == 1 and not out['record']['observation']['executed']
++    assert len(out['audit']['transport_exchange_refs']) == 1
++    assert out['record']['telemetry']['output_tokens'] is None
++    for path in Path(out['store_root']).rglob('*.json'):
++        assert 'SECRET' not in path.read_text()
++
++
++@pytest.mark.parametrize('defect', ['endpoint', 'timeout', 'response_limit', 'mode'])
++def test_http_identity_changes_cannot_resume_a_parent(transport_module, tmp_path, defect):
++    module = transport_module
++    adapters = module.driver.adapters
++    first = projection(adapters, 'domain_agent', 'translation')
++    before = adapters.run_trial(first, fixture_transport(module, first,
++        [action('ask_researcher', {'question': 'What is initial P?'})]), tmp_path/'parent')
++    second = projection(adapters, 'domain_agent', 'translation', 'clarified')
++    options = config()
++    if defect == 'endpoint': options['base_url'] = 'https://other.invalid/v1'
++    elif defect == 'timeout': options['request_timeout_s'] = 9
++    elif defect == 'response_limit': options['max_response_bytes'] = 1024
++    transport = module.ChatCompletionTransport(second['model_config'], options,
++        http_transport=None if defect == 'mode' else httpx.MockTransport(lambda _: pytest.fail('changed identity reached HTTP')))
++    if defect == 'mode':
++        with pytest.raises(AttributeError):
++            transport.evidence_kind = 'scripted_control'
++    with pytest.raises(ValueError, match='evidence kind' if defect == 'mode' else 'provider/settings/budget'):
++        adapters.run_trial(second, transport, tmp_path/'child', store_root=before['store_root'],
++                           parent_session_ref=before['session_ref'])
++    assert not (tmp_path/'child').exists()
++
++
++@pytest.mark.parametrize('defect', ['endpoint', 'budget', 'source_hash', 'approval', 'implementation'])
++def test_preparation_changes_require_new_freeze(transport_module, tmp_path, monkeypatch, defect):
++    module = transport_module
++    manifest = module.driver.protocol.development_manifest(ROOT)
++    manifest['evidence_kind'] = 'live_model'
++    directory = tmp_path/'prepared'
++    module.prepare_comparison(manifest, config(), directory, root=ROOT)
++    filename = {'endpoint': 'transport.json', 'budget': 'manifest.json', 'source_hash': 'manifest.json',
++                'approval': 'preflight.json'}.get(defect)
++    if filename:
++        path = directory/filename
++        value = json.loads(path.read_text())
++        if defect == 'endpoint': value['base_url'] = 'https://other.invalid/v1'
++        elif defect == 'budget': value['budget']['max_model_calls'] += 1
++        elif defect == 'source_hash': value['cases'][0]['phases'][0]['files'][0]['sha256'] = '0'*64
++        else: value['status'] = 'approved'
++        path.write_text(json.dumps(value))
++    else:
++        original = module._implementation()
++        monkeypatch.setattr(module, '_implementation', lambda: {**original, 'httpx_version': 'changed'})
++    with pytest.raises(ValueError):
++        module.validate_preparation(directory, root=ROOT)
++
++
++def test_preparation_rejects_scripted_manifest_before_output(transport_module, tmp_path):
++    module = transport_module
++    with pytest.raises(ValueError, match='live-model'):
++        module.prepare_comparison(module.driver.protocol.development_manifest(ROOT), config(), tmp_path/'bad')
++    assert not (tmp_path/'bad').exists()
++
++
++@pytest.mark.parametrize('workflow', ['fixed_workflow', 'generic_tool_agent', 'domain_agent'])
++def test_same_http_identity_restores_actual_original_task_and_keeps_cumulative_budget(transport_module, tmp_path, workflow):
++    module = transport_module
++    adapters = module.driver.adapters
++    first = projection(adapters, workflow, 'translation')
++    before = adapters.run_trial(first, fixture_transport(module, first,
++        [action('ask_researcher', {'question': 'What is initial P?'})]), tmp_path/'parent')
++    assert before['record']['observation']['state'] == 'awaiting_input'
++    second = projection(adapters, workflow, 'translation', 'clarified')
++    proposal = translation_proposal([{'content': json.dumps({'materials': {'$main': {'pages': [{'chars': 1}]}}})},
++                                    {'content': json.dumps({'tool': 'researcher_reply', 'source_ref': '$reply'})}])
++    actions = [proposal] if workflow == 'fixed_workflow' else [proposal, action('run'), action('finish')]
++    after = adapters.run_trial(second, fixture_transport(module, second, actions), tmp_path/'child',
++        store_root=before['store_root'], parent_session_ref=before['session_ref'])
++    assert after['record']['continuation'] == 'resumed'
++    assert after['record']['observation']['state'] == 'completed'
++    store = ArtifactStore(after['store_root'])
++    parent = store.get(before['session_ref'])['payload']
++    child = store.get(after['session_ref'])['payload']
++    assert child['transport_identity'] == parent['transport_identity']
++    assert child['meter_totals']['model_calls'] == before['record']['telemetry']['model_calls']+after['record']['telemetry']['model_calls']
++    if workflow == 'domain_agent':
++        native = store.get(after['audit']['native_agent_run_ref'])['payload']
++        assert native['parent_run_ref'] == before['audit']['native_agent_run_ref']
++
++
++def test_http_mock_stall_is_still_bounded_by_the_outer_hard_deadline(transport_module, tmp_path):
++    module = transport_module
++    adapters = module.driver.adapters
++    p = projection(adapters)
++    p['budget']['max_elapsed_seconds'] = .8
++    def stall(request):
++        time.sleep(5)
++        return httpx.Response(200, json=envelope(p['model_config']))
++    transport = module.ChatCompletionTransport(p['model_config'], config(), http_transport=httpx.MockTransport(stall))
++    started = time.monotonic()
++    out = adapters.run_trial(p, transport, tmp_path/'timeout')
++    assert time.monotonic()-started < 4
++    assert out['record']['status'] == 'timeout' and not out['record']['observation']['executed']
++    assert out['record']['telemetry']['model_calls'] <= 1
++
++
++def test_missing_explicit_test_credential_never_creates_an_http_client(transport_module, monkeypatch):
++    module = transport_module
++    monkeypatch.delenv('T08C_INTENTIONALLY_UNSET_KEY', raising=False)
++    monkeypatch.setattr(module.httpx, 'Client', lambda *a, **kw: pytest.fail('missing credential opened a client'))
++    settings = model(module)
++    transport = module.ChatCompletionTransport(settings, {**config(), 'api_key_env': 'T08C_INTENTIONALLY_UNSET_KEY'})
++    with pytest.raises(ProviderError, match='credential unavailable'):
++        transport.request(packet(settings), 1)
++    assert transport.exchange_audit()['outcome'] == 'missing_credential'
++
++
++def test_preparation_cli_has_no_execution_path(transport_module, tmp_path, monkeypatch, capsys):
++    module = transport_module
++    manifest = module.protocol.development_manifest(ROOT)
++    manifest['evidence_kind'] = 'live_model'
++    manifest_path, transport_path = tmp_path/'manifest.json', tmp_path/'transport.json'
++    manifest_path.write_text(json.dumps(manifest))
++    transport_path.write_text(json.dumps(config()))
++    monkeypatch.setattr(module.httpx, 'Client', lambda *a, **kw: pytest.fail('CLI opened HTTP'))
++    assert module.main(['prepare', '--manifest', str(manifest_path), '--transport', str(transport_path),
++                        '--output', str(tmp_path/'ready')]) == 0
++    assert module.main(['check', str(tmp_path/'ready')]) == 0
++    with pytest.raises(SystemExit):
++        module.main(['execute', str(tmp_path/'ready')])
++    assert 'prepared_only_no_authorization' in capsys.readouterr().out
+--- a/docs/comparison-transport.md
++++ b/docs/comparison-transport.md
+@@ -0,0 +1,70 @@
++# T08c：共同 HTTP 传输与离线外发准备
++
++`benchmarks/development/comparison_transport.py` 提供三种工作流共用的 `ChatCompletionTransport`，实现既有 `request(payload, timeout_s)` 契约。产品源码、科学后端、T08a 评分器、旧测试及原材料不变；T08 整体仍待真实模型对照与独立审核。
++
++## 请求与兼容范围
++
++请求采用现有非流式 Chat Completions 子集：model、messages、temperature、top_p、max_tokens，以及清单非空时的 seed。传输层不补系统提示、不删除参数或自动换协议；请求值须与共同冻结配置一致。HTTP JSON 使用固定排序和 UTF-8 编码，传输收据的 request_body_sha256 可以从已审计请求重新计算，字符预算仍按 T08b 消息 JSON 口径计量。
++
++这不是所有模型通用的接口。2026-10-19 核对的 [OpenAI 官方文档](https://developers.openai.com/api/reference/resources/chat/subresources/completions/methods/create)将 max_tokens 列为旧参数、部分模型不支持，seed 也不保证确定性。本轮保留现有比较协议，未选择或迁移模型。服务不接受参数时如实失败；之后如需新协议，应对三组一起修改、重新冻结并验证，不能只给某一组删参或增加推理预算。
++
++响应必须是一个 index=0、finish_reason=stop、assistant 字符串消息；拒绝截断、拒答、原生 tool_calls/function_call、多候选、重复键、非有限 JSON 和过深嵌套。具体动作继续由现有严格解析器与共同工具白名单校验。返回 model 与清单不符时停止，未返回 model 保留未核验状态。服务自报 model、声明 revision 和 backend fingerprint 均不能认证真实底层模型；fingerprint 仅保留摘要用于发现变化。
++
++## 预算、错误与记录
++
++工作流先预留预算、保存实际请求，再进入 HTTP。传输只做一次尝试；HTTP 错误、限流、连接异常、超时和无效响应均不自动重试、不按 Retry-After 睡眠。服务错误不读取原始错误体。请求失败仍保留调用费用计数，缺少 usage 保留 null，不估算 token 或金额。
++
++服务地址仅支持 HTTPS，或显式本机 HTTP；拒绝 URL 凭证、查询串和片段。每次客户端禁用环境代理和自动跳转。密钥只在明确的网络 request 内从指定环境变量读取，不写入身份、请求、收据或异常。构造对象、准备和校验不读密钥、不创建 HTTP 客户端。单元测试的网络分支只使用专门的假环境变量，并把客户端替换为内存 HTTP。
++
++每次交换另存 `evaluation_transport_exchange`：固定身份摘要、实际 HTTP 请求体摘要、HTTP 状态、已读响应字节、结果类别、Retry-After 数值及可选 backend fingerprint 摘要。收据链接至原请求与预留，最终会话平坦引用这些产物。原动作文本和合法 usage 仍保存在原 evaluation_response。连接未返回、进程终止或缺失元数据时不猜测远端结果；远端可能已消耗费用，不能由未知结果触发隐式重放。
++
++响应按解码后的字节数限制，检查 UTF-8 和 JSON；这是读取/解析上限，不是完整进程内存上限。HTTP 单阶段等待采用较小的请求期限和剩余总预算，读取过程中也检查期限；总硬期限仍由 T08b POSIX 工作进程监督，包括不遵守 httpx 计时的测试回调。已被终止的进程可能来不及保存最后的 HTTP 收据，此时原请求和预留保留、响应未知。
++
++## 恢复身份
++
++旧通用注入接口仍可使用。新 HTTP 身份增加 profile、实际 network/mock 模式、服务地址、环境变量名称、请求期限、响应字节上限、模型配置摘要、httpx 版本及四个执行/评分模块的源码哈希。恢复比较其摘要；同一 Python 类换服务、改期限或换模式不能继续旧会话。密钥值不入身份，因此凭证轮换和提供方真实模型变化不受此摘要认证。
++
++`httpx.MockTransport` 是唯一允许注入的内存后端，此时 evidence_kind 为只读的 scripted_control，且使用固定假令牌，不读取实际密钥。默认网络后端为 live_model。Python 回调仍是受信任代码；这些声明和哈希不是隔离恶意代码的系统沙箱。
++
++## 准备与校验
++
++CLI 只提供 prepare/check，不执行线上调用。由操作者另存新 live_model 清单，填写实际提供方、模型与版本、设置和预算；另存传输配置，例如：
++
++```json
++{
++  "base_url": "https://YOUR_PROVIDER/v1",
++  "api_key_env": "BIOMODEL_API_KEY",
++  "request_timeout_s": 60.0,
++  "max_response_bytes": 2000000
++}
++```
++
++```bash
++PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=src .venv/bin/python \
++  benchmarks/development/comparison_transport.py prepare \
++  --manifest path/to/new-live-manifest.json \
++  --transport path/to/transport.json --output /tmp/comparison-preparation
++
++PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=src .venv/bin/python \
++  benchmarks/development/comparison_transport.py check /tmp/comparison-preparation
++```
++
++输出目录须不存在。包保存 manifest.json、transport.json 和 preflight.json；逐项列出案例/阶段、来源/实验路径、SHA256、字符与 UTF-8 字节数，并冻结服务、实现、模型/预算及计划摘要。预期外发还包含任务/工具指引、允许来源片段与预录澄清、对话历史及科学工具反馈；动态请求仍须实际审计。private_rubric 保留在控制器，不进入工作流投影。
++
++状态始终为 prepared_only_no_authorization。包不是授权凭据，修改成 approved 会在校验中拒绝；材料、服务、预算或实现变化也须重新冻结。真实执行还需依据用户对具体材料/服务的授权，把新传输注入现有 run_comparison；通用库是受信任执行接口，准备包本身不充当拦截任意 Python 网络调用的安全边界。
++
++[本轮准备示例](../artifacts/audit-t08c-http-transport-20261019/preparation-example/preflight.json)使用 `.invalid` 地址和 example-not-selected 模型，不能当成已选择服务或已获批准的运行计划。旧四次 c13/c18 USTC 外发拒绝仍有效；没有读取其材料、换路或重试。
++
++## 实测与限制
++
++修改前两项检查得到缺模块错误，说明缺少 HTTP/准备包能力，不作为已有产品行为缺陷。首轮 2 项、扩展 62 项通过；再补原任务恢复、期限、配置完整性、拒答/截断/原生工具与错误类型检查，最终专项 **74 项通过**。共同适配与评分定向 165 项通过，最终完整 **1309 项通过**（330.81 秒）；原测试和产品源码不改。源码差异、快照与原始日志见 [T08c 工程验收](../artifacts/audit-t08c-http-transport-20261019/acceptance.json)。
++
++HTTP 模拟中的决策仍是 F1 原有字面脚本，材料、模型占位配置、预算与清单不改。30 阶段均保存：66 次内存 HTTP 请求和逐条收据，18 个阶段技术完成，12 个初始缺口阶段仍追问；实际严格模拟与收敛加严积分各 18 次。三组/重复的轨迹相同，全部 18 次数值输出与 F1 一致，4 次产品领域 Agent 原生恢复的父任务关系已核对。实际请求体摘要逐条从已保存请求复算一致，收据链接至调用前预留；详见 [HTTP 与数值诊断](../artifacts/audit-t08c-http-transport-20261019/http-scientific-results.json)。
++
++全部 assessment 仍 unreviewed，semantic_support 为 unknown，线上推理调用及独立人工审核决定均为 0；缺失 usage 保持 null。准备示例的纯 CLI check 也已实际运行。旧 2425 个 T08a/T08b/F1 文件逐项哈希校验保留。它能验证传输与工作流连接，不能提供真实模型成绩、真实服务兼容性、费用或稳定性结论。
++
++用户在本轮末明确后续主要与 **Codex 产品执行**比较，候选先记为 gpt-6.1-sol 和 gpt-6-astra（后者暂按用户原文“6 Atra”理解），具体服务配置讨论按用户要求暂缓。[意图记录](../artifacts/audit-t08c-http-transport-20261019/comparison-intent.json)单列候选、未定地址与授权状态。
++
++下一项 T08d 先定义 Codex 对照协议、真实执行/记录接口及共同材料与预算，明确工具/权限/环境差异；确定配置和材料授权后再实跑。产品对 Codex 的系统比较用于评价实际表现，另保留同底层模型的三种工作流比较来判断框架贡献，模型差异与框架贡献分开归因。当前 T08a/T08b 三种内部工作流仍按原协议保留，Codex 需有自己的真实执行证据。
++
++独立领域审核、未见任务和 Memory/RAG/Skill 消融仍待补。已见合成材料保持开发属性，未增加论文或读取独立评测集。
+--- a/docs/workflow-adapters.md
++++ b/docs/workflow-adapters.md
+@@ -79,4 +79,6 @@
+ 
+ 驱动逐阶段保存 records 和 receipts。意外前置条件错误会保留已有产物并停止，原计划中未执行项仍可用 T08a 工具按固定分母汇总，不自动删掉失败或重跑。CLI 成功退出只表示驱动结束，应检查操作状态、技术状态、预算未知和未审核字段。
+ 
+-T08 整体仍缺实际同模型对照、独立审核任务及模块消融。下一项 T08c 先完成共同真实模型 transport 的离线接入与故障控制；冻结提供方、模型版本、设置、预算及允许外发的具体材料范围后，再在适用授权内运行真实模型开发对照。T07 的独立审核/真实论文证据仍待补；本轮没有新增论文、读取独立评测集、访问 c13/c18 或重试被拒绝的 USTC 外发。
++后续 [T08c 共同 HTTP 传输](comparison-transport.md)已完成离线工程验收：74 项专项、1309 项完整回归通过；新增传输身份摘要及逐次收据，同类更换服务地址/配置不能恢复旧任务。旧注入接口兼容，产品源码、评分器与原脚本不改。原样 30 阶段 HTTP 模拟有 66 次请求、18 次实际严格模拟及 18 次加严积分，原任务关系与数值均核对；依然是 scripted_control，不计真实模型表现。
++
++T08 整体仍缺实际模型对照、独立审核任务及模块消融。用户将主要对手定为 Codex，候选先记 gpt-6.1-sol、gpt-6-astra（暂按“Atra”理解），具体服务配置稍后讨论。下一项 T08d 先准备真实 Codex 执行与记录协议、共同材料/预算及工具环境差异，另保留同底层模型三工作流对照以区分框架贡献。服务配置和具体材料范围明确后再在适用授权内执行；T08c 准备包本身不授予外发授权。T07 的独立审核/真实论文证据仍待补；本轮没有新增论文、读取独立评测集、访问 c13/c18 或重试被拒绝的 USTC 外发。
+--- a/docs/agent-evaluation-protocol.md
++++ b/docs/agent-evaluation-protocol.md
+@@ -3,6 +3,8 @@
+ 本轮完成冻结清单、按阶段输入投影、记录协议和统一评分器，位于 `benchmarks/development/agent_evaluation.py`。它只准备输入和读取结果文件，不执行模型请求、工作流或科学计算。T08 整体仍未完成，不能从本轮控制数据比较系统能力。
+ 
+ 后续 [T08b 执行适配器](workflow-adapters.md)已接入三种工作流，领域组运行实际产品 Agent，完成脚本决策与真实科学工具的30阶段演练。本文保留 T08a 阶段的协议与验收边界；执行监督、共同工具、恢复及新发现的绑定句式限制以 T08b 文档为准。真实模型对照仍未开展。
++
++后续 [T08c HTTP 薄适配与离线准备](comparison-transport.md)已接入共同请求契约。实际内存 HTTP 演练仍标为 scripted_control；默认网络传输才声明 live_model。模型自报和准备包均不构成身份认证、独立审核或外发授权。本评分器及既有评分规则保持不变，真实同模型比较仍待后续运行。
+ 
+ T07 另有独立领域审核和真实论文检索对照待补。已有 18 例的 Codex 预审及一处条件标签修订候选已留档；按用户要求仍不增加新论文。T08a 的离线工程准备不依赖这些外部证据全部到位。
+ 
+--- a/docs/optimization-backlog.md
++++ b/docs/optimization-backlog.md
+@@ -1,6 +1,6 @@
+ # 架构审计后的优化任务队列
+ 
+-更新：2026-10-19。默认由 Codex 安排任务、监督 DSH 实现并独立验收；DSH 超时后，T03b 经用户授权由 Codex 接手，之后 T04 至 T08b-F1 延续用户要求的 Codex 独立实现方式。一次推进一项，验收后更新本表，不以执行方回复“完成”代替验收。
++更新：2026-10-19。默认由 Codex 安排任务、监督 DSH 实现并独立验收；DSH 超时后，T03b 经用户授权由 Codex 接手，之后 T04 至 T08c 延续用户要求的 Codex 独立实现方式。一次推进一项，验收后更新本表，不以执行方回复“完成”代替验收。
+ 
+ 审计原始证据已从临时目录归档到 [architecture-audit-20261019](../artifacts/architecture-audit-20261019/audit.md)。基线完整 Python 回归 715 项通过，同时存在下列已复现问题；测试数量不代表真实模型科研能力。
+ 
+@@ -14,9 +14,10 @@
+ | T05 | 引文中的数值可错绑目标，公式可不对应草稿 | **已验收**：[结果与限制](evidence-binding.md) | Codex独立实现；版本化目标/数值/表达式/原文位置记录、显式映射见证、实际SBML重检；基线16失败，扩展108通过，完整990通过；语义支持仍unknown |
+ | T06 | PDF 只有 pypdf 逐页文本，尚未接入成熟解析结果 | **已验收**：[结果与限制](pdf-parser-adapter.md) | 可选本地PyMuPDF薄适配、原PDF/版本/不可变产物/块坐标、辅助表格和失败诊断；40例专项通过，完整1030通过；OCR/公式识别仍not_run |
+ | T07 | 检索目前只有待独立审核的合成开发对照 | **T07a工程准备已验收；T07b已做Codex预审，待独立领域审核，整体未结项**：[审核包与协议](retrieval-review.md) | 不加新论文；18例中17项建议保留、1项条件标签建议修订，另存候选包；人工决定仍全部pending，原包/代码不改；1075为此前完整回归 |
+-| T08 | 缺同底层模型、近预算的真实 Agent 公平评价 | **T08a/T08b及F1工程已验收；真实模型对照仍待做，整体未结项**：[执行与限制](workflow-adapters.md) | 三种实际工作流、共同后端/请求/预算、总期限和原任务恢复；F1原样30阶段含18次实际模拟，脚本响应不算模型表现 |
++| T08 | 缺同底层模型、近预算的真实 Agent 公平评价 | **T08a/T08b/F1/T08c工程已验收；真实模型对照仍待做，整体未结项**：[执行与限制](workflow-adapters.md) | 三种实际工作流、共同HTTP/请求/预算、总期限和原任务恢复；原样30阶段含18次实际模拟，脚本响应不算模型表现 |
+ | T08b-F1 | 共同绑定工具不支持 “the intended equation is …” 澄清句式 | **已验收**：[实际结果与补丁](../artifacts/audit-t08b-f1-equation-prose-20261019/acceptance.json) | 完整固定句式/原文位置及截短、否定、不确定、条件限定负控制；63项新增检查，完整1235通过；六处澄清解阻，原材料/脚本/成绩保留，语义仍unknown |
+-| T08c | 缺共同真实模型transport及可审核的线上执行准备 | **下一项：先离线实现** | 三组共用请求契约；冻结提供方/模型版本/设置/预算/允许外发材料范围；验证超时、服务错误、usage未知和不自动重试，再在适用授权内实际运行 |
++| T08c | 缺共同真实模型transport及可审核的线上执行准备 | **离线工程已验收**：[结果与边界](comparison-transport.md) | 共同HTTP薄适配、地址/配置/实现身份、结构化收据和纯离线准备包；专项74、完整1309通过；66次HTTP模拟请求和18次实际模拟，不含真实推理 |
++| T08d | 尚未完成产品与Codex的实际对照及同模型框架归因 | **下一项：优先Codex对照协议/执行接入，具体服务配置稍后讨论** | 用户候选gpt-6.1-sol及gpt-6-astra（Atra暂作此解）；真实Codex执行与记录、共同材料/预算及工具环境差异；另保留同模型三工作流归因，授权范围明确后实跑，失败保留分母 |
+ | T09 | Memory 候选审核、Skill 科研流程、失效传播和规模性能 | 待真实任务证据 | T05/T08；候选不自动成为事实，技能有案例/失败条件，以消融检验收益，测量后优化索引 |
+ 
+ 保留单 Agent、模块化单体、SBML 权威执行载荷、不可变产物及冻结研究协议。暂缓多 Agent、通用 PDE、开放机制搜索及没有规模测量支撑的基础设施迁移。
+@@ -53,7 +54,9 @@
+ 
+ 原样30阶段重跑有66次脚本响应、18次实际严格运行及18次加严积分；六个澄清阶段解阻，12个初始缺口仍追问，原12次已完成的数值输出不变。三组各重复的轨迹一致，所有assessment仍unreviewed。旧1089份T08a/T08b产物逐文件哈希校验保留；解析误差如实记录，不改变精度门槛。[验收与数值诊断](../artifacts/audit-t08b-f1-equation-prose-20261019/acceptance.json)不作为模型能力成绩。
+ 
+-下一步T08c先离线接入共同线上transport与故障控制，再在适用授权内冻结具体材料、底层模型、设置和预算后开展真实模型开发对照。独立领域审核、未见科学任务、真实同模型对照及Memory/RAG/Skill消融仍待完成。本轮没有扩展论文范围、读取独立评测集或重试USTC被拒绝的材料外发。
++T08c按[任务卡](../tasks/audit-t08c-http-transport.json)和[计划](../artifacts/audit-t08c-http-transport-20261019/execution-plan.md)完成共同HTTP传输与离线准备。保持产品源码、原测试、T08a评分器及脚本驱动不变；同类切换地址/期限/响应限制/模式的恢复拒绝，HTTP错误/限流无重试，截断、拒答和原生工具消息不执行，缺失usage仍null。专项74、完整1309项通过，原30阶段得到66条实际HTTP模拟收据、18次严格模拟及18次加严积分，18次数值与F1一致，4次原生恢复父关系保留。旧2425个T08a/T08b/F1产物哈希不变，全部assessment仍unreviewed；见[验收与差异](../artifacts/audit-t08c-http-transport-20261019/acceptance.json)。
++
++纯离线准备包冻结具体来源/实验哈希、服务/模型/预算与实现，状态为prepared_only_no_authorization；示例地址和模型均未实际选定，不能当成已获外发授权。用户在T08c末明确主要与Codex竞争，先考虑gpt-6.1-sol及gpt-6-astra（后者暂按“Atra”理解）；具体配置讨论稍后进行，已另存[意图记录](../artifacts/audit-t08c-http-transport-20261019/comparison-intent.json)。下一步T08d先准备真实Codex对照协议与执行/记录接口，冻结共同材料、预算及工具/权限差异；另做同底层模型的框架对照，避免把模型差异归为领域框架收益。实际服务和材料范围明确后冻结新包，再按适用授权执行。独立领域审核、未见科学任务、真实同模型对照及Memory/RAG/Skill消融仍待完成。本轮没有扩展论文范围、读取独立评测集或重试USTC被拒绝的材料外发。
+ 
+ 任务不涉及 c13/c18 材料、独立评测材料、密钥或外部模型评价。此前四次 USTC 外发审批拒绝仍有效，不重试或改道。
+ 
+--- a/docs/seven-point-status.md
++++ b/docs/seven-point-status.md
+@@ -10,7 +10,7 @@
+ | Tool Use | 材料读取/检索、可选本地PyMuPDF页块/表格解析与引用定位、记忆召回、技能读取、有界目标/数值/公式绑定、模拟，以及冻结的训练拟合/留出比较 | 解析与绑定不能证明语义支持；OCR/公式识别未运行，表格和复杂阅读顺序待审核；复杂语言/单位换算仍unknown，拟合仍限已验证的profile |
+ | 工作流 | 追问、归属回复、暂停/恢复、版本与预算冻结、一次研究执行、持久调用记录、受控故障恢复/结果认领及本地所有者；统一研究入口与科学总期限 | 任意崩溃点自动恢复、跨分支全局费用/执行限额、较复杂的研究修改与失效传播仍有限；科学工具总期限不包含此前LLM讨论或研究者等待 |
+ | Skill | 固定版本的 ODE 复现、澄清复核、受约束研究指引；目录随任务模式冻结，不改变权限或科学判据 | 仍为少量内置流程；可增加有独立科学案例验收的技能，不急于通用插件市场 |
+-| Evaluation | 完整数值/故障回归、解析解、恢复演练；T08a共同清单/固定分母评分；T08b三种执行适配、共同工具和预算、进程期限、实际产品Agent原任务恢复；F1完整声明句式及原样重跑 | 当前仅脚本响应驱动真实工具；下一项T08c共同真实模型transport先离线接入，专家审核的未见任务、同模型在线对照、真实模块消融仍待完成 |
++| Evaluation | 完整数值/故障回归、解析解、恢复演练；T08a共同清单/固定分母评分；T08b三种执行适配及原任务恢复；F1完整声明句式；T08c共同HTTP、传输身份/收据和离线准备包 | 当前仅脚本响应/内存HTTP驱动真实工具；T08d优先Codex两模型候选的真实对照协议/接入，服务配置稍后讨论；同模型框架归因、专家审核任务及真实消融仍待完成 |
+ 
+ 本轮选择补 Memory 的工作上下文与 Evaluation，因为之前只有持久化与续跑，而每次请求仍可能携带不断增长的全部历史。详见 [上下文预算](context-budget.md)；前两轮能力见 [记忆与检索](memory-and-retrieval.md) 和 [受约束研究工具](agent-study-tool.md)。
+ 
+@@ -29,3 +29,7 @@
+ 随后[T08b工作流适配](workflow-adapters.md)接入实际产品Agent和两种共用后端的基线编排，完成30阶段脚本决策演练：58次脚本transport响应、12次实际严格模拟及12次加严积分、线上模型调用0，轨迹跨三组一致。6个澄清阶段因共同绑定语法继续等待，已登记T08b-F1；原文、规则和未知状态保留。判断均未独立审核，不构成模型成功率或优势结论。产品源码、原测试和T08a源码未改，完整验收见[记录](../artifacts/audit-t08b-workflow-adapters-20261019/acceptance.json)。
+ 
+ 后续T08b-F1补齐两种完整intended-equation声明句式，保留确认前缀偏移和原有限定/公式检查；新增63项开发检查，完整1235项通过。仅新建指纹清单，材料、脚本、预算不变，旧清单/不兼容恢复继续拒绝。原样30阶段重跑使用66次脚本响应、18次严格模拟及18次加严积分；六处澄清解阻，12个初始缺口仍追问，原12次完成的数值输出不变，三组/重复轨迹一致。原测试、旧成绩和失败记录保留，assessment未审核、semantic_support仍unknown；见[F1验收](../artifacts/audit-t08b-f1-equation-prose-20261019/acceptance.json)。T07/T08整体缺口未因此关闭，下一项为T08c共同transport的离线准备。
++
++随后[T08c共同HTTP与离线准备](comparison-transport.md)完成工程验收：专项74项、完整1309项通过；产品源码、原测试、评分器和既有材料/脚本保持不变。原样30阶段经过内存HTTP，66条请求及收据可复核，18次严格运行与18次加严积分的数值均与F1一致，4次产品领域Agent原生恢复父关系保留。地址/配置切换恢复拒绝、服务错误/超时无自动重试、未知usage及纯离线准备/失效检查已覆盖。准备示例不是授权，未选择真实服务/模型、读取实际凭证或执行线上推理；T07独立审核与T08真实模型对照/消融仍待完成，下一项T08d待具体服务配置和材料范围明确后推进。
++
++用户随后明确主要与Codex竞争，候选先记gpt-6.1-sol与gpt-6-astra（“6 Atra”暂作此解），服务配置讨论按要求暂缓。T08d先补真实Codex对照协议和执行/记录接口，共同材料/预算与工具环境差异留档；另保留同模型工作流对照来区分框架和模型贡献。候选不表示已发起调用或获得材料外发授权，见[意图记录](../artifacts/audit-t08c-http-transport-20261019/comparison-intent.json)。
+--- a/tasks/audit-t08c-http-transport.json
++++ b/tasks/audit-t08c-http-transport.json
+@@ -0,0 +1,8 @@
++{
++  "task_id": "T08c",
++  "owner": "Codex alone",
++  "objective": "Add one shared HTTP comparison transport and an offline, reviewable material/endpoint/model preparation bundle; validate with actual in-memory HTTP and scientific tools, without external inference.",
++  "write_scope": ["benchmarks/development/comparison_transport.py", "benchmarks/development/workflow_adapters.py", "tests/test_comparison_transport.py", "docs/comparison-transport.md", "docs/workflow-adapters.md", "docs/agent-evaluation-protocol.md", "docs/optimization-backlog.md", "docs/seven-point-status.md", "tasks/audit-t08c-http-transport.json", "artifacts/audit-t08c-http-transport-20261019"],
++  "constraints": ["No product source or original tests changed", "No T08a scorer, scripted driver, source material or decision script changes", "No subagents or DSH", "No online inference, real credential reads, new papers, independent evalset or c13/c18 access", "Mock HTTP remains scripted_control", "No silent retries, parameter fallbacks, redirects, environment proxies or version bypass", "Preparation is not external transmission authorization", "Prior artifacts remain immutable"],
++  "acceptance": ["Missing-capability baseline", "Shared exact request values and settings through HTTP", "Bounded strict response decoding and completion/refusal guards", "Timeout/error/usage/no-retry controls and structured sanitized receipts", "Endpoint and transport settings frozen across actual original-task resume", "Offline material and implementation hashes with stale-preparation rejection", "Thirty-phase HTTP mock replay with actual scientific tools", "Appropriate full regression, scope/hash verification, final patch and raw results"]
++}

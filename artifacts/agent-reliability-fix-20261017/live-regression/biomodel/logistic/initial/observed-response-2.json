@@ -1,0 +1,28 @@
+{
+  "id": "chatcmpl-4b34c1ca-433a-4bb1-a4d2-a35aa16ba240",
+  "created": 1792237940,
+  "model": "qwen3.8-chat",
+  "object": "chat.completion",
+  "choices": [
+    {
+      "finish_reason": "stop",
+      "index": 0,
+      "message": {
+        "content": "{\"action\": \"ask_researcher\", \"args\": {\"question\": \"The source gives two equally authoritative alternatives for the ODE: dX/dt = r*X*(1-X/K) OR dX/dt = r*X*(1-X)/K, and does not specify which was used. Which one should the model use?\"}, \"reason\": \"Source explicitly presents two conflicting rate expressions without specifying which applies; must not choose on my own.\"}",
+        "role": "assistant",
+        "provider_specific_fields": {
+          "refusal": null
+        }
+      },
+      "provider_specific_fields": {}
+    }
+  ],
+  "usage": {
+    "completion_tokens": 95,
+    "prompt_tokens": 1229,
+    "total_tokens": 1324,
+    "prompt_tokens_details": {
+      "cached_tokens": 0
+    }
+  }
+}

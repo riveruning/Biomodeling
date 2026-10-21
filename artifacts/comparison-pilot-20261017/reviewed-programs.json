@@ -1,0 +1,8 @@
+{
+  "artifacts/comparison-pilot-20261017/codex/raw/simulate.py": "fb01bb5000518a63c43449eec1d0b0763d839408fd1eed3e8b2cce80beb63c84",
+  "artifacts/comparison-pilot-20261017/codex/assisted/simulate.py": "9624d3dbd4290df27d61ea00882dc469ad7c644e2e8b8656a25e1a835226c51f",
+  "artifacts/comparison-pilot-20261017/codex/complete/simulate.py": "431c0ef7b68a7901216fa6e88ef8444e04effb3c560d3eeeb07bba483a866c43",
+  "artifacts/comparison-pilot-20261017/dsh/raw/simulate.py": "1b58ec77647ef5a0d17daa4487a16ac51b1e703c23e9c0452a7ba52ba69cc75a",
+  "artifacts/comparison-pilot-20261017/dsh/assisted/simulate.py": "4621820e8b3b472743e308fc3b20285a1d35a7d5250a44cd450a497c04ff0a4e",
+  "artifacts/comparison-pilot-20261017/dsh/complete/simulate.py": "6b2c47958036c9fd1b805e5781b386f698bd0b0842d848281c3aaf976f644181"
+}

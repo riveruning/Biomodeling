@@ -1,0 +1,24 @@
+{
+  "status": "needs_input",
+  "parameters": [
+    {"id": "s", "value": 0.8, "unit": "min^-1"},
+    {"id": "dm", "value": 0.4, "unit": "min^-1"},
+    {"id": "kp", "value": 0.6, "unit": "min^-1"},
+    {"id": "dp", "value": 0.2, "unit": "min^-1"}
+  ],
+  "states": [
+    {"id": "M", "initial": 1.0},
+    {"id": "P", "initial": null}
+  ],
+  "equations": [
+    {"state": "M", "expression": "s-dm*M"},
+    {"state": "P", "expression": "kp*M-dp*P"}
+  ],
+  "questions": [
+    "What is the initial dimensionless activity P at t = 0 minutes?"
+  ],
+  "limitations": [
+    "The initial value of P is not reported; a unique simulation of the complete system cannot be justified.",
+    "Parameter units are inferred from the supplied equations, dimensionless states, and time in minutes."
+  ]
+}

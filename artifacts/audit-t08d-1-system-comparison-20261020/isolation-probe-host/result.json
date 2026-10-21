@@ -1,0 +1,23 @@
+{
+  "runtime_files": [
+    "TASK.md",
+    "experiment.json",
+    "source.txt"
+  ],
+  "source_sha256": "ce02704af04e7ff8101dd646bd1dcfdbbae0e1df853de87135fc359c9793bed2",
+  "forbidden_reads_denied": {
+    "artifacts/audit-t08d-1-system-comparison-20261020/isolation-probe-host/operator-only-canary.txt": true,
+    "artifacts/audit-t08d-1-system-comparison-20261020/isolation-probe-host/task/manifest.json": true,
+    "/home/riveruning/biologymodel_agent/src/biomodel_agent/agent.py": true
+  },
+  "task_inputs_readonly": true,
+  "network_namespace": "net:[4026532243]",
+  "environment_names": [
+    "LANG",
+    "PWD"
+  ],
+  "evidence_kind": "scripted_control",
+  "status": "offline_OS_visibility_probe_passed",
+  "native_Codex_execution_verified": false,
+  "limit": "Only this fixed Python probe was executed. Future native launch still needs its own runtime/session/auth mounts and visibility checks."
+}

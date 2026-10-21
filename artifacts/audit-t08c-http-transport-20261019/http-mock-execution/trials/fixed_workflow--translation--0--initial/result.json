@@ -1,0 +1,74 @@
+{
+  "record": {
+    "trial_id": "fixed_workflow--translation--0--initial",
+    "manifest_sha256": "67590824f164fa01c9533f3b460ab0b229b248dcd7f4f2f584a61e8697677c27",
+    "evidence_kind": "scripted_control",
+    "model_config": {
+      "provider": "offline_control",
+      "model": "scripted-fixture",
+      "revision": "not-a-model",
+      "temperature": 0.0,
+      "top_p": 1.0,
+      "max_output_tokens": 1000,
+      "seed": 0
+    },
+    "toolchain_sha256": "abad7db107b62cb942b96ec88df701d47c8eb236275d0cf17216f37da6686252",
+    "status": "finished",
+    "continuation": "none",
+    "parent_trial_id": null,
+    "observation": {
+      "state": "awaiting_input",
+      "executed": false,
+      "claimed_complete": false,
+      "identified_gaps": [],
+      "question_targets": [],
+      "question_texts": [
+        "What is the initial P value?"
+      ]
+    },
+    "assessment": {
+      "authority": "unreviewed",
+      "reviewer": null,
+      "evidence_refs": [],
+      "numeric": "unknown",
+      "source_support": "unknown",
+      "behavior_labels_reviewed": false
+    },
+    "telemetry": {
+      "model_calls": 1,
+      "tool_calls": 1,
+      "max_request_chars": 2581,
+      "max_response_tokens": null,
+      "elapsed_seconds": 0.26819443499698536,
+      "human_interventions": 0,
+      "human_seconds": 0.0,
+      "input_tokens": null,
+      "output_tokens": null
+    }
+  },
+  "session_ref": "9a84944c78a3fe0851993a1f762b6f738537d30135b0cedce0a523e6c16bfc80",
+  "store_root": "/home/riveruning/biologymodel_agent/artifacts/audit-t08c-http-transport-20261019/http-mock-execution/stores/fixed_workflow--translation--0",
+  "audit": {
+    "supervised": true,
+    "stop_reason": null,
+    "run_ref": null,
+    "native_agent_run_ref": null,
+    "request_refs": [
+      "f19a995dbac9c06c2c8492cccd52a53d272116e729e320e3b8190428eef7dace"
+    ],
+    "response_refs": [
+      "6c4abf5892e2a8d7460cf86d7c22c6ed216ea5a9cc7807476762bc9314b1b904"
+    ],
+    "transport_exchange_refs": [
+      "fd251f2c54b4d4407bf981c04ee3022f918737288c3502102965b58db07c81c0"
+    ],
+    "reservation_refs": [
+      "0c8d0bd048721d1a86421e1b8b779bc95adc17d3641309011c382c5794d36a68",
+      "37e48f67d70da4019796436baffd24fd67482390c358fbc59ca04206e44d9f49"
+    ],
+    "clarification_origin": null,
+    "runtime_adapter_sha256": "1184e44fe5386cff8cce5c05f644668263ab74b1550af8e2e587bc2cf5372aaf",
+    "scientific_support": "unknown",
+    "same_returned_model_verified": true
+  }
+}

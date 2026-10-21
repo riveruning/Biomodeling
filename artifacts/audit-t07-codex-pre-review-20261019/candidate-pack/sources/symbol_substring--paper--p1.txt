@@ -1,0 +1,1 @@
+The kcat and kcat2 entries describe other parameters.

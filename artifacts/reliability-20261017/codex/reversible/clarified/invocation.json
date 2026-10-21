@@ -1,0 +1,21 @@
+{
+  "command": [
+    "/home/riveruning/.local/bin/codex",
+    "exec",
+    "--ignore-user-config",
+    "--ephemeral",
+    "--skip-git-repo-check",
+    "--sandbox",
+    "workspace-write",
+    "--model",
+    "gpt-6.1-sol",
+    "--json",
+    "-C",
+    "/tmp/biomodel-reliability-od3u8k8r",
+    "Read TASK.md and source.txt. Complete this one independent evaluation task now. Do not spawn agents or inspect outside files. Do not run generated Python; it will be independently reviewed and executed. Write answer.json and simulate.py in the current directory. The evaluator supplies Python with numpy/scipy later. No package installation is needed."
+  ],
+  "working_directory": "/tmp/biomodel-reliability-od3u8k8r",
+  "prompt": "Read TASK.md and source.txt. Complete this one independent evaluation task now. Do not spawn agents or inspect outside files. Do not run generated Python; it will be independently reviewed and executed. Write answer.json and simulate.py in the current directory. The evaluator supplies Python with numpy/scipy later. No package installation is needed.",
+  "native_auth": true,
+  "user_config_ignored": true
+}

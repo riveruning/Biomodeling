@@ -1,0 +1,28 @@
+{
+  "id": "chatcmpl-0f7f49fe-19e1-4c55-b57c-3b37e92c6dcd",
+  "created": 1792252507,
+  "model": "qwen3.8-chat",
+  "object": "chat.completion",
+  "choices": [
+    {
+      "finish_reason": "stop",
+      "index": 0,
+      "message": {
+        "content": "{\"action\": \"submit_draft\", \"args\": {\"draft\": {\"compartment\": {\"id\": \"C\", \"size\": 1, \"unit\": \"dimensionless\"}, \"derived\": [], \"id\": \"s1_to_s2_clearance\", \"parameters\": [{\"id\": \"k1\", \"origin\": \"source\", \"unit\": \"per minute\", \"value\": 0.85}, {\"id\": \"k2\", \"origin\": \"source\", \"unit\": \"per minute\", \"value\": 0.25}], \"rate_rules\": [{\"expression\": \"-k1*A\", \"state\": \"A\"}, {\"expression\": \"k1*A - k2*B\", \"state\": \"B\"}], \"reactions\": [], \"states\": [{\"id\": \"A\", \"initial\": 4.0, \"nonnegative\": false, \"quantity_kind\": \"variable\", \"unit\": \"a.u.\"}, {\"id\": \"B\", \"initial\": 0.0, \"nonnegative\": false, \"quantity_kind\": \"variable\", \"unit\": \"a.u.\"}], \"time_unit\": \"min\"}, \"evidence\": [{\"page\": 1, \"quote\": \"A(0) = 4.0 a.u.; B(0) = 0.0 a.u.\", \"source_ref\": \"306e5d1cdd11cefc9fa15075ee0d25440a4edc431979a96f3d22a1484a4b1c44\", \"target\": \"A/initial\"}, {\"page\": 1, \"quote\": \"A(0) = 4.0 a.u.; B(0) = 0.0 a.u.\", \"source_ref\": \"306e5d1cdd11cefc9fa15075ee0d25440a4edc431979a96f3d22a1484a4b1c44\", \"target\": \"B/initial\"}, {\"page\": 1, \"quote\": \"k1 = 0.85 per minute; k2 = 0.25 per minute.\", \"source_ref\": \"306e5d1cdd11cefc9fa15075ee0d25440a4edc431979a96f3d22a1484a4b1c44\", \"target\": \"k1/value\"}, {\"page\": 1, \"quote\": \"k1 = 0.85 per minute; k2 = 0.25 per minute.\", \"source_ref\": \"306e5d1cdd11cefc9fa15075ee0d25440a4edc431979a96f3d22a1484a4b1c44\", \"target\": \"k2/value\"}, {\"page\": 1, \"quote\": \"dA/dt = -k1*A ; dB/dt = k1*A - k2*B.\", \"source_ref\": \"306e5d1cdd11cefc9fa15075ee0d25440a4edc431979a96f3d22a1484a4b1c44\", \"target\": \"rule:A/expression\"}, {\"page\": 1, \"quote\": \"dA/dt = -k1*A ; dB/dt = k1*A - k2*B.\", \"source_ref\": \"306e5d1cdd11cefc9fa15075ee0d25440a4edc431979a96f3d22a1484a4b1c44\", \"target\": \"rule:B/expression\"}, {\"page\": 1, \"quote\": \"sampled every 0.25 min from t = 0 to t = 8 min inclusive.\", \"source_ref\": \"306e5d1cdd11cefc9fa15075ee0d25440a4edc431979a96f3d22a1484a4b1c44\", \"target\": \"time_unit\"}, {\"page\": 1, \"quote\": \"single well-mixed compartment of size 1 (dimensionless)\", \"source_ref\": \"306e5d1cdd11cefc9fa15075ee0d25440a4edc431979a96f3d22a1484a4b1c44\", \"target\": \"C/size\"}], \"mechanism\": \"S1 (A) -> S2 (B) irreversible, then B cleared first-order\"}}",
+        "role": "assistant",
+        "provider_specific_fields": {
+          "refusal": null
+        }
+      },
+      "provider_specific_fields": {}
+    }
+  ],
+  "usage": {
+    "completion_tokens": 1093,
+    "prompt_tokens": 2624,
+    "total_tokens": 3717,
+    "prompt_tokens_details": {
+      "cached_tokens": 0
+    }
+  }
+}

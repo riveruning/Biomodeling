@@ -1,0 +1,19 @@
+{
+  "schema_version": "1",
+  "id": "replace-with-task-id",
+  "objective": "替换为一个可单独验收的行为目标。",
+  "context": "填写已经冻结的相关接口与必要背景，不粘贴全部架构文档。",
+  "read_files": ["README.md"],
+  "write_files": ["src/biomodel_agent/example.py", "tests/test_example.py"],
+  "expected_files": ["src/biomodel_agent/example.py", "tests/test_example.py"],
+  "instructions": "这是模板，须替换为具体实现要求后才派发。只在允许文件范围内实现，使用明确路径的文件工具；测试由 Codex 执行。",
+  "acceptance": ["替换为行为与错误路径的验收条件"],
+  "verification_commands": [[".venv/bin/python", "-m", "pytest", "tests/test_example.py", "-q"]],
+  "budget": {
+    "first_activity_ms": 120000,
+    "idle_ms": 180000,
+    "first_write_ms": 300000,
+    "write_idle_ms": 300000,
+    "total_ms": 600000
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "status": "failed",
+  "error_type": "RuntimeError",
+  "error": "provider_http_429",
+  "calls": 0,
+  "tokens": 0,
+  "variant": "official_original_prompt_alternative_LLM_compatible_runtime",
+  "questions": [],
+  "native_clarification_capability": "not_available",
+  "system": "kinmodgpt",
+  "case": "translation",
+  "phase": "initial",
+  "elapsed_seconds": 0.10382329200365348
+}

@@ -1,0 +1,17 @@
+{
+  "status": "awaiting_input",
+  "calls": 2,
+  "tokens": 2135,
+  "questions": [
+    "The source gives two equally authoritative alternatives for dX/dt: (A) r*X*(1-X/K) or (B) r*X*(1-X)/K, and does not specify which was used. Which one should the reproduction model use?"
+  ],
+  "problems": [],
+  "model_ref": null,
+  "run_ref": null,
+  "agent_ref": "3dc7e80621a734f5969e11d93e9cf4dcb61bef80b72d4238e0fb0083500e25f4",
+  "product_modules_sha256": "446e6f3a01fc692ef8f8da085c81f86a41e75e2b41276be86eb1c5c103c8c47b",
+  "system": "biomodel",
+  "case": "logistic",
+  "phase": "initial",
+  "elapsed_seconds": 18.80969142799586
+}

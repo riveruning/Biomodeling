@@ -1,0 +1,20 @@
+{
+  "status": "executed",
+  "initial_values": {
+    "X": 0.2
+  },
+  "parameters": {
+    "X": 0.2,
+    "r": 0.8,
+    "K": 2.0
+  },
+  "calls": 1,
+  "tokens": 809,
+  "variant": "official_original_prompt_alternative_LLM_compatible_runtime",
+  "questions": [],
+  "native_clarification_capability": "not_available",
+  "system": "kinmodgpt",
+  "case": "logistic",
+  "phase": "initial",
+  "elapsed_seconds": 1.4356986979983049
+}

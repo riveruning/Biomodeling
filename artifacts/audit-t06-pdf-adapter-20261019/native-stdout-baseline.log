@@ -1,0 +1,24 @@
+F                                                                        [100%]
+=================================== FAILURES ===================================
+_______ test_native_stdout_diagnostics_do_not_corrupt_application_stdout _______
+
+tmp_path = PosixPath('/tmp/biomodel-t06-native-stdout-baseline/test_native_stdout_diagnostics0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x719bfa2d6780>
+capfd = <_pytest.capture.CaptureFixture object at 0x719bfa2d6840>
+
+    def test_native_stdout_diagnostics_do_not_corrupt_application_stdout(tmp_path, monkeypatch, capfd):
+        from biomodel_agent import pdf_adapter
+        monkeypatch.setattr(pdf_adapter, '_worker', _noisy_native_worker)
+        store, source, _ = ingested(tmp_path)
+        assert store.get(source)['kind'] == 'source'
+        output = capfd.readouterr()
+>       assert output.out == ''
+E       AssertionError: assert 'injected nat...t analysis.\n' == ''
+E         
+E         + injected native diagnostic on stdout
+E         + Consider using the pymupdf_layout package for a greatly improved page layout analysis.
+
+tests/test_pdf_adapter_acceptance.py:413: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_pdf_adapter_acceptance.py::test_native_stdout_diagnostics_do_not_corrupt_application_stdout
+1 failed in 0.69s

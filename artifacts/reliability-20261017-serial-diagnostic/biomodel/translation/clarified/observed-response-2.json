@@ -1,0 +1,28 @@
+{
+  "id": "chatcmpl-b2fdf895-9c89-4da9-9d07-a7d57258d376",
+  "created": 1792203491,
+  "model": "qwen3.8-chat",
+  "object": "chat.completion",
+  "choices": [
+    {
+      "finish_reason": "stop",
+      "index": 0,
+      "message": {
+        "content": "{\"action\": \"submit_draft\", \"args\": {\"draft\": {\"id\": \"ff71e00473153e250b83990d2345c445d334136570770507391813e9fef16fa3\", \"states\": [{\"id\": \"M\", \"initial\": 1.0, \"unit\": null, \"quantity_kind\": \"variable\", \"nonnegative\": true}, {\"id\": \"P\", \"initial\": 0.2, \"unit\": null, \"quantity_kind\": \"variable\", \"nonnegative\": true}], \"parameters\": [{\"id\": \"s\", \"value\": 0.8, \"unit\": null, \"origin\": \"source\"}, {\"id\": \"dm\", \"value\": 0.4, \"unit\": null, \"origin\": \"source\"}, {\"id\": \"kp\", \"value\": 0.6, \"unit\": null, \"origin\": \"source\"}, {\"id\": \"dp\", \"value\": 0.2, \"unit\": null, \"origin\": \"source\"}], \"compartment\": {\"id\": \"c\", \"size\": 1, \"unit\": null}, \"reactions\": [], \"rate_rules\": [{\"state\": \"M\", \"expression\": \"s-dm*M\"}, {\"state\": \"P\", \"expression\": \"kp*M-dp*P\"}], \"derived\": [], \"time_unit\": \"minutes\"}, \"evidence\": [{\"target\": \"M/initial\", \"source_ref\": \"ff71e00473153e250b83990d2345c445d334136570770507391813e9fef16fa3\", \"page\": 1, \"quote\": \"Initial M = 1.0.\"}, {\"target\": \"P/initial\", \"source_ref\": \"ff71e00473153e250b83990d2345c445d334136570770507391813e9fef16fa3\", \"page\": 1, \"quote\": \"Initial P = 0.2.\"}, {\"target\": \"s/value\", \"source_ref\": \"ff71e00473153e250b83990d2345c445d334136570770507391813e9fef16fa3\", \"page\": 1, \"quote\": \"Parameter s = 0.8.\"}, {\"target\": \"dm/value\", \"source_ref\": \"ff71e00473153e250b83990d2345c445d334136570770507391813e9fef16fa3\", \"page\": 1, \"quote\": \"Parameter dm = 0.4.\"}, {\"target\": \"kp/value\", \"source_ref\": \"ff71e00473153e250b83990d2345c445d334136570770507391813e9fef16fa3\", \"page\": 1, \"quote\": \"Parameter kp = 0.6.\"}, {\"target\": \"dp/value\", \"source_ref\": \"ff71e00473153e250b83990d2345c445d334136570770507391813e9fef16fa3\", \"page\": 1, \"quote\": \"Parameter dp = 0.2.\"}, {\"target\": \"rule:M/expression\", \"source_ref\": \"ff71e00473153e250b83990d2345c445d334136570770507391813e9fef16fa3\", \"page\": 1, \"quote\": \"Equation dM/dt = s-dm*M.\"}, {\"target\": \"rule:P/expression\", \"source_ref\": \"ff71e00473153e250b83990d2345c445d334136570770507391813e9fef16fa3\", \"page\": 1, \"quote\": \"Equation dP/dt = kp*M-dp*P.\"}, {\"target\": \"time_unit\", \"source_ref\": \"ff71e00473153e250b83990d2345c445d334136570770507391813e9fef16fa3\", \"page\": 1, \"quote\": \"Time t is in minutes.\"}, {\"target\": \"c/size\", \"source_ref\": \"ff71e00473153e250b83990d2345c445d334136570770507391813e9fef16fa3\", \"page\": 1, \"quote\": \"The fixed compartment has size 1 dimensionless.\"}], \"mechanism\": \"Two-state linear ODE: M produced at constant rate s and degraded at dm*M; P produced from M at kp*M and degraded at dp*P.\"}, \"reason\": \"All values and equations are explicitly given in source; submit draft.\"}",
+        "role": "assistant",
+        "provider_specific_fields": {
+          "refusal": null
+        }
+      },
+      "provider_specific_fields": {}
+    }
+  ],
+  "usage": {
+    "completion_tokens": 1321,
+    "prompt_tokens": 1178,
+    "total_tokens": 2499,
+    "prompt_tokens_details": {
+      "cached_tokens": 0
+    }
+  }
+}

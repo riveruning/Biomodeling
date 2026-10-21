@@ -1,0 +1,22 @@
+{
+  "status": "needs_input",
+  "parameters": [
+    {"id": "Vmax", "value": 0.9, "unit": "a.u. per minute"},
+    {"id": "Km", "value": 1.5, "unit": "a.u."},
+    {"id": "KI", "value": null, "unit": "a.u."}
+  ],
+  "states": [
+    {"id": "S", "initial": 1.0}
+  ],
+  "equations": [
+    {"state": "S", "expression": "-Vmax*S/(Km + S + S^2/KI)"}
+  ],
+  "questions": [
+    "What numerical value of KI (in a.u.) from the standard characterisation should be used in dS/dt = -Vmax*S/(Km + S + S^2/KI)?"
+  ],
+  "limitations": [
+    "source.txt requires KI but supplies no numerical value; the referenced standard characterisation is not provided. The weak exercise of substrate inhibition does not determine KI or justify omitting S^2/KI.",
+    "The unit of KI is inferred by dimensional consistency: S^2/KI must have the same concentration unit as Km and S.",
+    "No trajectory can be determined at the 41 requested sampling times without KI. The simulation was not run."
+  ]
+}

@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="31" time="0.447" timestamp="2026-10-19T20:41:59.353019+08:00" hostname="LAPTOP-2QUP5P60"><testcase classname="tests.test_agent_evaluation_protocol" name="test_empty_records_keep_fixed_denominator" time="0.017" /><testcase classname="tests.test_agent_evaluation_protocol" name="test_provider_failure_is_retained" time="0.007" /><testcase classname="tests.test_agent_evaluation_protocol" name="test_nominal_controls_and_unknown_usage" time="0.009" /><testcase classname="tests.test_agent_evaluation_protocol" name="test_mismatched_model_or_sampling_stays_invalid_in_denominator[model-other]" time="0.009" /><testcase classname="tests.test_agent_evaluation_protocol" name="test_mismatched_model_or_sampling_stays_invalid_in_denominator[temperature-0.9]" time="0.006" /><testcase classname="tests.test_agent_evaluation_protocol" name="test_mismatched_model_or_sampling_stays_invalid_in_denominator[max_output_tokens-2000]" time="0.007" /><testcase classname="tests.test_agent_evaluation_protocol" name="test_missing_and_wrong_gap_questions_do_not_pass" time="0.014" /><testcase classname="tests.test_agent_evaluation_protocol" name="test_unsupported_execution_and_overblocking_are_separate" time="0.009" /><testcase classname="tests.test_agent_evaluation_protocol" name="test_unknown_scientific_assessment_never_becomes_completion" time="0.011" /><testcase classname="tests.test_agent_evaluation_protocol" name="test_fresh_rebuild_is_not_resumption" time="0.009" /><testcase classname="tests.test_agent_evaluation_protocol" name="test_missing_or_foreign_parent_does_not_count_as_recovery" time="0.012" /><testcase classname="tests.test_agent_evaluation_protocol" name="test_budget_is_cumulative_across_clarification" time="0.010" /><testcase classname="tests.test_agent_evaluation_protocol" name="test_invalid_telemetry_is_an_invalid_trial_not_a_free_run[model_calls-True]" time="0.007" /><testcase classname="tests.test_agent_evaluation_protocol" name="test_invalid_telemetry_is_an_invalid_trial_not_a_free_run[tool_calls--1]" time="0.006" /><testcase classname="tests.test_agent_evaluation_protocol" name="test_invalid_telemetry_is_an_invalid_trial_not_a_free_run[elapsed_seconds-inf]" time="0.006"><failure message="ValueError: Out of range float values are not JSON compliant: inf">ev = &lt;module 'agent_evaluation_tool' from '/home/riveruning/biologymodel_agent/benchmarks/development/agent_evaluation.py'&gt;
+field = 'elapsed_seconds', bad = inf
+
+    @pytest.mark.parametrize('field,bad', [('model_calls', True), ('tool_calls', -1), ('elapsed_seconds', float('inf')),
+                                         ('input_tokens', False), ('max_request_chars', '1000')])
+    def test_invalid_telemetry_is_an_invalid_trial_not_a_free_run(ev, field, bad):
+        m = ev.development_manifest(ROOT); t = ev.schedule(m)[0]; r = record(ev,m,t)
+        r['telemetry'][field] = bad
+&gt;       assert ev.score(m,[r],ROOT)['rows'][0]['status'] == 'invalid_record'
+               ^^^^^^^^^^^^^^^^^^^^
+
+tests/test_agent_evaluation_protocol.py:168: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+benchmarks/development/agent_evaluation.py:347: in score
+    'record_sha256': digest(supplied[ident]) if ident in supplied else None}
+                     ^^^^^^^^^^^^^^^^^^^^^^^
+benchmarks/development/agent_evaluation.py:23: in digest
+    return hashlib.sha256(json.dumps(value, ensure_ascii=False, sort_keys=True,
+/usr/lib/python3.12/json/__init__.py:238: in dumps
+    **kw).encode(obj)
+          ^^^^^^^^^^^
+/usr/lib/python3.12/json/encoder.py:200: in encode
+    chunks = self.iterencode(o, _one_shot=True)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;json.encoder.JSONEncoder object at 0x78b842e4c650&gt;
+o = {'trial_id': 'fixed_workflow--decay--0--initial', 'manifest_sha256': 'e0f3824d4effc3481bbdd0fa27641f21ba248f114c4a42d3... {'provider': 'offline_control', 'model': 'scripted-fixture', 'revision': 'not-a-model', 'temperature': 0.0, ...}, ...}
+_one_shot = True
+
+    def iterencode(self, o, _one_shot=False):
+        """Encode the given object and yield each string
+        representation as available.
+    
+        For example::
+    
+            for chunk in JSONEncoder().iterencode(bigobject):
+                mysocket.write(chunk)
+    
+        """
+        if self.check_circular:
+            markers = {}
+        else:
+            markers = None
+        if self.ensure_ascii:
+            _encoder = encode_basestring_ascii
+        else:
+            _encoder = encode_basestring
+    
+        def floatstr(o, allow_nan=self.allow_nan,
+                _repr=float.__repr__, _inf=INFINITY, _neginf=-INFINITY):
+            # Check for specials.  Note that this type of test is processor
+            # and/or platform-specific, so do tests which don't depend on the
+            # internals.
+    
+            if o != o:
+                text = 'NaN'
+            elif o == _inf:
+                text = 'Infinity'
+            elif o == _neginf:
+                text = '-Infinity'
+            else:
+                return _repr(o)
+    
+            if not allow_nan:
+                raise ValueError(
+                    "Out of range float values are not JSON compliant: " +
+                    repr(o))
+    
+            return text
+    
+    
+        if (_one_shot and c_make_encoder is not None
+                and self.indent is None):
+            _iterencode = c_make_encoder(
+                markers, self.default, _encoder, self.indent,
+                self.key_separator, self.item_separator, self.sort_keys,
+                self.skipkeys, self.allow_nan)
+        else:
+            _iterencode = _make_iterencode(
+                markers, self.default, _encoder, self.indent, floatstr,
+                self.key_separator, self.item_separator, self.sort_keys,
+                self.skipkeys, _one_shot)
+&gt;       return _iterencode(o, 0)
+               ^^^^^^^^^^^^^^^^^
+E       ValueError: Out of range float values are not JSON compliant: inf
+
+/usr/lib/python3.12/json/encoder.py:258: ValueError</failure></testcase><testcase classname="tests.test_agent_evaluation_protocol" name="test_invalid_telemetry_is_an_invalid_trial_not_a_free_run[input_tokens-False]" time="0.008" /><testcase classname="tests.test_agent_evaluation_protocol" name="test_invalid_telemetry_is_an_invalid_trial_not_a_free_run[max_request_chars-1000]" time="0.008" /><testcase classname="tests.test_agent_evaluation_protocol" name="test_unknown_output_token_measurement_is_unverified_not_zero" time="0.009" /><testcase classname="tests.test_agent_evaluation_protocol" name="test_duplicate_or_unscheduled_records_refuse_cherry_picking" time="0.007" /><testcase classname="tests.test_agent_evaluation_protocol" name="test_stale_manifest_and_scripted_live_mix_are_invalid_records" time="0.008" /><testcase classname="tests.test_agent_evaluation_protocol" name="test_fixture_assessment_cannot_be_used_as_live_judgment" time="0.007" /><testcase classname="tests.test_agent_evaluation_protocol" name="test_trial_projection_excludes_gold_and_future_clarification" time="0.067" /><testcase classname="tests.test_agent_evaluation_protocol" name="test_manifest_rejects_stale_or_unsafe_plans[source_hash]" time="0.010" /><testcase classname="tests.test_agent_evaluation_protocol" name="test_manifest_rejects_stale_or_unsafe_plans[parent_escape]" time="0.012" /><testcase classname="tests.test_agent_evaluation_protocol" name="test_manifest_rejects_stale_or_unsafe_plans[absolute_path]" time="0.008" /><testcase classname="tests.test_agent_evaluation_protocol" name="test_manifest_rejects_stale_or_unsafe_plans[split_promotion]" time="0.008" /><testcase classname="tests.test_agent_evaluation_protocol" name="test_manifest_rejects_stale_or_unsafe_plans[repeats_bool]" time="0.006" /><testcase classname="tests.test_agent_evaluation_protocol" name="test_manifest_rejects_stale_or_unsafe_plans[extra_config]" time="0.009" /><testcase classname="tests.test_agent_evaluation_protocol" name="test_manifest_rejects_stale_or_unsafe_plans[budget_bool]" time="0.008" /><testcase classname="tests.test_agent_evaluation_protocol" name="test_null_and_partial_usage_are_reported_without_fabricated_totals" time="0.019" /><testcase classname="tests.test_agent_evaluation_protocol" name="test_scoring_does_not_mutate_manifest_or_records" time="0.023" /></testsuite></testsuites>

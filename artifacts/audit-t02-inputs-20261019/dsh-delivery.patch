@@ -1,0 +1,115 @@
+--- before/src/biomodel_agent/domain/contracts.py
++++ dsh/src/biomodel_agent/domain/contracts.py
+@@ -127,15 +127,31 @@
+     return str(value)
+ 
+ 
++def strict_float(value: object, what: str) -> float:
++    """Return ``value`` as a float, strictly.
++
++    Accepts int/float only (numpy.float64 etc. via isinstance); bool, str,
++    Decimal and __float__-only objects are rejected without invoking any
++    conversion protocol.  Converting an int that overflows the float range
++    surfaces as ValueError rather than OverflowError.
++    """
++    if isinstance(value, bool) or not isinstance(value, (int, float)):
++        raise ValueError(f"{what} must be an int or float, got {type(value).__name__}")
++    try:
++        f = float(value)
++    except OverflowError:
++        raise ValueError(f"{what} must be finite, got {value!r}") from None
++    if not math.isfinite(f):
++        raise ValueError(f"{what} must be finite, got {value!r}")
++    return f
++
++
+ def finite(value: float | None, what: str, allow_none: bool) -> float | None:
+     if value is None:
+         if not allow_none:
+             raise ValueError(f"{what} must not be None")
+         return None
+-    f = float(value)
+-    if not math.isfinite(f):
+-        raise ValueError(f"{what} must be finite, got {value!r}")
+-    return f
++    return strict_float(value, what)
+ 
+ 
+ def copy_finite_map(value: Mapping[str, Any] | tuple[tuple[str, Any], ...], what: str) -> FrozenMap:
+@@ -148,11 +164,7 @@
+             for i, x in enumerate(v):
+                 walk(f"{key}[{i}]", x)
+         else:
+-            if isinstance(v, bool) or not isinstance(v, (int, float)):
+-                raise ValueError(f"{what}[{key!r}] must be a number, got {v!r}")
+-            f = float(v)
+-            if not math.isfinite(f):
+-                raise ValueError(f"{what}[{key!r}] must be finite, got {v!r}")
++            strict_float(v, f"{what}[{key!r}]")
+     fm = FrozenMap(value)
+     for k, v in fm.items():
+         walk(k, v)
+@@ -377,7 +389,7 @@
+             if v is not None and v <= 0:
+                 raise ValueError(f"{name} must be > 0")
+             object.__setattr__(self, name, v)
+-        if not isinstance(self.max_steps, int) or self.max_steps <= 0:
++        if isinstance(self.max_steps, bool) or not isinstance(self.max_steps, int) or self.max_steps <= 0:
+             raise ValueError("max_steps must be a positive integer")
+ 
+ 
+@@ -437,7 +449,26 @@
+                 raise ValueError(f"SimulationResult.values[{k!r}] must be a sequence of floats")
+             if len(v) != len(checked):
+                 raise ValueError(f"SimulationResult.values[{k!r}] length must match times")
+-            cols[k] = tuple(float(x) for x in v)
++            # Strict typing: refuse bool/str/__float__ objects and
++            # non-representable ints; keep native float NaN/Inf as-is for
++            # downstream validation diagnostics.
++            col: list[float] = []
++            for x in v:
++                if isinstance(x, bool) or not isinstance(x, (int, float)):
++                    raise ValueError(
++                        f"SimulationResult.values[{k!r}] must contain int or float, "
++                        f"got {type(x).__name__}"
++                    )
++                if isinstance(x, float):
++                    col.append(x)
++                else:
++                    try:
++                        col.append(float(x))
++                    except OverflowError:
++                        raise ValueError(
++                            f"SimulationResult.values[{k!r}] cannot be represented as float: {x!r}"
++                        ) from None
++            cols[k] = tuple(col)
+         object.__setattr__(self, "values", FrozenMap(cols))
+         object.__setattr__(self, "diagnostics", tuple(self.diagnostics))
+         object.__setattr__(self, "elapsed_s", finite(self.elapsed_s, "elapsed_s", False))
+--- before/src/biomodel_agent/domain/serialization.py
++++ dsh/src/biomodel_agent/domain/serialization.py
+@@ -27,7 +27,7 @@
+ from dataclasses import MISSING, is_dataclass, fields
+ from typing import Any, get_args, get_origin, get_type_hints
+ 
+-from .contracts import FrozenMap
++from .contracts import FrozenMap, strict_float
+ 
+ 
+ class SchemaError(ValueError):
+@@ -81,11 +81,10 @@
+             return data
+         raise SchemaError(f"{name}: expected int, got {type(data).__name__}")
+     if hint is float:
+-        if isinstance(data, bool) or not isinstance(data, (int, float)):
+-            raise SchemaError(f"{name}: expected finite number, got {data!r}")
+-        if isinstance(data, float) and not math.isfinite(data):
+-            raise SchemaError(f"{name}: expected finite number, got {data!r}")
+-        return float(data)
++        try:
++            return strict_float(data, name)
++        except ValueError as exc:
++            raise SchemaError(f"{name}: {exc}") from exc
+     if hint is str:
+         if isinstance(data, str):
+             return data

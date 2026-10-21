@@ -1,0 +1,78 @@
+{
+  "record": {
+    "trial_id": "domain_agent--logistic--1--initial",
+    "manifest_sha256": "67590824f164fa01c9533f3b460ab0b229b248dcd7f4f2f584a61e8697677c27",
+    "evidence_kind": "scripted_control",
+    "model_config": {
+      "provider": "offline_control",
+      "model": "scripted-fixture",
+      "revision": "not-a-model",
+      "temperature": 0.0,
+      "top_p": 1.0,
+      "max_output_tokens": 1000,
+      "seed": 0
+    },
+    "toolchain_sha256": "abad7db107b62cb942b96ec88df701d47c8eb236275d0cf17216f37da6686252",
+    "status": "finished",
+    "continuation": "none",
+    "parent_trial_id": null,
+    "observation": {
+      "state": "awaiting_input",
+      "executed": false,
+      "claimed_complete": false,
+      "identified_gaps": [],
+      "question_targets": [],
+      "question_texts": [
+        "Which reported dX/dt alternative was actually used?"
+      ]
+    },
+    "assessment": {
+      "authority": "unreviewed",
+      "reviewer": null,
+      "evidence_refs": [],
+      "numeric": "unknown",
+      "source_support": "unknown",
+      "behavior_labels_reviewed": false
+    },
+    "telemetry": {
+      "model_calls": 2,
+      "tool_calls": 1,
+      "max_request_chars": 6746,
+      "max_response_tokens": null,
+      "elapsed_seconds": 0.48183886199694825,
+      "human_interventions": 0,
+      "human_seconds": 0.0,
+      "input_tokens": null,
+      "output_tokens": null
+    }
+  },
+  "session_ref": "aa516ea56350ee28fddad4a5d10da3a7f2fbde226bd8fc70d2aa41afe3adbf03",
+  "store_root": "/home/riveruning/biologymodel_agent/artifacts/audit-t08c-http-transport-20261019/http-mock-execution/stores/domain_agent--logistic--1",
+  "audit": {
+    "supervised": true,
+    "stop_reason": null,
+    "run_ref": null,
+    "native_agent_run_ref": "1cb7961b4c2c203775977ee97665275297b493c8227d63de1cf60dde0952c23d",
+    "request_refs": [
+      "8f6faa9dcbe3852ebf2db77a1adf8132cb9478da1f687506406c36cea402cdaa",
+      "f89d13ea3396bdcccd78a1cd19d776dbf0643ae112da289061a0418db3aa2b1b"
+    ],
+    "response_refs": [
+      "3382a1162f54ce47d57927ce230aa00f034a1f538bc4752bf02e5f2960bd0cdb",
+      "73ee1e00e242adde702ad20b530de33ceb8fd554542a81e8da56b072ba9f6591"
+    ],
+    "transport_exchange_refs": [
+      "9a6543be0bb6ba44ece97be26681ab9421e1d6a95de25ae508a31f501e989f4e",
+      "1609557f8610bf759f73f2e4280a72fcf3eeca8004ac9ca2c694c52428b4998b"
+    ],
+    "reservation_refs": [
+      "b376ff579a2bdf4583344c98c78b8b0347617d439a1dda3fc13b26b8d7e71c2a",
+      "80bcbc351a34419a90bb23a70030417f116030681fa4207996444bfaf09b2dd9",
+      "41fdcf22d4cb0b35bde648f29783c6e5b86d749d752c7f9018bd20f10ccac52f"
+    ],
+    "clarification_origin": null,
+    "runtime_adapter_sha256": "1184e44fe5386cff8cce5c05f644668263ab74b1550af8e2e587bc2cf5372aaf",
+    "scientific_support": "unknown",
+    "same_returned_model_verified": true
+  }
+}

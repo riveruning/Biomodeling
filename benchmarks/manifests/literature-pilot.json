@@ -1,0 +1,161 @@
+{
+  "schema_version": "1",
+  "id": "gonze2013-fig2b",
+  "role": "development_not_blind",
+  "retrieved_date": "2026-10-17",
+  "paper": {
+    "title": "The Goodwin Model: Behind the Hill Function",
+    "doi": "10.1371/journal.pone.0069573",
+    "url": "https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0069573",
+    "license": "CC BY; see publisher XML license element",
+    "publisher_xml_url": "https://journals.plos.org/plosone/article/file?id=10.1371/journal.pone.0069573&type=manuscript",
+    "europe_pmc_xml_url": "https://www.ebi.ac.uk/europepmc/webservices/rest/PMC3731313/fullTextXML",
+    "equation_url_template": "https://journals.plos.org/plosone/article/figure/image?size=original&id=info:doi/10.1371/journal.pone.0069573.e{number:03d}"
+  },
+  "scope": "JATS section s2a including Fig 2 caption; not whole-paper extraction",
+  "review_status": "pending_human_review",
+  "tracks": {
+    "raw": {
+      "source_id": "raw",
+      "source": "benchmarks/inputs/literature/gonze2013/raw-text.txt",
+      "gold": "benchmarks/inputs/literature/gonze2013/gold-raw.json"
+    },
+    "assisted": {
+      "source_id": "assisted",
+      "source": "benchmarks/inputs/literature/gonze2013/assisted-transcription.txt",
+      "gold": "benchmarks/inputs/literature/gonze2013/gold-assisted.json"
+    }
+  },
+  "numeric_control": {
+    "initials": {
+      "X": 0.1,
+      "Y": 0.2,
+      "Z": 0.3
+    },
+    "initial_origin": "analyst_chosen_exploratory_not_paper",
+    "time_start": 0.0,
+    "time_end": 240.0,
+    "samples": 481,
+    "threshold": 0.001,
+    "scale": 10.0,
+    "reference_method": "independent handwritten SciPy DOP853 equations",
+    "scientific_claim": "cross_implementation_consistency_not_figure_reproduction"
+  },
+  "files": [
+    {
+      "path": "benchmarks/inputs/literature/gonze2013/article.html",
+      "sha256": "dfe06d70810dc2c958ec70654bb6baa83aa73e97adc4527e8f79d47cb0cc24e1",
+      "bytes": 270945
+    },
+    {
+      "path": "benchmarks/inputs/literature/gonze2013/article.xml",
+      "sha256": "e3813bbd1ac35780ce16c8d8f991a84ef351813d2ed6bd34b84f278deadac562",
+      "bytes": 117143
+    },
+    {
+      "path": "benchmarks/inputs/literature/gonze2013/assisted-transcription.txt",
+      "sha256": "e5256f5cc7a66d9e88233a9b574f25837db53b88fdc03ccc2642aad0654c0089",
+      "bytes": 1360
+    },
+    {
+      "path": "benchmarks/inputs/literature/gonze2013/equations/e004.png",
+      "sha256": "33cf7da8ba681b973e54fa5a37f70da4a078d8c182a1f6b8e4a62fe20119bb3d",
+      "bytes": 5072
+    },
+    {
+      "path": "benchmarks/inputs/literature/gonze2013/equations/e004.tiff",
+      "sha256": "c6e2f454ad07f823ef07f3f8daa7916bed058a9ac9a031a4ebabcfb55538c837",
+      "bytes": 4650
+    },
+    {
+      "path": "benchmarks/inputs/literature/gonze2013/equations/e005.png",
+      "sha256": "5f68165cda997889afc8fff60597ee2f2221638830c63fe25b0dbb9a0ad1db04",
+      "bytes": 3130
+    },
+    {
+      "path": "benchmarks/inputs/literature/gonze2013/equations/e005.tiff",
+      "sha256": "a6f694229984c53a4f267f77b1a36777410b8bda2423d8de1da0886947c0e295",
+      "bytes": 2958
+    },
+    {
+      "path": "benchmarks/inputs/literature/gonze2013/equations/e006.png",
+      "sha256": "f657fa1bc4639e56a36baa5df0749ebdbedccc5fc82e73becdf49ab2695012fd",
+      "bytes": 3197
+    },
+    {
+      "path": "benchmarks/inputs/literature/gonze2013/equations/e006.tiff",
+      "sha256": "9a37dece9facd1537a3973b4e36c987fb0759bdfdc6062213759aac10e104353",
+      "bytes": 2966
+    },
+    {
+      "path": "benchmarks/inputs/literature/gonze2013/equations/e010.png",
+      "sha256": "fc8a7525fb2b34d4fd93bf6946372e67e408756646435886bdea128aa168ff01",
+      "bytes": 3587
+    },
+    {
+      "path": "benchmarks/inputs/literature/gonze2013/equations/e010.tiff",
+      "sha256": "5cb6188a1d1c5e02b9d3022e16ca5725e1cec492cd67b7dfc2e8d52e494cb1cf",
+      "bytes": 3368
+    },
+    {
+      "path": "benchmarks/inputs/literature/gonze2013/equations/e021.png",
+      "sha256": "020aceeaec1704451dbb23f8a5654e6d52788de4ff8f701919f8ac4015f8ddca",
+      "bytes": 1925
+    },
+    {
+      "path": "benchmarks/inputs/literature/gonze2013/equations/e021.tiff",
+      "sha256": "4f8ac6108846f0cf4c5d40281fe9d74200fecc052ad834f88b58636ef876df64",
+      "bytes": 1920
+    },
+    {
+      "path": "benchmarks/inputs/literature/gonze2013/equations/e022.png",
+      "sha256": "1330a4380a79ee293a90bc88a5c00b2f958290807381224dce3792b82cb2fee7",
+      "bytes": 2225
+    },
+    {
+      "path": "benchmarks/inputs/literature/gonze2013/equations/e022.tiff",
+      "sha256": "0f9d1c7b6a8a86beb72aa6f7d69e9efb8d70b36aa9b35bc218c306cc350ab5e2",
+      "bytes": 2254
+    },
+    {
+      "path": "benchmarks/inputs/literature/gonze2013/equations/e023.png",
+      "sha256": "f7aa12af0acccc87f2c7914a647a3726f615d67a7008ec6bcb2f94cccdd615e0",
+      "bytes": 847
+    },
+    {
+      "path": "benchmarks/inputs/literature/gonze2013/equations/e023.tiff",
+      "sha256": "fa67253d9aa5c7d6d17d35203b14114c638f2b469811fb20238a1faca2e03861",
+      "bytes": 1058
+    },
+    {
+      "path": "benchmarks/inputs/literature/gonze2013/equations/e024.png",
+      "sha256": "4e74e354bfddcce91f5d46760232b981b6b65ef4a50cc10038b99bc18906bc72",
+      "bytes": 786
+    },
+    {
+      "path": "benchmarks/inputs/literature/gonze2013/equations/e024.tiff",
+      "sha256": "02fd069f90826c7d66d95f266e5fe74429df29b3d5bad544f727a7137fddd14c",
+      "bytes": 1042
+    },
+    {
+      "path": "benchmarks/inputs/literature/gonze2013/gold-assisted.json",
+      "sha256": "171fd34fd42a0ffec693fbfd28f29bc3bb748d51e10035a055005438e9be6375",
+      "bytes": 8349
+    },
+    {
+      "path": "benchmarks/inputs/literature/gonze2013/gold-raw.json",
+      "sha256": "03b7ed2128ae703a42335a973269287eba8af4b13d0f098217eae0616eccd313",
+      "bytes": 2802
+    },
+    {
+      "path": "benchmarks/inputs/literature/gonze2013/pmc.xml",
+      "sha256": "dcaae67e314d4bcb45c86937f554776f42e3fc65b6fe5d8bb9cd0a8188d74abb",
+      "bytes": 185791
+    },
+    {
+      "path": "benchmarks/inputs/literature/gonze2013/raw-text.txt",
+      "sha256": "6d77f8dc3c82f30618d589116b3fd15518fd3132a9561e2827c5bb0eab548b1b",
+      "bytes": 3830
+    }
+  ]
+}

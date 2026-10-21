@@ -1,0 +1,30 @@
+{
+  "schema_version": "1",
+  "id": "v02-literature-scoring",
+  "objective": "实现真实文献提取开发基准的逐项评分器及有区分力的测试",
+  "context": "仅开发评测，不改变产品Agent，不冒充人工审核或符号等价证明。纯Python、无网络、无新依赖。Codex另负责真实论文材料、gold与运行器。",
+  "read_files": [
+    "src/biomodel_agent/expressions.py"
+  ],
+  "write_files": [
+    "src/biomodel_agent/literature_scoring.py",
+    "tests/test_literature_scoring.py"
+  ],
+  "expected_files": [
+    "src/biomodel_agent/literature_scoring.py",
+    "tests/test_literature_scoring.py"
+  ],
+  "budget": {
+    "total_ms": 600000,
+    "first_write_ms": 240000
+  },
+  "instructions": "实现 score_extraction(gold, prediction, sources)->dict。gold={items:[{target:str,kind:'number'|'expression'|'text',expected:number|str|null,support:[{source_id,quote}],probes:[dict] 可选}],rtol:1e-7,atol:1e-9};prediction={facts:{target:{value:...,evidence:[{source_id,quote}]}},state:str}; sources={source_id:UTF8text}。只接受非空唯一target gold； malformed gold抛ValueError（重复target、未知kind、非finite/bool数值、坏tolerance、expression无probe等）；坏prediction字段逐项fail或missing，不崩溃。expected null表示材料缺失：value null或缺项为正确拒绝，任何非null是unsupported_completion，需单列统计。number用math.isclose（bool和nonfinite拒绝）；text精确相等；expression用现有expressions.evaluate在gold给定所有probe比较，拒绝非finite和异常，只称probe_agreement，不称符号等价。candidate引用必须source_id存在，quote非空且在source恰好出现一次，且包含gold.support中同source的完整quote锚点；仅引用存在但不覆盖正确锚点不能计来源支持。缺失信息不要求引用；有值item必须值匹配且至少一条合法匹配引用才fully_supported。报告items逐项{target,value_status:'pass'|'fail'|'missing'|'correct_abstention'|'unsupported_completion',evidence_status:'pass'|'fail'|'not_applicable',fully_supported:bool}、counts {total,expected_present,value_correct,evidence_supported,fully_supported,expected_missing,correct_abstentions,unsupported_completions,extra_targets}；extra_targets为不在gold的prediction facts键列表（排序），不能忽略；semantic_review:'pending_human_review' 永远固定；expression_method:'fixed_probe_agreement_not_symbolic_proof'。不计算单一success，不把gold作为Agent输入。约200行含docstrings，测试独立断言错误引用、编造参数、错误方程、等值写法、NaN/bool、重复target、缺probe和额外target等。先写实现再测试，无shell/no todo，不要读取无关文件。",
+  "acceptance": [
+    "错误方程和错误引用被识别",
+    "缺失值不被补成正确答案",
+    "probe一致不报告科学或人审通过"
+  ],
+  "verification_commands": [
+    ".venv/bin/python -m pytest tests/test_literature_scoring.py -q"
+  ]
+}

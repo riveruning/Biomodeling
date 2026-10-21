@@ -1,0 +1,19 @@
+{
+  "input": {
+    "status": "failed",
+    "times": [
+      0.0,
+      1.0
+    ],
+    "values": {
+      "x": [
+        1.0,
+        0.5
+      ]
+    },
+    "scales": {
+      "x": 1.0
+    }
+  },
+  "parsed_status": "succeeded"
+}

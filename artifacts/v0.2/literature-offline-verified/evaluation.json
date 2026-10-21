@@ -1,0 +1,503 @@
+{
+  "schema_version": "1",
+  "case_id": "gonze2013-fig2b",
+  "evaluated_at": "2026-10-17T00:51:07.012065+00:00",
+  "manifest_sha256": "6c128c61e5b535f68de0d7ab62d2e60497633806a8018144fa16b54d254cb04b",
+  "environment": {
+    "python": "3.12.3",
+    "python_full": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]",
+    "implementation": "CPython",
+    "platform": "Linux-6.6.87.2-microsoft-standard-WSL2-x86_64-with-glibc2.39",
+    "machine": "x86_64",
+    "packages": {
+      "libroadrunner": "2.10.0",
+      "roadrunner": "absent",
+      "python-libsbml": "5.21.2",
+      "libsbml": "absent",
+      "numpy": "2.5.4",
+      "scipy": "1.18.1",
+      "pypdf": "6.20.1",
+      "biomodel-agent": "0.1.0"
+    },
+    "modules": {
+      "__init__.py": "3ebbb4065141012142168ecc70776886d2a452d80c3c3c1b19fc94665136fd5c",
+      "__main__.py": "11e716d1f66f25a0dd6ee566cb9bff3452624a3f47b8e009c3631ab2a9b01630",
+      "agent.py": "948e6fc4b58cd8f8ea629931713ccfc5d09a13ba467794d84eb0c014b34486e5",
+      "agent_tools.py": "abe06c2c67548389f32d7f47b901407b8463940434e5251678fe17ca691fe905",
+      "application.py": "efdb3812341f794985e5857f0b9c04782a1ec3543022b28c956a2d35cfdc27c1",
+      "bundles.py": "e3d710814a0205fc84fd66e5699ed5335a3bbe4d1910fc3c7f688d7ad6a49acd",
+      "cli.py": "21f4dc409bdf209ab3b42facda51e166a72a3c133da51165b2cc150cc38b17d3",
+      "domain/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "domain/contracts.py": "0c9711fb6500a00cbb4c5be748db77b7b4a8a32a0f54d76d04fc80be424f8366",
+      "domain/serialization.py": "35cd7eac8aa83a8bb7e41e0ea7f568abe34a570d38b8484c017ccf9b37d7e395",
+      "evidence.py": "020c4e0653bdbd9e06734ed060b89984dda013a9e7810ec132b51d5bf794b79f",
+      "expressions.py": "972ce61a74b747af2fcb92893b6c98bf9371408ff9737f68f22fe36e043fc8ea",
+      "fitting.py": "099546d69f8735c6b6357d23e9b4618025fc59f5ac8f655406e52db1325291b1",
+      "hypotheses.py": "22fcc3ecb93e6845b8aa484e396885bf2b56b6eb8d64e47fed7519e717f828b7",
+      "literature_scoring.py": "3e2c20e568de9203dd8e12095627f76046ab6d68b62944e3952dad61a4f70499",
+      "llm.py": "8e47c8eee713c29e40360c70c2076eae2eb30ddbaef4108ffa9200abb4176ab8",
+      "modeling.py": "69cafa82bffe977ee4a0b1e3b77c29c1bb48fd0e48d58f4644fcd045eb43c44e",
+      "reporting.py": "8316c78fa5628b8da82813f07b0c334d92fc3c73c2edbc7b55ba0bec969cf20d",
+      "simulation.py": "5ce58365e6adb77e801719a519aef488a938654bc50ca34c9dd6c2189e509f18",
+      "storage.py": "8fdfff97a2477666515664e71e2122eb2a4885d79f16c8fbb1a04735461a3062",
+      "validation.py": "a358aa2ecf7c460f3f263fbf5eb08188068f493f21f4a2a69bb1afe90faebb86"
+    },
+    "modules_sha256": "446e6f3a01fc692ef8f8da085c81f86a41e75e2b41276be86eb1c5c103c8c47b",
+    "provenance": "content_hash_of_src_biomodel_agent_py (no git metadata available)"
+  },
+  "scope": "single_real_paper_development_pilot_not_blind_or_success_rate",
+  "semantic_review": "pending_human_review",
+  "calibration": {
+    "raw": {
+      "kind": "known_answer_calibration_not_extraction_result",
+      "positive": {
+        "items": [
+          {
+            "target": "k1/value",
+            "value_status": "correct_abstention",
+            "evidence_status": "not_applicable",
+            "fully_supported": false
+          },
+          {
+            "target": "k2/value",
+            "value_status": "correct_abstention",
+            "evidence_status": "not_applicable",
+            "fully_supported": false
+          },
+          {
+            "target": "k3/value",
+            "value_status": "correct_abstention",
+            "evidence_status": "not_applicable",
+            "fully_supported": false
+          },
+          {
+            "target": "k4/value",
+            "value_status": "correct_abstention",
+            "evidence_status": "not_applicable",
+            "fully_supported": false
+          },
+          {
+            "target": "k5/value",
+            "value_status": "correct_abstention",
+            "evidence_status": "not_applicable",
+            "fully_supported": false
+          },
+          {
+            "target": "k6/value",
+            "value_status": "correct_abstention",
+            "evidence_status": "not_applicable",
+            "fully_supported": false
+          },
+          {
+            "target": "Ki/value",
+            "value_status": "correct_abstention",
+            "evidence_status": "not_applicable",
+            "fully_supported": false
+          },
+          {
+            "target": "n/value",
+            "value_status": "correct_abstention",
+            "evidence_status": "not_applicable",
+            "fully_supported": false
+          },
+          {
+            "target": "rule:X/expression",
+            "value_status": "correct_abstention",
+            "evidence_status": "not_applicable",
+            "fully_supported": false
+          },
+          {
+            "target": "rule:Y/expression",
+            "value_status": "correct_abstention",
+            "evidence_status": "not_applicable",
+            "fully_supported": false
+          },
+          {
+            "target": "rule:Z/expression",
+            "value_status": "correct_abstention",
+            "evidence_status": "not_applicable",
+            "fully_supported": false
+          },
+          {
+            "target": "X/initial",
+            "value_status": "correct_abstention",
+            "evidence_status": "not_applicable",
+            "fully_supported": false
+          },
+          {
+            "target": "Y/initial",
+            "value_status": "correct_abstention",
+            "evidence_status": "not_applicable",
+            "fully_supported": false
+          },
+          {
+            "target": "Z/initial",
+            "value_status": "correct_abstention",
+            "evidence_status": "not_applicable",
+            "fully_supported": false
+          }
+        ],
+        "counts": {
+          "total": 14,
+          "expected_present": 0,
+          "value_correct": 0,
+          "evidence_supported": 0,
+          "fully_supported": 0,
+          "expected_missing": 14,
+          "correct_abstentions": 14,
+          "unsupported_completions": 0
+        },
+        "extra_targets": [],
+        "semantic_review": "pending_human_review",
+        "expression_method": "fixed_probe_agreement_not_symbolic_proof"
+      },
+      "deliberately_corrupted": {
+        "items": [
+          {
+            "target": "k1/value",
+            "value_status": "correct_abstention",
+            "evidence_status": "not_applicable",
+            "fully_supported": false
+          },
+          {
+            "target": "k2/value",
+            "value_status": "correct_abstention",
+            "evidence_status": "not_applicable",
+            "fully_supported": false
+          },
+          {
+            "target": "k3/value",
+            "value_status": "correct_abstention",
+            "evidence_status": "not_applicable",
+            "fully_supported": false
+          },
+          {
+            "target": "k4/value",
+            "value_status": "correct_abstention",
+            "evidence_status": "not_applicable",
+            "fully_supported": false
+          },
+          {
+            "target": "k5/value",
+            "value_status": "correct_abstention",
+            "evidence_status": "not_applicable",
+            "fully_supported": false
+          },
+          {
+            "target": "k6/value",
+            "value_status": "correct_abstention",
+            "evidence_status": "not_applicable",
+            "fully_supported": false
+          },
+          {
+            "target": "Ki/value",
+            "value_status": "correct_abstention",
+            "evidence_status": "not_applicable",
+            "fully_supported": false
+          },
+          {
+            "target": "n/value",
+            "value_status": "correct_abstention",
+            "evidence_status": "not_applicable",
+            "fully_supported": false
+          },
+          {
+            "target": "rule:X/expression",
+            "value_status": "correct_abstention",
+            "evidence_status": "not_applicable",
+            "fully_supported": false
+          },
+          {
+            "target": "rule:Y/expression",
+            "value_status": "correct_abstention",
+            "evidence_status": "not_applicable",
+            "fully_supported": false
+          },
+          {
+            "target": "rule:Z/expression",
+            "value_status": "correct_abstention",
+            "evidence_status": "not_applicable",
+            "fully_supported": false
+          },
+          {
+            "target": "X/initial",
+            "value_status": "unsupported_completion",
+            "evidence_status": "fail",
+            "fully_supported": false
+          },
+          {
+            "target": "Y/initial",
+            "value_status": "correct_abstention",
+            "evidence_status": "not_applicable",
+            "fully_supported": false
+          },
+          {
+            "target": "Z/initial",
+            "value_status": "correct_abstention",
+            "evidence_status": "not_applicable",
+            "fully_supported": false
+          }
+        ],
+        "counts": {
+          "total": 14,
+          "expected_present": 0,
+          "value_correct": 0,
+          "evidence_supported": 0,
+          "fully_supported": 0,
+          "expected_missing": 14,
+          "correct_abstentions": 13,
+          "unsupported_completions": 1
+        },
+        "extra_targets": [],
+        "semantic_review": "pending_human_review",
+        "expression_method": "fixed_probe_agreement_not_symbolic_proof"
+      }
+    },
+    "assisted": {
+      "kind": "known_answer_calibration_not_extraction_result",
+      "positive": {
+        "items": [
+          {
+            "target": "k1/value",
+            "value_status": "pass",
+            "evidence_status": "pass",
+            "fully_supported": true
+          },
+          {
+            "target": "k2/value",
+            "value_status": "pass",
+            "evidence_status": "pass",
+            "fully_supported": true
+          },
+          {
+            "target": "k3/value",
+            "value_status": "pass",
+            "evidence_status": "pass",
+            "fully_supported": true
+          },
+          {
+            "target": "k4/value",
+            "value_status": "pass",
+            "evidence_status": "pass",
+            "fully_supported": true
+          },
+          {
+            "target": "k5/value",
+            "value_status": "pass",
+            "evidence_status": "pass",
+            "fully_supported": true
+          },
+          {
+            "target": "k6/value",
+            "value_status": "pass",
+            "evidence_status": "pass",
+            "fully_supported": true
+          },
+          {
+            "target": "Ki/value",
+            "value_status": "pass",
+            "evidence_status": "pass",
+            "fully_supported": true
+          },
+          {
+            "target": "n/value",
+            "value_status": "pass",
+            "evidence_status": "pass",
+            "fully_supported": true
+          },
+          {
+            "target": "rule:X/expression",
+            "value_status": "pass",
+            "evidence_status": "pass",
+            "fully_supported": true
+          },
+          {
+            "target": "rule:Y/expression",
+            "value_status": "pass",
+            "evidence_status": "pass",
+            "fully_supported": true
+          },
+          {
+            "target": "rule:Z/expression",
+            "value_status": "pass",
+            "evidence_status": "pass",
+            "fully_supported": true
+          },
+          {
+            "target": "X/initial",
+            "value_status": "correct_abstention",
+            "evidence_status": "not_applicable",
+            "fully_supported": false
+          },
+          {
+            "target": "Y/initial",
+            "value_status": "correct_abstention",
+            "evidence_status": "not_applicable",
+            "fully_supported": false
+          },
+          {
+            "target": "Z/initial",
+            "value_status": "correct_abstention",
+            "evidence_status": "not_applicable",
+            "fully_supported": false
+          }
+        ],
+        "counts": {
+          "total": 14,
+          "expected_present": 11,
+          "value_correct": 11,
+          "evidence_supported": 11,
+          "fully_supported": 11,
+          "expected_missing": 3,
+          "correct_abstentions": 3,
+          "unsupported_completions": 0
+        },
+        "extra_targets": [],
+        "semantic_review": "pending_human_review",
+        "expression_method": "fixed_probe_agreement_not_symbolic_proof"
+      },
+      "deliberately_corrupted": {
+        "items": [
+          {
+            "target": "k1/value",
+            "value_status": "pass",
+            "evidence_status": "fail",
+            "fully_supported": false
+          },
+          {
+            "target": "k2/value",
+            "value_status": "pass",
+            "evidence_status": "pass",
+            "fully_supported": true
+          },
+          {
+            "target": "k3/value",
+            "value_status": "pass",
+            "evidence_status": "pass",
+            "fully_supported": true
+          },
+          {
+            "target": "k4/value",
+            "value_status": "pass",
+            "evidence_status": "pass",
+            "fully_supported": true
+          },
+          {
+            "target": "k5/value",
+            "value_status": "pass",
+            "evidence_status": "pass",
+            "fully_supported": true
+          },
+          {
+            "target": "k6/value",
+            "value_status": "pass",
+            "evidence_status": "pass",
+            "fully_supported": true
+          },
+          {
+            "target": "Ki/value",
+            "value_status": "pass",
+            "evidence_status": "pass",
+            "fully_supported": true
+          },
+          {
+            "target": "n/value",
+            "value_status": "pass",
+            "evidence_status": "pass",
+            "fully_supported": true
+          },
+          {
+            "target": "rule:X/expression",
+            "value_status": "fail",
+            "evidence_status": "pass",
+            "fully_supported": false
+          },
+          {
+            "target": "rule:Y/expression",
+            "value_status": "pass",
+            "evidence_status": "pass",
+            "fully_supported": true
+          },
+          {
+            "target": "rule:Z/expression",
+            "value_status": "pass",
+            "evidence_status": "pass",
+            "fully_supported": true
+          },
+          {
+            "target": "X/initial",
+            "value_status": "unsupported_completion",
+            "evidence_status": "fail",
+            "fully_supported": false
+          },
+          {
+            "target": "Y/initial",
+            "value_status": "correct_abstention",
+            "evidence_status": "not_applicable",
+            "fully_supported": false
+          },
+          {
+            "target": "Z/initial",
+            "value_status": "correct_abstention",
+            "evidence_status": "not_applicable",
+            "fully_supported": false
+          }
+        ],
+        "counts": {
+          "total": 14,
+          "expected_present": 11,
+          "value_correct": 10,
+          "evidence_supported": 10,
+          "fully_supported": 9,
+          "expected_missing": 3,
+          "correct_abstentions": 2,
+          "unsupported_completions": 1
+        },
+        "extra_targets": [],
+        "semantic_review": "pending_human_review",
+        "expression_method": "fixed_probe_agreement_not_symbolic_proof"
+      }
+    }
+  },
+  "live_extraction": {
+    "raw": {
+      "status": "not_run"
+    },
+    "assisted": {
+      "status": "not_run"
+    }
+  },
+  "architecture_baselines": "not_run",
+  "numerical_control": {
+    "kind": "cross_implementation_consistency_not_figure_reproduction",
+    "initial_origin": "analyst_chosen_exploratory_not_paper",
+    "initials": {
+      "X": 0.1,
+      "Y": 0.2,
+      "Z": 0.3
+    },
+    "run_ref": "417199f6e2cf404cb300984619967355ca30b35ef8fde46da93e18546693d0ab",
+    "execution": "succeeded",
+    "comparison": {
+      "columns": [
+        "X",
+        "Y",
+        "Z"
+      ],
+      "max_scaled_error": 1.2165045512801953e-05,
+      "protocol": "fixed_scales",
+      "scales": {
+        "X": 10.0,
+        "Y": 10.0,
+        "Z": 10.0
+      },
+      "status": "pass",
+      "threshold": 0.001,
+      "worst": "Z[30]"
+    },
+    "scientific_status": "not_verified",
+    "observed_late_peak_period": 42.75,
+    "figure_trajectory_reproduction": "not_verified",
+    "human_semantic_review": "pending_human_review"
+  }
+}

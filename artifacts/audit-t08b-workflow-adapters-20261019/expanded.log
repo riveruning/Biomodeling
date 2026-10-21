@@ -1,0 +1,84 @@
+..F..F................F                                                  [100%]
+=================================== FAILURES ===================================
+_____ test_each_workflow_runs_real_shared_scientific_backend[domain_agent] _____
+
+adapters = <module 'workflow_adapters_acceptance' from '/home/riveruning/biologymodel_agent/benchmarks/development/workflow_adapters.py'>
+tmp_path = PosixPath('/tmp/biomodel-t08b-expanded/test_each_workflow_runs_real_s2')
+workflow = 'domain_agent'
+
+    @pytest.mark.parametrize('workflow',['fixed_workflow','generic_tool_agent','domain_agent'])
+    def test_each_workflow_runs_real_shared_scientific_backend(adapters,tmp_path,workflow):
+        p=projection(adapters,workflow)
+        result=adapters.run_trial(p,EnvelopeTransport(p,complete_actions(workflow)),tmp_path/'phase')
+        r=result['record']
+>       assert r['status']=='finished' and r['observation']['state']=='completed'
+E       AssertionError: assert ('adapter_error' == 'finished'
+E         
+E         - finished
+E         + adapter_error)
+
+tests/test_workflow_adapters.py:95: AssertionError
+_ test_actual_original_task_resumption_uses_new_source_and_remaining_budget[domain_agent] _
+
+adapters = <module 'workflow_adapters_acceptance' from '/home/riveruning/biologymodel_agent/benchmarks/development/workflow_adapters.py'>
+tmp_path = PosixPath('/tmp/biomodel-t08b-expanded/test_actual_original_task_resu2')
+workflow = 'domain_agent'
+
+    @pytest.mark.parametrize('workflow',['fixed_workflow','generic_tool_agent','domain_agent'])
+    def test_actual_original_task_resumption_uses_new_source_and_remaining_budget(adapters,tmp_path,workflow):
+        first=projection(adapters,workflow,'translation')
+        ask=action('ask_researcher',{'question':'What is the initial P value?'})
+        actions=[ask] if workflow=='fixed_workflow' else [read_action,ask]
+        before=adapters.run_trial(first,EnvelopeTransport(first,actions),tmp_path/'initial')
+>       assert before['record']['observation']['state']=='awaiting_input'
+E       AssertionError: assert 'failed' == 'awaiting_input'
+E         
+E         - awaiting_input
+E         + failed
+
+tests/test_workflow_adapters.py:113: AssertionError
+____ test_shared_backend_keeps_nonnegative_scientific_failure[domain_agent] ____
+
+adapters = <module 'workflow_adapters_acceptance' from '/home/riveruning/biologymodel_agent/benchmarks/development/workflow_adapters.py'>
+tmp_path = PosixPath('/tmp/biomodel-t08b-expanded/test_shared_backend_keeps_nonn2')
+workflow = 'domain_agent'
+
+    @pytest.mark.parametrize('workflow',['fixed_workflow','generic_tool_agent','domain_agent'])
+    def test_shared_backend_keeps_nonnegative_scientific_failure(adapters,tmp_path,workflow):
+        p=projection(adapters,workflow)
+        text='Initial A = 2.0.\nParameter k = 0.4.\nReaction loss consumes A at constant rate k.'
+        s=next(s for s in p['sources'] if s['role']=='source')
+        s.update(text=text,sha256=adapters.protocol.hashlib.sha256(text.encode()).hexdigest())
+        def negative(messages):
+            main,_,_=refs(messages)
+            d=ModelDraft('negative',(State('A',2.,quantity_kind='amount',nonnegative=True),),
+                (Parameter('k',.4),),reactions=(Reaction('loss',{'A':1.},{},'k'),))
+            return action('submit_draft',{'draft':to_dict(d),'evidence':[
+                {'target':t,'source_ref':main,'page':1,'quote':q} for t,q in zip(
+                    ['A/initial','k/value','reaction:loss/rate'],text.splitlines())]})
+        out=adapters.run_trial(p,EnvelopeTransport(p,complete_actions(workflow,negative)),tmp_path/'negative')
+>       run=ArtifactStore(out['store_root']).get(out['audit']['run_ref'])['payload']
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_workflow_adapters.py:219: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+src/biomodel_agent/storage.py:355: in get
+    ref = _validate_ref(ref)
+          ^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+ref = None
+
+    def _validate_ref(ref: Any) -> str:
+        """Refs must be exactly 64 lowercase hex chars; nothing else (blocks
+        traversal, short forms, prefixes)."""
+        if not isinstance(ref, str) or not REF_RE.fullmatch(ref):
+>           raise ArtifactError(f"invalid ref (must be 64 lowercase hex chars): {ref!r}")
+E           biomodel_agent.storage.ArtifactError: invalid ref (must be 64 lowercase hex chars): None
+
+src/biomodel_agent/storage.py:73: ArtifactError
+=========================== short test summary info ============================
+FAILED tests/test_workflow_adapters.py::test_each_workflow_runs_real_shared_scientific_backend[domain_agent]
+FAILED tests/test_workflow_adapters.py::test_actual_original_task_resumption_uses_new_source_and_remaining_budget[domain_agent]
+FAILED tests/test_workflow_adapters.py::test_shared_backend_keeps_nonnegative_scientific_failure[domain_agent]
+3 failed, 20 passed in 18.22s

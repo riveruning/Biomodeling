@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="2" failures="0" skipped="0" tests="2" time="0.050" timestamp="2026-10-20T08:07:54.930506+08:00" hostname="LAPTOP-2QUP5P60"><testcase classname="tests.test_evaluation_reporting" name="test_actual_saved_unreviewed_completions_stay_pending" time="0.001"><error message="failed on setup with &quot;FileNotFoundError: [Errno 2] No such file or directory: '/home/riveruning/biologymodel_agent/benchmarks/development/evaluation_reporting.py'&quot;">@pytest.fixture
+    def reporting():
+        spec = importlib.util.spec_from_file_location('evaluation_reporting_test',
+            ROOT/'benchmarks/development/evaluation_reporting.py')
+        module = importlib.util.module_from_spec(spec)
+&gt;       spec.loader.exec_module(module)
+
+tests/test_evaluation_reporting.py:17: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+&lt;frozen importlib._bootstrap_external&gt;:991: in exec_module
+    ???
+&lt;frozen importlib._bootstrap_external&gt;:1128: in get_code
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;_frozen_importlib_external.SourceFileLoader object at 0x74750660eb40&gt;
+path = '/home/riveruning/biologymodel_agent/benchmarks/development/evaluation_reporting.py'
+
+&gt;   ???
+E   FileNotFoundError: [Errno 2] No such file or directory: '/home/riveruning/biologymodel_agent/benchmarks/development/evaluation_reporting.py'
+
+&lt;frozen importlib._bootstrap_external&gt;:1186: FileNotFoundError</error></testcase><testcase classname="tests.test_evaluation_reporting" name="test_actual_legacy_scores_stay_exact" time="0.001"><error message="failed on setup with &quot;FileNotFoundError: [Errno 2] No such file or directory: '/home/riveruning/biologymodel_agent/benchmarks/development/evaluation_reporting.py'&quot;">@pytest.fixture
+    def reporting():
+        spec = importlib.util.spec_from_file_location('evaluation_reporting_test',
+            ROOT/'benchmarks/development/evaluation_reporting.py')
+        module = importlib.util.module_from_spec(spec)
+&gt;       spec.loader.exec_module(module)
+
+tests/test_evaluation_reporting.py:17: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+&lt;frozen importlib._bootstrap_external&gt;:991: in exec_module
+    ???
+&lt;frozen importlib._bootstrap_external&gt;:1128: in get_code
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;_frozen_importlib_external.SourceFileLoader object at 0x747506634200&gt;
+path = '/home/riveruning/biologymodel_agent/benchmarks/development/evaluation_reporting.py'
+
+&gt;   ???
+E   FileNotFoundError: [Errno 2] No such file or directory: '/home/riveruning/biologymodel_agent/benchmarks/development/evaluation_reporting.py'
+
+&lt;frozen importlib._bootstrap_external&gt;:1186: FileNotFoundError</error></testcase></testsuite></testsuites>

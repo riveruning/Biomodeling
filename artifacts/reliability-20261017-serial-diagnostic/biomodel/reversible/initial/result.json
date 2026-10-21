@@ -1,0 +1,18 @@
+{
+  "status": "awaiting_input",
+  "calls": 3,
+  "tokens": 6290,
+  "questions": [],
+  "problems": [
+    "Unknown citation target 'compartment/size'; allowed targets: ['A/initial', 'A/unit', 'B/initial', 'B/unit', 'C/size', 'C/unit', 'kf/unit', 'kf/value', 'kr/unit', 'kr/value', 'rule:A/expression', 'rule:B/expression', 'time_unit']",
+    "B/initial"
+  ],
+  "model_ref": null,
+  "run_ref": null,
+  "agent_ref": "e7794e3e597e3259abef34b6763caa30f3f5789ce5f5b1cd10fc579a87759744",
+  "product_modules_sha256": "446e6f3a01fc692ef8f8da085c81f86a41e75e2b41276be86eb1c5c103c8c47b",
+  "system": "biomodel",
+  "case": "reversible",
+  "phase": "initial",
+  "elapsed_seconds": 48.264161195998895
+}

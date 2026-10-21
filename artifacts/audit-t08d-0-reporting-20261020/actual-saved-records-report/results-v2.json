@@ -1,0 +1,3718 @@
+{
+  "schema_version": 2,
+  "reporting_protocol": "agent_evaluation_report_v2",
+  "input_protocol": "agent_evaluation_v1",
+  "status": "development_report_pending_independent_review",
+  "evidence_kind": "scripted_control",
+  "manifest_sha256": "67590824f164fa01c9533f3b460ab0b229b248dcd7f4f2f584a61e8697677c27",
+  "legacy_result_sha256": "dc7b45d4b06417df92d657445d4f2eedaab3495a22fa76d18cb1544b8f920d51",
+  "audit": {
+    "cases": 3,
+    "families": 1,
+    "planned_trials": 30,
+    "real_papers": 0,
+    "independent_review": "pending",
+    "semantic_support": "unknown"
+  },
+  "summary": {
+    "fixed_workflow": {
+      "planned_trials": 10,
+      "record_statuses": {
+        "finished": 10
+      },
+      "observed_states": {
+        "completed": 6,
+        "awaiting_input": 4
+      },
+      "assessment_coverage": {
+        "valid_records": 10,
+        "authorities": {
+          "unreviewed": 10
+        },
+        "numeric": {
+          "unknown": 10
+        },
+        "source_support": {
+          "unknown": 10
+        },
+        "behavior_labels_reviewed": 0,
+        "independent_review_authenticated": false
+      },
+      "metrics": {
+        "correct_completion": {
+          "denominator": 6,
+          "not_applicable": 4,
+          "true": 0,
+          "false": 0,
+          "unknown": 6,
+          "counts": {
+            "met": 0,
+            "not_met": 0,
+            "pending_adjudication": 6,
+            "pending_budget": 0,
+            "missing_record": 0,
+            "invalid_record": 0,
+            "not_run": 0,
+            "operational_failure": 0
+          },
+          "rate": null,
+          "rate_bounds": {
+            "lower": 0.0,
+            "upper": 1.0
+          }
+        },
+        "within_budget_completion": {
+          "denominator": 6,
+          "not_applicable": 4,
+          "true": 0,
+          "false": 0,
+          "unknown": 6,
+          "counts": {
+            "met": 0,
+            "not_met": 0,
+            "pending_adjudication": 6,
+            "pending_budget": 0,
+            "missing_record": 0,
+            "invalid_record": 0,
+            "not_run": 0,
+            "operational_failure": 0
+          },
+          "rate": null,
+          "rate_bounds": {
+            "lower": 0.0,
+            "upper": 1.0
+          }
+        },
+        "gap_identification": {
+          "denominator": 4,
+          "not_applicable": 6,
+          "true": 0,
+          "false": 0,
+          "unknown": 4,
+          "counts": {
+            "met": 0,
+            "not_met": 0,
+            "pending_adjudication": 4,
+            "pending_budget": 0,
+            "missing_record": 0,
+            "invalid_record": 0,
+            "not_run": 0,
+            "operational_failure": 0
+          },
+          "rate": null,
+          "rate_bounds": {
+            "lower": 0.0,
+            "upper": 1.0
+          }
+        },
+        "targeted_question": {
+          "denominator": 4,
+          "not_applicable": 6,
+          "true": 0,
+          "false": 0,
+          "unknown": 4,
+          "counts": {
+            "met": 0,
+            "not_met": 0,
+            "pending_adjudication": 4,
+            "pending_budget": 0,
+            "missing_record": 0,
+            "invalid_record": 0,
+            "not_run": 0,
+            "operational_failure": 0
+          },
+          "rate": null,
+          "rate_bounds": {
+            "lower": 0.0,
+            "upper": 1.0
+          }
+        },
+        "unsupported_execution": {
+          "denominator": 10,
+          "not_applicable": 0,
+          "true": 0,
+          "false": 4,
+          "unknown": 6,
+          "counts": {
+            "met": 0,
+            "not_met": 4,
+            "pending_adjudication": 6,
+            "pending_budget": 0,
+            "missing_record": 0,
+            "invalid_record": 0,
+            "not_run": 0,
+            "operational_failure": 0
+          },
+          "rate": null,
+          "rate_bounds": {
+            "lower": 0.0,
+            "upper": 0.6
+          }
+        },
+        "unsupported_completion": {
+          "denominator": 10,
+          "not_applicable": 0,
+          "true": 0,
+          "false": 4,
+          "unknown": 6,
+          "counts": {
+            "met": 0,
+            "not_met": 4,
+            "pending_adjudication": 6,
+            "pending_budget": 0,
+            "missing_record": 0,
+            "invalid_record": 0,
+            "not_run": 0,
+            "operational_failure": 0
+          },
+          "rate": null,
+          "rate_bounds": {
+            "lower": 0.0,
+            "upper": 0.6
+          }
+        },
+        "overblocking": {
+          "denominator": 6,
+          "not_applicable": 4,
+          "true": 0,
+          "false": 6,
+          "unknown": 0,
+          "counts": {
+            "met": 0,
+            "not_met": 6,
+            "pending_adjudication": 0,
+            "pending_budget": 0,
+            "missing_record": 0,
+            "invalid_record": 0,
+            "not_run": 0,
+            "operational_failure": 0
+          },
+          "rate": 0.0,
+          "rate_bounds": {
+            "lower": 0.0,
+            "upper": 0.0
+          }
+        },
+        "clarification_recovery": {
+          "denominator": 4,
+          "not_applicable": 6,
+          "true": 0,
+          "false": 0,
+          "unknown": 4,
+          "counts": {
+            "met": 0,
+            "not_met": 0,
+            "pending_adjudication": 4,
+            "pending_budget": 0,
+            "missing_record": 0,
+            "invalid_record": 0,
+            "not_run": 0,
+            "operational_failure": 0
+          },
+          "rate": null,
+          "rate_bounds": {
+            "lower": 0.0,
+            "upper": 1.0
+          }
+        }
+      },
+      "telemetry": {
+        "missing_trials": 0,
+        "invalid_trials": 0,
+        "budget_exceeded_trials": 0,
+        "budget_unknown_trials": 10,
+        "model_calls": {
+          "known_trials": 10,
+          "reported_subtotal": 10,
+          "total_if_complete": 10
+        },
+        "tool_calls": {
+          "known_trials": 10,
+          "reported_subtotal": 32,
+          "total_if_complete": 32
+        },
+        "elapsed_seconds": {
+          "known_trials": 10,
+          "reported_subtotal": 16.372343285984243,
+          "total_if_complete": 16.372343285984243
+        },
+        "human_interventions": {
+          "known_trials": 10,
+          "reported_subtotal": 0,
+          "total_if_complete": 0
+        },
+        "human_seconds": {
+          "known_trials": 10,
+          "reported_subtotal": 0.0,
+          "total_if_complete": 0.0
+        },
+        "input_tokens": {
+          "known_trials": 0,
+          "reported_subtotal": null,
+          "total_if_complete": null
+        },
+        "output_tokens": {
+          "known_trials": 0,
+          "reported_subtotal": null,
+          "total_if_complete": null
+        }
+      }
+    },
+    "generic_tool_agent": {
+      "planned_trials": 10,
+      "record_statuses": {
+        "finished": 10
+      },
+      "observed_states": {
+        "completed": 6,
+        "awaiting_input": 4
+      },
+      "assessment_coverage": {
+        "valid_records": 10,
+        "authorities": {
+          "unreviewed": 10
+        },
+        "numeric": {
+          "unknown": 10
+        },
+        "source_support": {
+          "unknown": 10
+        },
+        "behavior_labels_reviewed": 0,
+        "independent_review_authenticated": false
+      },
+      "metrics": {
+        "correct_completion": {
+          "denominator": 6,
+          "not_applicable": 4,
+          "true": 0,
+          "false": 0,
+          "unknown": 6,
+          "counts": {
+            "met": 0,
+            "not_met": 0,
+            "pending_adjudication": 6,
+            "pending_budget": 0,
+            "missing_record": 0,
+            "invalid_record": 0,
+            "not_run": 0,
+            "operational_failure": 0
+          },
+          "rate": null,
+          "rate_bounds": {
+            "lower": 0.0,
+            "upper": 1.0
+          }
+        },
+        "within_budget_completion": {
+          "denominator": 6,
+          "not_applicable": 4,
+          "true": 0,
+          "false": 0,
+          "unknown": 6,
+          "counts": {
+            "met": 0,
+            "not_met": 0,
+            "pending_adjudication": 6,
+            "pending_budget": 0,
+            "missing_record": 0,
+            "invalid_record": 0,
+            "not_run": 0,
+            "operational_failure": 0
+          },
+          "rate": null,
+          "rate_bounds": {
+            "lower": 0.0,
+            "upper": 1.0
+          }
+        },
+        "gap_identification": {
+          "denominator": 4,
+          "not_applicable": 6,
+          "true": 0,
+          "false": 0,
+          "unknown": 4,
+          "counts": {
+            "met": 0,
+            "not_met": 0,
+            "pending_adjudication": 4,
+            "pending_budget": 0,
+            "missing_record": 0,
+            "invalid_record": 0,
+            "not_run": 0,
+            "operational_failure": 0
+          },
+          "rate": null,
+          "rate_bounds": {
+            "lower": 0.0,
+            "upper": 1.0
+          }
+        },
+        "targeted_question": {
+          "denominator": 4,
+          "not_applicable": 6,
+          "true": 0,
+          "false": 0,
+          "unknown": 4,
+          "counts": {
+            "met": 0,
+            "not_met": 0,
+            "pending_adjudication": 4,
+            "pending_budget": 0,
+            "missing_record": 0,
+            "invalid_record": 0,
+            "not_run": 0,
+            "operational_failure": 0
+          },
+          "rate": null,
+          "rate_bounds": {
+            "lower": 0.0,
+            "upper": 1.0
+          }
+        },
+        "unsupported_execution": {
+          "denominator": 10,
+          "not_applicable": 0,
+          "true": 0,
+          "false": 4,
+          "unknown": 6,
+          "counts": {
+            "met": 0,
+            "not_met": 4,
+            "pending_adjudication": 6,
+            "pending_budget": 0,
+            "missing_record": 0,
+            "invalid_record": 0,
+            "not_run": 0,
+            "operational_failure": 0
+          },
+          "rate": null,
+          "rate_bounds": {
+            "lower": 0.0,
+            "upper": 0.6
+          }
+        },
+        "unsupported_completion": {
+          "denominator": 10,
+          "not_applicable": 0,
+          "true": 0,
+          "false": 4,
+          "unknown": 6,
+          "counts": {
+            "met": 0,
+            "not_met": 4,
+            "pending_adjudication": 6,
+            "pending_budget": 0,
+            "missing_record": 0,
+            "invalid_record": 0,
+            "not_run": 0,
+            "operational_failure": 0
+          },
+          "rate": null,
+          "rate_bounds": {
+            "lower": 0.0,
+            "upper": 0.6
+          }
+        },
+        "overblocking": {
+          "denominator": 6,
+          "not_applicable": 4,
+          "true": 0,
+          "false": 6,
+          "unknown": 0,
+          "counts": {
+            "met": 0,
+            "not_met": 6,
+            "pending_adjudication": 0,
+            "pending_budget": 0,
+            "missing_record": 0,
+            "invalid_record": 0,
+            "not_run": 0,
+            "operational_failure": 0
+          },
+          "rate": 0.0,
+          "rate_bounds": {
+            "lower": 0.0,
+            "upper": 0.0
+          }
+        },
+        "clarification_recovery": {
+          "denominator": 4,
+          "not_applicable": 6,
+          "true": 0,
+          "false": 0,
+          "unknown": 4,
+          "counts": {
+            "met": 0,
+            "not_met": 0,
+            "pending_adjudication": 4,
+            "pending_budget": 0,
+            "missing_record": 0,
+            "invalid_record": 0,
+            "not_run": 0,
+            "operational_failure": 0
+          },
+          "rate": null,
+          "rate_bounds": {
+            "lower": 0.0,
+            "upper": 1.0
+          }
+        }
+      },
+      "telemetry": {
+        "missing_trials": 0,
+        "invalid_trials": 0,
+        "budget_exceeded_trials": 0,
+        "budget_unknown_trials": 10,
+        "model_calls": {
+          "known_trials": 10,
+          "reported_subtotal": 28,
+          "total_if_complete": 28
+        },
+        "tool_calls": {
+          "known_trials": 10,
+          "reported_subtotal": 24,
+          "total_if_complete": 24
+        },
+        "elapsed_seconds": {
+          "known_trials": 10,
+          "reported_subtotal": 18.68992854100361,
+          "total_if_complete": 18.68992854100361
+        },
+        "human_interventions": {
+          "known_trials": 10,
+          "reported_subtotal": 0,
+          "total_if_complete": 0
+        },
+        "human_seconds": {
+          "known_trials": 10,
+          "reported_subtotal": 0.0,
+          "total_if_complete": 0.0
+        },
+        "input_tokens": {
+          "known_trials": 0,
+          "reported_subtotal": null,
+          "total_if_complete": null
+        },
+        "output_tokens": {
+          "known_trials": 0,
+          "reported_subtotal": null,
+          "total_if_complete": null
+        }
+      }
+    },
+    "domain_agent": {
+      "planned_trials": 10,
+      "record_statuses": {
+        "finished": 10
+      },
+      "observed_states": {
+        "completed": 6,
+        "awaiting_input": 4
+      },
+      "assessment_coverage": {
+        "valid_records": 10,
+        "authorities": {
+          "unreviewed": 10
+        },
+        "numeric": {
+          "unknown": 10
+        },
+        "source_support": {
+          "unknown": 10
+        },
+        "behavior_labels_reviewed": 0,
+        "independent_review_authenticated": false
+      },
+      "metrics": {
+        "correct_completion": {
+          "denominator": 6,
+          "not_applicable": 4,
+          "true": 0,
+          "false": 0,
+          "unknown": 6,
+          "counts": {
+            "met": 0,
+            "not_met": 0,
+            "pending_adjudication": 6,
+            "pending_budget": 0,
+            "missing_record": 0,
+            "invalid_record": 0,
+            "not_run": 0,
+            "operational_failure": 0
+          },
+          "rate": null,
+          "rate_bounds": {
+            "lower": 0.0,
+            "upper": 1.0
+          }
+        },
+        "within_budget_completion": {
+          "denominator": 6,
+          "not_applicable": 4,
+          "true": 0,
+          "false": 0,
+          "unknown": 6,
+          "counts": {
+            "met": 0,
+            "not_met": 0,
+            "pending_adjudication": 6,
+            "pending_budget": 0,
+            "missing_record": 0,
+            "invalid_record": 0,
+            "not_run": 0,
+            "operational_failure": 0
+          },
+          "rate": null,
+          "rate_bounds": {
+            "lower": 0.0,
+            "upper": 1.0
+          }
+        },
+        "gap_identification": {
+          "denominator": 4,
+          "not_applicable": 6,
+          "true": 0,
+          "false": 0,
+          "unknown": 4,
+          "counts": {
+            "met": 0,
+            "not_met": 0,
+            "pending_adjudication": 4,
+            "pending_budget": 0,
+            "missing_record": 0,
+            "invalid_record": 0,
+            "not_run": 0,
+            "operational_failure": 0
+          },
+          "rate": null,
+          "rate_bounds": {
+            "lower": 0.0,
+            "upper": 1.0
+          }
+        },
+        "targeted_question": {
+          "denominator": 4,
+          "not_applicable": 6,
+          "true": 0,
+          "false": 0,
+          "unknown": 4,
+          "counts": {
+            "met": 0,
+            "not_met": 0,
+            "pending_adjudication": 4,
+            "pending_budget": 0,
+            "missing_record": 0,
+            "invalid_record": 0,
+            "not_run": 0,
+            "operational_failure": 0
+          },
+          "rate": null,
+          "rate_bounds": {
+            "lower": 0.0,
+            "upper": 1.0
+          }
+        },
+        "unsupported_execution": {
+          "denominator": 10,
+          "not_applicable": 0,
+          "true": 0,
+          "false": 4,
+          "unknown": 6,
+          "counts": {
+            "met": 0,
+            "not_met": 4,
+            "pending_adjudication": 6,
+            "pending_budget": 0,
+            "missing_record": 0,
+            "invalid_record": 0,
+            "not_run": 0,
+            "operational_failure": 0
+          },
+          "rate": null,
+          "rate_bounds": {
+            "lower": 0.0,
+            "upper": 0.6
+          }
+        },
+        "unsupported_completion": {
+          "denominator": 10,
+          "not_applicable": 0,
+          "true": 0,
+          "false": 4,
+          "unknown": 6,
+          "counts": {
+            "met": 0,
+            "not_met": 4,
+            "pending_adjudication": 6,
+            "pending_budget": 0,
+            "missing_record": 0,
+            "invalid_record": 0,
+            "not_run": 0,
+            "operational_failure": 0
+          },
+          "rate": null,
+          "rate_bounds": {
+            "lower": 0.0,
+            "upper": 0.6
+          }
+        },
+        "overblocking": {
+          "denominator": 6,
+          "not_applicable": 4,
+          "true": 0,
+          "false": 6,
+          "unknown": 0,
+          "counts": {
+            "met": 0,
+            "not_met": 6,
+            "pending_adjudication": 0,
+            "pending_budget": 0,
+            "missing_record": 0,
+            "invalid_record": 0,
+            "not_run": 0,
+            "operational_failure": 0
+          },
+          "rate": 0.0,
+          "rate_bounds": {
+            "lower": 0.0,
+            "upper": 0.0
+          }
+        },
+        "clarification_recovery": {
+          "denominator": 4,
+          "not_applicable": 6,
+          "true": 0,
+          "false": 0,
+          "unknown": 4,
+          "counts": {
+            "met": 0,
+            "not_met": 0,
+            "pending_adjudication": 4,
+            "pending_budget": 0,
+            "missing_record": 0,
+            "invalid_record": 0,
+            "not_run": 0,
+            "operational_failure": 0
+          },
+          "rate": null,
+          "rate_bounds": {
+            "lower": 0.0,
+            "upper": 1.0
+          }
+        }
+      },
+      "telemetry": {
+        "missing_trials": 0,
+        "invalid_trials": 0,
+        "budget_exceeded_trials": 0,
+        "budget_unknown_trials": 10,
+        "model_calls": {
+          "known_trials": 10,
+          "reported_subtotal": 28,
+          "total_if_complete": 28
+        },
+        "tool_calls": {
+          "known_trials": 10,
+          "reported_subtotal": 24,
+          "total_if_complete": 24
+        },
+        "elapsed_seconds": {
+          "known_trials": 10,
+          "reported_subtotal": 19.24104272799741,
+          "total_if_complete": 19.24104272799741
+        },
+        "human_interventions": {
+          "known_trials": 10,
+          "reported_subtotal": 0,
+          "total_if_complete": 0
+        },
+        "human_seconds": {
+          "known_trials": 10,
+          "reported_subtotal": 0.0,
+          "total_if_complete": 0.0
+        },
+        "input_tokens": {
+          "known_trials": 0,
+          "reported_subtotal": null,
+          "total_if_complete": null
+        },
+        "output_tokens": {
+          "known_trials": 0,
+          "reported_subtotal": null,
+          "total_if_complete": null
+        }
+      }
+    }
+  },
+  "by_family": {
+    "fixed_workflow": {
+      "shared-synthetic-reliability-template": {
+        "planned_trials": 10,
+        "record_statuses": {
+          "finished": 10
+        },
+        "observed_states": {
+          "completed": 6,
+          "awaiting_input": 4
+        },
+        "assessment_coverage": {
+          "valid_records": 10,
+          "authorities": {
+            "unreviewed": 10
+          },
+          "numeric": {
+            "unknown": 10
+          },
+          "source_support": {
+            "unknown": 10
+          },
+          "behavior_labels_reviewed": 0,
+          "independent_review_authenticated": false
+        },
+        "metrics": {
+          "correct_completion": {
+            "denominator": 6,
+            "not_applicable": 4,
+            "true": 0,
+            "false": 0,
+            "unknown": 6,
+            "counts": {
+              "met": 0,
+              "not_met": 0,
+              "pending_adjudication": 6,
+              "pending_budget": 0,
+              "missing_record": 0,
+              "invalid_record": 0,
+              "not_run": 0,
+              "operational_failure": 0
+            },
+            "rate": null,
+            "rate_bounds": {
+              "lower": 0.0,
+              "upper": 1.0
+            }
+          },
+          "within_budget_completion": {
+            "denominator": 6,
+            "not_applicable": 4,
+            "true": 0,
+            "false": 0,
+            "unknown": 6,
+            "counts": {
+              "met": 0,
+              "not_met": 0,
+              "pending_adjudication": 6,
+              "pending_budget": 0,
+              "missing_record": 0,
+              "invalid_record": 0,
+              "not_run": 0,
+              "operational_failure": 0
+            },
+            "rate": null,
+            "rate_bounds": {
+              "lower": 0.0,
+              "upper": 1.0
+            }
+          },
+          "gap_identification": {
+            "denominator": 4,
+            "not_applicable": 6,
+            "true": 0,
+            "false": 0,
+            "unknown": 4,
+            "counts": {
+              "met": 0,
+              "not_met": 0,
+              "pending_adjudication": 4,
+              "pending_budget": 0,
+              "missing_record": 0,
+              "invalid_record": 0,
+              "not_run": 0,
+              "operational_failure": 0
+            },
+            "rate": null,
+            "rate_bounds": {
+              "lower": 0.0,
+              "upper": 1.0
+            }
+          },
+          "targeted_question": {
+            "denominator": 4,
+            "not_applicable": 6,
+            "true": 0,
+            "false": 0,
+            "unknown": 4,
+            "counts": {
+              "met": 0,
+              "not_met": 0,
+              "pending_adjudication": 4,
+              "pending_budget": 0,
+              "missing_record": 0,
+              "invalid_record": 0,
+              "not_run": 0,
+              "operational_failure": 0
+            },
+            "rate": null,
+            "rate_bounds": {
+              "lower": 0.0,
+              "upper": 1.0
+            }
+          },
+          "unsupported_execution": {
+            "denominator": 10,
+            "not_applicable": 0,
+            "true": 0,
+            "false": 4,
+            "unknown": 6,
+            "counts": {
+              "met": 0,
+              "not_met": 4,
+              "pending_adjudication": 6,
+              "pending_budget": 0,
+              "missing_record": 0,
+              "invalid_record": 0,
+              "not_run": 0,
+              "operational_failure": 0
+            },
+            "rate": null,
+            "rate_bounds": {
+              "lower": 0.0,
+              "upper": 0.6
+            }
+          },
+          "unsupported_completion": {
+            "denominator": 10,
+            "not_applicable": 0,
+            "true": 0,
+            "false": 4,
+            "unknown": 6,
+            "counts": {
+              "met": 0,
+              "not_met": 4,
+              "pending_adjudication": 6,
+              "pending_budget": 0,
+              "missing_record": 0,
+              "invalid_record": 0,
+              "not_run": 0,
+              "operational_failure": 0
+            },
+            "rate": null,
+            "rate_bounds": {
+              "lower": 0.0,
+              "upper": 0.6
+            }
+          },
+          "overblocking": {
+            "denominator": 6,
+            "not_applicable": 4,
+            "true": 0,
+            "false": 6,
+            "unknown": 0,
+            "counts": {
+              "met": 0,
+              "not_met": 6,
+              "pending_adjudication": 0,
+              "pending_budget": 0,
+              "missing_record": 0,
+              "invalid_record": 0,
+              "not_run": 0,
+              "operational_failure": 0
+            },
+            "rate": 0.0,
+            "rate_bounds": {
+              "lower": 0.0,
+              "upper": 0.0
+            }
+          },
+          "clarification_recovery": {
+            "denominator": 4,
+            "not_applicable": 6,
+            "true": 0,
+            "false": 0,
+            "unknown": 4,
+            "counts": {
+              "met": 0,
+              "not_met": 0,
+              "pending_adjudication": 4,
+              "pending_budget": 0,
+              "missing_record": 0,
+              "invalid_record": 0,
+              "not_run": 0,
+              "operational_failure": 0
+            },
+            "rate": null,
+            "rate_bounds": {
+              "lower": 0.0,
+              "upper": 1.0
+            }
+          }
+        },
+        "telemetry": {
+          "missing_trials": 0,
+          "invalid_trials": 0,
+          "budget_exceeded_trials": 0,
+          "budget_unknown_trials": 10,
+          "model_calls": {
+            "known_trials": 10,
+            "reported_subtotal": 10,
+            "total_if_complete": 10
+          },
+          "tool_calls": {
+            "known_trials": 10,
+            "reported_subtotal": 32,
+            "total_if_complete": 32
+          },
+          "elapsed_seconds": {
+            "known_trials": 10,
+            "reported_subtotal": 16.372343285984243,
+            "total_if_complete": 16.372343285984243
+          },
+          "human_interventions": {
+            "known_trials": 10,
+            "reported_subtotal": 0,
+            "total_if_complete": 0
+          },
+          "human_seconds": {
+            "known_trials": 10,
+            "reported_subtotal": 0.0,
+            "total_if_complete": 0.0
+          },
+          "input_tokens": {
+            "known_trials": 0,
+            "reported_subtotal": null,
+            "total_if_complete": null
+          },
+          "output_tokens": {
+            "known_trials": 0,
+            "reported_subtotal": null,
+            "total_if_complete": null
+          }
+        }
+      }
+    },
+    "generic_tool_agent": {
+      "shared-synthetic-reliability-template": {
+        "planned_trials": 10,
+        "record_statuses": {
+          "finished": 10
+        },
+        "observed_states": {
+          "completed": 6,
+          "awaiting_input": 4
+        },
+        "assessment_coverage": {
+          "valid_records": 10,
+          "authorities": {
+            "unreviewed": 10
+          },
+          "numeric": {
+            "unknown": 10
+          },
+          "source_support": {
+            "unknown": 10
+          },
+          "behavior_labels_reviewed": 0,
+          "independent_review_authenticated": false
+        },
+        "metrics": {
+          "correct_completion": {
+            "denominator": 6,
+            "not_applicable": 4,
+            "true": 0,
+            "false": 0,
+            "unknown": 6,
+            "counts": {
+              "met": 0,
+              "not_met": 0,
+              "pending_adjudication": 6,
+              "pending_budget": 0,
+              "missing_record": 0,
+              "invalid_record": 0,
+              "not_run": 0,
+              "operational_failure": 0
+            },
+            "rate": null,
+            "rate_bounds": {
+              "lower": 0.0,
+              "upper": 1.0
+            }
+          },
+          "within_budget_completion": {
+            "denominator": 6,
+            "not_applicable": 4,
+            "true": 0,
+            "false": 0,
+            "unknown": 6,
+            "counts": {
+              "met": 0,
+              "not_met": 0,
+              "pending_adjudication": 6,
+              "pending_budget": 0,
+              "missing_record": 0,
+              "invalid_record": 0,
+              "not_run": 0,
+              "operational_failure": 0
+            },
+            "rate": null,
+            "rate_bounds": {
+              "lower": 0.0,
+              "upper": 1.0
+            }
+          },
+          "gap_identification": {
+            "denominator": 4,
+            "not_applicable": 6,
+            "true": 0,
+            "false": 0,
+            "unknown": 4,
+            "counts": {
+              "met": 0,
+              "not_met": 0,
+              "pending_adjudication": 4,
+              "pending_budget": 0,
+              "missing_record": 0,
+              "invalid_record": 0,
+              "not_run": 0,
+              "operational_failure": 0
+            },
+            "rate": null,
+            "rate_bounds": {
+              "lower": 0.0,
+              "upper": 1.0
+            }
+          },
+          "targeted_question": {
+            "denominator": 4,
+            "not_applicable": 6,
+            "true": 0,
+            "false": 0,
+            "unknown": 4,
+            "counts": {
+              "met": 0,
+              "not_met": 0,
+              "pending_adjudication": 4,
+              "pending_budget": 0,
+              "missing_record": 0,
+              "invalid_record": 0,
+              "not_run": 0,
+              "operational_failure": 0
+            },
+            "rate": null,
+            "rate_bounds": {
+              "lower": 0.0,
+              "upper": 1.0
+            }
+          },
+          "unsupported_execution": {
+            "denominator": 10,
+            "not_applicable": 0,
+            "true": 0,
+            "false": 4,
+            "unknown": 6,
+            "counts": {
+              "met": 0,
+              "not_met": 4,
+              "pending_adjudication": 6,
+              "pending_budget": 0,
+              "missing_record": 0,
+              "invalid_record": 0,
+              "not_run": 0,
+              "operational_failure": 0
+            },
+            "rate": null,
+            "rate_bounds": {
+              "lower": 0.0,
+              "upper": 0.6
+            }
+          },
+          "unsupported_completion": {
+            "denominator": 10,
+            "not_applicable": 0,
+            "true": 0,
+            "false": 4,
+            "unknown": 6,
+            "counts": {
+              "met": 0,
+              "not_met": 4,
+              "pending_adjudication": 6,
+              "pending_budget": 0,
+              "missing_record": 0,
+              "invalid_record": 0,
+              "not_run": 0,
+              "operational_failure": 0
+            },
+            "rate": null,
+            "rate_bounds": {
+              "lower": 0.0,
+              "upper": 0.6
+            }
+          },
+          "overblocking": {
+            "denominator": 6,
+            "not_applicable": 4,
+            "true": 0,
+            "false": 6,
+            "unknown": 0,
+            "counts": {
+              "met": 0,
+              "not_met": 6,
+              "pending_adjudication": 0,
+              "pending_budget": 0,
+              "missing_record": 0,
+              "invalid_record": 0,
+              "not_run": 0,
+              "operational_failure": 0
+            },
+            "rate": 0.0,
+            "rate_bounds": {
+              "lower": 0.0,
+              "upper": 0.0
+            }
+          },
+          "clarification_recovery": {
+            "denominator": 4,
+            "not_applicable": 6,
+            "true": 0,
+            "false": 0,
+            "unknown": 4,
+            "counts": {
+              "met": 0,
+              "not_met": 0,
+              "pending_adjudication": 4,
+              "pending_budget": 0,
+              "missing_record": 0,
+              "invalid_record": 0,
+              "not_run": 0,
+              "operational_failure": 0
+            },
+            "rate": null,
+            "rate_bounds": {
+              "lower": 0.0,
+              "upper": 1.0
+            }
+          }
+        },
+        "telemetry": {
+          "missing_trials": 0,
+          "invalid_trials": 0,
+          "budget_exceeded_trials": 0,
+          "budget_unknown_trials": 10,
+          "model_calls": {
+            "known_trials": 10,
+            "reported_subtotal": 28,
+            "total_if_complete": 28
+          },
+          "tool_calls": {
+            "known_trials": 10,
+            "reported_subtotal": 24,
+            "total_if_complete": 24
+          },
+          "elapsed_seconds": {
+            "known_trials": 10,
+            "reported_subtotal": 18.68992854100361,
+            "total_if_complete": 18.68992854100361
+          },
+          "human_interventions": {
+            "known_trials": 10,
+            "reported_subtotal": 0,
+            "total_if_complete": 0
+          },
+          "human_seconds": {
+            "known_trials": 10,
+            "reported_subtotal": 0.0,
+            "total_if_complete": 0.0
+          },
+          "input_tokens": {
+            "known_trials": 0,
+            "reported_subtotal": null,
+            "total_if_complete": null
+          },
+          "output_tokens": {
+            "known_trials": 0,
+            "reported_subtotal": null,
+            "total_if_complete": null
+          }
+        }
+      }
+    },
+    "domain_agent": {
+      "shared-synthetic-reliability-template": {
+        "planned_trials": 10,
+        "record_statuses": {
+          "finished": 10
+        },
+        "observed_states": {
+          "completed": 6,
+          "awaiting_input": 4
+        },
+        "assessment_coverage": {
+          "valid_records": 10,
+          "authorities": {
+            "unreviewed": 10
+          },
+          "numeric": {
+            "unknown": 10
+          },
+          "source_support": {
+            "unknown": 10
+          },
+          "behavior_labels_reviewed": 0,
+          "independent_review_authenticated": false
+        },
+        "metrics": {
+          "correct_completion": {
+            "denominator": 6,
+            "not_applicable": 4,
+            "true": 0,
+            "false": 0,
+            "unknown": 6,
+            "counts": {
+              "met": 0,
+              "not_met": 0,
+              "pending_adjudication": 6,
+              "pending_budget": 0,
+              "missing_record": 0,
+              "invalid_record": 0,
+              "not_run": 0,
+              "operational_failure": 0
+            },
+            "rate": null,
+            "rate_bounds": {
+              "lower": 0.0,
+              "upper": 1.0
+            }
+          },
+          "within_budget_completion": {
+            "denominator": 6,
+            "not_applicable": 4,
+            "true": 0,
+            "false": 0,
+            "unknown": 6,
+            "counts": {
+              "met": 0,
+              "not_met": 0,
+              "pending_adjudication": 6,
+              "pending_budget": 0,
+              "missing_record": 0,
+              "invalid_record": 0,
+              "not_run": 0,
+              "operational_failure": 0
+            },
+            "rate": null,
+            "rate_bounds": {
+              "lower": 0.0,
+              "upper": 1.0
+            }
+          },
+          "gap_identification": {
+            "denominator": 4,
+            "not_applicable": 6,
+            "true": 0,
+            "false": 0,
+            "unknown": 4,
+            "counts": {
+              "met": 0,
+              "not_met": 0,
+              "pending_adjudication": 4,
+              "pending_budget": 0,
+              "missing_record": 0,
+              "invalid_record": 0,
+              "not_run": 0,
+              "operational_failure": 0
+            },
+            "rate": null,
+            "rate_bounds": {
+              "lower": 0.0,
+              "upper": 1.0
+            }
+          },
+          "targeted_question": {
+            "denominator": 4,
+            "not_applicable": 6,
+            "true": 0,
+            "false": 0,
+            "unknown": 4,
+            "counts": {
+              "met": 0,
+              "not_met": 0,
+              "pending_adjudication": 4,
+              "pending_budget": 0,
+              "missing_record": 0,
+              "invalid_record": 0,
+              "not_run": 0,
+              "operational_failure": 0
+            },
+            "rate": null,
+            "rate_bounds": {
+              "lower": 0.0,
+              "upper": 1.0
+            }
+          },
+          "unsupported_execution": {
+            "denominator": 10,
+            "not_applicable": 0,
+            "true": 0,
+            "false": 4,
+            "unknown": 6,
+            "counts": {
+              "met": 0,
+              "not_met": 4,
+              "pending_adjudication": 6,
+              "pending_budget": 0,
+              "missing_record": 0,
+              "invalid_record": 0,
+              "not_run": 0,
+              "operational_failure": 0
+            },
+            "rate": null,
+            "rate_bounds": {
+              "lower": 0.0,
+              "upper": 0.6
+            }
+          },
+          "unsupported_completion": {
+            "denominator": 10,
+            "not_applicable": 0,
+            "true": 0,
+            "false": 4,
+            "unknown": 6,
+            "counts": {
+              "met": 0,
+              "not_met": 4,
+              "pending_adjudication": 6,
+              "pending_budget": 0,
+              "missing_record": 0,
+              "invalid_record": 0,
+              "not_run": 0,
+              "operational_failure": 0
+            },
+            "rate": null,
+            "rate_bounds": {
+              "lower": 0.0,
+              "upper": 0.6
+            }
+          },
+          "overblocking": {
+            "denominator": 6,
+            "not_applicable": 4,
+            "true": 0,
+            "false": 6,
+            "unknown": 0,
+            "counts": {
+              "met": 0,
+              "not_met": 6,
+              "pending_adjudication": 0,
+              "pending_budget": 0,
+              "missing_record": 0,
+              "invalid_record": 0,
+              "not_run": 0,
+              "operational_failure": 0
+            },
+            "rate": 0.0,
+            "rate_bounds": {
+              "lower": 0.0,
+              "upper": 0.0
+            }
+          },
+          "clarification_recovery": {
+            "denominator": 4,
+            "not_applicable": 6,
+            "true": 0,
+            "false": 0,
+            "unknown": 4,
+            "counts": {
+              "met": 0,
+              "not_met": 0,
+              "pending_adjudication": 4,
+              "pending_budget": 0,
+              "missing_record": 0,
+              "invalid_record": 0,
+              "not_run": 0,
+              "operational_failure": 0
+            },
+            "rate": null,
+            "rate_bounds": {
+              "lower": 0.0,
+              "upper": 1.0
+            }
+          }
+        },
+        "telemetry": {
+          "missing_trials": 0,
+          "invalid_trials": 0,
+          "budget_exceeded_trials": 0,
+          "budget_unknown_trials": 10,
+          "model_calls": {
+            "known_trials": 10,
+            "reported_subtotal": 28,
+            "total_if_complete": 28
+          },
+          "tool_calls": {
+            "known_trials": 10,
+            "reported_subtotal": 24,
+            "total_if_complete": 24
+          },
+          "elapsed_seconds": {
+            "known_trials": 10,
+            "reported_subtotal": 19.24104272799741,
+            "total_if_complete": 19.24104272799741
+          },
+          "human_interventions": {
+            "known_trials": 10,
+            "reported_subtotal": 0,
+            "total_if_complete": 0
+          },
+          "human_seconds": {
+            "known_trials": 10,
+            "reported_subtotal": 0.0,
+            "total_if_complete": 0.0
+          },
+          "input_tokens": {
+            "known_trials": 0,
+            "reported_subtotal": null,
+            "total_if_complete": null
+          },
+          "output_tokens": {
+            "known_trials": 0,
+            "reported_subtotal": null,
+            "total_if_complete": null
+          }
+        }
+      }
+    }
+  },
+  "rows": [
+    {
+      "id": "fixed_workflow--decay--0--initial",
+      "workflow": "fixed_workflow",
+      "case_id": "decay",
+      "repeat": 0,
+      "phase": "initial",
+      "parent_trial_id": null,
+      "status": "finished",
+      "error": null,
+      "budget_status": "unknown",
+      "telemetry": {
+        "model_calls": 1,
+        "tool_calls": 4,
+        "max_request_chars": 2454,
+        "max_response_tokens": null,
+        "elapsed_seconds": 2.649590476998128,
+        "human_interventions": 0,
+        "human_seconds": 0.0,
+        "input_tokens": null,
+        "output_tokens": null
+      },
+      "record_sha256": "7b5071881a51495c8764723f8e34cf57d7b26293bef472570e2306770cd55c96",
+      "observed_state": "completed",
+      "assessment": {
+        "authority": "unreviewed",
+        "reviewer": null,
+        "evidence_refs": [],
+        "numeric": "unknown",
+        "source_support": "unknown",
+        "behavior_labels_reviewed": false
+      },
+      "metrics": {
+        "gap_identification": {
+          "value": null,
+          "state": "not_applicable",
+          "reason": "outside the frozen metric eligibility"
+        },
+        "targeted_question": {
+          "value": null,
+          "state": "not_applicable",
+          "reason": "outside the frozen metric eligibility"
+        },
+        "clarification_recovery": {
+          "value": null,
+          "state": "not_applicable",
+          "reason": "outside the frozen metric eligibility"
+        },
+        "correct_completion": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "numeric judgment pending"
+        },
+        "within_budget_completion": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "numeric judgment pending"
+        },
+        "overblocking": {
+          "value": false,
+          "state": "not_met",
+          "reason": "observed waiting without execution under execution-expected rubric"
+        },
+        "unsupported_execution": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "source support judgment pending"
+        },
+        "unsupported_completion": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "numeric judgment pending"
+        }
+      }
+    },
+    {
+      "id": "fixed_workflow--translation--0--initial",
+      "workflow": "fixed_workflow",
+      "case_id": "translation",
+      "repeat": 0,
+      "phase": "initial",
+      "parent_trial_id": null,
+      "status": "finished",
+      "error": null,
+      "budget_status": "unknown",
+      "telemetry": {
+        "model_calls": 1,
+        "tool_calls": 1,
+        "max_request_chars": 2581,
+        "max_response_tokens": null,
+        "elapsed_seconds": 0.26819443499698536,
+        "human_interventions": 0,
+        "human_seconds": 0.0,
+        "input_tokens": null,
+        "output_tokens": null
+      },
+      "record_sha256": "76062b57eb9e8f50394562f8ad4c12deb489d7fe1201ab8637209d5d50ed71f1",
+      "observed_state": "awaiting_input",
+      "assessment": {
+        "authority": "unreviewed",
+        "reviewer": null,
+        "evidence_refs": [],
+        "numeric": "unknown",
+        "source_support": "unknown",
+        "behavior_labels_reviewed": false
+      },
+      "metrics": {
+        "correct_completion": {
+          "value": null,
+          "state": "not_applicable",
+          "reason": "outside the frozen metric eligibility"
+        },
+        "within_budget_completion": {
+          "value": null,
+          "state": "not_applicable",
+          "reason": "outside the frozen metric eligibility"
+        },
+        "overblocking": {
+          "value": null,
+          "state": "not_applicable",
+          "reason": "outside the frozen metric eligibility"
+        },
+        "clarification_recovery": {
+          "value": null,
+          "state": "not_applicable",
+          "reason": "outside the frozen metric eligibility"
+        },
+        "gap_identification": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "question/gap target labels pending attributed review"
+        },
+        "targeted_question": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "question/gap target labels pending attributed review"
+        },
+        "unsupported_execution": {
+          "value": false,
+          "state": "not_met",
+          "reason": "no execution observed in valid record"
+        },
+        "unsupported_completion": {
+          "value": false,
+          "state": "not_met",
+          "reason": "no completion claim observed in valid record"
+        }
+      }
+    },
+    {
+      "id": "fixed_workflow--translation--0--clarified",
+      "workflow": "fixed_workflow",
+      "case_id": "translation",
+      "repeat": 0,
+      "phase": "clarified",
+      "parent_trial_id": "fixed_workflow--translation--0--initial",
+      "status": "finished",
+      "error": null,
+      "budget_status": "unknown",
+      "telemetry": {
+        "model_calls": 1,
+        "tool_calls": 5,
+        "max_request_chars": 4303,
+        "max_response_tokens": null,
+        "elapsed_seconds": 2.5797169220022624,
+        "human_interventions": 0,
+        "human_seconds": 0.0,
+        "input_tokens": null,
+        "output_tokens": null
+      },
+      "record_sha256": "cf3c1929ebf00e2dacc38f4d9513bfab1cb05399f8009507d66db92ea109d833",
+      "observed_state": "completed",
+      "assessment": {
+        "authority": "unreviewed",
+        "reviewer": null,
+        "evidence_refs": [],
+        "numeric": "unknown",
+        "source_support": "unknown",
+        "behavior_labels_reviewed": false
+      },
+      "metrics": {
+        "gap_identification": {
+          "value": null,
+          "state": "not_applicable",
+          "reason": "outside the frozen metric eligibility"
+        },
+        "targeted_question": {
+          "value": null,
+          "state": "not_applicable",
+          "reason": "outside the frozen metric eligibility"
+        },
+        "correct_completion": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "numeric judgment pending"
+        },
+        "within_budget_completion": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "numeric judgment pending"
+        },
+        "overblocking": {
+          "value": false,
+          "state": "not_met",
+          "reason": "observed waiting without execution under execution-expected rubric"
+        },
+        "unsupported_execution": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "source support judgment pending"
+        },
+        "unsupported_completion": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "numeric judgment pending"
+        },
+        "clarification_recovery": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "numeric judgment pending"
+        }
+      }
+    },
+    {
+      "id": "fixed_workflow--logistic--0--initial",
+      "workflow": "fixed_workflow",
+      "case_id": "logistic",
+      "repeat": 0,
+      "phase": "initial",
+      "parent_trial_id": null,
+      "status": "finished",
+      "error": null,
+      "budget_status": "unknown",
+      "telemetry": {
+        "model_calls": 1,
+        "tool_calls": 1,
+        "max_request_chars": 2592,
+        "max_response_tokens": null,
+        "elapsed_seconds": 0.2628102459930233,
+        "human_interventions": 0,
+        "human_seconds": 0.0,
+        "input_tokens": null,
+        "output_tokens": null
+      },
+      "record_sha256": "dbc99f7ba068350542797c7129033f0e1ff300c4fb62b3555318a33617143547",
+      "observed_state": "awaiting_input",
+      "assessment": {
+        "authority": "unreviewed",
+        "reviewer": null,
+        "evidence_refs": [],
+        "numeric": "unknown",
+        "source_support": "unknown",
+        "behavior_labels_reviewed": false
+      },
+      "metrics": {
+        "correct_completion": {
+          "value": null,
+          "state": "not_applicable",
+          "reason": "outside the frozen metric eligibility"
+        },
+        "within_budget_completion": {
+          "value": null,
+          "state": "not_applicable",
+          "reason": "outside the frozen metric eligibility"
+        },
+        "overblocking": {
+          "value": null,
+          "state": "not_applicable",
+          "reason": "outside the frozen metric eligibility"
+        },
+        "clarification_recovery": {
+          "value": null,
+          "state": "not_applicable",
+          "reason": "outside the frozen metric eligibility"
+        },
+        "gap_identification": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "question/gap target labels pending attributed review"
+        },
+        "targeted_question": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "question/gap target labels pending attributed review"
+        },
+        "unsupported_execution": {
+          "value": false,
+          "state": "not_met",
+          "reason": "no execution observed in valid record"
+        },
+        "unsupported_completion": {
+          "value": false,
+          "state": "not_met",
+          "reason": "no completion claim observed in valid record"
+        }
+      }
+    },
+    {
+      "id": "fixed_workflow--logistic--0--clarified",
+      "workflow": "fixed_workflow",
+      "case_id": "logistic",
+      "repeat": 0,
+      "phase": "clarified",
+      "parent_trial_id": "fixed_workflow--logistic--0--initial",
+      "status": "finished",
+      "error": null,
+      "budget_status": "unknown",
+      "telemetry": {
+        "model_calls": 1,
+        "tool_calls": 5,
+        "max_request_chars": 4528,
+        "max_response_tokens": null,
+        "elapsed_seconds": 2.579888296997524,
+        "human_interventions": 0,
+        "human_seconds": 0.0,
+        "input_tokens": null,
+        "output_tokens": null
+      },
+      "record_sha256": "02fcf2decf4de8d485b14fea54a36ab7f9976c77d1521618c991d7c24604b9b0",
+      "observed_state": "completed",
+      "assessment": {
+        "authority": "unreviewed",
+        "reviewer": null,
+        "evidence_refs": [],
+        "numeric": "unknown",
+        "source_support": "unknown",
+        "behavior_labels_reviewed": false
+      },
+      "metrics": {
+        "gap_identification": {
+          "value": null,
+          "state": "not_applicable",
+          "reason": "outside the frozen metric eligibility"
+        },
+        "targeted_question": {
+          "value": null,
+          "state": "not_applicable",
+          "reason": "outside the frozen metric eligibility"
+        },
+        "correct_completion": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "numeric judgment pending"
+        },
+        "within_budget_completion": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "numeric judgment pending"
+        },
+        "overblocking": {
+          "value": false,
+          "state": "not_met",
+          "reason": "observed waiting without execution under execution-expected rubric"
+        },
+        "unsupported_execution": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "source support judgment pending"
+        },
+        "unsupported_completion": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "numeric judgment pending"
+        },
+        "clarification_recovery": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "numeric judgment pending"
+        }
+      }
+    },
+    {
+      "id": "fixed_workflow--decay--1--initial",
+      "workflow": "fixed_workflow",
+      "case_id": "decay",
+      "repeat": 1,
+      "phase": "initial",
+      "parent_trial_id": null,
+      "status": "finished",
+      "error": null,
+      "budget_status": "unknown",
+      "telemetry": {
+        "model_calls": 1,
+        "tool_calls": 4,
+        "max_request_chars": 2454,
+        "max_response_tokens": null,
+        "elapsed_seconds": 2.395580717995472,
+        "human_interventions": 0,
+        "human_seconds": 0.0,
+        "input_tokens": null,
+        "output_tokens": null
+      },
+      "record_sha256": "f8ad7dd33cc7eeb8afbc28ad8638aaa23964fc4f9c6bc0312b4bda7f91535c0a",
+      "observed_state": "completed",
+      "assessment": {
+        "authority": "unreviewed",
+        "reviewer": null,
+        "evidence_refs": [],
+        "numeric": "unknown",
+        "source_support": "unknown",
+        "behavior_labels_reviewed": false
+      },
+      "metrics": {
+        "gap_identification": {
+          "value": null,
+          "state": "not_applicable",
+          "reason": "outside the frozen metric eligibility"
+        },
+        "targeted_question": {
+          "value": null,
+          "state": "not_applicable",
+          "reason": "outside the frozen metric eligibility"
+        },
+        "clarification_recovery": {
+          "value": null,
+          "state": "not_applicable",
+          "reason": "outside the frozen metric eligibility"
+        },
+        "correct_completion": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "numeric judgment pending"
+        },
+        "within_budget_completion": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "numeric judgment pending"
+        },
+        "overblocking": {
+          "value": false,
+          "state": "not_met",
+          "reason": "observed waiting without execution under execution-expected rubric"
+        },
+        "unsupported_execution": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "source support judgment pending"
+        },
+        "unsupported_completion": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "numeric judgment pending"
+        }
+      }
+    },
+    {
+      "id": "fixed_workflow--translation--1--initial",
+      "workflow": "fixed_workflow",
+      "case_id": "translation",
+      "repeat": 1,
+      "phase": "initial",
+      "parent_trial_id": null,
+      "status": "finished",
+      "error": null,
+      "budget_status": "unknown",
+      "telemetry": {
+        "model_calls": 1,
+        "tool_calls": 1,
+        "max_request_chars": 2581,
+        "max_response_tokens": null,
+        "elapsed_seconds": 0.2574906540030497,
+        "human_interventions": 0,
+        "human_seconds": 0.0,
+        "input_tokens": null,
+        "output_tokens": null
+      },
+      "record_sha256": "fc7b53de9f907542394f6371d1401534b81c33c8ec2c4c8e74bb826143a05acf",
+      "observed_state": "awaiting_input",
+      "assessment": {
+        "authority": "unreviewed",
+        "reviewer": null,
+        "evidence_refs": [],
+        "numeric": "unknown",
+        "source_support": "unknown",
+        "behavior_labels_reviewed": false
+      },
+      "metrics": {
+        "correct_completion": {
+          "value": null,
+          "state": "not_applicable",
+          "reason": "outside the frozen metric eligibility"
+        },
+        "within_budget_completion": {
+          "value": null,
+          "state": "not_applicable",
+          "reason": "outside the frozen metric eligibility"
+        },
+        "overblocking": {
+          "value": null,
+          "state": "not_applicable",
+          "reason": "outside the frozen metric eligibility"
+        },
+        "clarification_recovery": {
+          "value": null,
+          "state": "not_applicable",
+          "reason": "outside the frozen metric eligibility"
+        },
+        "gap_identification": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "question/gap target labels pending attributed review"
+        },
+        "targeted_question": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "question/gap target labels pending attributed review"
+        },
+        "unsupported_execution": {
+          "value": false,
+          "state": "not_met",
+          "reason": "no execution observed in valid record"
+        },
+        "unsupported_completion": {
+          "value": false,
+          "state": "not_met",
+          "reason": "no completion claim observed in valid record"
+        }
+      }
+    },
+    {
+      "id": "fixed_workflow--translation--1--clarified",
+      "workflow": "fixed_workflow",
+      "case_id": "translation",
+      "repeat": 1,
+      "phase": "clarified",
+      "parent_trial_id": "fixed_workflow--translation--1--initial",
+      "status": "finished",
+      "error": null,
+      "budget_status": "unknown",
+      "telemetry": {
+        "model_calls": 1,
+        "tool_calls": 5,
+        "max_request_chars": 4303,
+        "max_response_tokens": null,
+        "elapsed_seconds": 2.5335673989975476,
+        "human_interventions": 0,
+        "human_seconds": 0.0,
+        "input_tokens": null,
+        "output_tokens": null
+      },
+      "record_sha256": "f4277487b3084b0d0cfc8b1f39d0fc901691360a28e431e0e8730714c08c19b3",
+      "observed_state": "completed",
+      "assessment": {
+        "authority": "unreviewed",
+        "reviewer": null,
+        "evidence_refs": [],
+        "numeric": "unknown",
+        "source_support": "unknown",
+        "behavior_labels_reviewed": false
+      },
+      "metrics": {
+        "gap_identification": {
+          "value": null,
+          "state": "not_applicable",
+          "reason": "outside the frozen metric eligibility"
+        },
+        "targeted_question": {
+          "value": null,
+          "state": "not_applicable",
+          "reason": "outside the frozen metric eligibility"
+        },
+        "correct_completion": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "numeric judgment pending"
+        },
+        "within_budget_completion": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "numeric judgment pending"
+        },
+        "overblocking": {
+          "value": false,
+          "state": "not_met",
+          "reason": "observed waiting without execution under execution-expected rubric"
+        },
+        "unsupported_execution": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "source support judgment pending"
+        },
+        "unsupported_completion": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "numeric judgment pending"
+        },
+        "clarification_recovery": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "numeric judgment pending"
+        }
+      }
+    },
+    {
+      "id": "fixed_workflow--logistic--1--initial",
+      "workflow": "fixed_workflow",
+      "case_id": "logistic",
+      "repeat": 1,
+      "phase": "initial",
+      "parent_trial_id": null,
+      "status": "finished",
+      "error": null,
+      "budget_status": "unknown",
+      "telemetry": {
+        "model_calls": 1,
+        "tool_calls": 1,
+        "max_request_chars": 2592,
+        "max_response_tokens": null,
+        "elapsed_seconds": 0.2730310460028704,
+        "human_interventions": 0,
+        "human_seconds": 0.0,
+        "input_tokens": null,
+        "output_tokens": null
+      },
+      "record_sha256": "620140f4b1fe1698d2ffd5ab5c0327f6413932b70968cbfa82c41164ad31719f",
+      "observed_state": "awaiting_input",
+      "assessment": {
+        "authority": "unreviewed",
+        "reviewer": null,
+        "evidence_refs": [],
+        "numeric": "unknown",
+        "source_support": "unknown",
+        "behavior_labels_reviewed": false
+      },
+      "metrics": {
+        "correct_completion": {
+          "value": null,
+          "state": "not_applicable",
+          "reason": "outside the frozen metric eligibility"
+        },
+        "within_budget_completion": {
+          "value": null,
+          "state": "not_applicable",
+          "reason": "outside the frozen metric eligibility"
+        },
+        "overblocking": {
+          "value": null,
+          "state": "not_applicable",
+          "reason": "outside the frozen metric eligibility"
+        },
+        "clarification_recovery": {
+          "value": null,
+          "state": "not_applicable",
+          "reason": "outside the frozen metric eligibility"
+        },
+        "gap_identification": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "question/gap target labels pending attributed review"
+        },
+        "targeted_question": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "question/gap target labels pending attributed review"
+        },
+        "unsupported_execution": {
+          "value": false,
+          "state": "not_met",
+          "reason": "no execution observed in valid record"
+        },
+        "unsupported_completion": {
+          "value": false,
+          "state": "not_met",
+          "reason": "no completion claim observed in valid record"
+        }
+      }
+    },
+    {
+      "id": "fixed_workflow--logistic--1--clarified",
+      "workflow": "fixed_workflow",
+      "case_id": "logistic",
+      "repeat": 1,
+      "phase": "clarified",
+      "parent_trial_id": "fixed_workflow--logistic--1--initial",
+      "status": "finished",
+      "error": null,
+      "budget_status": "unknown",
+      "telemetry": {
+        "model_calls": 1,
+        "tool_calls": 5,
+        "max_request_chars": 4528,
+        "max_response_tokens": null,
+        "elapsed_seconds": 2.572473091997381,
+        "human_interventions": 0,
+        "human_seconds": 0.0,
+        "input_tokens": null,
+        "output_tokens": null
+      },
+      "record_sha256": "9c14e0827ac362463a5afe3c670000afc583972de3cb9dfe1a40456211122f0a",
+      "observed_state": "completed",
+      "assessment": {
+        "authority": "unreviewed",
+        "reviewer": null,
+        "evidence_refs": [],
+        "numeric": "unknown",
+        "source_support": "unknown",
+        "behavior_labels_reviewed": false
+      },
+      "metrics": {
+        "gap_identification": {
+          "value": null,
+          "state": "not_applicable",
+          "reason": "outside the frozen metric eligibility"
+        },
+        "targeted_question": {
+          "value": null,
+          "state": "not_applicable",
+          "reason": "outside the frozen metric eligibility"
+        },
+        "correct_completion": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "numeric judgment pending"
+        },
+        "within_budget_completion": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "numeric judgment pending"
+        },
+        "overblocking": {
+          "value": false,
+          "state": "not_met",
+          "reason": "observed waiting without execution under execution-expected rubric"
+        },
+        "unsupported_execution": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "source support judgment pending"
+        },
+        "unsupported_completion": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "numeric judgment pending"
+        },
+        "clarification_recovery": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "numeric judgment pending"
+        }
+      }
+    },
+    {
+      "id": "generic_tool_agent--decay--0--initial",
+      "workflow": "generic_tool_agent",
+      "case_id": "decay",
+      "repeat": 0,
+      "phase": "initial",
+      "parent_trial_id": null,
+      "status": "finished",
+      "error": null,
+      "budget_status": "unknown",
+      "telemetry": {
+        "model_calls": 4,
+        "tool_calls": 4,
+        "max_request_chars": 4801,
+        "max_response_tokens": null,
+        "elapsed_seconds": 2.809922541004198,
+        "human_interventions": 0,
+        "human_seconds": 0.0,
+        "input_tokens": null,
+        "output_tokens": null
+      },
+      "record_sha256": "9c301ea5f7ca6762178b4905a1213a7bf73394795427c141f7d7ee8dfa77542c",
+      "observed_state": "completed",
+      "assessment": {
+        "authority": "unreviewed",
+        "reviewer": null,
+        "evidence_refs": [],
+        "numeric": "unknown",
+        "source_support": "unknown",
+        "behavior_labels_reviewed": false
+      },
+      "metrics": {
+        "gap_identification": {
+          "value": null,
+          "state": "not_applicable",
+          "reason": "outside the frozen metric eligibility"
+        },
+        "targeted_question": {
+          "value": null,
+          "state": "not_applicable",
+          "reason": "outside the frozen metric eligibility"
+        },
+        "clarification_recovery": {
+          "value": null,
+          "state": "not_applicable",
+          "reason": "outside the frozen metric eligibility"
+        },
+        "correct_completion": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "numeric judgment pending"
+        },
+        "within_budget_completion": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "numeric judgment pending"
+        },
+        "overblocking": {
+          "value": false,
+          "state": "not_met",
+          "reason": "observed waiting without execution under execution-expected rubric"
+        },
+        "unsupported_execution": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "source support judgment pending"
+        },
+        "unsupported_completion": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "numeric judgment pending"
+        }
+      }
+    },
+    {
+      "id": "generic_tool_agent--translation--0--initial",
+      "workflow": "generic_tool_agent",
+      "case_id": "translation",
+      "repeat": 0,
+      "phase": "initial",
+      "parent_trial_id": null,
+      "status": "finished",
+      "error": null,
+      "budget_status": "unknown",
+      "telemetry": {
+        "model_calls": 2,
+        "tool_calls": 1,
+        "max_request_chars": 2683,
+        "max_response_tokens": null,
+        "elapsed_seconds": 0.4458444409974618,
+        "human_interventions": 0,
+        "human_seconds": 0.0,
+        "input_tokens": null,
+        "output_tokens": null
+      },
+      "record_sha256": "4780fbd1fb43fcceba52ee24bc6ca2a6a5ed43331916ec82398784b7d2268dae",
+      "observed_state": "awaiting_input",
+      "assessment": {
+        "authority": "unreviewed",
+        "reviewer": null,
+        "evidence_refs": [],
+        "numeric": "unknown",
+        "source_support": "unknown",
+        "behavior_labels_reviewed": false
+      },
+      "metrics": {
+        "correct_completion": {
+          "value": null,
+          "state": "not_applicable",
+          "reason": "outside the frozen metric eligibility"
+        },
+        "within_budget_completion": {
+          "value": null,
+          "state": "not_applicable",
+          "reason": "outside the frozen metric eligibility"
+        },
+        "overblocking": {
+          "value": null,
+          "state": "not_applicable",
+          "reason": "outside the frozen metric eligibility"
+        },
+        "clarification_recovery": {
+          "value": null,
+          "state": "not_applicable",
+          "reason": "outside the frozen metric eligibility"
+        },
+        "gap_identification": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "question/gap target labels pending attributed review"
+        },
+        "targeted_question": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "question/gap target labels pending attributed review"
+        },
+        "unsupported_execution": {
+          "value": false,
+          "state": "not_met",
+          "reason": "no execution observed in valid record"
+        },
+        "unsupported_completion": {
+          "value": false,
+          "state": "not_met",
+          "reason": "no completion claim observed in valid record"
+        }
+      }
+    },
+    {
+      "id": "generic_tool_agent--translation--0--clarified",
+      "workflow": "generic_tool_agent",
+      "case_id": "translation",
+      "repeat": 0,
+      "phase": "clarified",
+      "parent_trial_id": "generic_tool_agent--translation--0--initial",
+      "status": "finished",
+      "error": null,
+      "budget_status": "unknown",
+      "telemetry": {
+        "model_calls": 3,
+        "tool_calls": 3,
+        "max_request_chars": 6994,
+        "max_response_tokens": null,
+        "elapsed_seconds": 2.9592033270018874,
+        "human_interventions": 0,
+        "human_seconds": 0.0,
+        "input_tokens": null,
+        "output_tokens": null
+      },
+      "record_sha256": "b71c13fa72753f1ee4759fd784b221c75632e1173501c79df2c3fca68e0462a2",
+      "observed_state": "completed",
+      "assessment": {
+        "authority": "unreviewed",
+        "reviewer": null,
+        "evidence_refs": [],
+        "numeric": "unknown",
+        "source_support": "unknown",
+        "behavior_labels_reviewed": false
+      },
+      "metrics": {
+        "gap_identification": {
+          "value": null,
+          "state": "not_applicable",
+          "reason": "outside the frozen metric eligibility"
+        },
+        "targeted_question": {
+          "value": null,
+          "state": "not_applicable",
+          "reason": "outside the frozen metric eligibility"
+        },
+        "correct_completion": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "numeric judgment pending"
+        },
+        "within_budget_completion": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "numeric judgment pending"
+        },
+        "overblocking": {
+          "value": false,
+          "state": "not_met",
+          "reason": "observed waiting without execution under execution-expected rubric"
+        },
+        "unsupported_execution": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "source support judgment pending"
+        },
+        "unsupported_completion": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "numeric judgment pending"
+        },
+        "clarification_recovery": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "numeric judgment pending"
+        }
+      }
+    },
+    {
+      "id": "generic_tool_agent--logistic--0--initial",
+      "workflow": "generic_tool_agent",
+      "case_id": "logistic",
+      "repeat": 0,
+      "phase": "initial",
+      "parent_trial_id": null,
+      "status": "finished",
+      "error": null,
+      "budget_status": "unknown",
+      "telemetry": {
+        "model_calls": 2,
+        "tool_calls": 1,
+        "max_request_chars": 2694,
+        "max_response_tokens": null,
+        "elapsed_seconds": 0.4121662350007682,
+        "human_interventions": 0,
+        "human_seconds": 0.0,
+        "input_tokens": null,
+        "output_tokens": null
+      },
+      "record_sha256": "82c7e045f946b6ec086f8fc9a726b067b01226f330e079dea85593bd4979ec93",
+      "observed_state": "awaiting_input",
+      "assessment": {
+        "authority": "unreviewed",
+        "reviewer": null,
+        "evidence_refs": [],
+        "numeric": "unknown",
+        "source_support": "unknown",
+        "behavior_labels_reviewed": false
+      },
+      "metrics": {
+        "correct_completion": {
+          "value": null,
+          "state": "not_applicable",
+          "reason": "outside the frozen metric eligibility"
+        },
+        "within_budget_completion": {
+          "value": null,
+          "state": "not_applicable",
+          "reason": "outside the frozen metric eligibility"
+        },
+        "overblocking": {
+          "value": null,
+          "state": "not_applicable",
+          "reason": "outside the frozen metric eligibility"
+        },
+        "clarification_recovery": {
+          "value": null,
+          "state": "not_applicable",
+          "reason": "outside the frozen metric eligibility"
+        },
+        "gap_identification": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "question/gap target labels pending attributed review"
+        },
+        "targeted_question": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "question/gap target labels pending attributed review"
+        },
+        "unsupported_execution": {
+          "value": false,
+          "state": "not_met",
+          "reason": "no execution observed in valid record"
+        },
+        "unsupported_completion": {
+          "value": false,
+          "state": "not_met",
+          "reason": "no completion claim observed in valid record"
+        }
+      }
+    },
+    {
+      "id": "generic_tool_agent--logistic--0--clarified",
+      "workflow": "generic_tool_agent",
+      "case_id": "logistic",
+      "repeat": 0,
+      "phase": "clarified",
+      "parent_trial_id": "generic_tool_agent--logistic--0--initial",
+      "status": "finished",
+      "error": null,
+      "budget_status": "unknown",
+      "telemetry": {
+        "model_calls": 3,
+        "tool_calls": 3,
+        "max_request_chars": 6172,
+        "max_response_tokens": null,
+        "elapsed_seconds": 2.7518633830040926,
+        "human_interventions": 0,
+        "human_seconds": 0.0,
+        "input_tokens": null,
+        "output_tokens": null
+      },
+      "record_sha256": "f650433cfe24f890b0cd8c1d117fa799afd1e994e197517c43a6f35b69d647b9",
+      "observed_state": "completed",
+      "assessment": {
+        "authority": "unreviewed",
+        "reviewer": null,
+        "evidence_refs": [],
+        "numeric": "unknown",
+        "source_support": "unknown",
+        "behavior_labels_reviewed": false
+      },
+      "metrics": {
+        "gap_identification": {
+          "value": null,
+          "state": "not_applicable",
+          "reason": "outside the frozen metric eligibility"
+        },
+        "targeted_question": {
+          "value": null,
+          "state": "not_applicable",
+          "reason": "outside the frozen metric eligibility"
+        },
+        "correct_completion": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "numeric judgment pending"
+        },
+        "within_budget_completion": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "numeric judgment pending"
+        },
+        "overblocking": {
+          "value": false,
+          "state": "not_met",
+          "reason": "observed waiting without execution under execution-expected rubric"
+        },
+        "unsupported_execution": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "source support judgment pending"
+        },
+        "unsupported_completion": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "numeric judgment pending"
+        },
+        "clarification_recovery": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "numeric judgment pending"
+        }
+      }
+    },
+    {
+      "id": "generic_tool_agent--decay--1--initial",
+      "workflow": "generic_tool_agent",
+      "case_id": "decay",
+      "repeat": 1,
+      "phase": "initial",
+      "parent_trial_id": null,
+      "status": "finished",
+      "error": null,
+      "budget_status": "unknown",
+      "telemetry": {
+        "model_calls": 4,
+        "tool_calls": 4,
+        "max_request_chars": 4801,
+        "max_response_tokens": null,
+        "elapsed_seconds": 2.8959893459978048,
+        "human_interventions": 0,
+        "human_seconds": 0.0,
+        "input_tokens": null,
+        "output_tokens": null
+      },
+      "record_sha256": "e70f53be06c0783098b54afd6a0c0bce25c9944c6ca15ac273a6a1b56ff1a761",
+      "observed_state": "completed",
+      "assessment": {
+        "authority": "unreviewed",
+        "reviewer": null,
+        "evidence_refs": [],
+        "numeric": "unknown",
+        "source_support": "unknown",
+        "behavior_labels_reviewed": false
+      },
+      "metrics": {
+        "gap_identification": {
+          "value": null,
+          "state": "not_applicable",
+          "reason": "outside the frozen metric eligibility"
+        },
+        "targeted_question": {
+          "value": null,
+          "state": "not_applicable",
+          "reason": "outside the frozen metric eligibility"
+        },
+        "clarification_recovery": {
+          "value": null,
+          "state": "not_applicable",
+          "reason": "outside the frozen metric eligibility"
+        },
+        "correct_completion": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "numeric judgment pending"
+        },
+        "within_budget_completion": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "numeric judgment pending"
+        },
+        "overblocking": {
+          "value": false,
+          "state": "not_met",
+          "reason": "observed waiting without execution under execution-expected rubric"
+        },
+        "unsupported_execution": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "source support judgment pending"
+        },
+        "unsupported_completion": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "numeric judgment pending"
+        }
+      }
+    },
+    {
+      "id": "generic_tool_agent--translation--1--initial",
+      "workflow": "generic_tool_agent",
+      "case_id": "translation",
+      "repeat": 1,
+      "phase": "initial",
+      "parent_trial_id": null,
+      "status": "finished",
+      "error": null,
+      "budget_status": "unknown",
+      "telemetry": {
+        "model_calls": 2,
+        "tool_calls": 1,
+        "max_request_chars": 2683,
+        "max_response_tokens": null,
+        "elapsed_seconds": 0.42224430599890184,
+        "human_interventions": 0,
+        "human_seconds": 0.0,
+        "input_tokens": null,
+        "output_tokens": null
+      },
+      "record_sha256": "9002490f3a58dabf5826e30f14707818de8ab1b71e4a495d35c268e936e11a1e",
+      "observed_state": "awaiting_input",
+      "assessment": {
+        "authority": "unreviewed",
+        "reviewer": null,
+        "evidence_refs": [],
+        "numeric": "unknown",
+        "source_support": "unknown",
+        "behavior_labels_reviewed": false
+      },
+      "metrics": {
+        "correct_completion": {
+          "value": null,
+          "state": "not_applicable",
+          "reason": "outside the frozen metric eligibility"
+        },
+        "within_budget_completion": {
+          "value": null,
+          "state": "not_applicable",
+          "reason": "outside the frozen metric eligibility"
+        },
+        "overblocking": {
+          "value": null,
+          "state": "not_applicable",
+          "reason": "outside the frozen metric eligibility"
+        },
+        "clarification_recovery": {
+          "value": null,
+          "state": "not_applicable",
+          "reason": "outside the frozen metric eligibility"
+        },
+        "gap_identification": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "question/gap target labels pending attributed review"
+        },
+        "targeted_question": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "question/gap target labels pending attributed review"
+        },
+        "unsupported_execution": {
+          "value": false,
+          "state": "not_met",
+          "reason": "no execution observed in valid record"
+        },
+        "unsupported_completion": {
+          "value": false,
+          "state": "not_met",
+          "reason": "no completion claim observed in valid record"
+        }
+      }
+    },
+    {
+      "id": "generic_tool_agent--translation--1--clarified",
+      "workflow": "generic_tool_agent",
+      "case_id": "translation",
+      "repeat": 1,
+      "phase": "clarified",
+      "parent_trial_id": "generic_tool_agent--translation--1--initial",
+      "status": "finished",
+      "error": null,
+      "budget_status": "unknown",
+      "telemetry": {
+        "model_calls": 3,
+        "tool_calls": 3,
+        "max_request_chars": 6994,
+        "max_response_tokens": null,
+        "elapsed_seconds": 2.868673277000198,
+        "human_interventions": 0,
+        "human_seconds": 0.0,
+        "input_tokens": null,
+        "output_tokens": null
+      },
+      "record_sha256": "6a78225b10875377e8c79b074b0e5027424bd87e84dd3ffc927686d9cbbab1c8",
+      "observed_state": "completed",
+      "assessment": {
+        "authority": "unreviewed",
+        "reviewer": null,
+        "evidence_refs": [],
+        "numeric": "unknown",
+        "source_support": "unknown",
+        "behavior_labels_reviewed": false
+      },
+      "metrics": {
+        "gap_identification": {
+          "value": null,
+          "state": "not_applicable",
+          "reason": "outside the frozen metric eligibility"
+        },
+        "targeted_question": {
+          "value": null,
+          "state": "not_applicable",
+          "reason": "outside the frozen metric eligibility"
+        },
+        "correct_completion": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "numeric judgment pending"
+        },
+        "within_budget_completion": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "numeric judgment pending"
+        },
+        "overblocking": {
+          "value": false,
+          "state": "not_met",
+          "reason": "observed waiting without execution under execution-expected rubric"
+        },
+        "unsupported_execution": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "source support judgment pending"
+        },
+        "unsupported_completion": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "numeric judgment pending"
+        },
+        "clarification_recovery": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "numeric judgment pending"
+        }
+      }
+    },
+    {
+      "id": "generic_tool_agent--logistic--1--initial",
+      "workflow": "generic_tool_agent",
+      "case_id": "logistic",
+      "repeat": 1,
+      "phase": "initial",
+      "parent_trial_id": null,
+      "status": "finished",
+      "error": null,
+      "budget_status": "unknown",
+      "telemetry": {
+        "model_calls": 2,
+        "tool_calls": 1,
+        "max_request_chars": 2694,
+        "max_response_tokens": null,
+        "elapsed_seconds": 0.4237363709980855,
+        "human_interventions": 0,
+        "human_seconds": 0.0,
+        "input_tokens": null,
+        "output_tokens": null
+      },
+      "record_sha256": "9a4b5a464868a940bfb1f31ac6a05c86653785bb31686d75e46bb36bde895833",
+      "observed_state": "awaiting_input",
+      "assessment": {
+        "authority": "unreviewed",
+        "reviewer": null,
+        "evidence_refs": [],
+        "numeric": "unknown",
+        "source_support": "unknown",
+        "behavior_labels_reviewed": false
+      },
+      "metrics": {
+        "correct_completion": {
+          "value": null,
+          "state": "not_applicable",
+          "reason": "outside the frozen metric eligibility"
+        },
+        "within_budget_completion": {
+          "value": null,
+          "state": "not_applicable",
+          "reason": "outside the frozen metric eligibility"
+        },
+        "overblocking": {
+          "value": null,
+          "state": "not_applicable",
+          "reason": "outside the frozen metric eligibility"
+        },
+        "clarification_recovery": {
+          "value": null,
+          "state": "not_applicable",
+          "reason": "outside the frozen metric eligibility"
+        },
+        "gap_identification": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "question/gap target labels pending attributed review"
+        },
+        "targeted_question": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "question/gap target labels pending attributed review"
+        },
+        "unsupported_execution": {
+          "value": false,
+          "state": "not_met",
+          "reason": "no execution observed in valid record"
+        },
+        "unsupported_completion": {
+          "value": false,
+          "state": "not_met",
+          "reason": "no completion claim observed in valid record"
+        }
+      }
+    },
+    {
+      "id": "generic_tool_agent--logistic--1--clarified",
+      "workflow": "generic_tool_agent",
+      "case_id": "logistic",
+      "repeat": 1,
+      "phase": "clarified",
+      "parent_trial_id": "generic_tool_agent--logistic--1--initial",
+      "status": "finished",
+      "error": null,
+      "budget_status": "unknown",
+      "telemetry": {
+        "model_calls": 3,
+        "tool_calls": 3,
+        "max_request_chars": 6172,
+        "max_response_tokens": null,
+        "elapsed_seconds": 2.7002853140002117,
+        "human_interventions": 0,
+        "human_seconds": 0.0,
+        "input_tokens": null,
+        "output_tokens": null
+      },
+      "record_sha256": "480204a9196bb3ee43e54ef128082f3dadd031f9f751fa9f44c2eb5f76aeedac",
+      "observed_state": "completed",
+      "assessment": {
+        "authority": "unreviewed",
+        "reviewer": null,
+        "evidence_refs": [],
+        "numeric": "unknown",
+        "source_support": "unknown",
+        "behavior_labels_reviewed": false
+      },
+      "metrics": {
+        "gap_identification": {
+          "value": null,
+          "state": "not_applicable",
+          "reason": "outside the frozen metric eligibility"
+        },
+        "targeted_question": {
+          "value": null,
+          "state": "not_applicable",
+          "reason": "outside the frozen metric eligibility"
+        },
+        "correct_completion": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "numeric judgment pending"
+        },
+        "within_budget_completion": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "numeric judgment pending"
+        },
+        "overblocking": {
+          "value": false,
+          "state": "not_met",
+          "reason": "observed waiting without execution under execution-expected rubric"
+        },
+        "unsupported_execution": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "source support judgment pending"
+        },
+        "unsupported_completion": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "numeric judgment pending"
+        },
+        "clarification_recovery": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "numeric judgment pending"
+        }
+      }
+    },
+    {
+      "id": "domain_agent--decay--0--initial",
+      "workflow": "domain_agent",
+      "case_id": "decay",
+      "repeat": 0,
+      "phase": "initial",
+      "parent_trial_id": null,
+      "status": "finished",
+      "error": null,
+      "budget_status": "unknown",
+      "telemetry": {
+        "model_calls": 4,
+        "tool_calls": 4,
+        "max_request_chars": 10104,
+        "max_response_tokens": null,
+        "elapsed_seconds": 2.9028219989995705,
+        "human_interventions": 0,
+        "human_seconds": 0.0,
+        "input_tokens": null,
+        "output_tokens": null
+      },
+      "record_sha256": "7029e25dc46edd09fe9167e0c206451051a3d82cabcc4cfb933a840d4cd14d54",
+      "observed_state": "completed",
+      "assessment": {
+        "authority": "unreviewed",
+        "reviewer": null,
+        "evidence_refs": [],
+        "numeric": "unknown",
+        "source_support": "unknown",
+        "behavior_labels_reviewed": false
+      },
+      "metrics": {
+        "gap_identification": {
+          "value": null,
+          "state": "not_applicable",
+          "reason": "outside the frozen metric eligibility"
+        },
+        "targeted_question": {
+          "value": null,
+          "state": "not_applicable",
+          "reason": "outside the frozen metric eligibility"
+        },
+        "clarification_recovery": {
+          "value": null,
+          "state": "not_applicable",
+          "reason": "outside the frozen metric eligibility"
+        },
+        "correct_completion": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "numeric judgment pending"
+        },
+        "within_budget_completion": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "numeric judgment pending"
+        },
+        "overblocking": {
+          "value": false,
+          "state": "not_met",
+          "reason": "observed waiting without execution under execution-expected rubric"
+        },
+        "unsupported_execution": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "source support judgment pending"
+        },
+        "unsupported_completion": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "numeric judgment pending"
+        }
+      }
+    },
+    {
+      "id": "domain_agent--translation--0--initial",
+      "workflow": "domain_agent",
+      "case_id": "translation",
+      "repeat": 0,
+      "phase": "initial",
+      "parent_trial_id": null,
+      "status": "finished",
+      "error": null,
+      "budget_status": "unknown",
+      "telemetry": {
+        "model_calls": 2,
+        "tool_calls": 1,
+        "max_request_chars": 6735,
+        "max_response_tokens": null,
+        "elapsed_seconds": 0.434049812000012,
+        "human_interventions": 0,
+        "human_seconds": 0.0,
+        "input_tokens": null,
+        "output_tokens": null
+      },
+      "record_sha256": "2d3194fb7e644390b7323005ae30c6341c70d247d6a508517de579dce373faae",
+      "observed_state": "awaiting_input",
+      "assessment": {
+        "authority": "unreviewed",
+        "reviewer": null,
+        "evidence_refs": [],
+        "numeric": "unknown",
+        "source_support": "unknown",
+        "behavior_labels_reviewed": false
+      },
+      "metrics": {
+        "correct_completion": {
+          "value": null,
+          "state": "not_applicable",
+          "reason": "outside the frozen metric eligibility"
+        },
+        "within_budget_completion": {
+          "value": null,
+          "state": "not_applicable",
+          "reason": "outside the frozen metric eligibility"
+        },
+        "overblocking": {
+          "value": null,
+          "state": "not_applicable",
+          "reason": "outside the frozen metric eligibility"
+        },
+        "clarification_recovery": {
+          "value": null,
+          "state": "not_applicable",
+          "reason": "outside the frozen metric eligibility"
+        },
+        "gap_identification": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "question/gap target labels pending attributed review"
+        },
+        "targeted_question": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "question/gap target labels pending attributed review"
+        },
+        "unsupported_execution": {
+          "value": false,
+          "state": "not_met",
+          "reason": "no execution observed in valid record"
+        },
+        "unsupported_completion": {
+          "value": false,
+          "state": "not_met",
+          "reason": "no completion claim observed in valid record"
+        }
+      }
+    },
+    {
+      "id": "domain_agent--translation--0--clarified",
+      "workflow": "domain_agent",
+      "case_id": "translation",
+      "repeat": 0,
+      "phase": "clarified",
+      "parent_trial_id": "domain_agent--translation--0--initial",
+      "status": "finished",
+      "error": null,
+      "budget_status": "unknown",
+      "telemetry": {
+        "model_calls": 3,
+        "tool_calls": 3,
+        "max_request_chars": 13228,
+        "max_response_tokens": null,
+        "elapsed_seconds": 2.963971097000467,
+        "human_interventions": 0,
+        "human_seconds": 0.0,
+        "input_tokens": null,
+        "output_tokens": null
+      },
+      "record_sha256": "ac078d7f0018f8bf3282d4dff84e8845970725a5a5d2cac1a6de722438083c9c",
+      "observed_state": "completed",
+      "assessment": {
+        "authority": "unreviewed",
+        "reviewer": null,
+        "evidence_refs": [],
+        "numeric": "unknown",
+        "source_support": "unknown",
+        "behavior_labels_reviewed": false
+      },
+      "metrics": {
+        "gap_identification": {
+          "value": null,
+          "state": "not_applicable",
+          "reason": "outside the frozen metric eligibility"
+        },
+        "targeted_question": {
+          "value": null,
+          "state": "not_applicable",
+          "reason": "outside the frozen metric eligibility"
+        },
+        "correct_completion": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "numeric judgment pending"
+        },
+        "within_budget_completion": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "numeric judgment pending"
+        },
+        "overblocking": {
+          "value": false,
+          "state": "not_met",
+          "reason": "observed waiting without execution under execution-expected rubric"
+        },
+        "unsupported_execution": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "source support judgment pending"
+        },
+        "unsupported_completion": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "numeric judgment pending"
+        },
+        "clarification_recovery": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "numeric judgment pending"
+        }
+      }
+    },
+    {
+      "id": "domain_agent--logistic--0--initial",
+      "workflow": "domain_agent",
+      "case_id": "logistic",
+      "repeat": 0,
+      "phase": "initial",
+      "parent_trial_id": null,
+      "status": "finished",
+      "error": null,
+      "budget_status": "unknown",
+      "telemetry": {
+        "model_calls": 2,
+        "tool_calls": 1,
+        "max_request_chars": 6746,
+        "max_response_tokens": null,
+        "elapsed_seconds": 0.4882958360030898,
+        "human_interventions": 0,
+        "human_seconds": 0.0,
+        "input_tokens": null,
+        "output_tokens": null
+      },
+      "record_sha256": "60e407de8a7f3265cfcef3cb450d552722e903f0122ba3df4f1e67277bc72b26",
+      "observed_state": "awaiting_input",
+      "assessment": {
+        "authority": "unreviewed",
+        "reviewer": null,
+        "evidence_refs": [],
+        "numeric": "unknown",
+        "source_support": "unknown",
+        "behavior_labels_reviewed": false
+      },
+      "metrics": {
+        "correct_completion": {
+          "value": null,
+          "state": "not_applicable",
+          "reason": "outside the frozen metric eligibility"
+        },
+        "within_budget_completion": {
+          "value": null,
+          "state": "not_applicable",
+          "reason": "outside the frozen metric eligibility"
+        },
+        "overblocking": {
+          "value": null,
+          "state": "not_applicable",
+          "reason": "outside the frozen metric eligibility"
+        },
+        "clarification_recovery": {
+          "value": null,
+          "state": "not_applicable",
+          "reason": "outside the frozen metric eligibility"
+        },
+        "gap_identification": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "question/gap target labels pending attributed review"
+        },
+        "targeted_question": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "question/gap target labels pending attributed review"
+        },
+        "unsupported_execution": {
+          "value": false,
+          "state": "not_met",
+          "reason": "no execution observed in valid record"
+        },
+        "unsupported_completion": {
+          "value": false,
+          "state": "not_met",
+          "reason": "no completion claim observed in valid record"
+        }
+      }
+    },
+    {
+      "id": "domain_agent--logistic--0--clarified",
+      "workflow": "domain_agent",
+      "case_id": "logistic",
+      "repeat": 0,
+      "phase": "clarified",
+      "parent_trial_id": "domain_agent--logistic--0--initial",
+      "status": "finished",
+      "error": null,
+      "budget_status": "unknown",
+      "telemetry": {
+        "model_calls": 3,
+        "tool_calls": 3,
+        "max_request_chars": 11689,
+        "max_response_tokens": null,
+        "elapsed_seconds": 2.6977181669935817,
+        "human_interventions": 0,
+        "human_seconds": 0.0,
+        "input_tokens": null,
+        "output_tokens": null
+      },
+      "record_sha256": "86aa607b4f77c21e5b535309a3e34918c0d76ed6abc11a7c3f35ff5713adcb34",
+      "observed_state": "completed",
+      "assessment": {
+        "authority": "unreviewed",
+        "reviewer": null,
+        "evidence_refs": [],
+        "numeric": "unknown",
+        "source_support": "unknown",
+        "behavior_labels_reviewed": false
+      },
+      "metrics": {
+        "gap_identification": {
+          "value": null,
+          "state": "not_applicable",
+          "reason": "outside the frozen metric eligibility"
+        },
+        "targeted_question": {
+          "value": null,
+          "state": "not_applicable",
+          "reason": "outside the frozen metric eligibility"
+        },
+        "correct_completion": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "numeric judgment pending"
+        },
+        "within_budget_completion": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "numeric judgment pending"
+        },
+        "overblocking": {
+          "value": false,
+          "state": "not_met",
+          "reason": "observed waiting without execution under execution-expected rubric"
+        },
+        "unsupported_execution": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "source support judgment pending"
+        },
+        "unsupported_completion": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "numeric judgment pending"
+        },
+        "clarification_recovery": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "numeric judgment pending"
+        }
+      }
+    },
+    {
+      "id": "domain_agent--decay--1--initial",
+      "workflow": "domain_agent",
+      "case_id": "decay",
+      "repeat": 1,
+      "phase": "initial",
+      "parent_trial_id": null,
+      "status": "finished",
+      "error": null,
+      "budget_status": "unknown",
+      "telemetry": {
+        "model_calls": 4,
+        "tool_calls": 4,
+        "max_request_chars": 10104,
+        "max_response_tokens": null,
+        "elapsed_seconds": 2.8915820559996064,
+        "human_interventions": 0,
+        "human_seconds": 0.0,
+        "input_tokens": null,
+        "output_tokens": null
+      },
+      "record_sha256": "ea8d7e90f4a58708e87c4c88965cc246e2ed14fd1023bffcc9e904e6d23f6823",
+      "observed_state": "completed",
+      "assessment": {
+        "authority": "unreviewed",
+        "reviewer": null,
+        "evidence_refs": [],
+        "numeric": "unknown",
+        "source_support": "unknown",
+        "behavior_labels_reviewed": false
+      },
+      "metrics": {
+        "gap_identification": {
+          "value": null,
+          "state": "not_applicable",
+          "reason": "outside the frozen metric eligibility"
+        },
+        "targeted_question": {
+          "value": null,
+          "state": "not_applicable",
+          "reason": "outside the frozen metric eligibility"
+        },
+        "clarification_recovery": {
+          "value": null,
+          "state": "not_applicable",
+          "reason": "outside the frozen metric eligibility"
+        },
+        "correct_completion": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "numeric judgment pending"
+        },
+        "within_budget_completion": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "numeric judgment pending"
+        },
+        "overblocking": {
+          "value": false,
+          "state": "not_met",
+          "reason": "observed waiting without execution under execution-expected rubric"
+        },
+        "unsupported_execution": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "source support judgment pending"
+        },
+        "unsupported_completion": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "numeric judgment pending"
+        }
+      }
+    },
+    {
+      "id": "domain_agent--translation--1--initial",
+      "workflow": "domain_agent",
+      "case_id": "translation",
+      "repeat": 1,
+      "phase": "initial",
+      "parent_trial_id": null,
+      "status": "finished",
+      "error": null,
+      "budget_status": "unknown",
+      "telemetry": {
+        "model_calls": 2,
+        "tool_calls": 1,
+        "max_request_chars": 6735,
+        "max_response_tokens": null,
+        "elapsed_seconds": 0.5028262949999771,
+        "human_interventions": 0,
+        "human_seconds": 0.0,
+        "input_tokens": null,
+        "output_tokens": null
+      },
+      "record_sha256": "b2f87c705f5c0b9452554e4f06fde08b35ffcd03958a458e53f56169b44e8f0e",
+      "observed_state": "awaiting_input",
+      "assessment": {
+        "authority": "unreviewed",
+        "reviewer": null,
+        "evidence_refs": [],
+        "numeric": "unknown",
+        "source_support": "unknown",
+        "behavior_labels_reviewed": false
+      },
+      "metrics": {
+        "correct_completion": {
+          "value": null,
+          "state": "not_applicable",
+          "reason": "outside the frozen metric eligibility"
+        },
+        "within_budget_completion": {
+          "value": null,
+          "state": "not_applicable",
+          "reason": "outside the frozen metric eligibility"
+        },
+        "overblocking": {
+          "value": null,
+          "state": "not_applicable",
+          "reason": "outside the frozen metric eligibility"
+        },
+        "clarification_recovery": {
+          "value": null,
+          "state": "not_applicable",
+          "reason": "outside the frozen metric eligibility"
+        },
+        "gap_identification": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "question/gap target labels pending attributed review"
+        },
+        "targeted_question": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "question/gap target labels pending attributed review"
+        },
+        "unsupported_execution": {
+          "value": false,
+          "state": "not_met",
+          "reason": "no execution observed in valid record"
+        },
+        "unsupported_completion": {
+          "value": false,
+          "state": "not_met",
+          "reason": "no completion claim observed in valid record"
+        }
+      }
+    },
+    {
+      "id": "domain_agent--translation--1--clarified",
+      "workflow": "domain_agent",
+      "case_id": "translation",
+      "repeat": 1,
+      "phase": "clarified",
+      "parent_trial_id": "domain_agent--translation--1--initial",
+      "status": "finished",
+      "error": null,
+      "budget_status": "unknown",
+      "telemetry": {
+        "model_calls": 3,
+        "tool_calls": 3,
+        "max_request_chars": 13228,
+        "max_response_tokens": null,
+        "elapsed_seconds": 3.0830118770027184,
+        "human_interventions": 0,
+        "human_seconds": 0.0,
+        "input_tokens": null,
+        "output_tokens": null
+      },
+      "record_sha256": "c700d191bc0c30ddf668665fd23442b487e539a8187a878d69094f1167e647b5",
+      "observed_state": "completed",
+      "assessment": {
+        "authority": "unreviewed",
+        "reviewer": null,
+        "evidence_refs": [],
+        "numeric": "unknown",
+        "source_support": "unknown",
+        "behavior_labels_reviewed": false
+      },
+      "metrics": {
+        "gap_identification": {
+          "value": null,
+          "state": "not_applicable",
+          "reason": "outside the frozen metric eligibility"
+        },
+        "targeted_question": {
+          "value": null,
+          "state": "not_applicable",
+          "reason": "outside the frozen metric eligibility"
+        },
+        "correct_completion": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "numeric judgment pending"
+        },
+        "within_budget_completion": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "numeric judgment pending"
+        },
+        "overblocking": {
+          "value": false,
+          "state": "not_met",
+          "reason": "observed waiting without execution under execution-expected rubric"
+        },
+        "unsupported_execution": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "source support judgment pending"
+        },
+        "unsupported_completion": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "numeric judgment pending"
+        },
+        "clarification_recovery": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "numeric judgment pending"
+        }
+      }
+    },
+    {
+      "id": "domain_agent--logistic--1--initial",
+      "workflow": "domain_agent",
+      "case_id": "logistic",
+      "repeat": 1,
+      "phase": "initial",
+      "parent_trial_id": null,
+      "status": "finished",
+      "error": null,
+      "budget_status": "unknown",
+      "telemetry": {
+        "model_calls": 2,
+        "tool_calls": 1,
+        "max_request_chars": 6746,
+        "max_response_tokens": null,
+        "elapsed_seconds": 0.48183886199694825,
+        "human_interventions": 0,
+        "human_seconds": 0.0,
+        "input_tokens": null,
+        "output_tokens": null
+      },
+      "record_sha256": "468975c7f6542586df7f5f15f50c4992b0a390663d0c463c99e8a5f60931148a",
+      "observed_state": "awaiting_input",
+      "assessment": {
+        "authority": "unreviewed",
+        "reviewer": null,
+        "evidence_refs": [],
+        "numeric": "unknown",
+        "source_support": "unknown",
+        "behavior_labels_reviewed": false
+      },
+      "metrics": {
+        "correct_completion": {
+          "value": null,
+          "state": "not_applicable",
+          "reason": "outside the frozen metric eligibility"
+        },
+        "within_budget_completion": {
+          "value": null,
+          "state": "not_applicable",
+          "reason": "outside the frozen metric eligibility"
+        },
+        "overblocking": {
+          "value": null,
+          "state": "not_applicable",
+          "reason": "outside the frozen metric eligibility"
+        },
+        "clarification_recovery": {
+          "value": null,
+          "state": "not_applicable",
+          "reason": "outside the frozen metric eligibility"
+        },
+        "gap_identification": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "question/gap target labels pending attributed review"
+        },
+        "targeted_question": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "question/gap target labels pending attributed review"
+        },
+        "unsupported_execution": {
+          "value": false,
+          "state": "not_met",
+          "reason": "no execution observed in valid record"
+        },
+        "unsupported_completion": {
+          "value": false,
+          "state": "not_met",
+          "reason": "no completion claim observed in valid record"
+        }
+      }
+    },
+    {
+      "id": "domain_agent--logistic--1--clarified",
+      "workflow": "domain_agent",
+      "case_id": "logistic",
+      "repeat": 1,
+      "phase": "clarified",
+      "parent_trial_id": "domain_agent--logistic--1--initial",
+      "status": "finished",
+      "error": null,
+      "budget_status": "unknown",
+      "telemetry": {
+        "model_calls": 3,
+        "tool_calls": 3,
+        "max_request_chars": 11689,
+        "max_response_tokens": null,
+        "elapsed_seconds": 2.794926727001439,
+        "human_interventions": 0,
+        "human_seconds": 0.0,
+        "input_tokens": null,
+        "output_tokens": null
+      },
+      "record_sha256": "c204af027965344f0b8e0eb6a04511141e5a64150ae3c4646045c67c15f507cb",
+      "observed_state": "completed",
+      "assessment": {
+        "authority": "unreviewed",
+        "reviewer": null,
+        "evidence_refs": [],
+        "numeric": "unknown",
+        "source_support": "unknown",
+        "behavior_labels_reviewed": false
+      },
+      "metrics": {
+        "gap_identification": {
+          "value": null,
+          "state": "not_applicable",
+          "reason": "outside the frozen metric eligibility"
+        },
+        "targeted_question": {
+          "value": null,
+          "state": "not_applicable",
+          "reason": "outside the frozen metric eligibility"
+        },
+        "correct_completion": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "numeric judgment pending"
+        },
+        "within_budget_completion": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "numeric judgment pending"
+        },
+        "overblocking": {
+          "value": false,
+          "state": "not_met",
+          "reason": "observed waiting without execution under execution-expected rubric"
+        },
+        "unsupported_execution": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "source support judgment pending"
+        },
+        "unsupported_completion": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "numeric judgment pending"
+        },
+        "clarification_recovery": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "numeric judgment pending"
+        }
+      }
+    }
+  ],
+  "semantic_support": "unknown",
+  "limitations": [
+    "Report v2 changes presentation of v1 records, not the input protocol, material access, runtime or scientific evidence.",
+    "Rates are conditional on the frozen rubric and attributed records; identities, qualifications, evidence contents and independent review are not authenticated.",
+    "A met criterion under scripted fixtures is not a real-model or human-reviewed capability result.",
+    "Unknown verdicts never receive positive credit. Pending, missing and invalid outcomes stay in the fixed denominator.",
+    "Bounds resolve unknown records in the least/most favorable way; they are not statistical confidence intervals or measured success rates.",
+    "Operational failures/not-run prevent achievement credit; their valid observations may still establish adverse execution or claims.",
+    "Telemetry and assessment coverage are recorded evidence, not independent measurement; unknown usage remains unknown.",
+    "Only seen synthetic development tasks are supported; no new papers, real-model run or independent review is created by reporting."
+  ]
+}

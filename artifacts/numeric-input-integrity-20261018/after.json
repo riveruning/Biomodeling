@@ -1,0 +1,33 @@
+[
+  {
+    "case": "boolean",
+    "rejected": true,
+    "error": "actual time grid must contain finite numbers (not booleans or strings)"
+  },
+  {
+    "case": "strings",
+    "rejected": true,
+    "error": "actual time grid must contain finite numbers (not booleans or strings)"
+  },
+  {
+    "case": "reversed",
+    "rejected": true,
+    "error": "actual time grid must be strictly increasing"
+  },
+  {
+    "case": "duplicate",
+    "rejected": true,
+    "error": "actual time grid must be strictly increasing"
+  },
+  {
+    "case": "nonfinite_report",
+    "can_execute": false,
+    "checks": [
+      {
+        "code": "finite",
+        "status": "fail",
+        "message": "values['x'] must contain finite numbers (not booleans or strings)"
+      }
+    ]
+  }
+]

@@ -1,0 +1,23 @@
+{
+  "call_count": 1,
+  "events": [
+    {
+      "call": 1,
+      "error": "HTTP 429 from provider",
+      "type": "provider_error",
+      "usage": {}
+    }
+  ],
+  "limitations": [
+    "source quote existence does not prove semantic support",
+    "no arbitrary paper extraction guarantee"
+  ],
+  "mode": "reproduction",
+  "model_ref": null,
+  "repair_count": 0,
+  "run_ref": null,
+  "source_refs": [
+    "86db644e605b9337dc33d8e171200f5832373f76108e1b1ab71849959ec0bd6e"
+  ],
+  "state": "failed"
+}

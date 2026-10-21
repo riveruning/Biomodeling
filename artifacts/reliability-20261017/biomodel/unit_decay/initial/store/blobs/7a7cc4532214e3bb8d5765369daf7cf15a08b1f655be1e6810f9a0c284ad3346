@@ -1,0 +1,5 @@
+Synthetic, analyst-specified biochemical ODE model; not a published paper.
+Time t is in minutes. States are dimensionless abstract activities. The fixed compartment has size 1 dimensionless.
+Initial D = 1.0.
+Parameter k = 0.3. The parameter table labels k per second, but the equally authoritative equation legend labels k per minute. No correction is available.
+Equation dD/dt = -k*D.

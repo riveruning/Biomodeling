@@ -1,0 +1,101 @@
+{
+  "sha": "ef8d146a5922cbad4f0685163d41b4090bc363cd",
+  "node_id": "C_kwDONIFsItoAKGVmOGQxNDZhNTkyMmNiYWQ0ZjA2ODUxNjNkNDFiNDA5MGJjMzYzY2Q",
+  "commit": {
+    "author": {
+      "name": "github-actions[bot]",
+      "email": "41898282+github-actions[bot]@users.noreply.github.com",
+      "date": "2026-03-28T13:10:07Z"
+    },
+    "committer": {
+      "name": "github-actions[bot]",
+      "email": "41898282+github-actions[bot]@users.noreply.github.com",
+      "date": "2026-03-28T13:10:07Z"
+    },
+    "message": "chore(release): 1.49.1",
+    "tree": {
+      "sha": "a5bce05ab5c781c97a164d77fa6d88b9c8ced316",
+      "url": "https://api.github.com/repos/VirtualPatientEngine/AIAgents4Pharma/git/trees/a5bce05ab5c781c97a164d77fa6d88b9c8ced316"
+    },
+    "url": "https://api.github.com/repos/VirtualPatientEngine/AIAgents4Pharma/git/commits/ef8d146a5922cbad4f0685163d41b4090bc363cd",
+    "comment_count": 0,
+    "verification": {
+      "verified": false,
+      "reason": "unsigned",
+      "signature": null,
+      "payload": null,
+      "verified_at": null
+    }
+  },
+  "url": "https://api.github.com/repos/VirtualPatientEngine/AIAgents4Pharma/commits/ef8d146a5922cbad4f0685163d41b4090bc363cd",
+  "html_url": "https://github.com/VirtualPatientEngine/AIAgents4Pharma/commit/ef8d146a5922cbad4f0685163d41b4090bc363cd",
+  "comments_url": "https://api.github.com/repos/VirtualPatientEngine/AIAgents4Pharma/commits/ef8d146a5922cbad4f0685163d41b4090bc363cd/comments",
+  "author": {
+    "login": "github-actions[bot]",
+    "id": 41898282,
+    "node_id": "MDM6Qm90NDE4OTgyODI=",
+    "avatar_url": "https://avatars.githubusercontent.com/in/15368?v=4",
+    "gravatar_id": "",
+    "url": "https://api.github.com/users/github-actions%5Bbot%5D",
+    "html_url": "https://github.com/apps/github-actions",
+    "followers_url": "https://api.github.com/users/github-actions%5Bbot%5D/followers",
+    "following_url": "https://api.github.com/users/github-actions%5Bbot%5D/following{/other_user}",
+    "gists_url": "https://api.github.com/users/github-actions%5Bbot%5D/gists{/gist_id}",
+    "starred_url": "https://api.github.com/users/github-actions%5Bbot%5D/starred{/owner}{/repo}",
+    "subscriptions_url": "https://api.github.com/users/github-actions%5Bbot%5D/subscriptions",
+    "organizations_url": "https://api.github.com/users/github-actions%5Bbot%5D/orgs",
+    "repos_url": "https://api.github.com/users/github-actions%5Bbot%5D/repos",
+    "events_url": "https://api.github.com/users/github-actions%5Bbot%5D/events{/privacy}",
+    "received_events_url": "https://api.github.com/users/github-actions%5Bbot%5D/received_events",
+    "type": "Bot",
+    "user_view_type": "public",
+    "site_admin": false
+  },
+  "committer": {
+    "login": "github-actions[bot]",
+    "id": 41898282,
+    "node_id": "MDM6Qm90NDE4OTgyODI=",
+    "avatar_url": "https://avatars.githubusercontent.com/in/15368?v=4",
+    "gravatar_id": "",
+    "url": "https://api.github.com/users/github-actions%5Bbot%5D",
+    "html_url": "https://github.com/apps/github-actions",
+    "followers_url": "https://api.github.com/users/github-actions%5Bbot%5D/followers",
+    "following_url": "https://api.github.com/users/github-actions%5Bbot%5D/following{/other_user}",
+    "gists_url": "https://api.github.com/users/github-actions%5Bbot%5D/gists{/gist_id}",
+    "starred_url": "https://api.github.com/users/github-actions%5Bbot%5D/starred{/owner}{/repo}",
+    "subscriptions_url": "https://api.github.com/users/github-actions%5Bbot%5D/subscriptions",
+    "organizations_url": "https://api.github.com/users/github-actions%5Bbot%5D/orgs",
+    "repos_url": "https://api.github.com/users/github-actions%5Bbot%5D/repos",
+    "events_url": "https://api.github.com/users/github-actions%5Bbot%5D/events{/privacy}",
+    "received_events_url": "https://api.github.com/users/github-actions%5Bbot%5D/received_events",
+    "type": "Bot",
+    "user_view_type": "public",
+    "site_admin": false
+  },
+  "parents": [
+    {
+      "sha": "72c30173ee472818ca5bbe533e339ead1235be54",
+      "url": "https://api.github.com/repos/VirtualPatientEngine/AIAgents4Pharma/commits/72c30173ee472818ca5bbe533e339ead1235be54",
+      "html_url": "https://github.com/VirtualPatientEngine/AIAgents4Pharma/commit/72c30173ee472818ca5bbe533e339ead1235be54"
+    }
+  ],
+  "stats": {
+    "total": 2,
+    "additions": 1,
+    "deletions": 1
+  },
+  "files": [
+    {
+      "sha": "fd44a142df48eacc6164037a00a198748dfbb816",
+      "filename": "pyproject.toml",
+      "status": "modified",
+      "additions": 1,
+      "deletions": 1,
+      "changes": 2,
+      "blob_url": "https://github.com/VirtualPatientEngine/AIAgents4Pharma/blob/ef8d146a5922cbad4f0685163d41b4090bc363cd/pyproject.toml",
+      "raw_url": "https://github.com/VirtualPatientEngine/AIAgents4Pharma/raw/ef8d146a5922cbad4f0685163d41b4090bc363cd/pyproject.toml",
+      "contents_url": "https://api.github.com/repos/VirtualPatientEngine/AIAgents4Pharma/contents/pyproject.toml?ref=ef8d146a5922cbad4f0685163d41b4090bc363cd",
+      "patch": "@@ -85,7 +85,7 @@ dependencies = [\n   \"cloudscraper==1.2.71\",\n   \"azure-identity==1.25.0\",\n ]\n-version = \"1.49.0\"\n+version = \"1.49.1\"\n \n [project.optional-dependencies]\n dev = ["
+    }
+  ]
+}

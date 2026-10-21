@@ -1,0 +1,6 @@
+-> R ; km_R_P * K_R_P ^ n_R_P / ( K_R_P ^ n_R_P + P ^ n_R_P ) ; km_R_P = 1.0 ; K_R_P = 1.0 ; n_R_P = 2
+R -> ; kdeg_R * R ; kdeg_R = 0.4
+-> P ; kp_R_P * R ; kp_R_P = 0.7
+P -> ; kdeg_P * P ; kdeg_P = 0.3
+R = 0.2
+P = 0.1

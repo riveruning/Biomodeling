@@ -1,0 +1,64 @@
+........................................................................ [  5%]
+........................................................................ [ 10%]
+........................................................................ [ 15%]
+........................................................................ [ 21%]
+........................................................................ [ 26%]
+........................................................................ [ 31%]
+........................................................................ [ 37%]
+........................................................................ [ 42%]
+........................................................................ [ 47%]
+........................................................................ [ 52%]
+........................................................................ [ 58%]
+........................................................................ [ 63%]
+........................................................................ [ 68%]
+........................................................................ [ 74%]
+........................................................................ [ 79%]
+........................................................................ [ 84%]
+........................................................................ [ 90%]
+........................................................................ [ 95%]
+..............................................FF................         [100%]
+=================================== FAILURES ===================================
+____ test_hard_deadline_also_bounds_the_scientific_tool[generic_tool_agent] ____
+
+adapters = <module 'workflow_adapters_acceptance' from '/home/riveruning/biologymodel_agent/benchmarks/development/workflow_adapters.py'>
+tmp_path = PosixPath('/tmp/t08d0-full/test_hard_deadline_also_bounds1')
+workflow = 'generic_tool_agent'
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7aa943e98e90>
+
+    @pytest.mark.parametrize('workflow',['fixed_workflow','generic_tool_agent','domain_agent'])
+    def test_hard_deadline_also_bounds_the_scientific_tool(adapters,tmp_path,workflow,monkeypatch):
+        p=projection(adapters,workflow); p['budget']['max_elapsed_seconds']=.6
+        def slow(*args,**kwargs): time.sleep(5)
+        monkeypatch.setattr(adapters.application,'run_reproduction',slow)
+        start=time.monotonic()
+        out=adapters.run_trial(p,EnvelopeTransport(p,complete_actions(workflow)),tmp_path/'scientific-timeout')
+        assert time.monotonic()-start<3
+        assert out['record']['status']=='timeout'
+>       assert out['record']['observation']['executed'] is True
+E       assert False is True
+
+tests/test_workflow_adapters.py:283: AssertionError
+_______ test_hard_deadline_also_bounds_the_scientific_tool[domain_agent] _______
+
+adapters = <module 'workflow_adapters_acceptance' from '/home/riveruning/biologymodel_agent/benchmarks/development/workflow_adapters.py'>
+tmp_path = PosixPath('/tmp/t08d0-full/test_hard_deadline_also_bounds2')
+workflow = 'domain_agent'
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7aa943e74ce0>
+
+    @pytest.mark.parametrize('workflow',['fixed_workflow','generic_tool_agent','domain_agent'])
+    def test_hard_deadline_also_bounds_the_scientific_tool(adapters,tmp_path,workflow,monkeypatch):
+        p=projection(adapters,workflow); p['budget']['max_elapsed_seconds']=.6
+        def slow(*args,**kwargs): time.sleep(5)
+        monkeypatch.setattr(adapters.application,'run_reproduction',slow)
+        start=time.monotonic()
+        out=adapters.run_trial(p,EnvelopeTransport(p,complete_actions(workflow)),tmp_path/'scientific-timeout')
+        assert time.monotonic()-start<3
+        assert out['record']['status']=='timeout'
+>       assert out['record']['observation']['executed'] is True
+E       assert False is True
+
+tests/test_workflow_adapters.py:283: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_workflow_adapters.py::test_hard_deadline_also_bounds_the_scientific_tool[generic_tool_agent]
+FAILED tests/test_workflow_adapters.py::test_hard_deadline_also_bounds_the_scientific_tool[domain_agent]
+2 failed, 1358 passed in 356.16s (0:05:56)

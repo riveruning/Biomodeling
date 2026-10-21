@@ -1,0 +1,13 @@
+
+
+I've read all four required files. Now I'll implement the Journal module.
+
+I made the module more complex than the contract allows — `store.put` returns the ref directly, and details should be written once at reserve time. Rewriting cleanly:
+
+
+
+
+Now the `_execute_agent` integrations:
+
+
+

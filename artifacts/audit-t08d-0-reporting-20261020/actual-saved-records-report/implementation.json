@@ -1,0 +1,5 @@
+{
+  "reporting_protocol": "agent_evaluation_report_v2",
+  "reporter_sha256": "5b47b6f4b20765fcbabc2b29352e8ef700d99aed086bdb43ba63a17ed88e7d58",
+  "legacy_scorer_sha256": "2c0a41c137bfbf678fcada3dd6f97a720fb0f56954f8d4e344890a26259d686c"
+}

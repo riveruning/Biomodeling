@@ -1,0 +1,7 @@
+{
+  "exit_code": 0,
+  "elapsed_seconds": 73.27501947400015,
+  "model": "gpt-6.1-sol",
+  "cli_version": "0.162.1",
+  "user_config_ignored_except_preserved_model_and_native_auth": true
+}

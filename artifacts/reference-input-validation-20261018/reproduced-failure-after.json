@@ -1,0 +1,22 @@
+{
+  "input": {
+    "status": "failed",
+    "times": [
+      0.0,
+      1.0
+    ],
+    "values": {
+      "x": [
+        1.0,
+        0.5
+      ]
+    },
+    "scales": {
+      "x": 1.0
+    }
+  },
+  "outcome": {
+    "rejected": true,
+    "error": "reference simulation did not succeed"
+  }
+}

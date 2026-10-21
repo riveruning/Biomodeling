@@ -1,0 +1,27 @@
+{
+  "date": "2026-10-17",
+  "official_source_files_verified": 82,
+  "product_modules_sha256": "446e6f3a01fc692ef8f8da085c81f86a41e75e2b41276be86eb1c5c103c8c47b",
+  "product_source_matches_preintegration": true,
+  "pytest": {
+    "name": "pytest",
+    "errors": "0",
+    "failures": "0",
+    "skipped": "0",
+    "tests": "230",
+    "time": "24.601",
+    "timestamp": "2026-10-17T09:54:49.939050+08:00",
+    "hostname": "LAPTOP-2QUP5P60"
+  },
+  "evidence_sha256": {
+    "source-manifest.json": "0f86961a2e96b745591a777d9eb5722764c07859648f88c0cdb01880057dfa39",
+    "results.json": "19d561071e1a21854aa963aa0a1eb2631686c195d99b5ce918816e2a1e8b95a3",
+    "results.csv": "bc681fbae3fe7ba6361a0b04875528d5ac5f67dad0435b6fdcd882e3dc9ef8bb",
+    "pytest.xml": "0e73d8620d9b3401b5d14474eb300187d37f7f92afe00f5ad28dd5ec452c5883",
+    "report.md": "7ace69463284fcc6cb230c170bdd316b03f2daaa11fda4f60d9c44cbcde2ab5d",
+    "sbml-protocol.json": "9af99e01c42d2deaff5f8ac719dd4a4e1eef56411d3f9c077a6461171d90e424",
+    "requirements-kinmod.lock": "26ab157e34f6ce4b5df954f6eed6bb3b251a389640d22a169096f20fcce604ba",
+    "requirements-t2b.lock": "d7caf2a300569e771bbe5ac00d5392cf7cfc7e6a68d0dd9eb716492344a40589"
+  },
+  "scope": "Official source adapters executed with alternative LLM and compatible runtimes; not original paper score reproduction. Assisted diagnostics and deterministic controls are separate from unassisted agents."
+}

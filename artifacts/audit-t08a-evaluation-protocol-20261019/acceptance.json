@@ -1,0 +1,115 @@
+{
+  "task_id": "T08a",
+  "parent_task": "T08",
+  "status": "engineering_accepted",
+  "parent_status": "live_adapters_independent_tasks_and_comparisons_pending",
+  "accepted_at_utc": "2026-10-19T12:56:22.029729+00:00",
+  "implementation_owner": "Codex alone",
+  "dsh_or_subagents_used": false,
+  "previous_accepted_full_regression": 1075,
+  "new_tests": 47,
+  "verification": {
+    "baseline": {
+      "tests": 2,
+      "failures": 0,
+      "errors": 2,
+      "skipped": 0,
+      "time": 0.058
+    },
+    "first": {
+      "tests": 31,
+      "failures": 1,
+      "errors": 0,
+      "skipped": 0,
+      "time": 0.447
+    },
+    "expanded": {
+      "tests": 37,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "time": 0.363
+    },
+    "focused": {
+      "tests": 46,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "time": 2.59
+    },
+    "final-check": {
+      "tests": 47,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "time": 3.905
+    },
+    "full": {
+      "tests": 1121,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "time": 213.463
+    },
+    "full-final": {
+      "tests": 1122,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "time": 213.142
+    }
+  },
+  "frozen_original_files_checked": 114,
+  "modified_original_product_tests_or_evaluators": [],
+  "product_implementation_sha256": "149e4a7e2d5c300cf8f180a388a99c103b257c03413ac97b60c3605f955f57bf",
+  "protocol": "agent_evaluation_v1",
+  "plan_audit": {
+    "cases": 3,
+    "families": 1,
+    "planned_trials": 30,
+    "real_papers": 0,
+    "independent_review": "pending",
+    "semantic_support": "unknown"
+  },
+  "manifest_sha256": "f2ccd66775137ff2fad83e11ff727b8a47d7f32f01f6c2c9f0d31b59ca9d78fe",
+  "scorer_sha256": "2c0a41c137bfbf678fcada3dd6f97a720fb0f56954f8d4e344890a26259d686c",
+  "isolated_trial_input_files": 30,
+  "actual_model_calls": 0,
+  "actual_scientific_tool_calls": 0,
+  "actual_human_review_decisions": 0,
+  "controls": "final-controls/controls.json",
+  "control_rows_per_set": 30,
+  "control_sets": [
+    "nominal",
+    "adverse",
+    "missing"
+  ],
+  "changed_files": [
+    "benchmarks/development/agent_evaluation.py",
+    "tests/test_agent_evaluation_protocol.py",
+    "docs/agent-evaluation-protocol.md",
+    "docs/optimization-backlog.md",
+    "docs/seven-point-status.md",
+    "tasks/audit-t08a-evaluation-protocol.json"
+  ],
+  "final_hashes": {
+    "benchmarks/development/agent_evaluation.py": "2c0a41c137bfbf678fcada3dd6f97a720fb0f56954f8d4e344890a26259d686c",
+    "tests/test_agent_evaluation_protocol.py": "fca11cfa647b74a51b9075fafcddcd319e227370dd88df0a2b11bf5d00ebc0e0",
+    "docs/agent-evaluation-protocol.md": "d47fb255d570550655ce38851c43a4fe75112b397742783ae3526d240d90a53d",
+    "docs/optimization-backlog.md": "3c6fe982045b26157ac032306af770afabfcee44fc1a9d14b5f822fb92c0bb86",
+    "docs/seven-point-status.md": "0eb25ee1ee14321bb2b75a1f3cb6cc0fe2152f2d2d0dc065d56d81721c694694",
+    "tasks/audit-t08a-evaluation-protocol.json": "4e452b2e471cfc506cd2994e219caca969f3411b87edbf1f691aa11948acaf11"
+  },
+  "diff": "changes.patch",
+  "task_card": "../../tasks/audit-t08a-evaluation-protocol.json",
+  "execution_plan": "execution-plan.md",
+  "T07_status": "independent_review_and_real_paper_comparison_pending",
+  "limits": [
+    "Offline manifest and attributed record scorer only; no three-workflow runtime adapters or budget enforcement.",
+    "All inputs are seen synthetic development controls, one family, zero papers and pending independent review.",
+    "Model settings, telemetry, reviewer identity and assessment evidence are declared rather than authenticated.",
+    "Generated observations, execution flags, judgment passes, usage and human time are explicit fixture values, not real runs.",
+    "No new scientific/model performance result, module ablation, independent evalset access, paper ingestion or c13/c18 transmission."
+  ],
+  "next_task": "T08b: implement three actual workflow adapters with common tool access, accounting and isolated inputs; verify offline before any applicable authorized live calls."
+}

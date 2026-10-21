@@ -1,0 +1,144 @@
+[
+  {
+    "case": "decay",
+    "phase": "initial",
+    "expected_execution": true,
+    "blocked": false,
+    "targets": []
+  },
+  {
+    "case": "turnover",
+    "phase": "initial",
+    "expected_execution": true,
+    "blocked": false,
+    "targets": []
+  },
+  {
+    "case": "reversible",
+    "phase": "initial",
+    "expected_execution": false,
+    "blocked": true,
+    "targets": [
+      "B/initial"
+    ]
+  },
+  {
+    "case": "reversible",
+    "phase": "clarified",
+    "expected_execution": true,
+    "blocked": false,
+    "targets": []
+  },
+  {
+    "case": "translation",
+    "phase": "initial",
+    "expected_execution": false,
+    "blocked": true,
+    "targets": [
+      "P/initial"
+    ]
+  },
+  {
+    "case": "translation",
+    "phase": "clarified",
+    "expected_execution": true,
+    "blocked": false,
+    "targets": []
+  },
+  {
+    "case": "binding",
+    "phase": "initial",
+    "expected_execution": false,
+    "blocked": true,
+    "targets": [
+      "ka/value"
+    ]
+  },
+  {
+    "case": "binding",
+    "phase": "clarified",
+    "expected_execution": true,
+    "blocked": false,
+    "targets": []
+  },
+  {
+    "case": "saturation",
+    "phase": "initial",
+    "expected_execution": false,
+    "blocked": true,
+    "targets": [
+      "K/value"
+    ]
+  },
+  {
+    "case": "saturation",
+    "phase": "clarified",
+    "expected_execution": true,
+    "blocked": false,
+    "targets": []
+  },
+  {
+    "case": "logistic",
+    "phase": "initial",
+    "expected_execution": false,
+    "blocked": true,
+    "targets": [
+      "rule:X/expression"
+    ]
+  },
+  {
+    "case": "logistic",
+    "phase": "clarified",
+    "expected_execution": true,
+    "blocked": false,
+    "targets": []
+  },
+  {
+    "case": "feedback",
+    "phase": "initial",
+    "expected_execution": false,
+    "blocked": true,
+    "targets": [
+      "rule:R/expression"
+    ]
+  },
+  {
+    "case": "feedback",
+    "phase": "clarified",
+    "expected_execution": true,
+    "blocked": false,
+    "targets": []
+  },
+  {
+    "case": "unit_decay",
+    "phase": "initial",
+    "expected_execution": false,
+    "blocked": true,
+    "targets": [
+      "k/unit"
+    ]
+  },
+  {
+    "case": "unit_decay",
+    "phase": "clarified",
+    "expected_execution": true,
+    "blocked": false,
+    "targets": []
+  },
+  {
+    "case": "unit_chain",
+    "phase": "initial",
+    "expected_execution": false,
+    "blocked": true,
+    "targets": [
+      "k1/unit"
+    ]
+  },
+  {
+    "case": "unit_chain",
+    "phase": "clarified",
+    "expected_execution": true,
+    "blocked": false,
+    "targets": []
+  }
+]

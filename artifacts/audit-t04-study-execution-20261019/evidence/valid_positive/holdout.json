@@ -1,0 +1,1 @@
+[{"id": "private-holdout-id", "role": "holdout", "experiment": {"times": [0.0, 0.5, 1.0, 2.0, 4.0], "time_unit": "second"}, "values": {"response": [0.0, 0.7869386805747332, 1.2642411176571153, 1.7293294335267746, 1.9633687222225316]}, "sigma": {"response": 0.01}, "scales": {"response": 1.0}}]

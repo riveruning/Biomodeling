@@ -1,0 +1,178 @@
+{
+  "task": "T03a",
+  "status": "accepted",
+  "date": "2026-10-19",
+  "objective": "Persistent invocation/budget boundaries for the single Agent, without automatic recovery",
+  "implementation": "DSH Journal and Agent integration, one bounded single-file revision; Codex independent acceptance and localized corrections",
+  "baseline": {
+    "passed": 811,
+    "record": "../audit-t02-inputs-20261019/full.xml",
+    "code_test_changes_since_acceptance": []
+  },
+  "red_baseline": {
+    "tests": "3",
+    "failures": "3",
+    "errors": "0",
+    "skipped": "0",
+    "time": "3.187"
+  },
+  "journal_first": {
+    "tests": "17",
+    "failures": "1",
+    "errors": "0",
+    "skipped": "0",
+    "time": "1.428"
+  },
+  "first_review": {
+    "tests": "35",
+    "failures": "12",
+    "errors": "0",
+    "skipped": "0",
+    "time": "14.036"
+  },
+  "revised_review": {
+    "tests": "38",
+    "failures": "5",
+    "errors": "0",
+    "skipped": "0",
+    "time": "17.737"
+  },
+  "targeted": {
+    "tests": "233",
+    "failures": "0",
+    "errors": "0",
+    "skipped": "0",
+    "time": "90.090"
+  },
+  "full": {
+    "tests": "849",
+    "failures": "0",
+    "errors": "0",
+    "skipped": "0",
+    "time": "156.071"
+  },
+  "scope": {
+    "preexisting_changed": [
+      "src/biomodel_agent/agent.py",
+      "docs/optimization-backlog.md",
+      "docs/seven-point-status.md"
+    ],
+    "unexpected_changes": [],
+    "original_tests_unchanged": true,
+    "new_production_modules": [
+      "src/biomodel_agent/invocations.py"
+    ]
+  },
+  "record_protocol": {
+    "version": 1,
+    "execution_kind": "agent_execution",
+    "invocation_kind": "agent_invocation",
+    "phases": [
+      "reserved",
+      "returned",
+      "error",
+      "interrupted"
+    ],
+    "budget_scope": "inherited per execution branch, not global fees",
+    "refs": "flat; terminal references own reservation and actual results"
+  },
+  "dsh_runs": [
+    {
+      "output": ".workflow/runs/audit-t03a-invocations-1792379605660-9d991e8b",
+      "summary": {
+        "taskId": "audit-t03a-invocations",
+        "bridgeTaskId": "9e336b43-144b-430f-a5d4-2707105d9e2a",
+        "outcome": "error",
+        "elapsedMs": 498745,
+        "polls": 68,
+        "reviews": 17,
+        "changedFiles": [
+          "src/biomodel_agent/invocations.py",
+          "src/biomodel_agent/agent.py"
+        ],
+        "missingFiles": [],
+        "delivered": true,
+        "acceptance": "not_run",
+        "error": "RequestError: Internal error: turn failed: terminated\n    at Connection.handleResponse (file:///home/riveruning/tools/mcp-acp-bridge/node_modules/@agentclientprotocol/sdk/dist/acp.js:1173:40)\n    at Connection.processMessage (file:///home/riveruning/tools/mcp-acp-bridge/node_modules/@agentclientprotocol/sdk/dist/acp.js:1099:18)\n    at Connection.receive (file:///home/riveruning/tools/mcp-acp-bridge/node_modules/@agentclientprotocol/sdk/dist/acp.js:1037:30)\n    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)",
+        "outputDirectory": "/home/riveruning/biologymodel_agent/.workflow/runs/audit-t03a-invocations-1792379605660-9d991e8b"
+      }
+    },
+    {
+      "output": ".workflow/runs/audit-t03a-complete-integration-1792380311802-2f86d746",
+      "summary": {
+        "taskId": "audit-t03a-complete-integration",
+        "bridgeTaskId": "7f719461-2810-4a3f-9edb-9d3deceb7ccf",
+        "outcome": "needs_review",
+        "elapsedMs": 120370,
+        "polls": 36,
+        "reviews": 16,
+        "changedFiles": [
+          "src/biomodel_agent/agent.py"
+        ],
+        "missingFiles": [],
+        "delivered": true,
+        "acceptance": "not_run",
+        "reason": "Edit needs explicit old and new text",
+        "requestId": "b5711465-afc1-4a59-a4ef-6c2b0948e000",
+        "policy": {
+          "decision": "wait",
+          "rule": "missing_edit",
+          "reason": "Edit needs explicit old and new text",
+          "operation": "edit",
+          "command": null,
+          "cwd": "/home/riveruning/biologymodel_agent",
+          "paths": [],
+          "missing": [
+            "old/new text"
+          ],
+          "impact": [
+            "Replace file text"
+          ]
+        },
+        "outputDirectory": "/home/riveruning/biologymodel_agent/.workflow/runs/audit-t03a-complete-integration-1792380311802-2f86d746"
+      }
+    }
+  ],
+  "codex_production_corrections": [
+    "interrupted record error_type",
+    "finish_session forwards execution_ref and invocation_refs",
+    "nonlocal placement and lambda variable clarity"
+  ],
+  "hashes": {
+    "src/biomodel_agent/agent.py": "19d5e8abb06118530689b6bb916358eb9fe6238239890fdd114969637055eb58",
+    "src/biomodel_agent/invocations.py": "fd6842a9b5f9cb2b77460d7087bf4547787b405bc181f864a58ac2c131c67321",
+    "tests/test_invocation_acceptance.py": "a2f5cdd830ae84035a737e6a5d21c7874cc87bf0218a08e501d1b4580e134899",
+    "tests/test_invocation_journal.py": "ee0caa67c0da430124303b978e6fec564e7a4073cf054426dbbe2eba327456db",
+    "docs/invocation-journal.md": "dd93f510a3b62b456b02a6e4302543d2547277b33cfb18692c96d101b53fbc4b",
+    "docs/optimization-backlog.md": "3c7c77ffe865b880a41a8ca683f1ca34538cbc1c71c013d3b758a6db774cff7f",
+    "docs/seven-point-status.md": "a1649b0760e330e0c3410f0984f57201366b0da967f63ef1c3f5f2a58cebe800",
+    "tasks/audit-t03a-invocations.json": "9ca8f36d5d2efa43d7ef8e06ea2c6ea1fc1c963a302ec45938630a091a1ce3cc",
+    "tasks/audit-t03a-complete-integration.json": "5eb2a247e0c05086bcf0c7abbab2b77cb981a17c0a41452dd3bb783ffb58f777"
+  },
+  "fault_evidence": "fault-results.json",
+  "product_model_evaluation_calls": 0,
+  "development_provider": "Existing authorized DSH USTC development channel; exact usage unavailable",
+  "c13_c18_materials_sent": false,
+  "new_dependencies": [],
+  "limitations": [
+    "No crash recovery API, result adoption or automatic retry",
+    "External request outcome can remain unknown; no exactly-once promise",
+    "No cross-branch global fee or concurrent owner lock",
+    "Crash execution alone does not export later child records automatically",
+    "Process exits and controlled storage faults tested; power-loss durability not established",
+    "No model capability or throughput/latency improvement claim"
+  ],
+  "next_task": "T03b: read-only recovery diagnosis, result adoption and controlled continuation",
+  "artifacts": [
+    "before/",
+    "dsh-first-delivery/",
+    "dsh-revised-delivery/",
+    "after/",
+    "changes.patch",
+    "codex-review-fixes.patch",
+    "fault-results.json",
+    "fault-evidence/",
+    "targeted.log",
+    "full.log"
+  ]
+}

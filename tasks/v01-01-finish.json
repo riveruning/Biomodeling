@@ -1,0 +1,40 @@
+{
+  "schema_version": "1",
+  "id": "v01-01-finish",
+  "objective": "修复已实测失败的领域契约，交付可运行代码。",
+  "context": "Codex运行13测试7失败6通过。无需执行任何命令；只read/write/edit这3文件，禁止shell。没有必要继续规划。",
+  "read_files": [],
+  "write_files": [
+    "src/biomodel_agent/domain/contracts.py",
+    "src/biomodel_agent/domain/serialization.py",
+    "tests/test_contracts.py"
+  ],
+  "expected_files": [
+    "src/biomodel_agent/domain/contracts.py",
+    "src/biomodel_agent/domain/serialization.py",
+    "tests/test_contracts.py"
+  ],
+  "instructions": "只做这几处精准修复，勿重写其它代码：serialization导入get_type_hints。FrozenMap.__hash__排序_pairs按key，与无序mapping equality一致（嵌套FrozenMap也自身排序）。test_snapshot_isolation_and_pickle第二次itemassignment期待TypeError。test_frozenmap_value_rules重复key测试现在用dict会在构造前覆盖重复，改输入tuple pairs ((\"a\",1),(\"a\",2))，保留重复检测实现。from_dict外层包装构造ValueError/TypeError为SchemaError。输出最终完成，无任何命令/规划工具。",
+  "acceptance": [
+    "dataclass快照不可受外部修改",
+    "序列化拒绝未知字段",
+    "None和unknown保持明确",
+    "测试由Codex执行"
+  ],
+  "verification_commands": [
+    [
+      ".venv/bin/python",
+      "-m",
+      "pytest",
+      "tests/test_contracts.py",
+      "-q"
+    ]
+  ],
+  "budget": {
+    "first_activity_ms": 120000,
+    "idle_ms": 180000,
+    "first_write_ms": 300000,
+    "write_idle_ms": 300000,
+    "total_ms": 600000
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "schema_version": "1",
+  "id": "v01-06-tools",
+  "objective": "实现Agent一个结构化草案提交工具，约120行，无主循环。",
+  "context": "只需 from_dict(ModelDraft,data)、to_dict()、evidence.add_claim(store,source_ref,page,start,end,statement,claim_type)->claimhash；store.get(ref)返回{kind,payload,refs}，source.payload.pages=[{number,text}]。validate_draft()/build_model() API已定义。",
+  "read_files": [
+    "src/biomodel_agent/domain/contracts.py",
+    "src/biomodel_agent/domain/serialization.py"
+  ],
+  "write_files": [
+    "src/biomodel_agent/agent_tools.py"
+  ],
+  "expected_files": [
+    "src/biomodel_agent/agent_tools.py"
+  ],
+  "budget": {
+    "idle_ms": 360000,
+    "first_write_ms": 480000,
+    "total_ms": 900000
+  },
+  "instructions": "只一个API submit_draft(store,args,source_refs,mode='reproduction',allowed_mechanisms=())->dict {state,artifact,model_ref,draft_ref,hypothesis_ref,checks,problems}，state ready/invalid/awaiting_input/failed。artifact是内部ModelArtifact实例（写events时主循环会to_dict）。args合法keys draft/evidence/mechanism；evidence列表条目target/source_ref/page/start/end/claim_type；拒绝其它keys，不任意code或SBML。from_dict严格建ModelDraft，draft.element_map必须空不能从LLM接受hash。补引用由后端add_claim，source必须白名单ref且真实source，page/start/end整数非bool有效最多8000，statement为target，quote保存既有源文本切片，不接受编造quote。\nrequired targets parameter id/value,state id/initial,rule:<state>/expression,reaction:<id>/rate,derived:<id>/expression。每numeric字段value/initial非None时必须出现在对应quote中（数字token regexfloat finite/tol匹配）；None或missing source→awaiting_input，不让模型编数字。regex数字只能match完整token，不把1匹配成10。单位unknown明确报告不当事实，通过完整evidence也semantic_support unknown，源存在不证明语义支持。非法math/static checks→invalid允许主循环受预算修复，保存draft/checks与claim谱系；所有草案store.put('model_draft',to_dict(draft),refs=claimrefs)，替换element_map FrozenMap mapping后build->store.put('model',to_dict(artifact),refs=[draftref])，返回artifact+refs。\nmode hypothesis必须mechanism在allowed_mechanisms，否则failed；system_conjecture Hypothesis对象含assumptions=['bounded proposed mechanism; not biological fact']/source_refs，refs有效。可无文献coverage，保留新的hypothesis_refs，让fromzeroModelDraft。modeA不能凭拟合变成hypothesis模式。mode只reproduction/hypothesis合法。errors清晰问题list，不抛trace跨主循环；不要填parameterNone、不设科学passed。不要主循环/LLMadapter/tests，现在只有这一file，尽快write完整，最多一遍接口读取，不读任何其它业务源码/todo/shell，最后文字完成。",
+  "acceptance": [
+    "missing不补数",
+    "引用范围检查",
+    "科学状态不由LLM设定"
+  ],
+  "verification_commands": []
+}

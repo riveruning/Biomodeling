@@ -1,0 +1,12 @@
+Synthetic, analyst-specified biochemical ODE model; not a published paper.
+Time t is in minutes. States are dimensionless abstract activities. The fixed compartment has size 1 dimensionless.
+Initial A = 1.5.
+Initial B = 1.0.
+Initial C = 0.0.
+Parameter ka is not reported.
+Equation dA/dt = -ka*A*B.
+Equation dB/dt = -ka*A*B.
+Equation dC/dt = ka*A*B.
+
+Author clarification (supersedes the unresolved statement above):
+Parameter ka = 0.15.

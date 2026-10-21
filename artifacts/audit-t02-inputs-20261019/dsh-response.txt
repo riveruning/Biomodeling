@@ -1,0 +1,18 @@
+
+
+
+完成。按契约 5 步小改，两个生产文件各按最小范围编辑：
+
+**实际文件与接口**
+1. `src/biomodel_agent/domain/contracts.py`
+   - 新增公共 helper：`strict_float(value: object, what: str) -> float`（接受 int/float，含 numpy 数值类型兼容；显式拒绝 `bool`/`str`/`Decimal`/仅 `__float__` 对象，不调用任意转换协议；`int` 转 float 溢出时抛 `ValueError`，不泄露 `OverflowError`）。
+   - `finite()` 保留原签名与 `allow_none` 语义，委托 `strict_float`。
+   - `copy_finite_map` 数值叶检查改用 `strict_float`，保留合法整数叶存储类型和既有递归行为；通用 `FrozenMap` 未修改，仍支持 `bool/string/None` 等元数据。
+   - `SolverConfig.max_steps` 增加 `bool` 拒绝，仍要求正整数且不转 float、不新增上限。
+   - `SimulationResult.values` 列改为严格类型：拒绝 `bool/string` 等隐式转换与不可表示的超大整数；原生 `float` NaN/Inf 原样保留用于下游诊断；`times/elapsed_s` 仍要求有限。
+2. `src/biomodel_agent/domain/serialization.py`
+   - `_coerce_primitive` 的 `float` 分支改为调用 contracts 中的 `strict_float`，失败统一包装为 `SchemaError`；JSON 入口其他类型、字段、元组、可选值、computed hash 协议未改。
+
+**限制**
+- 未新增测试、未运行 shell/测试/联网/子 Agent；未读取契约与两个生产文件之外的文件；未修改旧测试、任务卡、监督脚本或科学判据。
+- `max_steps` 对极大合法正整数仍允许构造，仅表示输入边界，不改变执行语义。

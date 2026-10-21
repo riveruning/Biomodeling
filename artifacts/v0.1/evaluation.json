@@ -1,0 +1,232 @@
+{
+  "schema_version": "1",
+  "execution_track": [
+    {
+      "id": "BIOMD0000000010",
+      "run_ref": "f5af19e1d5cc0fb76a23bbc49e89c94162753e08418ceb48fb997c5c1e801352",
+      "execution": "succeeded",
+      "comparison": {
+        "columns": [
+          "MAPK",
+          "MAPK_P",
+          "MAPK_PP",
+          "MKK",
+          "MKKK",
+          "MKKK_P",
+          "MKK_P",
+          "MKK_PP"
+        ],
+        "max_scaled_error": 2.546581511353452e-06,
+        "protocol": "fixed_scales",
+        "scales": {
+          "MAPK": 300.0,
+          "MAPK_P": 300.0,
+          "MAPK_PP": 300.0,
+          "MKK": 300.0,
+          "MKKK": 100.0,
+          "MKKK_P": 100.0,
+          "MKK_P": 300.0,
+          "MKK_PP": 300.0
+        },
+        "status": "pass",
+        "threshold": 0.001,
+        "worst": "MKK[120]"
+      },
+      "scientific_status": "passed_structured_reference",
+      "source_support": "unknown",
+      "input_variant": "original_curated_sbml"
+    },
+    {
+      "id": "BIOMD0000000012",
+      "run_ref": "e7239d470821a74a9f4ec105f53326b3788c66ce3e9f15bb90938e805afb82d0",
+      "execution": "succeeded",
+      "comparison": {
+        "columns": [
+          "PX",
+          "PY",
+          "PZ",
+          "X",
+          "Y",
+          "Z"
+        ],
+        "max_scaled_error": 4.4176167005161916e-05,
+        "protocol": "fixed_scales",
+        "scales": {
+          "PX": 1000.0,
+          "PY": 1000.0,
+          "PZ": 1000.0,
+          "X": 100.0,
+          "Y": 100.0,
+          "Z": 100.0
+        },
+        "status": "pass",
+        "threshold": 0.001,
+        "worst": "PY[117]"
+      },
+      "scientific_status": "passed_structured_reference",
+      "source_support": "unknown",
+      "input_variant": "original_curated_sbml"
+    },
+    {
+      "id": "BIOMD0000000027",
+      "run_ref": "fa361e696acaa0ebc6bdee55e80791f4c0f62902c97630060eab757d1664f56e",
+      "execution": "succeeded",
+      "comparison": {
+        "columns": [
+          "M",
+          "MAPKK",
+          "MKP3",
+          "Mp",
+          "Mpp"
+        ],
+        "max_scaled_error": 1.9395722461013066e-07,
+        "protocol": "fixed_scales",
+        "scales": {
+          "M": 500.0,
+          "MAPKK": 50.0,
+          "MKP3": 100.0,
+          "Mp": 500.0,
+          "Mpp": 500.0
+        },
+        "status": "pass",
+        "threshold": 0.001,
+        "worst": "M[17]"
+      },
+      "scientific_status": "passed_structured_reference",
+      "source_support": "unknown",
+      "input_variant": "original_curated_sbml"
+    },
+    {
+      "id": "BIOMD0000000507",
+      "run_ref": "78a8ced0dcc54f2254df291c9f9ff056fbac1017809ff55749a4d89e5792c64f",
+      "execution": "succeeded",
+      "comparison": {
+        "columns": [
+          "species_1",
+          "species_2",
+          "species_3"
+        ],
+        "max_scaled_error": 1.5571481908409623e-07,
+        "protocol": "fixed_scales",
+        "scales": {
+          "species_1": 156.25,
+          "species_2": 15.6,
+          "species_3": 1.0
+        },
+        "status": "pass",
+        "threshold": 0.001,
+        "worst": "species_1[5]"
+      },
+      "scientific_status": "passed_structured_reference",
+      "source_support": "unknown",
+      "input_variant": "corrected_serialization_variant"
+    }
+  ],
+  "synthetic_b": {
+    "study_ref": "adfe7a708b23f41a1c28e2c6b0594a830d8384c0005ce7e14534c7cb7d6e74b5",
+    "comparison": {
+      "adequacy_weighted_rmse": 3,
+      "note": "Specified known independent Gaussian noise; no significance test or proof of mechanism",
+      "ranking": "best_compatible_candidate",
+      "separation_threshold": 0.05,
+      "winner": "cand_feedforward"
+    },
+    "candidates": {
+      "cand_baseline": {
+        "crosscheck": {
+          "observations": [
+            {
+              "expression": "x",
+              "id": "response"
+            }
+          ],
+          "ok": true,
+          "parameters": "frozen fitted values",
+          "scale": 1.0,
+          "scaled_max_error": 1.8460308520706903e-07
+        },
+        "fit_ref": "376b378994dbc0678f6926cf487fa8f2ecde53f5bb76004d791615bc7d132863",
+        "fit_status": "succeeded",
+        "heldout_scaled_rmse": 1.5224432453456265,
+        "heldout_weighted_rmse": 152.24432453456265,
+        "model_ref": "e1db2d0be118736dd9a77c708fbf2ac7254873a933a3509c346834f1ff51df25",
+        "parameters": {
+          "d": 1.7999999999856784,
+          "k": 0.5888080198998277
+        },
+        "training_weighted_rmse": 41.169125213709364
+      },
+      "cand_feedback": {
+        "crosscheck": {
+          "observations": [
+            {
+              "expression": "x",
+              "id": "response"
+            }
+          ],
+          "ok": true,
+          "parameters": "frozen fitted values",
+          "scale": 1.0,
+          "scaled_max_error": 1.101218067400822e-06
+        },
+        "fit_ref": "acbb75877f41fccdf387289deba45e82ce03b11c7efd80f29f1ade51694ddadd",
+        "fit_status": "succeeded",
+        "heldout_scaled_rmse": 0.2906149900426513,
+        "heldout_weighted_rmse": 29.061499004265126,
+        "model_ref": "9547433c870e89ce1ab25c42d6051c3cddfe95e4eda95829eeabd84ba1b62461",
+        "parameters": {
+          "d": 1.202346092766434,
+          "h": 0.19931334759207972,
+          "k": 1.9966242375141336
+        },
+        "training_weighted_rmse": 0.7893881133418222
+      },
+      "cand_feedforward": {
+        "crosscheck": {
+          "observations": [
+            {
+              "expression": "x",
+              "id": "response"
+            }
+          ],
+          "ok": true,
+          "parameters": "frozen fitted values",
+          "scale": 1.0,
+          "scaled_max_error": 9.682248451881037e-07
+        },
+        "fit_ref": "717462145561f211c28484dabee8c7b465aed89d56a317dc9667dec1d18d366c",
+        "fit_status": "succeeded",
+        "heldout_scaled_rmse": 0.010359869360647495,
+        "heldout_weighted_rmse": 1.0359869360647496,
+        "model_ref": "05ac48b6477ffb67a34572ac2a3b1907ee38707c237ff9415838b27ecfde9ea2",
+        "parameters": {
+          "d": 1.003784075985343,
+          "h": 0.19856196651801764,
+          "k": 1.9966241523110015
+        },
+        "training_weighted_rmse": 0.7893881091669963
+      }
+    },
+    "data_insufficient_case": {
+      "ranking": "indistinguishable_from_training",
+      "training_compatible": [
+        "cand_feedback",
+        "cand_feedforward"
+      ],
+      "note": "This training-only assessment reuses frozen training fits and excludes heldout scores."
+    }
+  },
+  "literature_extraction_track": {
+    "status": "not_run",
+    "note": "Public cases execute curated SBML; automatic paper extraction was not scored."
+  },
+  "agent_architecture_baselines": {
+    "status": "not_run",
+    "groups": [
+      "generic coding assistant",
+      "fixed scientific workflow",
+      "budgeted agent"
+    ],
+    "note": "No paid controlled baseline runs; no demonstrated superiority claim."
+  }
+}

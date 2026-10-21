@@ -1,0 +1,7 @@
+{
+  "status": "failed_script_harness_v1",
+  "cause": "Missing __main__ guard caused spawned solver child to re-execute the exercise and hit existing output directory. Parent subsequently found no x trajectory.",
+  "product_changed_for_retry": false,
+  "retained_directory": "offline-integration",
+  "retry_directory": "offline-integration-v2"
+}

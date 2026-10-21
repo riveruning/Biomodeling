@@ -1,0 +1,59 @@
+{
+  "kind": "already_seen_live_development_regression",
+  "independent_holdout": false,
+  "rows": [
+    {
+      "case": "c13_mm_with_inhibitor_ambiguous",
+      "mode": "original-resume",
+      "status": "failed",
+      "numeric": {
+        "status": "not_run"
+      },
+      "agent_ref": "0eb1829e683fe67c3730543f3bef5af177b255b8bccf978a2b590ab168ce7a61",
+      "calls": 5,
+      "retries": 2,
+      "repairs": 0,
+      "model_ref": null,
+      "run_ref": null,
+      "questions": [
+        "In the rate law dS/dt = -Vmax*S/(Km*(1 + I/KI) + S), does the symbol I denote (a) the free inhibitor state (constant at I(0)=2.0), or (b) the total inhibitor (free plus sequestered in the enzyme-inhibitor complex, which would grow as S is consumed)? The material presents both readings as equally authoritative and does not specify which one the rate expression uses."
+      ],
+      "tokens_cumulative": 2801,
+      "elapsed_seconds": 18.328049748000012,
+      "modules_sha256": "a79f24ec6a6ddbf623f290751c7d931087496e53a7eb3dde0accf026b72c299e",
+      "calls_incremental": 3,
+      "submit_attempts": [],
+      "successful_execution": false
+    },
+    {
+      "case": "c13_mm_with_inhibitor_ambiguous",
+      "mode": "fresh-clarified",
+      "status": "not_run",
+      "numeric": {
+        "status": "not_run"
+      },
+      "successful_execution": false
+    },
+    {
+      "case": "c18_two_pathway_unit_conflict",
+      "mode": "original-resume",
+      "status": "not_run",
+      "numeric": {
+        "status": "not_run"
+      },
+      "successful_execution": false
+    },
+    {
+      "case": "c18_two_pathway_unit_conflict",
+      "mode": "fresh-clarified",
+      "status": "not_run",
+      "numeric": {
+        "status": "not_run"
+      },
+      "successful_execution": false
+    }
+  ],
+  "successful": 0,
+  "denominator": 4,
+  "original_evaluation_modified": false
+}

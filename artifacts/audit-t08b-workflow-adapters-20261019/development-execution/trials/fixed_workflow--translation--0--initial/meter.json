@@ -1,0 +1,29 @@
+{
+  "base": {
+    "model_calls": 0,
+    "tool_calls": 0,
+    "run_attempts": 0,
+    "elapsed_seconds": 0.0
+  },
+  "counts": {
+    "model_calls": 1,
+    "tool_calls": 1,
+    "run_attempts": 0
+  },
+  "request_refs": [
+    "7a8eec7182c952590683a8cb96e62e7612d454a2466e68a7f5e732f9ff2e5447"
+  ],
+  "response_refs": [
+    "7922cd5367210450b8730d454e54063947956cf55cb907840a95a601ef376f19"
+  ],
+  "usage": [
+    {}
+  ],
+  "reservation_refs": [
+    "0c8d0bd048721d1a86421e1b8b779bc95adc17d3641309011c382c5794d36a68",
+    "37e48f67d70da4019796436baffd24fd67482390c358fbc59ca04206e44d9f49"
+  ],
+  "provider_status": null,
+  "stop_reason": null,
+  "elapsed_seconds": 0.13057640199986054
+}

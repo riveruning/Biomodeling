@@ -1,0 +1,149 @@
+[
+  {
+    "id": "parameter_late",
+    "recommendation": "retain_candidate",
+    "answer": "条件 A 下 k_deg = 0.12 min^-1。",
+    "reason": "声明完整包含参数名、数值、时间倒数单位及条件 A；页首只是指向结果部分，不能代替数值声明。",
+    "scope_limit": "不能转用于其他条件；本例没有状态量定义、其他参数或实验数据，不支持整模型复现。",
+    "checks": {"source_span": true, "target_scope": true, "answerability": true, "paper_grouping": true}
+  },
+  {
+    "id": "initial_late",
+    "recommendation": "retain_candidate",
+    "answer": "刺激前 X(0) 的物质量为 2.5 nmol。",
+    "reason": "引文给出 X、初始时刻、物质量和刺激前限定；没有把页首 observations 当成初值。",
+    "scope_limit": "nmol 是物质量；没有体积不能转换为浓度，也不能移用作刺激后的状态。",
+    "checks": {"source_span": true, "target_scope": true, "answerability": true, "paper_grouping": true}
+  },
+  {
+    "id": "unit_late",
+    "recommendation": "retain_candidate",
+    "answer": "原文将 k_on 的单位写为 litre per mole per second，即 L mol^-1 s^-1。",
+    "reason": "变量和完整单位出现在同一句，足以回答单位查询。",
+    "scope_limit": "这是材料中报告的单位；没有速率方程与状态单位，无法核验整个模型的量纲，也不能补出 k_on 的数值。",
+    "checks": {"source_span": true, "target_scope": true, "answerability": true, "paper_grouping": true}
+  },
+  {
+    "id": "formula_late",
+    "recommendation": "retain_candidate",
+    "answer": "dX/dt = k_in - k_out*X。",
+    "reason": "公式左端对应 X，右端的流入项、负号和乘积均包含在候选片段内。",
+    "scope_limit": "未给出 X 的量纲、初值、参数数值或时间单位；检索到公式不等于具备执行条件。",
+    "checks": {"source_span": true, "target_scope": true, "answerability": true, "paper_grouping": true}
+  },
+  {
+    "id": "qualifier",
+    "recommendation": "retain_candidate",
+    "answer": "仅未处理细胞的 k_cat = 0.8 s^-1；原文禁止用于已处理细胞。",
+    "reason": "必需片段同时包含数值与两处条件限定，避免只截取 0.8 丢失适用范围。",
+    "scope_limit": "未指定细胞处理条件的执行任务仍需澄清；材料没有提供已处理细胞的 k_cat。",
+    "checks": {"source_span": true, "target_scope": true, "answerability": true, "paper_grouping": true}
+  },
+  {
+    "id": "supplement",
+    "recommendation": "retain_candidate",
+    "answer": "补充材料 Table S2 报告结合实验的 k_bind = 0.07 s^-1。",
+    "reason": "正文只指向补充表，数值位于已授权补充材料页 2；主文与补充属于同一开发家庭。",
+    "scope_limit": "不能仅凭 bind 名称推断反应级数、改写为二级结合常数或补充浓度单位；这里只确认报告内容。",
+    "checks": {"source_span": true, "target_scope": true, "answerability": true, "paper_grouping": true}
+  },
+  {
+    "id": "conflict_same_page",
+    "recommendation": "retain_candidate",
+    "answer": "同页 Methods 报告 k_decay = 0.1 s^-1，Figure 2 报告 0.3 s^-1，且文字显式称二者冲突。",
+    "reason": "两侧具有相同变量和单位；材料明确声明冲突，候选片段覆盖两侧，支持作为合成冲突检索控制。",
+    "scope_limit": "没有实验条件细节或更正来源，不能决定采用哪个值；不能将人工写出的冲突句当成真实论文矛盾的独立验证。",
+    "checks": {"source_span": true, "target_scope": true, "answerability": true, "paper_grouping": true}
+  },
+  {
+    "id": "conflict_two_sources",
+    "recommendation": "retain_candidate",
+    "answer": "正文 Methods 报告 k_decay = 0.1 s^-1，补充来源报告 Figure 2 的 0.3 s^-1，后者显式称与 Methods 冲突。",
+    "reason": "与同页冲突相同的两条声明跨两个授权来源；必须检索两侧，不能把主文和补充分到不同划分。",
+    "scope_limit": "这里只验证跨来源候选覆盖；材料与 conflict_same_page 复制了相同句子，不能算两个独立科学样本，也不能自行选一个值。",
+    "checks": {"source_span": true, "target_scope": true, "answerability": true, "paper_grouping": true}
+  },
+  {
+    "id": "symbol_substring",
+    "recommendation": "retain_candidate",
+    "answer": "页 2 的损失常数 k = 0.2 h^-1。",
+    "reason": "页 1 的 kcat、kcat2 明确是其他参数，不是 k；短符号查询应保留变量边界。",
+    "scope_limit": "不应仅凭子串建立变量别名关系；材料没有授权 k 与 kcat 或 kcat2 的等价映射。",
+    "checks": {"source_span": true, "target_scope": true, "answerability": true, "paper_grouping": true}
+  },
+  {
+    "id": "underscore_symbol",
+    "recommendation": "retain_candidate",
+    "answer": "页 4 将 Na_K pump rate 报告为 3.0 s^-1。",
+    "reason": "Na_K 与页 1 明确无关的 NaK 不同；完整候选声明保留了下划线变量。",
+    "scope_limit": "pump rate 的物理定义未给出，不能据此确定是周转率、通量还是浓度变化率；不要自动补 nmol/s 或把 Na_K 映射为 NaK。",
+    "checks": {"source_span": true, "target_scope": true, "answerability": true, "paper_grouping": true}
+  },
+  {
+    "id": "unicode_offsets",
+    "recommendation": "retain_candidate",
+    "answer": "β_decay 的报告单位为 min^-1，保留 β 字符。",
+    "reason": "候选片段对应 β_decay 而非其他名称；İstanbul、Straße 等前文不改变原始 Unicode 字符偏移的定义。",
+    "scope_limit": "大小写折叠或 UTF-8 字节长度不能用于替代原文字符偏移；没有任何数值可供补全。",
+    "checks": {"source_span": true, "target_scope": true, "answerability": true, "paper_grouping": true}
+  },
+  {
+    "id": "no_match",
+    "recommendation": "retain_candidate",
+    "answer": "在本例提供的单页授权文本内没有 missing_token 的目标或数值声明。",
+    "reason": "无候选片段且全文不含查询目标，可作为本材料范围内的未定位控制。",
+    "scope_limit": "只能报告授权文本内未定位；不是整个研究领域没有该变量，也不是已经搜索真实论文及全部补充材料的证明。",
+    "checks": {"source_span": true, "target_scope": true, "answerability": true, "paper_grouping": true}
+  },
+  {
+    "id": "untrusted_instructions",
+    "recommendation": "retain_candidate",
+    "answer": "报告的 X 方程为 dX/dt = -0.5*X；材料称未报告其他项。",
+    "reason": "方程声明与页首要求更改预算的文字分开；来源中的指令只是待检索文本，不具有工作流指令权限。",
+    "scope_limit": "0.5 的时间单位、初值及 X 的量纲未给出；确定性检索返回正确公式也不能证明真实 LLM 抵抗提示注入。",
+    "checks": {"source_span": true, "target_scope": true, "answerability": true, "paper_grouping": true}
+  },
+  {
+    "id": "multiple_initials",
+    "recommendation": "retain_candidate",
+    "answer": "本材料明确给出 X(0) = 2 nmol、Y(0) = 4 nmol 两项初始状态。",
+    "reason": "initial state 是宽泛查询，两项都相关，分属同页远处，要求覆盖两项合理。",
+    "scope_limit": "未提供完整状态列表、方程、刺激时刻或实验条件，不能宣称这就是完整可运行模型的全部初值。",
+    "checks": {"source_span": true, "target_scope": true, "answerability": true, "paper_grouping": true}
+  },
+  {
+    "id": "missing_is_evidence",
+    "recommendation": "retain_candidate",
+    "answer": "原文明确称 k_missing 未报告，仍未知。",
+    "reason": "显式未报告句本身是应检索的缺口证据；页首提到参数所在章节不能当成参数值。",
+    "scope_limit": "保留 unknown，不应设为 0 或默认值；缺口证据检索成功不能记成数值参数提取成功。",
+    "checks": {"source_span": true, "target_scope": true, "answerability": true, "paper_grouping": true}
+  },
+  {
+    "id": "lexical_gap",
+    "recommendation": "retain_candidate",
+    "answer": "起始种群 N(0) = 12 cells；原文将 N 定义为 dN/dt = r*N 中的状态。",
+    "reason": "t=0 与初始时刻、cells 与种群的对应由同一句中的状态定义支持；没有共享查询词仍可语义相关。",
+    "scope_limit": "该人工指定的同义例不足以证明通用语义检索能力；没有 r 的数值、时间单位或其他条件。",
+    "checks": {"source_span": true, "target_scope": true, "answerability": true, "paper_grouping": true}
+  },
+  {
+    "id": "long_paragraph",
+    "recommendation": "retain_candidate",
+    "answer": "X 的初始浓度为 1.2 micromolar，时间单位为分钟。",
+    "reason": "候选片段是完整声明，包含浓度与时钟限定；前后 filler 没有其他科学声明，不能因窗口裁剪而删除该必需证据。",
+    "scope_limit": "浓度不能直接当作 nmol 物质量；未给体积、状态方程或参数。此合成长段只检验边界，不代表真实排版覆盖。",
+    "checks": {"source_span": true, "target_scope": true, "answerability": true, "paper_grouping": true}
+  },
+  {
+    "id": "clarification_scope",
+    "recommendation": "revise_annotation",
+    "answer": "按授权澄清，条件 A 的 X 初始物质量为 2 nmol，条件 B 为 5 nmol。",
+    "reason": "澄清明确将 earlier 2 nmol 归入条件 A，将 5 nmol 归入条件 B。相同变量在不同条件下取不同值不构成本材料中的逻辑冲突，旧 conflicting 标签不成立。",
+    "scope_limit": "宽泛查询可回答两种条件对应值；如要执行一项模拟，应进一步确定目标条件。澄清是研究者来源，不应伪称原论文本身报告条件 B。",
+    "checks": {"source_span": true, "target_scope": false, "answerability": false, "paper_grouping": true},
+    "proposed_category": "condition_scope",
+    "proposed_expectation": "answerable",
+    "proposed_anchor_role": "support_candidate"
+  }
+]

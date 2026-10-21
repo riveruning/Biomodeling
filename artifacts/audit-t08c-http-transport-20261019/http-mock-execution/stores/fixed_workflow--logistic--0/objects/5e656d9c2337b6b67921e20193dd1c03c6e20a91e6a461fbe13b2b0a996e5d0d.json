@@ -1,0 +1,1 @@
+{"kind":"evaluation_reservation","payload":{"charged_tools":["source_read"],"operation":"inspect_source","phase_counts":{"model_calls":0,"run_attempts":0,"tool_calls":2},"prior_totals":{"elapsed_seconds":0.2628102459930233,"model_calls":1,"run_attempts":0,"tool_calls":1},"trial_id":"fixed_workflow--logistic--0--clarified"},"refs":[],"schema_version":"1"}

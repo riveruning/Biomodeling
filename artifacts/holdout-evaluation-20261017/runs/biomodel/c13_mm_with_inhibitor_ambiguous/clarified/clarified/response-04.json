@@ -1,0 +1,28 @@
+{
+  "id": "chatcmpl-de8823c5-9d42-4d87-857a-235ee85ecacc",
+  "created": 1792253051,
+  "model": "qwen3.8-chat",
+  "object": "chat.completion",
+  "choices": [
+    {
+      "finish_reason": "stop",
+      "index": 0,
+      "message": {
+        "content": "{\"action\": \"submit_draft\", \"args\": {\"draft\": {\"compartment\": {\"id\": \"c1\", \"size\": 1, \"unit\": \"dimensionless\"}, \"derived\": [], \"id\": \"mm_competitive_inhibition\", \"parameters\": [{\"id\": \"Vmax\", \"origin\": \"source\", \"unit\": \"a.u. per minute\", \"value\": 1.2}, {\"id\": \"Km\", \"origin\": \"source\", \"unit\": \"a.u.\", \"value\": 0.9}, {\"id\": \"KI\", \"origin\": \"source\", \"unit\": \"a.u.\", \"value\": 1.4}], \"rate_rules\": [{\"expression\": \"-Vmax*S/(Km*(1 + I/KI) + S)\", \"state\": \"S\"}, {\"expression\": \"0\", \"state\": \"I\"}], \"reactions\": [], \"states\": [{\"id\": \"S\", \"initial\": 3.0, \"nonnegative\": false, \"quantity_kind\": \"concentration\", \"unit\": \"a.u.\"}, {\"id\": \"I\", \"initial\": 2.0, \"nonnegative\": false, \"quantity_kind\": \"concentration\", \"unit\": \"a.u.\"}], \"time_unit\": \"min\"}, \"evidence\": [{\"page\": 1, \"quote\": \"Initial conditions. S(0) = 3.0 a.u.; I(0) = 2.0 a.u.\", \"source_ref\": \"add71644d91e9b54107848c384758812db9fa86a0d83f6810b0b0f9eb1d38fa3\", \"target\": \"S/initial\"}, {\"page\": 1, \"quote\": \"Initial conditions. S(0) = 3.0 a.u.; I(0) = 2.0 a.u.\", \"source_ref\": \"add71644d91e9b54107848c384758812db9fa86a0d83f6810b0b0f9eb1d38fa3\", \"target\": \"I/initial\"}, {\"page\": 1, \"quote\": \"Parameters. Vmax = 1.2 a.u. per minute; Km = 0.9 a.u.; KI = 1.4 a.u.\", \"source_ref\": \"add71644d91e9b54107848c384758812db9fa86a0d83f6810b0b0f9eb1d38fa3\", \"target\": \"Vmax/value\"}, {\"page\": 1, \"quote\": \"Parameters. Vmax = 1.2 a.u. per minute; Km = 0.9 a.u.; KI = 1.4 a.u.\", \"source_ref\": \"add71644d91e9b54107848c384758812db9fa86a0d83f6810b0b0f9eb1d38fa3\", \"target\": \"Km/value\"}, {\"page\": 1, \"quote\": \"Parameters. Vmax = 1.2 a.u. per minute; Km = 0.9 a.u.; KI = 1.4 a.u.\", \"source_ref\": \"add71644d91e9b54107848c384758812db9fa86a0d83f6810b0b0f9eb1d38fa3\", \"target\": \"KI/value\"}, {\"page\": 1, \"quote\": \"The material states dS/dt = -Vmax*S/(Km*(1 + I/KI) + S).\", \"source_ref\": \"add71644d91e9b54107848c384758812db9fa86a0d83f6810b0b0f9eb1d38fa3\", \"target\": \"rule:S/expression\"}, {\"page\": 1, \"quote\": \"declares a state for the inhibitor with the line 'dI/dt = 0'.\", \"source_ref\": \"add71644d91e9b54107848c384758812db9fa86a0d83f6810b0b0f9eb1d38fa3\", \"target\": \"rule:I/expression\"}, {\"page\": 1, \"quote\": \"Batch, sampled every 0.25 min from t = 0 to t = 8 min inclusive.\", \"source_ref\": \"add71644d91e9b54107848c384758812db9fa86a0d83f6810b0b0f9eb1d38fa3\", \"target\": \"time_unit\"}, {\"page\": 1, \"quote\": \"single well-mixed compartment of size 1 (dimensionless)\", \"source_ref\": \"add71644d91e9b54107848c384758812db9fa86a0d83f6810b0b0f9eb1d38fa3\", \"target\": \"c1/size\"}], \"mechanism\": \"Michaelis-Menten with competitive inhibition factor (1 + I/KI) multiplying Km; I is the free inhibitor state held constant at I(0) per researcher clarification.\"}}",
+        "role": "assistant",
+        "provider_specific_fields": {
+          "refusal": null
+        }
+      },
+      "provider_specific_fields": {}
+    }
+  ],
+  "usage": {
+    "completion_tokens": 1288,
+    "prompt_tokens": 4382,
+    "total_tokens": 5670,
+    "prompt_tokens_details": {
+      "cached_tokens": 1536
+    }
+  }
+}

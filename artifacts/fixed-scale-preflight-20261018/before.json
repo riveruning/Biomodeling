@@ -1,0 +1,1 @@
+{"supplied_scales": {"x": true}, "comparison": {"columns": ["x"], "max_scaled_error": 2.373215866047218e-07, "protocol": "fixed_scales", "scales": {"x": 1.0}, "status": "pass", "threshold": 0.001, "time_unit": "unknown", "time_unit_status": "unknown", "worst": "x[1]"}, "scientific_status": "passed_structured_reference"}

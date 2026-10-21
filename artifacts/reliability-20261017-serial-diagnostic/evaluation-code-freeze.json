@@ -1,0 +1,11 @@
+{
+  "timestamp": "2026-10-17T02:05:56.648646+00:00",
+  "files": {
+    "benchmarks/development/prepare_reliability.py": "6158554cd076dd4cfdd0838fc8321d3abe9e1da83277e49c6a0f06d95b525615",
+    "benchmarks/development/run_reliability.py": "12f65b713c56651df8bc53fe5ff8a10b5ed95e56c287f90e9e4e93f679d0e8f4",
+    "benchmarks/development/score_reliability.py": "7a01ab8ef5ba432aeba83d05b038f418dcdf2f1628db4c475250a9c37c5235a3",
+    "tests/test_reliability_benchmark.py": "d05f1994b00276371893f3d1139627bf8f79982a7d36227c6176756d8ed132ba"
+  },
+  "pre_run_checks": "8 scoring/reference tests passed; source inspection of all ten deterministic model definitions completed; independent human domain review pending",
+  "guidance_source": "https://developers.openai.com/api/docs/guides/evaluation-best-practices"
+}

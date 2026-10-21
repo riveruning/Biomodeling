@@ -1,0 +1,17 @@
+{
+  "status": "ready",
+  "parameters": [
+    {"id": "s", "value": 1.2, "unit": "min^-1"},
+    {"id": "d", "value": 0.3, "unit": "min^-1"}
+  ],
+  "states": [
+    {"id": "M", "initial": 0.5}
+  ],
+  "equations": [
+    {"state": "M", "expression": "s-d*M"}
+  ],
+  "questions": [],
+  "limitations": [
+    "Parameter units are inferred by dimensional consistency from dimensionless M and time in minutes."
+  ]
+}

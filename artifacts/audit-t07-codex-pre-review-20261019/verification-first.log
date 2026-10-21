@@ -1,0 +1,7 @@
+Traceback (most recent call last):
+  File "/home/riveruning/biologymodel_agent/artifacts/audit-t07-codex-pre-review-20261019/verify-pre-review.py", line 122, in <module>
+    main()
+  File "/home/riveruning/biologymodel_agent/artifacts/audit-t07-codex-pre-review-20261019/verify-pre-review.py", line 90, in main
+    assert linked.exists(), (path, label, target)
+           ^^^^^^^^^^^^^^^
+AssertionError: (PosixPath('/home/riveruning/biologymodel_agent/docs/retrieval-review.md'), '校验记录', '../artifacts/audit-t07-codex-pre-review-20261019/verification.json')

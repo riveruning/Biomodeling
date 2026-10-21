@@ -1,0 +1,26 @@
+{
+  "case": "c18_two_pathway_unit_conflict",
+  "phase": "clarified",
+  "status": "completed",
+  "calls_cumulative": 6,
+  "calls_incremental": 6,
+  "repair_count": 2,
+  "original_response_sha256": {
+    "/home/riveruning/biologymodel_agent/artifacts/holdout-evaluation-20261017/runs/biomodel/c18_two_pathway_unit_conflict/clarified/clarified/response-01.json": "5b4ed3cba9bef93f3f55a99e4fd2a0aaaffcef0853a0d381b246a8897af4dc7b",
+    "/home/riveruning/biologymodel_agent/artifacts/holdout-evaluation-20261017/runs/biomodel/c18_two_pathway_unit_conflict/clarified/clarified/response-02.json": "62f75cfe63aa672fe2dfc085ebf8a38dae879dc8be8f3594b7cf2036d680a4e9"
+  },
+  "scripted_actions": 4,
+  "new_model_requests": 0,
+  "numeric": {
+    "status": "pass",
+    "max_scaled_error": 4.766109864107193e-07,
+    "per_species": {
+      "M": 4.766109864107193e-07
+    },
+    "reference_sha256": "7358189a5c61ffa3fbb0fbfb02b1b65469aaef7f0d6cd52baea214e67f73922a"
+  },
+  "parent_unchanged": false,
+  "additional_outputs": [],
+  "output_contract_exact": true,
+  "scientific_status": "not_verified"
+}

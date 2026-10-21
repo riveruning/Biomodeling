@@ -1,0 +1,71 @@
+{
+  "record": {
+    "trial_id": "generic_tool_agent--logistic--0--clarified",
+    "manifest_sha256": "f2ccd66775137ff2fad83e11ff727b8a47d7f32f01f6c2c9f0d31b59ca9d78fe",
+    "evidence_kind": "scripted_control",
+    "model_config": {
+      "provider": "offline_control",
+      "model": "scripted-fixture",
+      "revision": "not-a-model",
+      "temperature": 0.0,
+      "top_p": 1.0,
+      "max_output_tokens": 1000,
+      "seed": 0
+    },
+    "toolchain_sha256": "149e4a7e2d5c300cf8f180a388a99c103b257c03413ac97b60c3605f955f57bf",
+    "status": "finished",
+    "continuation": "resumed",
+    "parent_trial_id": "generic_tool_agent--logistic--0--initial",
+    "observation": {
+      "state": "awaiting_input",
+      "executed": false,
+      "claimed_complete": false,
+      "identified_gaps": [],
+      "question_targets": [],
+      "question_texts": [
+        "Please resolve: rule:X/expression: binding unknown: unsupported or incomplete declaration context; cite a complete direct declaration"
+      ]
+    },
+    "assessment": {
+      "authority": "unreviewed",
+      "reviewer": null,
+      "evidence_refs": [],
+      "numeric": "unknown",
+      "source_support": "unknown",
+      "behavior_labels_reviewed": false
+    },
+    "telemetry": {
+      "model_calls": 1,
+      "tool_calls": 1,
+      "max_request_chars": 3632,
+      "max_response_tokens": null,
+      "elapsed_seconds": 0.20397393799794372,
+      "human_interventions": 0,
+      "human_seconds": 0.0,
+      "input_tokens": null,
+      "output_tokens": null
+    }
+  },
+  "session_ref": "be0479ce6328071dfd711e9d42a450f17e22f97b53ba2c702e52ad23838a3869",
+  "store_root": "/home/riveruning/biologymodel_agent/artifacts/audit-t08b-workflow-adapters-20261019/development-execution/stores/generic_tool_agent--logistic--0",
+  "audit": {
+    "supervised": true,
+    "stop_reason": null,
+    "run_ref": null,
+    "native_agent_run_ref": null,
+    "request_refs": [
+      "82ef73f750cee7bd1aa02f62c448d5102ac993ce781ba682a97c89bee920973a"
+    ],
+    "response_refs": [
+      "4d0e2843c903eec51ea74cb5abf30b7254c254e1547870a689fe337d2513f8c4"
+    ],
+    "reservation_refs": [
+      "70f6047942f0a9ef49b1d72923d50fe5d9b1b0593eafab559117870cbd5efce2",
+      "5a481867747bff116c2b69ebcce000c9362f5523af6b9a9d70e9c8d992807fa7"
+    ],
+    "clarification_origin": "prerecorded_protocol",
+    "runtime_adapter_sha256": "bc5684016fa4131bfc91e8db16386adacdbedc644e7e9b4bd68763a66722e1b4",
+    "scientific_support": "unknown",
+    "same_returned_model_verified": true
+  }
+}

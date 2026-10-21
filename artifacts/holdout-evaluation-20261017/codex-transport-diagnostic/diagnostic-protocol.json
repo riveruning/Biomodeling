@@ -1,0 +1,31 @@
+{
+  "created_utc": "2026-10-17T15:57:01.588917+00:00",
+  "reason": "Native baseline launcher waited for inherited non-terminal stdin and lacked the host proxy configuration.",
+  "changes": [
+    "stdin explicitly closed using DEVNULL",
+    "preserve existing host HTTP(S) proxy variables; values never recorded"
+  ],
+  "proxy_variable_names": [
+    "HTTPS_PROXY",
+    "HTTP_PROXY",
+    "NO_PROXY"
+  ],
+  "case_order": [
+    "c01_multistep_decay",
+    "c05_seq_activation_missing_initial",
+    "c09_two_step_saturation_missing_parameter",
+    "c13_mm_with_inhibitor_ambiguous",
+    "c18_two_pathway_unit_conflict"
+  ],
+  "all_9_fresh_phases": true,
+  "unchanged": [
+    "native model",
+    "reasoning effort",
+    "task prompt",
+    "source and experiment",
+    "sandbox file mounts",
+    "wall limit"
+  ],
+  "not_original_results": true,
+  "launcher_sha256": "3b902a294e14646ba6cfc933160b29e0cca75ef3c1ad703c572f0fdaadcaba63"
+}

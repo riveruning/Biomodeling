@@ -1,0 +1,28 @@
+{
+  "id": "chatcmpl-4bd6786a-835c-467e-a02d-6df259252c68",
+  "created": 1792239064,
+  "model": "qwen3.8-chat",
+  "object": "chat.completion",
+  "choices": [
+    {
+      "finish_reason": "stop",
+      "index": 0,
+      "message": {
+        "content": "{\"action\": \"ask_researcher\", \"args\": {\"question\": \"The source reports 'Initial B is not reported.' What is the initial value of state B (and its unit) for this model?\"}, \"reason\": \"Initial B is explicitly not reported; cannot invent a value.\"}",
+        "role": "assistant",
+        "provider_specific_fields": {
+          "refusal": null
+        }
+      },
+      "provider_specific_fields": {}
+    }
+  ],
+  "usage": {
+    "completion_tokens": 62,
+    "prompt_tokens": 1234,
+    "total_tokens": 1296,
+    "prompt_tokens_details": {
+      "cached_tokens": 0
+    }
+  }
+}

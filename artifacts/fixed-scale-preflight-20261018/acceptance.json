@@ -1,0 +1,83 @@
+{
+  "status": "accepted",
+  "created_at": "2026-10-18T12:50:52.197154+00:00",
+  "scope": "strict positive finite fixed-scale preflight before execution and agent resume",
+  "files": [
+    {
+      "path": "src/biomodel_agent/validation.py",
+      "staged": "src/biomodel_agent/validation.py",
+      "before_sha256": "945f24af263c437c77163836bf58da0c7ec5063756d331a8a61cf8586adbe07f",
+      "after_sha256": "fdd96ac32c58e94a260d47a62edb3e98d74fae4d1ab06526f2f5b5db1343568f"
+    },
+    {
+      "path": "src/biomodel_agent/application.py",
+      "staged": "src/biomodel_agent/application.py",
+      "before_sha256": "efabd84d6c6009a5987afa439c4c8bc6a3b8a0b7824438c1beda64c2412630ea",
+      "after_sha256": "4b3a6791fde3aaebdcf941ec1b96564c4c455fdd1c4ecfe6c7b7c2cd2f8f773a"
+    },
+    {
+      "path": "src/biomodel_agent/agent.py",
+      "staged": "src/biomodel_agent/agent.py",
+      "before_sha256": "073aabd2760deed9abec18390df94c3bebe6bf9edd7a9287b7008f82346d287e",
+      "after_sha256": "25f8baf347a1f59017b0e2de7c53df82059a7515a1675545937cefcad0ac1351"
+    },
+    {
+      "path": "tests/test_fixed_scale_preflight.py",
+      "staged": "tests/test_fixed_scale_preflight.py",
+      "before_sha256": null,
+      "after_sha256": "d32576008fe269e6d4cb919070db15b4eb79503171d10e687a8583fa0c0b8f18"
+    },
+    {
+      "path": "docs/fixed-scale-preflight.md",
+      "staged": "docs/fixed-scale-preflight.md",
+      "before_sha256": null,
+      "after_sha256": "32f7ab4101860879a7b54d7ae23ff06b2348998f7113c0e545ae7263dcbc080d"
+    },
+    {
+      "path": "README.md",
+      "staged": "README.md",
+      "before_sha256": "ec72c70b63876d67a4785f48eccd70768b0fdec33d2d6f3f4b98c2e0823a9b7b",
+      "after_sha256": "d8c4b87ea821f053f29f8081744f574c17570f94dcbd0e105fe133b08dd9ae1c"
+    }
+  ],
+  "baseline_tests": 464,
+  "tests": {
+    "tests": 488,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "validation": "existing project suite with staged modified modules, 24 new fixed-scale regressions; identical copied storage test keeps spawned imports on staged source",
+  "pytest_log": "pytest.log",
+  "pytest_xml": "pytest.xml",
+  "offline_original_proposals": 3,
+  "new_model_calls": 0,
+  "full_agent_benchmark_success_measured": false,
+  "original_evaluation_modified": false,
+  "independent_holdout": false,
+  "known_limitations": [
+    "scale preflight validates format and coverage, not scientific authority",
+    "no new live LLM performance measurement",
+    "labels are declarations, not source verification; no automatic time conversion"
+  ],
+  "installed_tests": {
+    "tests": 488,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "installed_test_command": [
+    "/home/riveruning/biologymodel_agent/.venv/bin/python",
+    "-m",
+    "pytest",
+    "-q",
+    "-p",
+    "no:cacheprovider",
+    "--basetemp=/tmp/biology-agent-fixed-scales-installed-20261018",
+    "--junitxml=/home/riveruning/biologymodel_agent/artifacts/fixed-scale-preflight-20261018/installed-pytest.xml"
+  ],
+  "installed_test_exit_code": 0,
+  "old_checkpoint_exercise_exit_code": 0,
+  "old_checkpoint_exercise_is_scripted": true,
+  "old_checkpoint_exercise_completed": 3
+}

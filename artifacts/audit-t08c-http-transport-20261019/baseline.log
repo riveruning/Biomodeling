@@ -1,0 +1,54 @@
+EE                                                                       [100%]
+==================================== ERRORS ====================================
+_ ERROR at setup of test_http_request_preserves_the_frozen_payload_and_uses_no_real_key _
+
+    @pytest.fixture
+    def transport_module():
+        spec = importlib.util.spec_from_file_location('comparison_transport_acceptance',
+            ROOT/'benchmarks/development/comparison_transport.py')
+        module = importlib.util.module_from_spec(spec)
+>       spec.loader.exec_module(module)
+
+tests/test_comparison_transport.py:18: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+<frozen importlib._bootstrap_external>:991: in exec_module
+    ???
+<frozen importlib._bootstrap_external>:1128: in get_code
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <_frozen_importlib_external.SourceFileLoader object at 0x7ee5c0f72db0>
+path = '/home/riveruning/biologymodel_agent/benchmarks/development/comparison_transport.py'
+
+>   ???
+E   FileNotFoundError: [Errno 2] No such file or directory: '/home/riveruning/biologymodel_agent/benchmarks/development/comparison_transport.py'
+
+<frozen importlib._bootstrap_external>:1186: FileNotFoundError
+_ ERROR at setup of test_preparation_is_offline_frozen_and_never_authorizes_egress _
+
+    @pytest.fixture
+    def transport_module():
+        spec = importlib.util.spec_from_file_location('comparison_transport_acceptance',
+            ROOT/'benchmarks/development/comparison_transport.py')
+        module = importlib.util.module_from_spec(spec)
+>       spec.loader.exec_module(module)
+
+tests/test_comparison_transport.py:18: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+<frozen importlib._bootstrap_external>:991: in exec_module
+    ???
+<frozen importlib._bootstrap_external>:1128: in get_code
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <_frozen_importlib_external.SourceFileLoader object at 0x7ee5c0f73770>
+path = '/home/riveruning/biologymodel_agent/benchmarks/development/comparison_transport.py'
+
+>   ???
+E   FileNotFoundError: [Errno 2] No such file or directory: '/home/riveruning/biologymodel_agent/benchmarks/development/comparison_transport.py'
+
+<frozen importlib._bootstrap_external>:1186: FileNotFoundError
+=========================== short test summary info ============================
+ERROR tests/test_comparison_transport.py::test_http_request_preserves_the_frozen_payload_and_uses_no_real_key
+ERROR tests/test_comparison_transport.py::test_preparation_is_offline_frozen_and_never_authorizes_egress
+2 errors in 0.08s

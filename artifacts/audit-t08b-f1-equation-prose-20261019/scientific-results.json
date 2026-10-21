@@ -1,0 +1,343 @@
+{
+  "status": "engineering_invariants_passed_analytic_diagnostics_recorded",
+  "scope": "Seen synthetic development controls; scripted decisions and actual tools, not model performance",
+  "planned_phases": 30,
+  "technical_completed_phases": 18,
+  "initial_scripted_questions": 12,
+  "changed_states": [
+    "fixed_workflow--logistic--0--clarified",
+    "fixed_workflow--logistic--1--clarified",
+    "generic_tool_agent--logistic--0--clarified",
+    "generic_tool_agent--logistic--1--clarified",
+    "domain_agent--logistic--0--clarified",
+    "domain_agent--logistic--1--clarified"
+  ],
+  "unchanged_previously_completed_numeric_results": 12,
+  "scripted_provider_requests": 66,
+  "online_inference_calls": 0,
+  "actual_reproduction_runs": 18,
+  "convergence_fine_runs": 18,
+  "actual_native_agent_resumes": [
+    {
+      "trial_id": "domain_agent--translation--0--clarified",
+      "parent_trial_id": "domain_agent--translation--0--initial",
+      "native_parent_ref": "f79ed7212e4480bed31df492c5f131437ede08a8686beb37cf79c4579f3ee31a"
+    },
+    {
+      "trial_id": "domain_agent--logistic--0--clarified",
+      "parent_trial_id": "domain_agent--logistic--0--initial",
+      "native_parent_ref": "cd08a2a8869279bba77285e8b0dedb65d0e01cb84601cb9b97cd7aaed65a9320"
+    },
+    {
+      "trial_id": "domain_agent--translation--1--clarified",
+      "parent_trial_id": "domain_agent--translation--1--initial",
+      "native_parent_ref": "18c85d661c0d802298b6027554cb0327887bf92137305d76e0a464bbd3126460"
+    },
+    {
+      "trial_id": "domain_agent--logistic--1--clarified",
+      "parent_trial_id": "domain_agent--logistic--1--initial",
+      "native_parent_ref": "cc108b296b2d1b49d139fd00dfc954527ec2c0d080322f99ed603cbe06e2d80c"
+    }
+  ],
+  "scientific_runs": [
+    {
+      "trial_id": "fixed_workflow--decay--0--initial",
+      "run_ref": "fa07007746e53c428c47276a08a7a5406824aeee1c4a76b078656922a22f5807",
+      "solver_backend": "libRoadRunner/cvode",
+      "cached_from": null,
+      "max_absolute_error_vs_analytic": {
+        "A": 8.080245441632883e-07
+      },
+      "refined_max_absolute_error_vs_analytic": {
+        "A": 1.6048863837880845e-07
+      },
+      "old_exploratory_2e_6_check_satisfied": true,
+      "scientific_status": "not_verified",
+      "semantic_support": "unknown"
+    },
+    {
+      "trial_id": "fixed_workflow--translation--0--clarified",
+      "run_ref": "8db78f09859f73aeda6d56e0964ac67b20ce5ea660ce0eb5f261029dd34f33c0",
+      "solver_backend": "libRoadRunner/cvode",
+      "cached_from": null,
+      "max_absolute_error_vs_analytic": {
+        "M": 2.5935604264226697e-06,
+        "P": 8.819381784874736e-06
+      },
+      "refined_max_absolute_error_vs_analytic": {
+        "M": 1.655577084314075e-07,
+        "P": 5.00398416924952e-07
+      },
+      "old_exploratory_2e_6_check_satisfied": false,
+      "scientific_status": "not_verified",
+      "semantic_support": "unknown"
+    },
+    {
+      "trial_id": "fixed_workflow--logistic--0--clarified",
+      "run_ref": "71b13ae5f1ed37e4361deac25ea1c663d9002529ee7217d533e3ff2d1faa0f33",
+      "solver_backend": "libRoadRunner/cvode",
+      "cached_from": null,
+      "max_absolute_error_vs_analytic": {
+        "X": 1.3040657189655747e-06
+      },
+      "refined_max_absolute_error_vs_analytic": {
+        "X": 2.299989763088206e-07
+      },
+      "old_exploratory_2e_6_check_satisfied": true,
+      "scientific_status": "not_verified",
+      "semantic_support": "unknown"
+    },
+    {
+      "trial_id": "fixed_workflow--decay--1--initial",
+      "run_ref": "bdbc967c863f491e68abf30daafdbd784882011d996d1ba856d7f004afb04d6f",
+      "solver_backend": "libRoadRunner/cvode",
+      "cached_from": null,
+      "max_absolute_error_vs_analytic": {
+        "A": 8.080245441632883e-07
+      },
+      "refined_max_absolute_error_vs_analytic": {
+        "A": 1.6048863837880845e-07
+      },
+      "old_exploratory_2e_6_check_satisfied": true,
+      "scientific_status": "not_verified",
+      "semantic_support": "unknown"
+    },
+    {
+      "trial_id": "fixed_workflow--translation--1--clarified",
+      "run_ref": "d9a4c8fb0c64a7e3acf777a8555ad834459fcea97a536c3297c1ea5344806186",
+      "solver_backend": "libRoadRunner/cvode",
+      "cached_from": null,
+      "max_absolute_error_vs_analytic": {
+        "M": 2.5935604264226697e-06,
+        "P": 8.819381784874736e-06
+      },
+      "refined_max_absolute_error_vs_analytic": {
+        "M": 1.655577084314075e-07,
+        "P": 5.00398416924952e-07
+      },
+      "old_exploratory_2e_6_check_satisfied": false,
+      "scientific_status": "not_verified",
+      "semantic_support": "unknown"
+    },
+    {
+      "trial_id": "fixed_workflow--logistic--1--clarified",
+      "run_ref": "ec3f5d23b617f985dfabb297580b2caee31d3415b7df1e5341ce032a23a8fc7b",
+      "solver_backend": "libRoadRunner/cvode",
+      "cached_from": null,
+      "max_absolute_error_vs_analytic": {
+        "X": 1.3040657189655747e-06
+      },
+      "refined_max_absolute_error_vs_analytic": {
+        "X": 2.299989763088206e-07
+      },
+      "old_exploratory_2e_6_check_satisfied": true,
+      "scientific_status": "not_verified",
+      "semantic_support": "unknown"
+    },
+    {
+      "trial_id": "generic_tool_agent--decay--0--initial",
+      "run_ref": "9ea921e80ec75a3e3e2cd6d382f1e8ee559ea8251087279b416f839bca35e114",
+      "solver_backend": "libRoadRunner/cvode",
+      "cached_from": null,
+      "max_absolute_error_vs_analytic": {
+        "A": 8.080245441632883e-07
+      },
+      "refined_max_absolute_error_vs_analytic": {
+        "A": 1.6048863837880845e-07
+      },
+      "old_exploratory_2e_6_check_satisfied": true,
+      "scientific_status": "not_verified",
+      "semantic_support": "unknown"
+    },
+    {
+      "trial_id": "generic_tool_agent--translation--0--clarified",
+      "run_ref": "ce753a64aa7d7565c078087f0d093d842db574edf33d6deb743ebe5a891701e5",
+      "solver_backend": "libRoadRunner/cvode",
+      "cached_from": null,
+      "max_absolute_error_vs_analytic": {
+        "M": 2.5935604264226697e-06,
+        "P": 8.819381784874736e-06
+      },
+      "refined_max_absolute_error_vs_analytic": {
+        "M": 1.655577084314075e-07,
+        "P": 5.00398416924952e-07
+      },
+      "old_exploratory_2e_6_check_satisfied": false,
+      "scientific_status": "not_verified",
+      "semantic_support": "unknown"
+    },
+    {
+      "trial_id": "generic_tool_agent--logistic--0--clarified",
+      "run_ref": "950b513a63a6833def4de126e996aeed622602e1bb30d7bae8cdb0413327e59a",
+      "solver_backend": "libRoadRunner/cvode",
+      "cached_from": null,
+      "max_absolute_error_vs_analytic": {
+        "X": 1.3040657189655747e-06
+      },
+      "refined_max_absolute_error_vs_analytic": {
+        "X": 2.299989763088206e-07
+      },
+      "old_exploratory_2e_6_check_satisfied": true,
+      "scientific_status": "not_verified",
+      "semantic_support": "unknown"
+    },
+    {
+      "trial_id": "generic_tool_agent--decay--1--initial",
+      "run_ref": "53a48c2bebb13ae81db4870ed9b53368aed3a50a6c6a4b05cb4c2756afcea6bd",
+      "solver_backend": "libRoadRunner/cvode",
+      "cached_from": null,
+      "max_absolute_error_vs_analytic": {
+        "A": 8.080245441632883e-07
+      },
+      "refined_max_absolute_error_vs_analytic": {
+        "A": 1.6048863837880845e-07
+      },
+      "old_exploratory_2e_6_check_satisfied": true,
+      "scientific_status": "not_verified",
+      "semantic_support": "unknown"
+    },
+    {
+      "trial_id": "generic_tool_agent--translation--1--clarified",
+      "run_ref": "35b7b0d57acb22e3a77b1ae43ea09bf6e7de61357e38a6c8272f1d1d8ab84f59",
+      "solver_backend": "libRoadRunner/cvode",
+      "cached_from": null,
+      "max_absolute_error_vs_analytic": {
+        "M": 2.5935604264226697e-06,
+        "P": 8.819381784874736e-06
+      },
+      "refined_max_absolute_error_vs_analytic": {
+        "M": 1.655577084314075e-07,
+        "P": 5.00398416924952e-07
+      },
+      "old_exploratory_2e_6_check_satisfied": false,
+      "scientific_status": "not_verified",
+      "semantic_support": "unknown"
+    },
+    {
+      "trial_id": "generic_tool_agent--logistic--1--clarified",
+      "run_ref": "f29c5659f4ce955feab5b3b83ce9fc5b785ff8cc632fbf03c3145843d961a49c",
+      "solver_backend": "libRoadRunner/cvode",
+      "cached_from": null,
+      "max_absolute_error_vs_analytic": {
+        "X": 1.3040657189655747e-06
+      },
+      "refined_max_absolute_error_vs_analytic": {
+        "X": 2.299989763088206e-07
+      },
+      "old_exploratory_2e_6_check_satisfied": true,
+      "scientific_status": "not_verified",
+      "semantic_support": "unknown"
+    },
+    {
+      "trial_id": "domain_agent--decay--0--initial",
+      "run_ref": "ca7926d2cba3a75bf104f223164d72db71ad15b9688a9ea19cc89b0d1255aaa3",
+      "solver_backend": "libRoadRunner/cvode",
+      "cached_from": null,
+      "max_absolute_error_vs_analytic": {
+        "A": 8.080245441632883e-07
+      },
+      "refined_max_absolute_error_vs_analytic": {
+        "A": 1.6048863837880845e-07
+      },
+      "old_exploratory_2e_6_check_satisfied": true,
+      "scientific_status": "not_verified",
+      "semantic_support": "unknown"
+    },
+    {
+      "trial_id": "domain_agent--translation--0--clarified",
+      "run_ref": "824aa5dbd25c9d4691a57cce4a57c7b699dab59aef3a03b736d57a3da62b2837",
+      "solver_backend": "libRoadRunner/cvode",
+      "cached_from": null,
+      "max_absolute_error_vs_analytic": {
+        "M": 2.5935604264226697e-06,
+        "P": 8.819381784874736e-06
+      },
+      "refined_max_absolute_error_vs_analytic": {
+        "M": 1.655577084314075e-07,
+        "P": 5.00398416924952e-07
+      },
+      "old_exploratory_2e_6_check_satisfied": false,
+      "scientific_status": "not_verified",
+      "semantic_support": "unknown"
+    },
+    {
+      "trial_id": "domain_agent--logistic--0--clarified",
+      "run_ref": "cf0d35793dac59369a40fe7c596905c4774564a7c51f5a59c94e21993705d75e",
+      "solver_backend": "libRoadRunner/cvode",
+      "cached_from": null,
+      "max_absolute_error_vs_analytic": {
+        "X": 1.3040657189655747e-06
+      },
+      "refined_max_absolute_error_vs_analytic": {
+        "X": 2.299989763088206e-07
+      },
+      "old_exploratory_2e_6_check_satisfied": true,
+      "scientific_status": "not_verified",
+      "semantic_support": "unknown"
+    },
+    {
+      "trial_id": "domain_agent--decay--1--initial",
+      "run_ref": "e863f4364d78887a97b29601f16083b25ba6a910077dafd5530d43e7448fdc1c",
+      "solver_backend": "libRoadRunner/cvode",
+      "cached_from": null,
+      "max_absolute_error_vs_analytic": {
+        "A": 8.080245441632883e-07
+      },
+      "refined_max_absolute_error_vs_analytic": {
+        "A": 1.6048863837880845e-07
+      },
+      "old_exploratory_2e_6_check_satisfied": true,
+      "scientific_status": "not_verified",
+      "semantic_support": "unknown"
+    },
+    {
+      "trial_id": "domain_agent--translation--1--clarified",
+      "run_ref": "50d53807a8b86a54c92910c28b1524ddeb787506fda9a8052697bc0dfe20995b",
+      "solver_backend": "libRoadRunner/cvode",
+      "cached_from": null,
+      "max_absolute_error_vs_analytic": {
+        "M": 2.5935604264226697e-06,
+        "P": 8.819381784874736e-06
+      },
+      "refined_max_absolute_error_vs_analytic": {
+        "M": 1.655577084314075e-07,
+        "P": 5.00398416924952e-07
+      },
+      "old_exploratory_2e_6_check_satisfied": false,
+      "scientific_status": "not_verified",
+      "semantic_support": "unknown"
+    },
+    {
+      "trial_id": "domain_agent--logistic--1--clarified",
+      "run_ref": "360efa79e3dad6a97ab0fdd9884121dabb8f58a3e51673ef119119353646272e",
+      "solver_backend": "libRoadRunner/cvode",
+      "cached_from": null,
+      "max_absolute_error_vs_analytic": {
+        "X": 1.3040657189655747e-06
+      },
+      "refined_max_absolute_error_vs_analytic": {
+        "X": 2.299989763088206e-07
+      },
+      "old_exploratory_2e_6_check_satisfied": true,
+      "scientific_status": "not_verified",
+      "semantic_support": "unknown"
+    }
+  ],
+  "cross_workflow_numeric_comparison": {
+    "decay": {
+      "actual_runs": 6,
+      "max_difference_across_workflows_and_repeats": 0.0
+    },
+    "translation": {
+      "actual_runs": 6,
+      "max_difference_across_workflows_and_repeats": 0.0
+    },
+    "logistic": {
+      "actual_runs": 6,
+      "max_difference_across_workflows_and_repeats": 0.0
+    }
+  },
+  "source_support": "unknown",
+  "human_review_decisions": 0,
+  "analytic_limit": "Global analytic errors are diagnostics. The prior exploratory 2e-6 failure remains immutable; no replacement threshold or solver setting change is adopted. Existing finite/convergence checks remain the product criterion."
+}

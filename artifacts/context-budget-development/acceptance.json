@@ -1,0 +1,93 @@
+{
+  "status": "accepted",
+  "created_at": "2026-10-18T16:14:23.788534+00:00",
+  "scope": "deterministic working-context character budget, scientific state retention, actual request audit, resume preflight and offline retention ablation",
+  "baseline_tests": 659,
+  "new_regressions": 29,
+  "tests": {
+    "tests": 688,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "test_exit_code": 0,
+  "test_command": "PYTHONDONTWRITEBYTECODE=1 .venv/bin/python -m pytest -q -p no:cacheprovider --basetemp=/tmp/context-budget-full --junitxml=artifacts/context-budget-development/pytest.xml",
+  "files": [
+    {
+      "path": "src/biomodel_agent/context.py",
+      "before_sha256": null,
+      "after_sha256": "c596ed7965d642496803467f6b741e5e88b021ecbf217758c00e17de97149d39"
+    },
+    {
+      "path": "src/biomodel_agent/agent.py",
+      "before_sha256": "85ae80a9c0e634106be52892af4b7af1a334f3637f1e21278e3ae57711b6c68e",
+      "after_sha256": "403bfcfcfd250a7108ac8afe41d74a23542173959fa3d3de1347786531c1a4c2"
+    },
+    {
+      "path": "src/biomodel_agent/cli.py",
+      "before_sha256": "42f1648901d59727972a24e1071406b7fa1328195478279e42782bdac1c42711",
+      "after_sha256": "725e84cd8986839ac022f7906341ff4d8a86f40353a2faa19feb2470b1b037b2"
+    },
+    {
+      "path": "src/biomodel_agent/reporting.py",
+      "before_sha256": "0c1a79fbbd3c9237a37c645c20da37f8950f101a090488ffd39bd6fb63d2a157",
+      "after_sha256": "feee951e27e1915c00e8bd490d93afc1b7718b6782fba3594191e36bfe197477"
+    },
+    {
+      "path": "tests/test_context_budget.py",
+      "before_sha256": null,
+      "after_sha256": "359005691fbcc76f8f25648daae6e1f9d6409f771d5f50318f0aaf2ae2393025"
+    },
+    {
+      "path": "benchmarks/development/evaluate_context.py",
+      "before_sha256": null,
+      "after_sha256": "8639fbaee0963d86cc77b31db8682db7e23094d3f41f2d24ddb6acf0a5daae4b"
+    },
+    {
+      "path": "docs/context-budget.md",
+      "before_sha256": null,
+      "after_sha256": "045225c341c286f0af5c4a60a1fb9b5f9d198af60b0f4a5745e58c61c5d69925"
+    },
+    {
+      "path": "docs/seven-point-status.md",
+      "before_sha256": null,
+      "after_sha256": "39f044dfe0b6ce6c4c4705db47366fcc2bcb0ac9d7b549660cfd67cd6278a8c6"
+    },
+    {
+      "path": "README.md",
+      "before_sha256": "95591fe92a8b67cf012afb0164f7e1b3502d145a3af17ba456cd1c6e58735796",
+      "after_sha256": "72e893ffde85be784d58931eb4e634c6ef7e4c9c407ce9ec3a93364fdee39419"
+    }
+  ],
+  "ablation": {
+    "path": "retention-evaluation/results.json",
+    "cases": 5,
+    "all_checks_pass": true,
+    "negative_controls": {
+      "dropped_correction_rejected": true,
+      "rewritten_fact_rejected": true
+    },
+    "long_context_character_reductions": [
+      0.9242457734075854,
+      0.9209099757728186,
+      0.9240283441215889
+    ],
+    "fixtures_sha256": "013bdeaf3dab6ce6ed86787dd157f96c33edb84beb851331e80dd311fc4496e6"
+  },
+  "old_checkpoint_scripted_compatibility": {
+    "completed": 3,
+    "new_model_requests": 0
+  },
+  "product_model_calls": 0,
+  "independent_evaluation_modified": false,
+  "autonomous_model_performance_measured": false,
+  "token_or_billing_savings_measured": false,
+  "dependencies_added": [],
+  "limitations": [
+    "character budget is not provider tokens or full HTTP body size",
+    "older nonmandatory context may need to be reread using the existing action budget",
+    "essential context overflow stops inference; it is not silently summarized or truncated",
+    "legacy frozen tasks retain their original full-history protocol",
+    "offline exact-retention checks do not establish improved reasoning or real-task success"
+  ]
+}

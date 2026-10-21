@@ -1,0 +1,506 @@
+{
+  "evidence_kind": "synthetic development PDF; scripted Agent; real local PyMuPDF and ODE tools",
+  "source_ref": "ea3afd58798c9736e9a030ddacf66734f91573a016efca49dea13077544f379c",
+  "parser": "pymupdf",
+  "parser_version": "1.28.2",
+  "parser_output_ref": "7f91b84009abd1c3c63a8759a83ca82cc81d7d9628209d1f83175f0a3af608e6",
+  "pdf_blob_ref": "3af9cfa84a4d1cc40135c2977838e8fe0d1c6ea20bf3feaffc9d91fb729c40ed",
+  "page_status": [
+    {
+      "number": 1,
+      "status": "text_with_images",
+      "tables": 1,
+      "images": 1,
+      "chars": 114
+    },
+    {
+      "number": 2,
+      "status": "textless",
+      "tables": 0,
+      "images": 1,
+      "chars": 0
+    }
+  ],
+  "warnings": [
+    "page 1: image regions were not transcribed; visual/formula review required",
+    "page 2: no extractable text; blank/scan/vector content needs visual review or OCR",
+    "page 2: image regions were not transcribed; visual/formula review required"
+  ],
+  "table": {
+    "bbox": [
+      30.0,
+      160.0,
+      270.0,
+      250.0
+    ],
+    "cells": [
+      [
+        30.0,
+        160.0,
+        150.0,
+        190.0
+      ],
+      [
+        30.0,
+        190.0,
+        150.0,
+        220.0
+      ],
+      [
+        30.0,
+        220.0,
+        150.0,
+        250.0
+      ],
+      [
+        150.0,
+        160.0,
+        270.0,
+        190.0
+      ],
+      [
+        150.0,
+        190.0,
+        270.0,
+        220.0
+      ],
+      [
+        150.0,
+        220.0,
+        270.0,
+        250.0
+      ]
+    ],
+    "citation_role": "auxiliary_not_page_text",
+    "column_count": 2,
+    "id": "p1:t1",
+    "row_count": 3,
+    "rows": [
+      [
+        "Symbol",
+        "Value"
+      ],
+      [
+        "k",
+        "0.4"
+      ],
+      [
+        "x",
+        "1"
+      ]
+    ],
+    "status": "extracted_unverified"
+  },
+  "agent": {
+    "root_ref": "68304601f6fb9d10182eb0c0f1d2cdc93a5235bd481e0dd25b5c29e0024a4690",
+    "state": "completed",
+    "call_count": 4,
+    "run_ref": "fd9b8feb6f0d1a6af8366c6cce8c8349da91ead4fc6892a800c273b660b453b1",
+    "endpoint": 0.6703202833572259,
+    "expected_endpoint": 0.6703200460356393,
+    "absolute_error": 2.373215866047218e-07,
+    "scientific_status": "not_verified",
+    "initial_materials": {
+      "ea3afd58798c9736e9a030ddacf66734f91573a016efca49dea13077544f379c": {
+        "capabilities": {
+          "formula_recognition": "not_run",
+          "ocr": "not_run",
+          "reading_order": "engine_coordinate_sort_unverified",
+          "tables": "native_unverified",
+          "text": "native_pdf_text"
+        },
+        "page_status": [
+          {
+            "page": 1,
+            "status": "text_with_images",
+            "tables": "completed"
+          },
+          {
+            "page": 2,
+            "status": "textless",
+            "tables": "completed"
+          }
+        ],
+        "pages": [
+          {
+            "chars": 114,
+            "page": 1
+          },
+          {
+            "chars": 0,
+            "page": 2
+          }
+        ],
+        "parser": "pymupdf",
+        "parser_version": "1.28.2",
+        "warning_count": 3,
+        "warnings": [
+          "page 1: image regions were not transcribed; visual/formula review required",
+          "page 2: no extractable text; blank/scan/vector content needs visual review or OCR",
+          "page 2: image regions were not transcribed; visual/formula review required"
+        ]
+      }
+    },
+    "inspection": {
+      "end": 114,
+      "length": 114,
+      "locator": {
+        "block_count": 7,
+        "blocks": [
+          {
+            "bbox": [
+              25.0,
+              23.174999237060547,
+              197.40296936035156,
+              38.28900146484375
+            ],
+            "end": 34,
+            "id": "p1:b0",
+            "start": 0
+          },
+          {
+            "bbox": [
+              25.0,
+              53.17499923706055,
+              80.94599914550781,
+              68.28900146484375
+            ],
+            "end": 49,
+            "id": "p1:b1",
+            "start": 34
+          },
+          {
+            "bbox": [
+              25.0,
+              78.17500305175781,
+              115.79399871826172,
+              93.28900146484375
+            ],
+            "end": 68,
+            "id": "p1:b2",
+            "start": 49
+          },
+          {
+            "bbox": [
+              25.0,
+              103.17500305175781,
+              129.86300659179688,
+              118.28900146484375
+            ],
+            "end": 91,
+            "id": "p1:b3",
+            "start": 68
+          },
+          {
+            "bbox": [
+              38.0,
+              168.1750030517578,
+              186.1269989013672,
+              183.28900146484375
+            ],
+            "end": 104,
+            "id": "p1:b4",
+            "start": 91
+          },
+          {
+            "bbox": [
+              38.0,
+              198.1750030517578,
+              173.2899932861328,
+              213.28900146484375
+            ],
+            "end": 110,
+            "id": "p1:b5",
+            "start": 104
+          },
+          {
+            "bbox": [
+              38.0,
+              228.1750030517578,
+              164.11599731445312,
+              243.28900146484375
+            ],
+            "end": 114,
+            "id": "p1:b6",
+            "start": 110
+          }
+        ],
+        "coordinate_space": "pymupdf_unrotated_page_points",
+        "end": 114,
+        "page": 1,
+        "parser_output_ref": "7f91b84009abd1c3c63a8759a83ca82cc81d7d9628209d1f83175f0a3af608e6",
+        "pdf_blob_ref": "3af9cfa84a4d1cc40135c2977838e8fe0d1c6ea20bf3feaffc9d91fb729c40ed",
+        "start": 0,
+        "text_layer": "native_pdf_text",
+        "truncated": false
+      },
+      "ok": true,
+      "page": 1,
+      "source_ref": "ea3afd58798c9736e9a030ddacf66734f91573a016efca49dea13077544f379c",
+      "start": 0,
+      "text": "Synthetic PDF development control\nInitial x = 1.\nParameter k = 0.4.\nEquation dx/dt = -k*x.\nSymbol\nValue\nk\n0.4\nx\n1\n",
+      "tool": "inspect_source"
+    }
+  },
+  "claims": {
+    "82d6a0f56102b7ef054dfedff8ab8066e3719c7781ab9bb342560fbf0696c1f4": {
+      "binding": {
+        "declarations": [
+          {
+            "end": 47,
+            "kind": "initial",
+            "rhs": "1",
+            "start": 34,
+            "symbol": "x"
+          }
+        ],
+        "mapping_evidence": [],
+        "proposed": {
+          "kind": "initial",
+          "value": "1"
+        },
+        "reason": "direct declaration matches target within the bounded grammar",
+        "semantic_support": "unknown",
+        "source": {
+          "end": 48,
+          "page": 1,
+          "source_ref": "ea3afd58798c9736e9a030ddacf66734f91573a016efca49dea13077544f379c",
+          "start": 34
+        },
+        "status": "matched",
+        "symbol_map": {},
+        "target": "x/initial",
+        "version": 1
+      },
+      "claim_type": "paper_assumption",
+      "end": 48,
+      "locator": {
+        "block_count": 1,
+        "blocks": [
+          {
+            "bbox": [
+              25.0,
+              53.17499923706055,
+              80.94599914550781,
+              68.28900146484375
+            ],
+            "end": 48,
+            "id": "p1:b1",
+            "start": 34
+          }
+        ],
+        "coordinate_space": "pymupdf_unrotated_page_points",
+        "end": 48,
+        "page": 1,
+        "parser_output_ref": "7f91b84009abd1c3c63a8759a83ca82cc81d7d9628209d1f83175f0a3af608e6",
+        "pdf_blob_ref": "3af9cfa84a4d1cc40135c2977838e8fe0d1c6ea20bf3feaffc9d91fb729c40ed",
+        "start": 34,
+        "text_layer": "native_pdf_text",
+        "truncated": false
+      },
+      "page": 1,
+      "quote": "Initial x = 1.",
+      "relation": "reported_as",
+      "review_status": "unverified",
+      "source_ref": "ea3afd58798c9736e9a030ddacf66734f91573a016efca49dea13077544f379c",
+      "start": 34,
+      "statement": "x/initial"
+    },
+    "22b530770aa2b454c533f2101cd00d1efba1d4c0d879b62ef29313ccca7fa629": {
+      "binding": {
+        "declarations": [
+          {
+            "end": 66,
+            "kind": "value",
+            "rhs": "0.4",
+            "start": 49,
+            "symbol": "k"
+          }
+        ],
+        "mapping_evidence": [],
+        "proposed": {
+          "kind": "value",
+          "value": "2/5"
+        },
+        "reason": "direct declaration matches target within the bounded grammar",
+        "semantic_support": "unknown",
+        "source": {
+          "end": 67,
+          "page": 1,
+          "source_ref": "ea3afd58798c9736e9a030ddacf66734f91573a016efca49dea13077544f379c",
+          "start": 49
+        },
+        "status": "matched",
+        "symbol_map": {},
+        "target": "k/value",
+        "version": 1
+      },
+      "claim_type": "paper_assumption",
+      "end": 67,
+      "locator": {
+        "block_count": 1,
+        "blocks": [
+          {
+            "bbox": [
+              25.0,
+              78.17500305175781,
+              115.79399871826172,
+              93.28900146484375
+            ],
+            "end": 67,
+            "id": "p1:b2",
+            "start": 49
+          }
+        ],
+        "coordinate_space": "pymupdf_unrotated_page_points",
+        "end": 67,
+        "page": 1,
+        "parser_output_ref": "7f91b84009abd1c3c63a8759a83ca82cc81d7d9628209d1f83175f0a3af608e6",
+        "pdf_blob_ref": "3af9cfa84a4d1cc40135c2977838e8fe0d1c6ea20bf3feaffc9d91fb729c40ed",
+        "start": 49,
+        "text_layer": "native_pdf_text",
+        "truncated": false
+      },
+      "page": 1,
+      "quote": "Parameter k = 0.4.",
+      "relation": "reported_as",
+      "review_status": "unverified",
+      "source_ref": "ea3afd58798c9736e9a030ddacf66734f91573a016efca49dea13077544f379c",
+      "start": 49,
+      "statement": "k/value"
+    },
+    "9673aa51893f76d21b1a5318f35dc00676c18c7b1da1a5d235677d6793811e2f": {
+      "binding": {
+        "declarations": [
+          {
+            "end": 89,
+            "kind": "rule",
+            "normalized": {
+              "kind": "polynomial",
+              "terms": [
+                [
+                  [
+                    "k",
+                    "x"
+                  ],
+                  "-1"
+                ]
+              ]
+            },
+            "rhs": "-k*x",
+            "start": 68,
+            "symbol": "x"
+          }
+        ],
+        "mapping_evidence": [],
+        "proposed": {
+          "kind": "polynomial",
+          "terms": [
+            [
+              [
+                "k",
+                "x"
+              ],
+              "-1"
+            ]
+          ]
+        },
+        "reason": "direct declaration matches target within the bounded grammar",
+        "semantic_support": "unknown",
+        "source": {
+          "end": 90,
+          "page": 1,
+          "source_ref": "ea3afd58798c9736e9a030ddacf66734f91573a016efca49dea13077544f379c",
+          "start": 68
+        },
+        "status": "matched",
+        "symbol_map": {},
+        "target": "rule:x/expression",
+        "version": 1
+      },
+      "claim_type": "paper_assumption",
+      "end": 90,
+      "locator": {
+        "block_count": 1,
+        "blocks": [
+          {
+            "bbox": [
+              25.0,
+              103.17500305175781,
+              129.86300659179688,
+              118.28900146484375
+            ],
+            "end": 90,
+            "id": "p1:b3",
+            "start": 68
+          }
+        ],
+        "coordinate_space": "pymupdf_unrotated_page_points",
+        "end": 90,
+        "page": 1,
+        "parser_output_ref": "7f91b84009abd1c3c63a8759a83ca82cc81d7d9628209d1f83175f0a3af608e6",
+        "pdf_blob_ref": "3af9cfa84a4d1cc40135c2977838e8fe0d1c6ea20bf3feaffc9d91fb729c40ed",
+        "start": 68,
+        "text_layer": "native_pdf_text",
+        "truncated": false
+      },
+      "page": 1,
+      "quote": "Equation dx/dt = -k*x.",
+      "relation": "reported_as",
+      "review_status": "unverified",
+      "source_ref": "ea3afd58798c9736e9a030ddacf66734f91573a016efca49dea13077544f379c",
+      "start": 68,
+      "statement": "rule:x/expression"
+    }
+  },
+  "retrieval": {
+    "query": "Parameter k",
+    "method": "lexical_v1",
+    "results": [
+      {
+        "source_ref": "ea3afd58798c9736e9a030ddacf66734f91573a016efca49dea13077544f379c",
+        "page": 1,
+        "start": 0,
+        "end": 114,
+        "text": "Synthetic PDF development control\nInitial x = 1.\nParameter k = 0.4.\nEquation dx/dt = -k*x.\nSymbol\nValue\nk\n0.4\nx\n1\n",
+        "matched_terms": [
+          "parameter",
+          "k"
+        ],
+        "score": 2
+      }
+    ],
+    "returned_chars": 114,
+    "truncated": false
+  },
+  "bundle": {
+    "root_ref": "68304601f6fb9d10182eb0c0f1d2cdc93a5235bd481e0dd25b5c29e0024a4690",
+    "objects_and_blobs": 30,
+    "pdf_and_parser_output_unchanged": true
+  },
+  "injected_failures": {
+    "timeout": {
+      "failure_ref": "c0a14bb4febc83e9ef7938ad9eccc0f8006c50d3e889a8a0c0da794eab45e7d3",
+      "error": "PDF parsing timeout budget exceeded; raw PDF and failure retained: c0a14bb4febc83e9ef7938ad9eccc0f8006c50d3e889a8a0c0da794eab45e7d3",
+      "wall_time_s": 0.5297923519974574,
+      "successful_sources": 0,
+      "no_child_left": true,
+      "raw_bytes_retained": true
+    },
+    "worker_crash": {
+      "failure_ref": "3e26f09ed5e78f89ef66e6a66805ac951961fb684f1f295d31a25a0728c1db32",
+      "error": "PDF parser exited without a complete result; raw PDF and failure retained: 3e26f09ed5e78f89ef66e6a66805ac951961fb684f1f295d31a25a0728c1db32",
+      "wall_time_s": 0.7184601059998386,
+      "successful_sources": 0,
+      "no_child_left": true,
+      "raw_bytes_retained": true
+    }
+  },
+  "recovery": {
+    "execution_ref": "3c2549d6054518243c307a984dd1a07b50e9d29ef4d157e58d64d62ae27636f4",
+    "root_ref": "1c24cd6efce79e7323a8df3ca13e251a8d237f159064feeef6305e978eac86de",
+    "state": "completed",
+    "no_solver_repeat": true,
+    "no_claim_repeat": true
+  }
+}

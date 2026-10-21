@@ -1,0 +1,175 @@
+FFFFFFF.                                                                 [100%]
+=================================== FAILURES ===================================
+__________ test_real_negative_result_cannot_complete_or_lose_failure ___________
+
+tmp_path = PosixPath('/tmp/biomodel-t01-independent-before/test_real_negative_result_cann0')
+
+    def test_real_negative_result_cannot_complete_or_lose_failure(tmp_path):
+        store = ArtifactStore(tmp_path)
+        source, _, actions = proposal(store, negative=True)
+        ref = agent.run_agent(store, Scripted(actions), [source], ExperimentSpec((0.,2.,4.)))
+        task = store.get(ref)['payload']
+        run = store.get(task['run_ref'])['payload']
+        assert run['simulation']['values']['x'][-1] < -.5
+        assert any(c['status']=='fail' and c['severity']=='blocking' for c in run['numeric_validation']['checks'])
+>       assert run['scientific_status']=='failed'
+E       AssertionError: assert 'not_verified' == 'failed'
+E         
+E         - failed
+E         + not_verified
+
+artifacts/audit-t01-verdict-20261019/test_independent_acceptance.py:53: AssertionError
+____ test_real_strict_reference_failure_is_failed_even_with_unknown_sources ____
+
+tmp_path = PosixPath('/tmp/biomodel-t01-independent-before/test_real_strict_reference_fai0')
+
+    def test_real_strict_reference_failure_is_failed_even_with_unknown_sources(tmp_path):
+        store = ArtifactStore(tmp_path)
+        _, draft, _ = proposal(store)
+        exp = ExperimentSpec((0.,1.))
+        ref = application.run_reproduction(store, modeling.build_model(draft), exp,
+            reference=SimulationResult('succeeded',exp.times,{'x':(100.,100.)}),
+            scales={'x':1.}, strict=True)
+        run = store.get(ref)['payload']
+        assert run['comparison']['status']=='fail'
+        assert run['source_validation']['semantic_support']=='unknown'
+>       assert run['scientific_status']=='failed'
+E       AssertionError: assert 'not_verified' == 'failed'
+E         
+E         - failed
+E         + not_verified
+
+artifacts/audit-t01-verdict-20261019/test_independent_acceptance.py:68: AssertionError
+_________ test_controlled_convergence_failure_wins_over_missing_source _________
+
+tmp_path = PosixPath('/tmp/biomodel-t01-independent-before/test_controlled_convergence_fa0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x74a98dbd3b90>
+
+    def test_controlled_convergence_failure_wins_over_missing_source(tmp_path, monkeypatch):
+        store = ArtifactStore(tmp_path)
+        _, draft, _ = proposal(store)
+        monkeypatch.setattr(application, '_convergence', lambda *a,**kw:
+            (None, {'status':'fail','comparison':{'max_scaled_error':1.,'threshold':.001}}, None, 'fault injection'))
+        ref = application.run_reproduction(store, modeling.build_model(draft), ExperimentSpec((0.,1.)), strict=True)
+        run = store.get(ref)['payload']
+        assert run['status']=='succeeded'
+>       assert run['scientific_status']=='failed'
+E       AssertionError: assert 'not_verified' == 'failed'
+E         
+E         - failed
+E         + not_verified
+
+artifacts/audit-t01-verdict-20261019/test_independent_acceptance.py:79: AssertionError
+______________ test_unknown_validation_is_not_a_failure_or_a_pass ______________
+
+tmp_path = PosixPath('/tmp/biomodel-t01-independent-before/test_unknown_validation_is_not0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x74a98dbd0e00>
+
+    def test_unknown_validation_is_not_a_failure_or_a_pass(tmp_path, monkeypatch):
+        store = ArtifactStore(tmp_path)
+        _, draft, _ = proposal(store)
+        monkeypatch.setattr(application, '_numeric_report', lambda *a,**kw:
+            ValidationReport((Check('finite','pass','finite'),
+                              Check('convergence','unknown','not established',severity='blocking'))))
+        ref = application.run_reproduction(store, modeling.build_model(draft), ExperimentSpec((0.,1.)),
+                                            strict=False, use_cache=False)
+>       assert store.get(ref)['payload']['scientific_status']=='not_verified'
+E       AssertionError: assert 'failed' == 'not_verified'
+E         
+E         - not_verified
+E         + failed
+
+artifacts/audit-t01-verdict-20261019/test_independent_acceptance.py:90: AssertionError
+______ test_legacy_unknown_label_does_not_hide_explicit_failure[numeric] _______
+
+tmp_path = PosixPath('/tmp/biomodel-t01-independent-before/test_legacy_unknown_label_does0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x74a98dbf5f70>
+kind = 'numeric'
+
+    @pytest.mark.parametrize('kind', ['numeric','static','comparison'])
+    def test_legacy_unknown_label_does_not_hide_explicit_failure(tmp_path, monkeypatch, kind):
+        store = ArtifactStore(tmp_path)
+        source, _, actions = proposal(store)
+        payload = {'status':'succeeded', 'scientific_status':'not_verified',
+                   'comparison':{'status':'not_run'}}
+        if kind=='comparison':
+            payload['comparison']={'status':'fail'}
+        else:
+            payload[kind+'_validation']={'checks':[{'code':'injected','status':'fail','severity':'blocking'}]}
+        legacy_ref = store.put('run', payload)
+        monkeypatch.setattr(application, 'run_reproduction', lambda *a,**kw:legacy_ref)
+        ref = agent.run_agent(store, Scripted(actions), [source], ExperimentSpec((0.,1.)))
+>       assert store.get(ref)['payload']['state']=='incomplete'
+E       AssertionError: assert 'completed' == 'incomplete'
+E         
+E         - incomplete
+E         ? --
+E         + completed
+E         ?         +
+
+artifacts/audit-t01-verdict-20261019/test_independent_acceptance.py:106: AssertionError
+_______ test_legacy_unknown_label_does_not_hide_explicit_failure[static] _______
+
+tmp_path = PosixPath('/tmp/biomodel-t01-independent-before/test_legacy_unknown_label_does1')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x74a98dbf7e00>
+kind = 'static'
+
+    @pytest.mark.parametrize('kind', ['numeric','static','comparison'])
+    def test_legacy_unknown_label_does_not_hide_explicit_failure(tmp_path, monkeypatch, kind):
+        store = ArtifactStore(tmp_path)
+        source, _, actions = proposal(store)
+        payload = {'status':'succeeded', 'scientific_status':'not_verified',
+                   'comparison':{'status':'not_run'}}
+        if kind=='comparison':
+            payload['comparison']={'status':'fail'}
+        else:
+            payload[kind+'_validation']={'checks':[{'code':'injected','status':'fail','severity':'blocking'}]}
+        legacy_ref = store.put('run', payload)
+        monkeypatch.setattr(application, 'run_reproduction', lambda *a,**kw:legacy_ref)
+        ref = agent.run_agent(store, Scripted(actions), [source], ExperimentSpec((0.,1.)))
+>       assert store.get(ref)['payload']['state']=='incomplete'
+E       AssertionError: assert 'completed' == 'incomplete'
+E         
+E         - incomplete
+E         ? --
+E         + completed
+E         ?         +
+
+artifacts/audit-t01-verdict-20261019/test_independent_acceptance.py:106: AssertionError
+_____ test_legacy_unknown_label_does_not_hide_explicit_failure[comparison] _____
+
+tmp_path = PosixPath('/tmp/biomodel-t01-independent-before/test_legacy_unknown_label_does2')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x74a98dbf5ee0>
+kind = 'comparison'
+
+    @pytest.mark.parametrize('kind', ['numeric','static','comparison'])
+    def test_legacy_unknown_label_does_not_hide_explicit_failure(tmp_path, monkeypatch, kind):
+        store = ArtifactStore(tmp_path)
+        source, _, actions = proposal(store)
+        payload = {'status':'succeeded', 'scientific_status':'not_verified',
+                   'comparison':{'status':'not_run'}}
+        if kind=='comparison':
+            payload['comparison']={'status':'fail'}
+        else:
+            payload[kind+'_validation']={'checks':[{'code':'injected','status':'fail','severity':'blocking'}]}
+        legacy_ref = store.put('run', payload)
+        monkeypatch.setattr(application, 'run_reproduction', lambda *a,**kw:legacy_ref)
+        ref = agent.run_agent(store, Scripted(actions), [source], ExperimentSpec((0.,1.)))
+>       assert store.get(ref)['payload']['state']=='incomplete'
+E       AssertionError: assert 'completed' == 'incomplete'
+E         
+E         - incomplete
+E         ? --
+E         + completed
+E         ?         +
+
+artifacts/audit-t01-verdict-20261019/test_independent_acceptance.py:106: AssertionError
+=========================== short test summary info ============================
+FAILED artifacts/audit-t01-verdict-20261019/test_independent_acceptance.py::test_real_negative_result_cannot_complete_or_lose_failure
+FAILED artifacts/audit-t01-verdict-20261019/test_independent_acceptance.py::test_real_strict_reference_failure_is_failed_even_with_unknown_sources
+FAILED artifacts/audit-t01-verdict-20261019/test_independent_acceptance.py::test_controlled_convergence_failure_wins_over_missing_source
+FAILED artifacts/audit-t01-verdict-20261019/test_independent_acceptance.py::test_unknown_validation_is_not_a_failure_or_a_pass
+FAILED artifacts/audit-t01-verdict-20261019/test_independent_acceptance.py::test_legacy_unknown_label_does_not_hide_explicit_failure[numeric]
+FAILED artifacts/audit-t01-verdict-20261019/test_independent_acceptance.py::test_legacy_unknown_label_does_not_hide_explicit_failure[static]
+FAILED artifacts/audit-t01-verdict-20261019/test_independent_acceptance.py::test_legacy_unknown_label_does_not_hide_explicit_failure[comparison]
+7 failed, 1 passed in 7.00s

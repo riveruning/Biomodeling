@@ -1,0 +1,35 @@
+{
+  "base": {
+    "elapsed_seconds": 0.2628102459930233,
+    "model_calls": 1,
+    "run_attempts": 0,
+    "tool_calls": 1
+  },
+  "counts": {
+    "model_calls": 1,
+    "tool_calls": 5,
+    "run_attempts": 1
+  },
+  "request_refs": [
+    "f2cbe9c5068045f2ab75c603ab011c568e1e2d7f10920d08cb97bd7b82c08748"
+  ],
+  "response_refs": [
+    "e22bd33cc8cda59ec51841e8f3936702fcd84afcbd874591671fb5edd7d1adad"
+  ],
+  "transport_exchange_refs": [
+    "7d7f66743e927d3bf100c3a483e48fce08c6a3b51326a0fa4d0f07569725528b"
+  ],
+  "usage": [
+    {}
+  ],
+  "reservation_refs": [
+    "872bf31ba5fdc7106a4a42eeb4d050641b1e5add7fba9f2978e03837429e7200",
+    "5e656d9c2337b6b67921e20193dd1c03c6e20a91e6a461fbe13b2b0a996e5d0d",
+    "a721de6e06af30177502311c5bcdff59fcc6024990b7c6f42999a0666ebd4208",
+    "07147dd9709adc2159caaf4fbb10020d31f551c00eadb1b72ceafd52923359f5",
+    "41231403e8ea92571b24a687d7cf784e895118bf60046375cd9ea7ec79bbc0f9"
+  ],
+  "provider_status": null,
+  "stop_reason": null,
+  "elapsed_seconds": 2.549663983998471
+}

@@ -1,0 +1,10 @@
+{
+  "task_id": "T08a",
+  "owner": "Codex alone; continuing the authorized implementation arrangement",
+  "objective": "Freeze comparable development trial plans, isolate trial inputs, and score attributed records with fixed denominators and explicit failure/unknown states.",
+  "read_scope": ["src/biomodel_agent", "benchmarks/development", "benchmarks/inputs/reliability/decay", "benchmarks/inputs/reliability/translation", "benchmarks/inputs/reliability/logistic", "docs", "tests"],
+  "write_scope": ["benchmarks/development/agent_evaluation.py", "tests/test_agent_evaluation_protocol.py", "docs/agent-evaluation-protocol.md", "docs/optimization-backlog.md", "docs/seven-point-status.md", "artifacts/audit-t08a-evaluation-protocol-20261019"],
+  "constraints": ["No product source changes", "No new papers or independent evalset access", "No inference, external transmission, dependency installation or DSH dispatch", "T07 remains open for independent review and real-paper comparison", "Scripted controls are not model performance or scientific execution", "Do not modify frozen historic evaluators or scores"],
+  "acceptance": ["Identical declared model/sampling/budget across three workflows", "Exact source hashes and frozen schedule", "No rubric or later clarification in initial trial input", "Missing/error/malformed records stay in fixed denominator", "Gap, targeted question, unsupported execution and overblocking scored separately", "Fresh rebuild never counted as continuation recovery", "Unknown usage remains unknown; phase budget is cumulative", "Meaningful positive and negative controls; appropriate regression and preserved patch"],
+  "remaining_after_T08a": ["Implement and verify three real workflow adapters", "Independent review and authorized future scientific tasks", "Applicable approval for actual material transmission", "Actual same-model trials and module ablations"]
+}

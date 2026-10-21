@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="3" skipped="0" tests="3" time="3.187" timestamp="2026-10-19T11:10:07.045456+08:00" hostname="LAPTOP-2QUP5P60"><testcase classname="tests.test_invocation_acceptance" name="test_crash_at_provider_entry_retains_attempt_reservation" time="0.072"><failure message="assert 1 == 0&#10; +  where 1 = len([[{'role': 'system', 'content': 'You drive a budgeted, tool-using modeling agent. Answer with EXACTLY ONE JSON object ...}, &quot;parameter_overrides&quot;: {}, &quot;segments&quot;: 0, &quot;time_unit&quot;: &quot;unknown&quot;, &quot;times&quot;: [0.0, 1.0]}, &quot;mode&quot;: &quot;reproduction&quot;}}'}]])&#10; +    where [[{'role': 'system', 'content': 'You drive a budgeted, tool-using modeling agent. Answer with EXACTLY ONE JSON object ...}, &quot;parameter_overrides&quot;: {}, &quot;segments&quot;: 0, &quot;time_unit&quot;: &quot;unknown&quot;, &quot;times&quot;: [0.0, 1.0]}, &quot;mode&quot;: &quot;reproduction&quot;}}'}]] = &lt;test_invocation_acceptance.Scripted object at 0x7c146f3dfe30&gt;.calls&#10; +  and   0 = len([])">tmp_path = PosixPath('/tmp/biomodel-t03a-before/test_crash_at_provider_entry_r0')
+
+    def test_crash_at_provider_entry_retains_attempt_reservation(tmp_path):
+        store, source, _ = fixture(tmp_path)
+        provider = Scripted([SystemExit('injected at provider entry')])
+        with pytest.raises(SystemExit):
+            run(store, source, provider, max_calls=1)
+        reopened = ArtifactStore(tmp_path / 'store')
+        reserved = phase(reopened, 'respond', 'reserved')
+&gt;       assert len(provider.calls) == len(reserved) == 1
+E       assert 1 == 0
+E        +  where 1 = len([[{'role': 'system', 'content': 'You drive a budgeted, tool-using modeling agent. Answer with EXACTLY ONE JSON object ...}, "parameter_overrides": {}, "segments": 0, "time_unit": "unknown", "times": [0.0, 1.0]}, "mode": "reproduction"}}'}]])
+E        +    where [[{'role': 'system', 'content': 'You drive a budgeted, tool-using modeling agent. Answer with EXACTLY ONE JSON object ...}, "parameter_overrides": {}, "segments": 0, "time_unit": "unknown", "times": [0.0, 1.0]}, "mode": "reproduction"}}'}]] = &lt;test_invocation_acceptance.Scripted object at 0x7c146f3dfe30&gt;.calls
+E        +  and   0 = len([])
+
+tests/test_invocation_acceptance.py:64: AssertionError</failure></testcase><testcase classname="tests.test_invocation_acceptance" name="test_provider_return_journal_boundary_precedes_action_handling" time="0.055"><failure message="assert (0 == 1)&#10; +  where 0 = len([])">tmp_path = PosixPath('/tmp/biomodel-t03a-before/test_provider_return_journal_b0')
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x7c13f7968620&gt;
+
+    def test_provider_return_journal_boundary_precedes_action_handling(tmp_path, monkeypatch):
+        store, source, _ = fixture(tmp_path)
+        response = act('ask_researcher', question='Confirm initial x?')
+        provider = Scripted([response])
+        def crash(*args):
+            raise SystemExit('after service return before action handling')
+        monkeypatch.setattr(agent, '_assistant', crash)
+        with pytest.raises(SystemExit):
+            run(store, source, provider)
+        returned = phase(store, 'respond', 'returned')
+&gt;       assert len(returned) == 1 and len(provider.calls) == 1
+E       assert (0 == 1)
+E        +  where 0 = len([])
+
+tests/test_invocation_acceptance.py:84: AssertionError</failure></testcase><testcase classname="tests.test_invocation_acceptance" name="test_post_run_boundary_preserves_result_ref_and_compute_reservation" time="1.379"><failure message="assert 0 == 1&#10; +  where 0 = len([])">tmp_path = PosixPath('/tmp/biomodel-t03a-before/test_post_run_boundary_preserv0')
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x7c13f7166d80&gt;
+
+    def test_post_run_boundary_preserves_result_ref_and_compute_reservation(tmp_path, monkeypatch):
+        store, source, proposal = fixture(tmp_path)
+        provider = Scripted([{'action':'submit_draft', 'args':proposal}, act('run')])
+        def crash(*args):
+            raise SystemExit('after result saved before feedback/checkpoint')
+        monkeypatch.setattr(agent, '_run_facts', crash)
+        with pytest.raises(SystemExit):
+            run(store, source, provider)
+        result_refs = store.list('run')
+        assert len(result_refs) == 1 and len(provider.calls) == 2
+        returned = phase(store, 'run', 'returned')
+&gt;       assert len(returned) == 1
+E       assert 0 == 1
+E        +  where 0 = len([])
+
+tests/test_invocation_acceptance.py:100: AssertionError</failure></testcase></testsuite></testsuites>

@@ -1,0 +1,25 @@
+{
+  "parent_run_ref": "ece282d3bc0676c8e0892d0cae1370d088945a513b6bdde276d75043f1dca486",
+  "source_ref": "6e33ce8b98fc6b446df732cff55d98f15e01cda6ef6db78e4a5d5e930e289de0",
+  "evidence_type": "synthetic scripted workflow; not an LLM performance evaluation",
+  "resumed_run_ref": "94099c1b34e7a36163a9cff055eddb4005e0b0b9d26c5529b53551fbd1bdf64b",
+  "state": "completed",
+  "call_count": 4,
+  "retry_count": 0,
+  "parent_unchanged": true,
+  "scientific_status": "not_verified",
+  "semantic_support": "unknown",
+  "values": [
+    2.0,
+    1.3406405667144519,
+    0.8986585645602239
+  ],
+  "analytic_reference": [
+    2.0,
+    1.3406400920712787,
+    0.8986579282344431
+  ],
+  "max_absolute_error": 6.363257807340261e-07,
+  "separate_process_phase": true,
+  "holdout_accessed": false
+}

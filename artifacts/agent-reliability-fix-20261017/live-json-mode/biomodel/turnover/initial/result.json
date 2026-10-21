@@ -1,0 +1,15 @@
+{
+  "status": "completed",
+  "calls": 4,
+  "tokens": 8025,
+  "questions": [],
+  "problems": [],
+  "model_ref": "d03c07016192e045dd5b1392e3c22fc88ddc4e485029fe0f9e69c867df40da75",
+  "run_ref": "a40d102d0f1ae6e2070049df6c8f83972762e8a89c25293a0b3c509cee24851e",
+  "agent_ref": "0fa0396d8503d967402cea72461e99a5ab7c585696aee936453388ca309e09c7",
+  "product_modules_sha256": "6576b32fccfcdeb47f6de998db003859c0ba3f9c9da831e42eb3155fbbe54775",
+  "system": "biomodel",
+  "case": "turnover",
+  "phase": "initial",
+  "elapsed_seconds": 42.459541845000786
+}

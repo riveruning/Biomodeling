@@ -1,0 +1,801 @@
+--- before/src/biomodel_agent/application.py
++++ dsh/src/biomodel_agent/application.py
+@@ -15,6 +15,7 @@
+ import sys
+ from datetime import datetime, timezone
+ from pathlib import Path
++from collections.abc import Mapping
+ from typing import Any
+ from uuid import uuid4
+ import math
+@@ -200,6 +201,155 @@
+             severity="warning",
+         ))
+     return ValidationReport(tuple(checks))
++
++
++# ---------------------------------------------------------------------------
++# Shared run verdict: one pure decision used by the Agent finish gate, the CLI
++# run-result exit codes, the new-run writer and the cache-reuse path, so that a
++# saved status string can never override the actual saved facts.
++# ---------------------------------------------------------------------------
++
++def _blocking_check_failures(checks: object) -> list[tuple[str, str]]:
++    """``(code, message)`` pairs of blocking checks with status 'fail'.
++
++    A *fail* is a verdict, not a missing piece of evidence: it is authoritative
++    even when other facts in the same record are unknown or absent.  unknown,
++    not_run and missing entries are deliberately not failures.
++    """
++    out: list[tuple[str, str]] = []
++    for check in checks if isinstance(checks, (list, tuple)) else ():
++        if not isinstance(check, Mapping):
++            continue
++        if check.get("severity") == "blocking" and check.get("status") == "fail":
++            out.append((str(check.get("code", "")), str(check.get("message", ""))))
++    return out
++
++
++def _blocking_checks_from_record(record: dict) -> dict:
++    """Collect blocking failure facts from one saved run record.
++
++    Inspects the *actual* stored facts (simulation state, static report,
++    numeric report, reference comparison, stored scientific status) and never
++    trusts a stored ``scientific_status`` alone.  A stored 'failed' is
++    authoritative even when the underlying facts are missing.
++    """
++    out: dict[str, list] = {}
++    if not isinstance(record, Mapping):
++        return out
++    status = record.get("status")
++    if status != "succeeded":
++        out.setdefault("execution", []).append(f"execution status is {status!r}")
++    static = record.get("static_validation")
++    static_checks = static.get("checks") if isinstance(static, Mapping) else None
++    static_failures = _blocking_check_failures(static_checks)
++    if static_failures:
++        out.setdefault("static", []).extend(f"{code}: {message}" for code, message in static_failures)
++    numeric = record.get("numeric_validation")
++    numeric_checks = numeric.get("checks") if isinstance(numeric, Mapping) else None
++    numeric_failures = _blocking_check_failures(numeric_checks)
++    if numeric_failures:
++        out.setdefault("numeric", []).extend(f"{code}: {message}" for code, message in numeric_failures)
++    comparison = record.get("comparison")
++    if isinstance(comparison, Mapping) and comparison.get("status") == "fail":
++        out.setdefault("comparison", []).append(f"max scaled error vs threshold (worst: {comparison.get('worst')!r})")
++    if record.get("scientific_status") == "failed":
++        out.setdefault("scientific", []).append("stored scientific_status is 'failed'")
++    return out
++
++
++def blocking_verdict_basis(record: dict) -> dict:
++    """The stored facts that justify a 'failed' verdict, keyed by domain.
++
++    Empty dict means no explicit failure was found.  This is the auditable
++    basis shown to callers (Agent tool facts, CLI output) so a verdict is
++    never an opaque string.
++    """
++    return _blocking_checks_from_record(record)
++
++
++def derive_scientific_status(record: dict) -> str:
++    """Recompute a run record's scientific status from its actual saved facts.
++
++    Decision order (explicit failure beats any unknown / missing provenance;
++    a single failure is never masked by other passing checks):
++
++    1. execution state != succeeded, any blocking static or numeric check
++       failure, reference comparison 'fail', or stored scientific_status
++       'failed'  ->  ``'failed'``;
++    2. otherwise  ->  ``'not_verified'``  (unknowns and missing provenance
++       stay unknown and are never promoted to pass nor auto-failed).
++
++    ``'passed_structured_reference'`` is therefore *derived only* (and thus
++    never emitted here): it requires a genuine frozen-reference pass plus
++    passing required numeric checks (non-empty, no unknown among them), and
++    in strict mode a fully supported source validation.  The new-run writer
++    may assign it; this helper only re-derives what the stored facts imply,
++    which is the conservative direction (pass -> not_verified).
++    """
++    if _blocking_checks_from_record(record):
++        return "failed"
++    return "not_verified"
++
++
++def _blocking_check_failures_dataclass(checks: object) -> list[tuple[str, str]]:
++    """Same fail rule as :func:`_blocking_check_failures` for Check objects."""
++    out: list[tuple[str, str]] = []
++    for check in checks if isinstance(checks, (list, tuple)) else ():
++        if getattr(check, "severity", None) == "blocking" and getattr(check, "status", None) == "fail":
++            out.append((str(getattr(check, "code", "")), str(getattr(check, "message", ""))))
++    return out
++
++
++def initial_scientific_status(result_status: str, static_checks: object, numeric_checks: object,
++                              comparison_status: object, source: Mapping, strict: bool) -> str:
++    """Verdict for a *new* run record, computed before anything is stored.
++
++    Failure conditions mirror :func:`derive_scientific_status` (execution not
++    succeeded, blocking static/numeric failure, comparison 'fail').  When
++    nothing failed:
++
++    - strict: ``passed_structured_reference`` only when the frozen reference
++      comparison genuinely passed, the required numeric checks (finite and,
++      when it was run, convergence) passed and were actually present, and the
++      source validation is fully supported; anything less stays
++      ``not_verified`` -- unknown provenance is never promoted to pass and
++      never auto-failed either.
++    - normal mode keeps the original semantics: a numerical pass without a
++      reference is only an honesty label, and only a reference fail or a
++      numeric failure is a fail.
++
++    ``source`` is the ``_source_validation`` mapping (its exact contents are
++    not re-read here).
++    """
++    if result_status != "succeeded":
++        return "failed"
++    if _blocking_check_failures_dataclass(static_checks) or _blocking_check_failures_dataclass(numeric_checks):
++        return "failed"
++    if comparison_status == "fail":
++        return "failed"
++    if strict:
++        required_codes = ("finite",)
++        if any(getattr(c, "code", "") == "convergence" for c in (numeric_checks or ())):
++            required_codes = required_codes + ("convergence",)
++        required_pass = [c for c in (numeric_checks or ()) if getattr(c, "code", "") in required_codes]
++        numeric_ok = bool(required_pass) and all(getattr(c, "status", "") == "pass" for c in required_pass)
++        sources_ok = (
++            isinstance(source, Mapping)
++            and source.get("status") == "complete"
++            and source.get("semantic_support") != "unknown"
++            and not source.get("units_unknown")
++        )
++        return "passed_structured_reference" if (comparison_status == "pass" and numeric_ok and sources_ok) else "not_verified"
++    if comparison_status == "pass":
++        required_codes = ("finite",)
++        if any(getattr(c, "code", "") == "convergence" for c in (numeric_checks or ())):
++            required_codes = required_codes + ("convergence",)
++        required_pass = [c for c in (numeric_checks or ()) if getattr(c, "code", "") in required_codes]
++        numeric_ok = bool(required_pass) and all(getattr(c, "status", "") == "pass" for c in required_pass)
++        if numeric_ok:
++            return "passed_structured_reference"  # numerical track, not paper fidelity
++        return "failed"
++    return "not_verified"
+ 
+ 
+ def _sbml_targets(sbml: str) -> tuple[list[str], list[str]]:
+@@ -383,7 +533,16 @@
+                 "convergence_ref": candidate.get("convergence_ref"),
+                 "environment": environment,
+                 "mode": candidate["mode"],
+-                "scientific_status": candidate.get("scientific_status", "not_verified"),
++                # Re-derive the verdict from the candidate's stored facts; its
++                # stored scientific_status string alone must not be trusted, so
++                # a cache reuse can never re-mask an explicit failure.
++                "scientific_status": derive_scientific_status({
++                    "status": candidate["status"],
++                    "static_validation": candidate.get("static_validation"),
++                    "numeric_validation": candidate.get("numeric_validation"),
++                    "comparison": candidate.get("comparison") or {"status": "not_run"},
++                    "scientific_status": candidate.get("scientific_status"),
++                }),
+             }
+             return store.put(RUN_KIND, cached, refs=(input_ref, candidate_ref))
+ 
+@@ -438,25 +597,8 @@
+             "declaration": conv_note, "result": serialization.to_dict(fine),
+         }, refs=(input_ref,))
+ 
+-    scientific = "not_verified"
+-    if result.status != "succeeded":
+-        scientific = "failed"
+-    else:
+-        numeric_ok = all(c.status == 'pass' for c in numeric.checks if c.severity == 'blocking')
+-        sources_ok = (
+-            source["status"] == "complete"
+-            and source["semantic_support"] != "unknown"
+-            and not source["units_unknown"]
+-        )
+-        if strict:
+-            if not sources_ok or comparison.get("status") != "pass" or not numeric_ok:
+-                scientific = "not_verified"
+-            else:
+-                scientific = "passed_structured_reference"
+-        elif comparison.get("status") == "pass" and numeric_ok:
+-            scientific = "passed_structured_reference"  # numerical track, not paper fidelity
+-        elif comparison.get('status') == 'fail' or not numeric_ok:
+-            scientific = 'failed'
++    scientific = initial_scientific_status(
++        result.status, static.checks, numeric.checks, comparison.get("status"), source, strict)
+ 
+     run = {
+         'run_id': str(uuid4()),
+--- before/src/biomodel_agent/agent.py
++++ dsh/src/biomodel_agent/agent.py
+@@ -80,8 +80,11 @@
+         "comparison": (run.get("comparison") or {}).get("status"),
+         "source_validation": source.get("status"),
+         "semantic_support": source.get("semantic_support"),
+-        "scientific_status": run.get("scientific_status"),
+-        "note": "pass/fail facts come from the run tool, never from the model",
++        "scientific_status": application.derive_scientific_status(run),
++        "verdict": application.derive_scientific_status(run),
++        "verdict_basis": application.blocking_verdict_basis(run),
++        "note": "pass/fail facts come from the run tool, never from the model; "
++                "a stored status string is never trusted over the actual checks",
+     }
+ 
+ 
+@@ -610,8 +613,13 @@
+                                         and finished_run.get('status') == 'completed'
+                                         and finished_run.get('completion_eligible') is True) else 'incomplete'
+             else:
++                # Technical completion requires a succeeded execution AND no
++                # explicit failure (shared verdict; stored scientific_status
++                # alone is never trusted).  Unknown provenance still never
++                # claims scientific validation.
++                verdict = application.derive_scientific_status(finished_run)
+                 state = "completed" if (finished_run.get("status") == "succeeded"
+-                                          and finished_run.get("scientific_status") != "failed") else "incomplete"
++                                          and verdict != "failed") else "incomplete"
+             break
+ 
+         if action == "ask_researcher":
+--- before/src/biomodel_agent/cli.py
++++ dsh/src/biomodel_agent/cli.py
+@@ -100,18 +100,26 @@
+ 
+ 
+ def _print_run_result(ref, store, strict: bool) -> int:
++    from .application import blocking_verdict_basis, derive_scientific_status
+     record = store.get(ref)
+     payload = record.get("payload", {}) if isinstance(record, dict) else {}
+     status = payload.get("status")
+-    scientific = payload.get("scientific_status")
++    stored_scientific = payload.get("scientific_status")
+     comparison = payload.get("comparison")
+     comp_status = comparison.get("status") if isinstance(comparison, dict) else comparison
+-    print(json.dumps({"ref": ref, "status": status, "scientific_status": scientific, "comparison": comp_status}))
+-    if status != "succeeded":
++    # Shared verdict from the actual stored facts: an explicit failure beats
++    # any stored 'not_verified' / 'unknown' string (and vice versa it can
++    # never manufacture a failure that the facts do not show).
++    verdict = derive_scientific_status(payload)
++    basis = blocking_verdict_basis(payload)
++    print(json.dumps({"ref": ref, "status": status, "scientific_status": stored_scientific,
++                      "verdict": verdict, "verdict_basis": basis, "comparison": comp_status}))
++    if verdict == "failed":
+         return 1
+-    if comp_status == "fail" or scientific == "failed":
+-        return 1
+-    if strict and scientific == "not_verified":
++    if strict and verdict != "failed" and stored_scientific != "passed_structured_reference":
++        # Strict and unverified (unknown provenance / missing comparison):
++        # exit 2, keeping the original unverified behavior while no explicit
++        # failure is present.
+         return 2
+     return 0
+ 
+--- before/tests/test_run_verdict.py
++++ dsh/tests/test_run_verdict.py
+@@ -0,0 +1,520 @@
++"""Audit T01 acceptance: explicit failure verdicts beat unknown states.
++
++Covers the shared run verdict (application.derive_scientific_status /
++blocking_verdict_basis / initial_scientific_status) through the *real* chain:
++strict-mode numeric failures, real reference mismatch, controlled convergence
++failure, unknown-check negative controls, legitimate source-unknown controls,
++old records whose stored status conflicts with their stored facts, and the
++Agent / CLI consumers of the same verdict.  All real solves use the project's
++own SBML/scientific tooling; no network.
++"""
++import math
++
++import pytest
++
++from biomodel_agent import agent, application, modeling
++from biomodel_agent.cli import _print_run_result
++from biomodel_agent.domain.contracts import (
++    ExperimentSpec,
++    ModelDraft,
++    Parameter,
++    RateRule,
++    SimulationResult,
++    State,
++)
++from biomodel_agent.storage import ArtifactStore
++
++NEGATIVE_SBML = """<?xml version="1.0" encoding="UTF-8"?>
++<sbml xmlns="http://www.sbml.org/sbml/level3/version2/core" level="3" version="2">
++  <model id="m_negative" name="m_negative">
++    <listOfCompartments><compartment id="c" constant="true" size="1.0"/></listOfCompartments>
++    <listOfSpecies>
++      <species id="x" compartment="c" initial="1.0" hasOnlySubstanceUnits="false" boundaryCondition="false" constant="false"/>
++    </listOfSpecies>
++    <listOfParameters><parameter id="k" value="0.4" constant="true"/></listOfParameters>
++    <listOfReactions><reaction id="r" reversible="false">
++      <listOfReactants><speciesReference species="x" stoichiometry="1" constant="true"/></listOfReactants>
++      <kineticLaw>
++        <formula>k</formula>
++        <listOfLocalParameters><localParameter id="k" value="k"/></listOfLocalParameters>
++      </kineticLaw>
++    </reaction></listOfReactions>
++  </model>
++</sbml>
++"""
++
++DECAY_SBML = """<?xml version="1.0" encoding="UTF-8"?>
++<sbml xmlns="http://www.sbml.org/sbml/level3/version2/core" level="3" version="2">
++  <model id="m_decay" name="m_decay">
++    <listOfCompartments><compartment id="c" constant="true" size="1.0"/></listOfCompartments>
++    <listOfSpecies>
++      <species id="x" compartment="c" initial="1.0" hasOnlySubstanceUnits="false" boundaryCondition="false" constant="false"/>
++    </listOfSpecies>
++    <listOfParameters><parameter id="d" value="0.5" constant="true"/></listOfParameters>
++    <listOfReactions><reaction id="r" reversible="false">
++      <listOfReactants><speciesReference species="x" stoichiometry="1" constant="true"/></listOfReactants>
++      <kineticLaw>
++        <formula>d * x</formula>
++        <listOfLocalParameters><localParameter id="d" value="d"/></listOfLocalParameters>
++      </kineticLaw>
++    </reaction></listOfReactions>
++  </model>
++</sbml>
++"""
++
++
++def _artifact():
++    return modeling.build_model(
++        ModelDraft("neg_const", (State("x", 1.0),), (Parameter("k", 0.4),),
++                   rate_rules=(RateRule("x", "-k"),)))
++
++
++def _decay_artifact():
++    return modeling.build_model(
++        ModelDraft("decay", (State("x", 1.0),), (Parameter("d", 0.5),),
++                   rate_rules=(RateRule("x", "-d*x"),)))
++
++
++def _numeric_checks(payload):
++    return {c["code"]: c for c in (payload.get("numeric_validation") or {}).get("checks", [])}
++
++
++# ---------------------------------------------------------------------------
++# Real-chain strict-mode numeric failure: the regression case
++# ---------------------------------------------------------------------------
++
++def test_strict_nonneg_failure_is_failed_not_masked(tmp_path):
++    """x(0)=1 with constant drain k=0.4 over [0,4] reaches -0.6: the strict
++    verdict must be 'failed' (with a numeric basis), never 'not_verified',
++    and the stored record must agree with the derived verdict."""
++    store = ArtifactStore(tmp_path / "store")
++    exp = ExperimentSpec((0.0, 4.0))
++    ref = application.run_reproduction(
++        store, _artifact(), exp, strict=True, nonnegative=("x",),
++        use_cache=False)
++    payload = store.get(ref)["payload"]
++    assert payload["status"] == "succeeded"
++    assert payload["mode"] == "strict_reproduction"
++    numeric = _numeric_checks(payload)
++    assert numeric["nonnegative"]["status"] == "fail"
++    assert numeric["nonnegative"]["severity"] == "blocking"
++    # The regression: strict must NOT collapse an explicit numeric failure
++    # into not_verified.
++    assert application.derive_scientific_status(payload) == "failed"
++    assert payload["scientific_status"] == "failed"
++    basis = application.blocking_verdict_basis(payload)
++    assert "numeric" in basis and any("nonnegative" in item for item in basis["numeric"])
++    # The same record must fail the CLI and the Agent gates.
++    assert _print_run_result(ref, store, strict=True) == 1
++    # Convergence check must not have silently turned the verdict unknown:
++    # unknown checks exist only for convergence-style non-failure gaps.
++    assert numeric["convergence"]["status"] in ("pass", "fail", "unknown")
++
++
++def test_strict_reference_mismatch_is_failed(tmp_path):
++    """Real solve of a first-order decay vs a reference that disagrees by a
++    factor of 10: strict verdict must be 'failed' on the comparison basis."""
++    store = ArtifactStore(tmp_path / "store")
++    exp = ExperimentSpec((0.0, 1.0, 2.0))
++    true_values = tuple(math.exp(-0.5 * t) for t in exp.times)
++    wrong_ref = SimulationResult("succeeded", exp.times, {"x": tuple(10.0 * v for v in true_values)})
++    ref = application.run_reproduction(
++        store, _decay_artifact(), exp, reference=wrong_ref, scales={"x": 1.0},
++        strict=True, use_cache=False)
++    payload = store.get(ref)["payload"]
++    assert payload["status"] == "succeeded"
++    assert payload["comparison"]["status"] == "fail"
++    assert application.derive_scientific_status(payload) == "failed"
++    assert payload["scientific_status"] == "failed"
++    assert "comparison" in application.blocking_verdict_basis(payload)
++    assert _print_run_result(ref, store, strict=True) == 1
++
++
++def test_controlled_convergence_failure_is_failed(tmp_path):
++    """A convergence check that genuinely fails (blocking) must drive the
++    verdict to 'failed' even though the raw execution succeeded and the
++    nonnegativity check passed.  A near-degenerate solver (very loose rtol)
++    forces the 10x refinement to disagree with the coarse run."""
++    store = ArtifactStore(tmp_path / "store")
++    exp = ExperimentSpec((0.0, 1.0))
++    from biomodel_agent.domain.contracts import SolverConfig
++
++    def simulate_stub(artifact, experiment, observations, solver):
++        if solver.rtol < 1e-7:
++            return SimulationResult(
++                "succeeded", experiment.times,
++                {"x": tuple(2.0 * math.exp(-0.5 * t) for t in experiment.times)})
++        return SimulationResult(
++            "succeeded", experiment.times,
++            {"x": tuple(math.exp(-0.5 * t) for t in experiment.times)})
++
++    monkey = pytest.MonkeyPatch()
++    monkey.setattr(application.simulation, "simulate", simulate_stub)
++    try:
++        ref = application.run_reproduction(
++            store, _decay_artifact(), exp, strict=True,
++            solver=SolverConfig(rtol=1.0), use_cache=False)
++    finally:
++        monkey.undo()
++    payload = store.get(ref)["payload"]
++    assert payload["status"] == "succeeded"
++    numeric = _numeric_checks(payload)
++    assert numeric["convergence"]["status"] == "fail"
++    assert numeric["convergence"]["severity"] == "blocking"
++    assert application.derive_scientific_status(payload) == "failed"
++    assert payload["scientific_status"] == "failed"
++    assert "numeric" in application.blocking_verdict_basis(payload)
++    assert _print_run_result(ref, store, strict=True) == 1
++
++
++# ---------------------------------------------------------------------------
++# Negative controls: unknowns stay unknown, never promoted, never auto-failed
++# ---------------------------------------------------------------------------
++
++def test_unknown_checks_stay_not_verified_and_cli_exit_2(tmp_path):
++    """Succeeded run, no explicit failure, but convergence unknown and source
++    not fully supported: verdict is 'not_verified' (not 'failed', not pass);
++    strict CLI exits 2 (unverified), non-strict exits 0 (legacy behavior)."""
++    store = ArtifactStore(tmp_path / "store")
++    exp = ExperimentSpec((0.0, 1.0))
++    ref = application.run_reproduction(
++        store, _decay_artifact(), exp, strict=True, use_cache=False)
++    payload = store.get(ref)["payload"]
++    assert payload["status"] == "succeeded"
++    numeric = _numeric_checks(payload)
++    assert numeric["convergence"]["status"] in ("unknown", "fail")
++    if numeric["convergence"]["status"] == "fail":
++        # Environment-dependent: solver refinement failed; still must be failed.
++        assert application.derive_scientific_status(payload) == "failed"
++        return
++    # No explicit failure at all: the unknown convergence must NOT be a fail.
++    assert application.derive_scientific_status(payload) == "not_verified"
++    assert application.blocking_verdict_basis(payload) == {}
++    assert payload["scientific_status"] != "passed_structured_reference"
++    assert _print_run_result(ref, store, strict=True) == 2
++    assert _print_run_result(ref, store, strict=False) == 0
++
++
++def test_source_unknown_controls_stay_not_verified(tmp_path):
++    """Legitimate source-unknown behavior is preserved: a strict run with an
++    incomplete source validation keeps not_verified (never pass, never fail),
++    while the non-strict numerical pass label is unchanged."""
++    store = ArtifactStore(tmp_path / "store")
++    exp = ExperimentSpec((0.0, 0.3, 2.0))
++    ref_result = SimulationResult("succeeded", exp.times,
++                                  {"x": tuple(math.exp(-0.5 * t) for t in exp.times)})
++    strict_ref = application.run_reproduction(
++        store, _decay_artifact(), exp, reference=ref_result, scales={"x": 1.0},
++        strict=True, use_cache=False)
++    sp = store.get(strict_ref)["payload"]
++    assert sp["comparison"]["status"] == "pass"
++    assert sp["source_validation"]["missing"]  # no source links in this artifact
++    assert sp["scientific_status"] == "not_verified"
++    assert application.derive_scientific_status(sp) == "not_verified"
++    assert application.blocking_verdict_basis(sp) == {}
++    assert _print_run_result(strict_ref, store, strict=True) == 2
++
++    norm_ref = application.run_reproduction(
++        store, _decay_artifact(), exp, reference=ref_result, scales={"x": 1.0},
++        strict=False, use_cache=False)
++    np_ = store.get(norm_ref)["payload"]
++    assert np_["comparison"]["status"] == "pass"
++    assert np_["scientific_status"] == "passed_structured_reference"
++    assert _print_run_result(norm_ref, store, strict=False) == 0
++    # Unknowns never promote: strict re-use of the same input cannot become pass.
++    assert application.derive_scientific_status(np_) == "not_verified"
++
++
++# ---------------------------------------------------------------------------
++# Old records: stored status conflicts with stored facts
++# ---------------------------------------------------------------------------
++
++def test_stored_not_verified_with_blocking_numeric_failure_is_failed(tmp_path):
++    """A saved record claiming 'not_verified' while its stored numeric checks
++    show a blocking nonnegativity failure must be re-deriving to 'failed' --
++    the stored string must not override the facts."""
++    record = {
++        "status": "succeeded",
++        "scientific_status": "not_verified",
++        "static_validation": {"checks": [], "can_execute": True},
++        "numeric_validation": {"checks": [
++            {"code": "finite", "status": "pass", "severity": "blocking", "message": ""},
++            {"code": "nonnegative", "status": "fail", "severity": "blocking",
++             "message": "'x' reached -0.6 < -1e-09"},
++            {"code": "conservation", "status": "not_run", "severity": "informational", "message": ""},
++            {"code": "convergence", "status": "unknown", "severity": "warning", "message": "not run"},
++        ]},
++        "comparison": {"status": "not_run"},
++        "source_validation": {"status": "incomplete", "semantic_support": "unknown"},
++    }
++    assert application.derive_scientific_status(record) == "failed"
++    basis = application.blocking_verdict_basis(record)
++    assert "numeric" in basis and "not_run" not in str(list(basis))
++    # Unknown convergence and not_run conservation must not appear as failures.
++    joined = " ".join(item for items in basis.values() for item in items)
++    assert "convergence" not in joined and "conservation" not in joined
++
++
++def test_stored_failed_with_unknown_facts_is_failed(tmp_path):
++    """A stored scientific_status of 'failed' with otherwise unknown/absent
++    facts is authoritative: it must not be downgraded to not_verified."""
++    record = {"status": "succeeded", "scientific_status": "failed",
++              "numeric_validation": {"checks": []},
++              "comparison": {"status": "not_run"}}
++    assert application.derive_scientific_status(record) == "failed"
++    assert "scientific" in application.blocking_verdict_basis(record)
++
++
++def test_stored_pass_with_blocking_static_failure_is_failed(tmp_path):
++    """A stored 'passed_structured_reference' whose stored static report shows
++    a blocking failure is re-derived to 'failed'."""
++    record = {
++        "status": "succeeded",
++        "scientific_status": "passed_structured_reference",
++        "static_validation": {"checks": [
++            {"code": "sbml", "status": "fail", "severity": "blocking", "message": "unreadable model"},
++        ]},
++        "numeric_validation": {"checks": [
++            {"code": "finite", "status": "pass", "severity": "blocking", "message": ""},
++        ]},
++        "comparison": {"status": "pass"},
++    }
++    assert application.derive_scientific_status(record) == "failed"
++    assert "static" in application.blocking_verdict_basis(record)
++
++
++def test_execution_status_failure_is_failed(tmp_path):
++    """Execution not succeeded is a failure regardless of other facts."""
++    assert application.derive_scientific_status({"status": "failed"}) == "failed"
++    assert application.derive_scientific_status({"status": "timed_out"}) == "failed"
++    assert application.derive_scientific_status({"status": "unsupported"}) == "failed"
++
++
++def test_clean_succeeded_record_stays_not_verified(tmp_path):
++    """No explicit failure anywhere -> not_verified (conservative, never pass)."""
++    record = {
++        "status": "succeeded",
++        "scientific_status": "not_verified",
++        "static_validation": {"checks": []},
++        "numeric_validation": {"checks": [
++            {"code": "finite", "status": "pass", "severity": "blocking", "message": ""},
++            {"code": "convergence", "status": "unknown", "severity": "warning", "message": ""},
++        ]},
++        "comparison": {"status": "not_run"},
++    }
++    assert application.derive_scientific_status(record) == "not_verified"
++    assert application.blocking_verdict_basis(record) == {}
++
++
++def test_cache_reuse_cannot_remask_explicit_failure(tmp_path):
++    """Re-derive path: a candidate that passed the numeric pre-filter but whose
++    stored static facts contain a blocking failure must not be cached as
++    'not_verified' — the derived verdict is 'failed'."""
++    store = ArtifactStore(tmp_path / "store")
++    exp = ExperimentSpec((0.0, 1.0))
++    candidate = {
++        "run_id": "cand", "input_ref": None, "mode": "strict_reproduction",
++        "status": "succeeded",
++        "static_validation": {"checks": [
++            {"code": "sbml", "status": "fail", "severity": "blocking", "message": "bad"},
++        ], "can_execute": False},
++        "numeric_validation": {"checks": [
++            {"code": "finite", "status": "pass", "severity": "blocking", "message": ""},
++            {"code": "convergence", "status": "pass", "severity": "blocking", "message": ""},
++        ]},
++        "comparison": {"status": "pass"},
++        "scientific_status": "not_verified",
++    }
++    assert application.derive_scientific_status(candidate) == "failed"
++    # The cache pre-filter on numeric checks alone passes this candidate:
++    checks = candidate["numeric_validation"]["checks"]
++    assert not any(c["status"] == "fail" and c["severity"] == "blocking" for c in checks)
++    assert all(any(c["code"] == code and c["status"] == "pass" for c in checks)
++               for code in ("finite", "convergence"))
++    # ...yet the derived verdict refuses to mask the static failure:
++    assert application.derive_scientific_status({
++        "status": candidate["status"],
++        "static_validation": candidate["static_validation"],
++        "numeric_validation": candidate["numeric_validation"],
++        "comparison": candidate["comparison"],
++        "scientific_status": candidate["scientific_status"],
++    }) == "failed"
++
++
++# ---------------------------------------------------------------------------
++# Agent completion gate reuses the shared verdict
++# ---------------------------------------------------------------------------
++
++class _Scripted:
++    last_usage = {"total_tokens": 0}
++
++    def __init__(self, actions):
++        self.actions = iter(actions)
++
++    def respond(self, messages):
++        return next(self.actions)
++
++
++def test_agent_finish_incomplete_on_stored_failed(tmp_path):
++    """Agent finish: stored scientific_status='failed' (with no underlying
++    facts) still blocks completion via the shared verdict."""
++    store = ArtifactStore(tmp_path / "store")
++    failed_ref = store.put(
++        "run",
++        {"status": "succeeded", "scientific_status": "failed",
++         "comparison": {"status": "not_run"},
++         "numeric_validation": {"checks": []},
++         "static_validation": {"checks": []}})
++    actions = [
++        {"action": "submit_draft", "args": {"draft": {}, "evidence": []}},
++        {"action": "run", "args": {}},
++        {"action": "finish", "args": {}},
++    ]
++
++    def fake_run_reproduction(*a, **kw):
++        return failed_ref
++
++    monkey = pytest.MonkeyPatch()
++    monkey.setattr(application, "run_reproduction", fake_run_reproduction)
++    try:
++        ref = agent.run_agent(store, _Scripted(actions), [], ExperimentSpec((0.0, 1.0)))
++    finally:
++        monkey.undo()
++    payload = store.get(ref)["payload"]
++    assert payload["state"] == "incomplete"
++
++
++def test_agent_finish_incomplete_on_numeric_failure_facts(tmp_path):
++    """Agent finish: even if the stored scientific_status string were the
++    non-failure 'not_verified', the stored blocking numeric failure must keep
++    the agent from completing."""
++    store = ArtifactStore(tmp_path / "store")
++    ref = application.run_reproduction(
++        store, _artifact(), ExperimentSpec((0.0, 4.0)), strict=True,
++        nonnegative=("x",), use_cache=False)
++    payload = store.get(ref)["payload"]
++    assert payload["scientific_status"] == "failed"
++    actions = [
++        {"action": "submit_draft", "args": {"draft": {}, "evidence": []}},
++        {"action": "run", "args": {}},
++        {"action": "finish", "args": {}},
++    ]
++
++    def fake_run_reproduction(*a, **kw):
++        return ref
++
++    monkey = pytest.MonkeyPatch()
++    monkey.setattr(application, "run_reproduction", fake_run_reproduction)
++    try:
++        agent_ref = agent.run_agent(store, _Scripted(actions), [], ExperimentSpec((0.0, 4.0)))
++    finally:
++        monkey.undo()
++    record = store.get(agent_ref)["payload"]
++    assert record["state"] == "incomplete"
++
++
++# ---------------------------------------------------------------------------
++# CLI exit codes reuse the shared verdict
++# ---------------------------------------------------------------------------
++
++def test_cli_exit_codes_for_failed_and_unverified(tmp_path):
++    store = ArtifactStore(tmp_path / "store")
++    # Explicit failure (comparison fail): exit 1 in both modes.
++    failed = store.put(
++        "run",
++        {"status": "succeeded", "scientific_status": "not_verified",
++         "comparison": {"status": "fail", "worst": "x[2]"},
++         "numeric_validation": {"checks": [
++             {"code": "finite", "status": "pass", "severity": "blocking", "message": ""}]},
++         "static_validation": {"checks": []}})
++    assert _print_run_result(failed, store, strict=True) == 1
++    assert _print_run_result(failed, store, strict=False) == 1
++
++    # Not succeeded: exit 1.
++    crashed = store.put("run", {"status": "failed", "scientific_status": "failed"})
++    assert _print_run_result(crashed, store, strict=False) == 1
++
++    # Strict and genuinely unverified (no explicit failure): exit 2.
++    unverified = store.put(
++        "run",
++        {"status": "succeeded", "scientific_status": "not_verified",
++         "comparison": {"status": "not_run"},
++         "numeric_validation": {"checks": [
++             {"code": "finite", "status": "pass", "severity": "blocking", "message": ""},
++             {"code": "convergence", "status": "unknown", "severity": "warning", "message": ""}]},
++         "static_validation": {"checks": []}})
++    assert _print_run_result(unverified, store, strict=True) == 2
++    assert _print_run_result(unverified, store, strict=False) == 0
++
++    # Legitimate ordinary unverified keeps original behavior: strict exit 2,
++    # non-strict exit 0.
++    ordinary = store.put(
++        "run",
++        {"status": "succeeded", "scientific_status": "not_verified",
++         "comparison": {"status": "not_run"},
++         "numeric_validation": {"checks": [
++             {"code": "finite", "status": "pass", "severity": "blocking", "message": ""}]},
++         "static_validation": {"checks": []}})
++    assert _print_run_result(ordinary, store, strict=True) == 2
++    assert _print_run_result(ordinary, store, strict=False) == 0
++
++
++# ---------------------------------------------------------------------------
++# Shared verdict unit checks (direct, no I/O)
++# ---------------------------------------------------------------------------
++
++def test_verdict_priority_and_basis_shape():
++    from biomodel_agent.application import (
++        Check,
++        ValidationReport,
++        blocking_verdict_basis,
++        derive_scientific_status,
++        initial_scientific_status,
++    )
++
++    ok_source = {"status": "complete", "semantic_support": "supported", "units_unknown": False}
++    bad_source = {"status": "incomplete", "semantic_support": "unknown", "units_unknown": True}
++
++    # 1. explicit failure beats everything, including a pass-looking comparison.
++    r1 = derive_scientific_status({
++        "status": "succeeded", "scientific_status": "not_verified",
++        "static_validation": {"checks": []},
++        "numeric_validation": {"checks": [
++            {"code": "finite", "status": "pass", "severity": "blocking", "message": ""},
++            {"code": "nonnegative", "status": "fail", "severity": "blocking", "message": "neg"}]},
++        "comparison": {"status": "pass"},
++    })
++    assert r1 == "failed"
++
++    # 2. no failure, missing provenance -> not_verified, empty basis.
++    r2 = derive_scientific_status({
++        "status": "succeeded", "scientific_status": "not_verified",
++        "numeric_validation": {"checks": [
++            {"code": "finite", "status": "pass", "severity": "blocking", "message": ""}]},
++        "comparison": {"status": "not_run"},
++    })
++    assert r2 == "not_verified" and blocking_verdict_basis({"status": "succeeded"}) == {}
++
++    # 3. non-blocking/warning fails are not failures.
++    r3 = derive_scientific_status({
++        "status": "succeeded",
++        "numeric_validation": {"checks": [
++            {"code": "convergence", "status": "fail", "severity": "warning", "message": ""}]},
++        "comparison": {"status": "not_run"},
++    })
++    assert r3 == "not_verified"
++
++    # 4. initial status: strict pass requires real comparison + required
++    #    numeric pass + supported sources; unknown source -> not_verified.
++    numeric_ok = ValidationReport((
++        Check("finite", "pass", severity="blocking"),
++        Check("convergence", "pass", severity="blocking"),
++    ))
++    assert initial_scientific_status("succeeded", (), numeric_ok, "pass", ok_source, True) == "passed_structured_reference"
++    assert initial_scientific_status("succeeded", (), numeric_ok, "pass", bad_source, True) == "not_verified"
++    assert initial_scientific_status("succeeded", (), numeric_ok, "not_run", ok_source, True) == "not_verified"
++    # Normal mode: numerical pass label; reference fail is a failure.
++    assert initial_scientific_status("succeeded", (), numeric_ok, "pass", bad_source, False) == "passed_structured_reference"
++    assert initial_scientific_status("succeeded", (), numeric_ok, "fail", ok_source, False) == "failed"
++    # Execution failure dominates.
++    assert initial_scientific_status("failed", (), (), "pass", ok_source, True) == "failed"

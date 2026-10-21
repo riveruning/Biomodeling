@@ -1,0 +1,28 @@
+{
+  "id": "chatcmpl-d666c456-9f60-4e96-b672-3d196e976a81",
+  "created": 1792238190,
+  "model": "qwen3.8-chat",
+  "object": "chat.completion",
+  "choices": [
+    {
+      "finish_reason": "stop",
+      "index": 0,
+      "message": {
+        "content": "{\"action\": \"inspect_source\", \"args\": {\"source_ref\": \"ff71e00473153e250b83990d2345c445d334136570770507391813e9fef16fa3\", \"page\": 1, \"start\": 0, \"end\": 451}, \"reason\": \"Read the only source page to understand the model to reproduce.\"}",
+        "role": "assistant",
+        "provider_specific_fields": {
+          "refusal": null
+        }
+      },
+      "provider_specific_fields": {}
+    }
+  ],
+  "usage": {
+    "completion_tokens": 114,
+    "prompt_tokens": 913,
+    "total_tokens": 1027,
+    "prompt_tokens_details": {
+      "cached_tokens": 0
+    }
+  }
+}

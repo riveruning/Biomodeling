@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="3" skipped="0" tests="4" time="0.719" timestamp="2026-10-20T08:56:32.842472+08:00" hostname="LAPTOP-2QUP5P60"><testcase classname="tests.test_system_comparison" name="test_unknown_execution_does_not_become_confirmed_overblocking" time="0.190"><failure message="assert True is None">system = &lt;module 'system_comparison_test' from '/home/riveruning/biologymodel_agent/benchmarks/development/system_comparison.py'&gt;
+tmp_path = PosixPath('/tmp/t08d1-boundary/test_unknown_execution_does_no0')
+
+    def test_unknown_execution_does_not_become_confirmed_overblocking(system, tmp_path):
+        m, r, *_ = imported(system, tmp_path, state='awaiting_input')
+        result = next(x for x in system.score(m, [r])['rows'] if x['id'] == r['trial']['id'])
+&gt;       assert result['metrics']['overblocking']['value'] is None
+E       assert True is None
+
+tests/test_system_comparison.py:338: AssertionError</failure></testcase><testcase classname="tests.test_system_comparison" name="test_utf16_native_stream_is_outside_utf8_profile" time="0.025"><failure message="AssertionError: assert 'incomplete_events' == 'invalid_events'&#10;  &#10;  - invalid_events&#10;  + incomplete_events">system = &lt;module 'system_comparison_test' from '/home/riveruning/biologymodel_agent/benchmarks/development/system_comparison.py'&gt;
+
+    def test_utf16_native_stream_is_outside_utf8_profile(system):
+        raw = json.dumps(events()[0]).encode('utf-16')+b'\n'
+&gt;       assert system.native.parse_events(raw)['status'] == 'invalid_events'
+E       AssertionError: assert 'incomplete_events' == 'invalid_events'
+E         
+E         - invalid_events
+E         + incomplete_events
+
+tests/test_system_comparison.py:343: AssertionError</failure></testcase><testcase classname="tests.test_system_comparison" name="test_malformed_artifact_metadata_is_invalid_in_fixed_denominator" time="0.160"><failure message="AssertionError: assert 'finished' == 'invalid_record'&#10;  &#10;  - invalid_record&#10;  + finished">system = &lt;module 'system_comparison_test' from '/home/riveruning/biologymodel_agent/benchmarks/development/system_comparison.py'&gt;
+tmp_path = PosixPath('/tmp/t08d1-boundary/test_malformed_artifact_metada0')
+
+    def test_malformed_artifact_metadata_is_invalid_in_fixed_denominator(system, tmp_path):
+        m, r, *_ = imported(system, tmp_path)
+        r['observation']['artifacts'] = [{'path': '../operator-answer', 'role': 'program', 'sha256': '0'*64}]
+        result = next(x for x in system.score(m, [r])['rows'] if x['id'] == r['trial']['id'])
+&gt;       assert result['status'] == 'invalid_record'
+E       AssertionError: assert 'finished' == 'invalid_record'
+E         
+E         - invalid_record
+E         + finished
+
+tests/test_system_comparison.py:350: AssertionError</failure></testcase><testcase classname="tests.test_system_comparison" name="test_cross_case_native_session_reuse_cannot_fake_independent_runs" time="0.237" /></testsuite></testsuites>

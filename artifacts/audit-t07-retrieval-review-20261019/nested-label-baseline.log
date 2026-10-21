@@ -1,0 +1,15 @@
+F                                                                        [100%]
+=================================== FAILURES ===================================
+________ test_source_page_cannot_smuggle_annotations_in_extra_metadata _________
+
+    def test_source_page_cannot_smuggle_annotations_in_extra_metadata():
+        p = packet(); source = p['cases'][0]['sources'][0]
+        source['pages'][0]['reviewer_answer'] = 'PRIVATE_ANNOTATION_MUST_NOT_ENTER_SOURCE_STORE'
+        source['pages_sha256'] = review.digest(source['pages'])
+>       with pytest.raises(ValueError, match='page fields'):
+E       Failed: DID NOT RAISE ValueError
+
+tests/test_retrieval_review_acceptance.py:296: Failed
+=========================== short test summary info ============================
+FAILED tests/test_retrieval_review_acceptance.py::test_source_page_cannot_smuggle_annotations_in_extra_metadata
+1 failed in 0.07s

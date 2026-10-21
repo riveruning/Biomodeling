@@ -1,0 +1,28 @@
+{
+  "id": "chatcmpl-b0f3fbc2-97cd-454e-9f3b-3b5eed08d8eb",
+  "created": 1792238848,
+  "model": "qwen3.8-chat",
+  "object": "chat.completion",
+  "choices": [
+    {
+      "finish_reason": "stop",
+      "index": 0,
+      "message": {
+        "content": "{\"action\": \"submit_draft\", \"args\": {\"draft\": {\"compartment\": {\"id\": \"C\", \"size\": 1, \"unit\": \"dimensionless\"}, \"derived\": [], \"id\": \"model\", \"parameters\": [{\"id\": \"k\", \"origin\": \"analyst\", \"unit\": \"1/min\", \"value\": 0.4}], \"rate_rules\": [{\"expression\": \"-k*A\", \"state\": \"A\"}], \"reactions\": [], \"states\": [{\"id\": \"A\", \"initial\": 2.0, \"nonnegative\": false, \"quantity_kind\": \"variable\", \"unit\": \"dimensionless\"}], \"time_unit\": \"minutes\"}, \"evidence\": [{\"quote\": \"Time t is in minutes.\", \"source_ref\": \"67668fbf6be1f7923521170a4373f3abee16091d28a76da28be1d682076d3db5\", \"target\": \"time_unit\"}, {\"quote\": \"The fixed compartment has size 1 dimensionless.\", \"source_ref\": \"67668fbf6be1f7923521170a4373f3abee16091d28a76da28be1d682076d3db5\", \"target\": \"C/size\"}, {\"quote\": \"Initial A = 2.0.\", \"source_ref\": \"67668fbf6be1f7923521170a4373f3abee16091d28a76da28be1d682076d3db5\", \"target\": \"A/initial\"}, {\"quote\": \"Parameter k = 0.4.\", \"source_ref\": \"67668fbf6be1f7923521170a4373f3abee16091d28a76da28be1d682076d3db5\", \"target\": \"k/value\"}, {\"quote\": \"Equation dA/dt = -k*A.\", \"source_ref\": \"67668fbf6be1f7923521170a4373f3abee16091d28a76da28be1d682076d3db5\", \"target\": \"rule:A/expression\"}], \"mechanism\": \"First-order decay of A\"}, \"reason\": \"Source fully specifies a single ODE model; submit draft.\"}",
+        "role": "assistant",
+        "provider_specific_fields": {
+          "refusal": null
+        }
+      },
+      "provider_specific_fields": {}
+    }
+  ],
+  "usage": {
+    "completion_tokens": 591,
+    "prompt_tokens": 1340,
+    "total_tokens": 1931,
+    "prompt_tokens_details": {
+      "cached_tokens": 0
+    }
+  }
+}

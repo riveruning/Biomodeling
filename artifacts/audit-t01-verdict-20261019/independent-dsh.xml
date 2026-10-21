@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="3" skipped="0" tests="11" time="9.763" timestamp="2026-10-19T10:26:32.745202+08:00" hostname="LAPTOP-2QUP5P60"><testcase classname="artifacts.audit-t01-verdict-20261019.test_independent_acceptance" name="test_real_negative_result_cannot_complete_or_lose_failure" time="1.507" /><testcase classname="artifacts.audit-t01-verdict-20261019.test_independent_acceptance" name="test_real_strict_reference_failure_is_failed_even_with_unknown_sources" time="1.001" /><testcase classname="artifacts.audit-t01-verdict-20261019.test_independent_acceptance" name="test_controlled_convergence_failure_wins_over_missing_source" time="0.503" /><testcase classname="artifacts.audit-t01-verdict-20261019.test_independent_acceptance" name="test_unknown_validation_is_not_a_failure_or_a_pass" time="0.929" /><testcase classname="artifacts.audit-t01-verdict-20261019.test_independent_acceptance" name="test_legacy_unknown_label_does_not_hide_explicit_failure[numeric]" time="0.209" /><testcase classname="artifacts.audit-t01-verdict-20261019.test_independent_acceptance" name="test_legacy_unknown_label_does_not_hide_explicit_failure[static]" time="0.207" /><testcase classname="artifacts.audit-t01-verdict-20261019.test_independent_acceptance" name="test_legacy_unknown_label_does_not_hide_explicit_failure[comparison]" time="0.225" /><testcase classname="artifacts.audit-t01-verdict-20261019.test_independent_acceptance" name="test_valid_but_unreviewed_run_remains_technically_complete" time="1.030" /><testcase classname="artifacts.audit-t01-verdict-20261019.test_independent_acceptance" name="test_valid_reference_pass_survives_cache_and_agent_summary" time="0.892"><failure message="AssertionError: assert 'not_verified' == 'passed_structured_reference'&#10;  &#10;  - passed_structured_reference&#10;  + not_verified">tmp_path = PosixPath('/tmp/biomodel-t01-independent-dsh/test_valid_reference_pass_surv0')
+
+    def test_valid_reference_pass_survives_cache_and_agent_summary(tmp_path):
+        store = ArtifactStore(tmp_path)
+        _, draft, _ = proposal(store)
+        exp = ExperimentSpec((0.,1.))
+        reference = SimulationResult('succeeded',exp.times,{'x':(1.,math.exp(-.4))})
+        artifact = modeling.build_model(draft)
+        original = application.run_reproduction(store, artifact, exp, reference=reference, scales={'x':1.})
+        cached = application.run_reproduction(store, artifact, exp, reference=reference, scales={'x':1.})
+        for ref in (original,cached):
+            run = store.get(ref)['payload']
+            assert run['scientific_status']=='passed_structured_reference'
+&gt;           assert agent._run_facts(run)['scientific_status']=='passed_structured_reference'
+E           AssertionError: assert 'not_verified' == 'passed_structured_reference'
+E             
+E             - passed_structured_reference
+E             + not_verified
+
+artifacts/audit-t01-verdict-20261019/test_independent_acceptance.py:136: AssertionError</failure></testcase><testcase classname="artifacts.audit-t01-verdict-20261019.test_independent_acceptance" name="test_reference_pass_with_missing_or_unknown_numeric_validation_stays_unknown[checks0]" time="0.896"><failure message="AssertionError: assert 'failed' == 'not_verified'&#10;  &#10;  - not_verified&#10;  + failed">tmp_path = PosixPath('/tmp/biomodel-t01-independent-dsh/test_reference_pass_with_missi0')
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x76bff8389340&gt;
+checks = ()
+
+    @pytest.mark.parametrize('checks', [(), (Check('finite','pass','finite'),
+        Check('convergence','unknown','not established',severity='blocking'))])
+    def test_reference_pass_with_missing_or_unknown_numeric_validation_stays_unknown(tmp_path, monkeypatch, checks):
+        store = ArtifactStore(tmp_path)
+        _, draft, _ = proposal(store)
+        exp = ExperimentSpec((0.,1.))
+        monkeypatch.setattr(application, '_numeric_report', lambda *a,**kw:ValidationReport(checks))
+        ref = application.run_reproduction(store, modeling.build_model(draft), exp,
+            reference=SimulationResult('succeeded',exp.times,{'x':(1.,math.exp(-.4))}),scales={'x':1.},use_cache=False)
+        assert store.get(ref)['payload']['comparison']['status']=='pass'
+&gt;       assert store.get(ref)['payload']['scientific_status']=='not_verified'
+E       AssertionError: assert 'failed' == 'not_verified'
+E         
+E         - not_verified
+E         + failed
+
+artifacts/audit-t01-verdict-20261019/test_independent_acceptance.py:150: AssertionError</failure></testcase><testcase classname="artifacts.audit-t01-verdict-20261019.test_independent_acceptance" name="test_reference_pass_with_missing_or_unknown_numeric_validation_stays_unknown[checks1]" time="0.897"><failure message="AssertionError: assert 'failed' == 'not_verified'&#10;  &#10;  - not_verified&#10;  + failed">tmp_path = PosixPath('/tmp/biomodel-t01-independent-dsh/test_reference_pass_with_missi1')
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x76bff7b6bb30&gt;
+checks = (Check(code='finite', status='pass', message='finite', severity='blocking'), Check(code='convergence', status='unknown', message='not established', severity='blocking'))
+
+    @pytest.mark.parametrize('checks', [(), (Check('finite','pass','finite'),
+        Check('convergence','unknown','not established',severity='blocking'))])
+    def test_reference_pass_with_missing_or_unknown_numeric_validation_stays_unknown(tmp_path, monkeypatch, checks):
+        store = ArtifactStore(tmp_path)
+        _, draft, _ = proposal(store)
+        exp = ExperimentSpec((0.,1.))
+        monkeypatch.setattr(application, '_numeric_report', lambda *a,**kw:ValidationReport(checks))
+        ref = application.run_reproduction(store, modeling.build_model(draft), exp,
+            reference=SimulationResult('succeeded',exp.times,{'x':(1.,math.exp(-.4))}),scales={'x':1.},use_cache=False)
+        assert store.get(ref)['payload']['comparison']['status']=='pass'
+&gt;       assert store.get(ref)['payload']['scientific_status']=='not_verified'
+E       AssertionError: assert 'failed' == 'not_verified'
+E         
+E         - not_verified
+E         + failed
+
+artifacts/audit-t01-verdict-20261019/test_independent_acceptance.py:150: AssertionError</failure></testcase></testsuite></testsuites>

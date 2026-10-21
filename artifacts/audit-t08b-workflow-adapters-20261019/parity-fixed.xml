@@ -1,0 +1,652 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="22" skipped="0" tests="23" time="2.958" timestamp="2026-10-19T21:12:38.834072+08:00" hostname="LAPTOP-2QUP5P60"><testcase classname="tests.test_workflow_adapters" name="test_each_workflow_runs_real_shared_scientific_backend[fixed_workflow]" time="1.082"><failure message="FileExistsError: [Errno 17] File exists: '/tmp/biomodel-t08b-parity-fixed/test_each_workflow_runs_real_s0/phase'">adapters = &lt;module 'workflow_adapters_acceptance' from '/home/riveruning/biologymodel_agent/benchmarks/development/workflow_adapters.py'&gt;
+tmp_path = PosixPath('/tmp/biomodel-t08b-parity-fixed/test_each_workflow_runs_real_s0')
+workflow = 'fixed_workflow'
+
+    @pytest.mark.parametrize('workflow',['fixed_workflow','generic_tool_agent','domain_agent'])
+    def test_each_workflow_runs_real_shared_scientific_backend(adapters,tmp_path,workflow):
+        p=projection(adapters,workflow)
+&gt;       result=adapters.run_trial(p,EnvelopeTransport(p,complete_actions(workflow)),tmp_path/'phase')
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_workflow_adapters.py:93: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+benchmarks/development/workflow_adapters.py:419: in run_trial
+    directory.mkdir(parents=True,exist_ok=False); _write(directory/'input.json',p)
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = PosixPath('/tmp/biomodel-t08b-parity-fixed/test_each_workflow_runs_real_s0/phase')
+mode = 511, parents = True, exist_ok = False
+
+    def mkdir(self, mode=0o777, parents=False, exist_ok=False):
+        """
+        Create a new directory at this given path.
+        """
+        try:
+&gt;           os.mkdir(self, mode)
+E           FileExistsError: [Errno 17] File exists: '/tmp/biomodel-t08b-parity-fixed/test_each_workflow_runs_real_s0/phase'
+
+/usr/lib/python3.12/pathlib.py:1313: FileExistsError</failure></testcase><testcase classname="tests.test_workflow_adapters" name="test_each_workflow_runs_real_shared_scientific_backend[generic_tool_agent]" time="0.056"><failure message="FileExistsError: [Errno 17] File exists: '/tmp/biomodel-t08b-parity-fixed/test_each_workflow_runs_real_s1/phase'">adapters = &lt;module 'workflow_adapters_acceptance' from '/home/riveruning/biologymodel_agent/benchmarks/development/workflow_adapters.py'&gt;
+tmp_path = PosixPath('/tmp/biomodel-t08b-parity-fixed/test_each_workflow_runs_real_s1')
+workflow = 'generic_tool_agent'
+
+    @pytest.mark.parametrize('workflow',['fixed_workflow','generic_tool_agent','domain_agent'])
+    def test_each_workflow_runs_real_shared_scientific_backend(adapters,tmp_path,workflow):
+        p=projection(adapters,workflow)
+&gt;       result=adapters.run_trial(p,EnvelopeTransport(p,complete_actions(workflow)),tmp_path/'phase')
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_workflow_adapters.py:93: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+benchmarks/development/workflow_adapters.py:419: in run_trial
+    directory.mkdir(parents=True,exist_ok=False); _write(directory/'input.json',p)
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = PosixPath('/tmp/biomodel-t08b-parity-fixed/test_each_workflow_runs_real_s1/phase')
+mode = 511, parents = True, exist_ok = False
+
+    def mkdir(self, mode=0o777, parents=False, exist_ok=False):
+        """
+        Create a new directory at this given path.
+        """
+        try:
+&gt;           os.mkdir(self, mode)
+E           FileExistsError: [Errno 17] File exists: '/tmp/biomodel-t08b-parity-fixed/test_each_workflow_runs_real_s1/phase'
+
+/usr/lib/python3.12/pathlib.py:1313: FileExistsError</failure></testcase><testcase classname="tests.test_workflow_adapters" name="test_each_workflow_runs_real_shared_scientific_backend[domain_agent]" time="0.056"><failure message="FileExistsError: [Errno 17] File exists: '/tmp/biomodel-t08b-parity-fixed/test_each_workflow_runs_real_s2/phase'">adapters = &lt;module 'workflow_adapters_acceptance' from '/home/riveruning/biologymodel_agent/benchmarks/development/workflow_adapters.py'&gt;
+tmp_path = PosixPath('/tmp/biomodel-t08b-parity-fixed/test_each_workflow_runs_real_s2')
+workflow = 'domain_agent'
+
+    @pytest.mark.parametrize('workflow',['fixed_workflow','generic_tool_agent','domain_agent'])
+    def test_each_workflow_runs_real_shared_scientific_backend(adapters,tmp_path,workflow):
+        p=projection(adapters,workflow)
+&gt;       result=adapters.run_trial(p,EnvelopeTransport(p,complete_actions(workflow)),tmp_path/'phase')
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_workflow_adapters.py:93: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+benchmarks/development/workflow_adapters.py:419: in run_trial
+    directory.mkdir(parents=True,exist_ok=False); _write(directory/'input.json',p)
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = PosixPath('/tmp/biomodel-t08b-parity-fixed/test_each_workflow_runs_real_s2/phase')
+mode = 511, parents = True, exist_ok = False
+
+    def mkdir(self, mode=0o777, parents=False, exist_ok=False):
+        """
+        Create a new directory at this given path.
+        """
+        try:
+&gt;           os.mkdir(self, mode)
+E           FileExistsError: [Errno 17] File exists: '/tmp/biomodel-t08b-parity-fixed/test_each_workflow_runs_real_s2/phase'
+
+/usr/lib/python3.12/pathlib.py:1313: FileExistsError</failure></testcase><testcase classname="tests.test_workflow_adapters" name="test_actual_original_task_resumption_uses_new_source_and_remaining_budget[fixed_workflow]" time="0.057"><failure message="FileExistsError: [Errno 17] File exists: '/tmp/biomodel-t08b-parity-fixed/test_actual_original_task_resu0/initial'">adapters = &lt;module 'workflow_adapters_acceptance' from '/home/riveruning/biologymodel_agent/benchmarks/development/workflow_adapters.py'&gt;
+tmp_path = PosixPath('/tmp/biomodel-t08b-parity-fixed/test_actual_original_task_resu0')
+workflow = 'fixed_workflow'
+
+    @pytest.mark.parametrize('workflow',['fixed_workflow','generic_tool_agent','domain_agent'])
+    def test_actual_original_task_resumption_uses_new_source_and_remaining_budget(adapters,tmp_path,workflow):
+        first=projection(adapters,workflow,'translation')
+        ask=action('ask_researcher',{'question':'What is the initial P value?'})
+        actions=[ask] if workflow=='fixed_workflow' else [read_action,ask]
+&gt;       before=adapters.run_trial(first,EnvelopeTransport(first,actions),tmp_path/'initial')
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_workflow_adapters.py:112: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+benchmarks/development/workflow_adapters.py:419: in run_trial
+    directory.mkdir(parents=True,exist_ok=False); _write(directory/'input.json',p)
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = PosixPath('/tmp/biomodel-t08b-parity-fixed/test_actual_original_task_resu0/initial')
+mode = 511, parents = True, exist_ok = False
+
+    def mkdir(self, mode=0o777, parents=False, exist_ok=False):
+        """
+        Create a new directory at this given path.
+        """
+        try:
+&gt;           os.mkdir(self, mode)
+E           FileExistsError: [Errno 17] File exists: '/tmp/biomodel-t08b-parity-fixed/test_actual_original_task_resu0/initial'
+
+/usr/lib/python3.12/pathlib.py:1313: FileExistsError</failure></testcase><testcase classname="tests.test_workflow_adapters" name="test_actual_original_task_resumption_uses_new_source_and_remaining_budget[generic_tool_agent]" time="0.056"><failure message="FileExistsError: [Errno 17] File exists: '/tmp/biomodel-t08b-parity-fixed/test_actual_original_task_resu1/initial'">adapters = &lt;module 'workflow_adapters_acceptance' from '/home/riveruning/biologymodel_agent/benchmarks/development/workflow_adapters.py'&gt;
+tmp_path = PosixPath('/tmp/biomodel-t08b-parity-fixed/test_actual_original_task_resu1')
+workflow = 'generic_tool_agent'
+
+    @pytest.mark.parametrize('workflow',['fixed_workflow','generic_tool_agent','domain_agent'])
+    def test_actual_original_task_resumption_uses_new_source_and_remaining_budget(adapters,tmp_path,workflow):
+        first=projection(adapters,workflow,'translation')
+        ask=action('ask_researcher',{'question':'What is the initial P value?'})
+        actions=[ask] if workflow=='fixed_workflow' else [read_action,ask]
+&gt;       before=adapters.run_trial(first,EnvelopeTransport(first,actions),tmp_path/'initial')
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_workflow_adapters.py:112: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+benchmarks/development/workflow_adapters.py:419: in run_trial
+    directory.mkdir(parents=True,exist_ok=False); _write(directory/'input.json',p)
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = PosixPath('/tmp/biomodel-t08b-parity-fixed/test_actual_original_task_resu1/initial')
+mode = 511, parents = True, exist_ok = False
+
+    def mkdir(self, mode=0o777, parents=False, exist_ok=False):
+        """
+        Create a new directory at this given path.
+        """
+        try:
+&gt;           os.mkdir(self, mode)
+E           FileExistsError: [Errno 17] File exists: '/tmp/biomodel-t08b-parity-fixed/test_actual_original_task_resu1/initial'
+
+/usr/lib/python3.12/pathlib.py:1313: FileExistsError</failure></testcase><testcase classname="tests.test_workflow_adapters" name="test_actual_original_task_resumption_uses_new_source_and_remaining_budget[domain_agent]" time="0.061"><failure message="FileExistsError: [Errno 17] File exists: '/tmp/biomodel-t08b-parity-fixed/test_actual_original_task_resu2/initial'">adapters = &lt;module 'workflow_adapters_acceptance' from '/home/riveruning/biologymodel_agent/benchmarks/development/workflow_adapters.py'&gt;
+tmp_path = PosixPath('/tmp/biomodel-t08b-parity-fixed/test_actual_original_task_resu2')
+workflow = 'domain_agent'
+
+    @pytest.mark.parametrize('workflow',['fixed_workflow','generic_tool_agent','domain_agent'])
+    def test_actual_original_task_resumption_uses_new_source_and_remaining_budget(adapters,tmp_path,workflow):
+        first=projection(adapters,workflow,'translation')
+        ask=action('ask_researcher',{'question':'What is the initial P value?'})
+        actions=[ask] if workflow=='fixed_workflow' else [read_action,ask]
+&gt;       before=adapters.run_trial(first,EnvelopeTransport(first,actions),tmp_path/'initial')
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_workflow_adapters.py:112: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+benchmarks/development/workflow_adapters.py:419: in run_trial
+    directory.mkdir(parents=True,exist_ok=False); _write(directory/'input.json',p)
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = PosixPath('/tmp/biomodel-t08b-parity-fixed/test_actual_original_task_resu2/initial')
+mode = 511, parents = True, exist_ok = False
+
+    def mkdir(self, mode=0o777, parents=False, exist_ok=False):
+        """
+        Create a new directory at this given path.
+        """
+        try:
+&gt;           os.mkdir(self, mode)
+E           FileExistsError: [Errno 17] File exists: '/tmp/biomodel-t08b-parity-fixed/test_actual_original_task_resu2/initial'
+
+/usr/lib/python3.12/pathlib.py:1313: FileExistsError</failure></testcase><testcase classname="tests.test_workflow_adapters" name="test_scripted_projection_does_not_leak_rubric_or_later_reply_to_provider" time="0.057"><failure message="FileExistsError: [Errno 17] File exists: '/tmp/biomodel-t08b-parity-fixed/test_scripted_projection_does_0/run'">adapters = &lt;module 'workflow_adapters_acceptance' from '/home/riveruning/biologymodel_agent/benchmarks/development/workflow_adapters.py'&gt;
+tmp_path = PosixPath('/tmp/biomodel-t08b-parity-fixed/test_scripted_projection_does_0')
+
+    def test_scripted_projection_does_not_leak_rubric_or_later_reply_to_provider(adapters,tmp_path):
+        p=projection(adapters)
+&gt;       out=adapters.run_trial(p,EnvelopeTransport(p,complete_actions('domain_agent')),tmp_path/'run')
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_workflow_adapters.py:130: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+benchmarks/development/workflow_adapters.py:419: in run_trial
+    directory.mkdir(parents=True,exist_ok=False); _write(directory/'input.json',p)
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = PosixPath('/tmp/biomodel-t08b-parity-fixed/test_scripted_projection_does_0/run')
+mode = 511, parents = True, exist_ok = False
+
+    def mkdir(self, mode=0o777, parents=False, exist_ok=False):
+        """
+        Create a new directory at this given path.
+        """
+        try:
+&gt;           os.mkdir(self, mode)
+E           FileExistsError: [Errno 17] File exists: '/tmp/biomodel-t08b-parity-fixed/test_scripted_projection_does_0/run'
+
+/usr/lib/python3.12/pathlib.py:1313: FileExistsError</failure></testcase><testcase classname="tests.test_workflow_adapters" name="test_tool_budget_stops_before_scientific_execution[fixed_workflow]" time="0.054"><failure message="FileExistsError: [Errno 17] File exists: '/tmp/biomodel-t08b-parity-fixed/test_tool_budget_stops_before_0/run'">adapters = &lt;module 'workflow_adapters_acceptance' from '/home/riveruning/biologymodel_agent/benchmarks/development/workflow_adapters.py'&gt;
+tmp_path = PosixPath('/tmp/biomodel-t08b-parity-fixed/test_tool_budget_stops_before_0')
+workflow = 'fixed_workflow'
+
+    @pytest.mark.parametrize('workflow',['fixed_workflow','generic_tool_agent','domain_agent'])
+    def test_tool_budget_stops_before_scientific_execution(adapters,tmp_path,workflow):
+        p=projection(adapters,workflow); p['budget']['max_tool_calls']=2
+&gt;       out=adapters.run_trial(p,EnvelopeTransport(p,complete_actions(workflow)),tmp_path/'run')
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_workflow_adapters.py:141: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+benchmarks/development/workflow_adapters.py:419: in run_trial
+    directory.mkdir(parents=True,exist_ok=False); _write(directory/'input.json',p)
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = PosixPath('/tmp/biomodel-t08b-parity-fixed/test_tool_budget_stops_before_0/run')
+mode = 511, parents = True, exist_ok = False
+
+    def mkdir(self, mode=0o777, parents=False, exist_ok=False):
+        """
+        Create a new directory at this given path.
+        """
+        try:
+&gt;           os.mkdir(self, mode)
+E           FileExistsError: [Errno 17] File exists: '/tmp/biomodel-t08b-parity-fixed/test_tool_budget_stops_before_0/run'
+
+/usr/lib/python3.12/pathlib.py:1313: FileExistsError</failure></testcase><testcase classname="tests.test_workflow_adapters" name="test_tool_budget_stops_before_scientific_execution[generic_tool_agent]" time="0.056"><failure message="FileExistsError: [Errno 17] File exists: '/tmp/biomodel-t08b-parity-fixed/test_tool_budget_stops_before_1/run'">adapters = &lt;module 'workflow_adapters_acceptance' from '/home/riveruning/biologymodel_agent/benchmarks/development/workflow_adapters.py'&gt;
+tmp_path = PosixPath('/tmp/biomodel-t08b-parity-fixed/test_tool_budget_stops_before_1')
+workflow = 'generic_tool_agent'
+
+    @pytest.mark.parametrize('workflow',['fixed_workflow','generic_tool_agent','domain_agent'])
+    def test_tool_budget_stops_before_scientific_execution(adapters,tmp_path,workflow):
+        p=projection(adapters,workflow); p['budget']['max_tool_calls']=2
+&gt;       out=adapters.run_trial(p,EnvelopeTransport(p,complete_actions(workflow)),tmp_path/'run')
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_workflow_adapters.py:141: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+benchmarks/development/workflow_adapters.py:419: in run_trial
+    directory.mkdir(parents=True,exist_ok=False); _write(directory/'input.json',p)
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = PosixPath('/tmp/biomodel-t08b-parity-fixed/test_tool_budget_stops_before_1/run')
+mode = 511, parents = True, exist_ok = False
+
+    def mkdir(self, mode=0o777, parents=False, exist_ok=False):
+        """
+        Create a new directory at this given path.
+        """
+        try:
+&gt;           os.mkdir(self, mode)
+E           FileExistsError: [Errno 17] File exists: '/tmp/biomodel-t08b-parity-fixed/test_tool_budget_stops_before_1/run'
+
+/usr/lib/python3.12/pathlib.py:1313: FileExistsError</failure></testcase><testcase classname="tests.test_workflow_adapters" name="test_tool_budget_stops_before_scientific_execution[domain_agent]" time="0.058"><failure message="FileExistsError: [Errno 17] File exists: '/tmp/biomodel-t08b-parity-fixed/test_tool_budget_stops_before_2/run'">adapters = &lt;module 'workflow_adapters_acceptance' from '/home/riveruning/biologymodel_agent/benchmarks/development/workflow_adapters.py'&gt;
+tmp_path = PosixPath('/tmp/biomodel-t08b-parity-fixed/test_tool_budget_stops_before_2')
+workflow = 'domain_agent'
+
+    @pytest.mark.parametrize('workflow',['fixed_workflow','generic_tool_agent','domain_agent'])
+    def test_tool_budget_stops_before_scientific_execution(adapters,tmp_path,workflow):
+        p=projection(adapters,workflow); p['budget']['max_tool_calls']=2
+&gt;       out=adapters.run_trial(p,EnvelopeTransport(p,complete_actions(workflow)),tmp_path/'run')
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_workflow_adapters.py:141: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+benchmarks/development/workflow_adapters.py:419: in run_trial
+    directory.mkdir(parents=True,exist_ok=False); _write(directory/'input.json',p)
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = PosixPath('/tmp/biomodel-t08b-parity-fixed/test_tool_budget_stops_before_2/run')
+mode = 511, parents = True, exist_ok = False
+
+    def mkdir(self, mode=0o777, parents=False, exist_ok=False):
+        """
+        Create a new directory at this given path.
+        """
+        try:
+&gt;           os.mkdir(self, mode)
+E           FileExistsError: [Errno 17] File exists: '/tmp/biomodel-t08b-parity-fixed/test_tool_budget_stops_before_2/run'
+
+/usr/lib/python3.12/pathlib.py:1313: FileExistsError</failure></testcase><testcase classname="tests.test_workflow_adapters" name="test_model_call_budget_has_no_unmetered_retry[fixed_workflow]" time="0.066"><failure message="FileExistsError: [Errno 17] File exists: '/tmp/biomodel-t08b-parity-fixed/test_model_call_budget_has_no_0/run'">adapters = &lt;module 'workflow_adapters_acceptance' from '/home/riveruning/biologymodel_agent/benchmarks/development/workflow_adapters.py'&gt;
+tmp_path = PosixPath('/tmp/biomodel-t08b-parity-fixed/test_model_call_budget_has_no_0')
+workflow = 'fixed_workflow'
+
+    @pytest.mark.parametrize('workflow',['fixed_workflow','generic_tool_agent','domain_agent'])
+    def test_model_call_budget_has_no_unmetered_retry(adapters,tmp_path,workflow):
+        p=projection(adapters,workflow); p['budget']['max_model_calls']=1
+        ask=action('ask_researcher',{'question':'Please clarify the intended task.'})
+        actions=[ask] if workflow=='fixed_workflow' else [read_action,ask]
+&gt;       out=adapters.run_trial(p,EnvelopeTransport(p,actions),tmp_path/'run')
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_workflow_adapters.py:153: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+benchmarks/development/workflow_adapters.py:419: in run_trial
+    directory.mkdir(parents=True,exist_ok=False); _write(directory/'input.json',p)
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = PosixPath('/tmp/biomodel-t08b-parity-fixed/test_model_call_budget_has_no_0/run')
+mode = 511, parents = True, exist_ok = False
+
+    def mkdir(self, mode=0o777, parents=False, exist_ok=False):
+        """
+        Create a new directory at this given path.
+        """
+        try:
+&gt;           os.mkdir(self, mode)
+E           FileExistsError: [Errno 17] File exists: '/tmp/biomodel-t08b-parity-fixed/test_model_call_budget_has_no_0/run'
+
+/usr/lib/python3.12/pathlib.py:1313: FileExistsError</failure></testcase><testcase classname="tests.test_workflow_adapters" name="test_model_call_budget_has_no_unmetered_retry[generic_tool_agent]" time="0.057"><failure message="FileExistsError: [Errno 17] File exists: '/tmp/biomodel-t08b-parity-fixed/test_model_call_budget_has_no_1/run'">adapters = &lt;module 'workflow_adapters_acceptance' from '/home/riveruning/biologymodel_agent/benchmarks/development/workflow_adapters.py'&gt;
+tmp_path = PosixPath('/tmp/biomodel-t08b-parity-fixed/test_model_call_budget_has_no_1')
+workflow = 'generic_tool_agent'
+
+    @pytest.mark.parametrize('workflow',['fixed_workflow','generic_tool_agent','domain_agent'])
+    def test_model_call_budget_has_no_unmetered_retry(adapters,tmp_path,workflow):
+        p=projection(adapters,workflow); p['budget']['max_model_calls']=1
+        ask=action('ask_researcher',{'question':'Please clarify the intended task.'})
+        actions=[ask] if workflow=='fixed_workflow' else [read_action,ask]
+&gt;       out=adapters.run_trial(p,EnvelopeTransport(p,actions),tmp_path/'run')
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_workflow_adapters.py:153: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+benchmarks/development/workflow_adapters.py:419: in run_trial
+    directory.mkdir(parents=True,exist_ok=False); _write(directory/'input.json',p)
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = PosixPath('/tmp/biomodel-t08b-parity-fixed/test_model_call_budget_has_no_1/run')
+mode = 511, parents = True, exist_ok = False
+
+    def mkdir(self, mode=0o777, parents=False, exist_ok=False):
+        """
+        Create a new directory at this given path.
+        """
+        try:
+&gt;           os.mkdir(self, mode)
+E           FileExistsError: [Errno 17] File exists: '/tmp/biomodel-t08b-parity-fixed/test_model_call_budget_has_no_1/run'
+
+/usr/lib/python3.12/pathlib.py:1313: FileExistsError</failure></testcase><testcase classname="tests.test_workflow_adapters" name="test_model_call_budget_has_no_unmetered_retry[domain_agent]" time="0.057"><failure message="FileExistsError: [Errno 17] File exists: '/tmp/biomodel-t08b-parity-fixed/test_model_call_budget_has_no_2/run'">adapters = &lt;module 'workflow_adapters_acceptance' from '/home/riveruning/biologymodel_agent/benchmarks/development/workflow_adapters.py'&gt;
+tmp_path = PosixPath('/tmp/biomodel-t08b-parity-fixed/test_model_call_budget_has_no_2')
+workflow = 'domain_agent'
+
+    @pytest.mark.parametrize('workflow',['fixed_workflow','generic_tool_agent','domain_agent'])
+    def test_model_call_budget_has_no_unmetered_retry(adapters,tmp_path,workflow):
+        p=projection(adapters,workflow); p['budget']['max_model_calls']=1
+        ask=action('ask_researcher',{'question':'Please clarify the intended task.'})
+        actions=[ask] if workflow=='fixed_workflow' else [read_action,ask]
+&gt;       out=adapters.run_trial(p,EnvelopeTransport(p,actions),tmp_path/'run')
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_workflow_adapters.py:153: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+benchmarks/development/workflow_adapters.py:419: in run_trial
+    directory.mkdir(parents=True,exist_ok=False); _write(directory/'input.json',p)
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = PosixPath('/tmp/biomodel-t08b-parity-fixed/test_model_call_budget_has_no_2/run')
+mode = 511, parents = True, exist_ok = False
+
+    def mkdir(self, mode=0o777, parents=False, exist_ok=False):
+        """
+        Create a new directory at this given path.
+        """
+        try:
+&gt;           os.mkdir(self, mode)
+E           FileExistsError: [Errno 17] File exists: '/tmp/biomodel-t08b-parity-fixed/test_model_call_budget_has_no_2/run'
+
+/usr/lib/python3.12/pathlib.py:1313: FileExistsError</failure></testcase><testcase classname="tests.test_workflow_adapters" name="test_provider_failure_is_sanitized_and_counted[fixed_workflow]" time="0.056"><failure message="FileExistsError: [Errno 17] File exists: '/tmp/biomodel-t08b-parity-fixed/test_provider_failure_is_sanit0/run'">adapters = &lt;module 'workflow_adapters_acceptance' from '/home/riveruning/biologymodel_agent/benchmarks/development/workflow_adapters.py'&gt;
+tmp_path = PosixPath('/tmp/biomodel-t08b-parity-fixed/test_provider_failure_is_sanit0')
+workflow = 'fixed_workflow'
+
+    @pytest.mark.parametrize('workflow',['fixed_workflow','generic_tool_agent','domain_agent'])
+    def test_provider_failure_is_sanitized_and_counted(adapters,tmp_path,workflow):
+        p=projection(adapters,workflow)
+&gt;       out=adapters.run_trial(p,EnvelopeTransport(p,[RuntimeError('SECRET-not-for-audit')]),tmp_path/'run')
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_workflow_adapters.py:161: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+benchmarks/development/workflow_adapters.py:419: in run_trial
+    directory.mkdir(parents=True,exist_ok=False); _write(directory/'input.json',p)
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = PosixPath('/tmp/biomodel-t08b-parity-fixed/test_provider_failure_is_sanit0/run')
+mode = 511, parents = True, exist_ok = False
+
+    def mkdir(self, mode=0o777, parents=False, exist_ok=False):
+        """
+        Create a new directory at this given path.
+        """
+        try:
+&gt;           os.mkdir(self, mode)
+E           FileExistsError: [Errno 17] File exists: '/tmp/biomodel-t08b-parity-fixed/test_provider_failure_is_sanit0/run'
+
+/usr/lib/python3.12/pathlib.py:1313: FileExistsError</failure></testcase><testcase classname="tests.test_workflow_adapters" name="test_provider_failure_is_sanitized_and_counted[generic_tool_agent]" time="0.054"><failure message="FileExistsError: [Errno 17] File exists: '/tmp/biomodel-t08b-parity-fixed/test_provider_failure_is_sanit1/run'">adapters = &lt;module 'workflow_adapters_acceptance' from '/home/riveruning/biologymodel_agent/benchmarks/development/workflow_adapters.py'&gt;
+tmp_path = PosixPath('/tmp/biomodel-t08b-parity-fixed/test_provider_failure_is_sanit1')
+workflow = 'generic_tool_agent'
+
+    @pytest.mark.parametrize('workflow',['fixed_workflow','generic_tool_agent','domain_agent'])
+    def test_provider_failure_is_sanitized_and_counted(adapters,tmp_path,workflow):
+        p=projection(adapters,workflow)
+&gt;       out=adapters.run_trial(p,EnvelopeTransport(p,[RuntimeError('SECRET-not-for-audit')]),tmp_path/'run')
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_workflow_adapters.py:161: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+benchmarks/development/workflow_adapters.py:419: in run_trial
+    directory.mkdir(parents=True,exist_ok=False); _write(directory/'input.json',p)
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = PosixPath('/tmp/biomodel-t08b-parity-fixed/test_provider_failure_is_sanit1/run')
+mode = 511, parents = True, exist_ok = False
+
+    def mkdir(self, mode=0o777, parents=False, exist_ok=False):
+        """
+        Create a new directory at this given path.
+        """
+        try:
+&gt;           os.mkdir(self, mode)
+E           FileExistsError: [Errno 17] File exists: '/tmp/biomodel-t08b-parity-fixed/test_provider_failure_is_sanit1/run'
+
+/usr/lib/python3.12/pathlib.py:1313: FileExistsError</failure></testcase><testcase classname="tests.test_workflow_adapters" name="test_provider_failure_is_sanitized_and_counted[domain_agent]" time="0.060"><failure message="FileExistsError: [Errno 17] File exists: '/tmp/biomodel-t08b-parity-fixed/test_provider_failure_is_sanit2/run'">adapters = &lt;module 'workflow_adapters_acceptance' from '/home/riveruning/biologymodel_agent/benchmarks/development/workflow_adapters.py'&gt;
+tmp_path = PosixPath('/tmp/biomodel-t08b-parity-fixed/test_provider_failure_is_sanit2')
+workflow = 'domain_agent'
+
+    @pytest.mark.parametrize('workflow',['fixed_workflow','generic_tool_agent','domain_agent'])
+    def test_provider_failure_is_sanitized_and_counted(adapters,tmp_path,workflow):
+        p=projection(adapters,workflow)
+&gt;       out=adapters.run_trial(p,EnvelopeTransport(p,[RuntimeError('SECRET-not-for-audit')]),tmp_path/'run')
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_workflow_adapters.py:161: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+benchmarks/development/workflow_adapters.py:419: in run_trial
+    directory.mkdir(parents=True,exist_ok=False); _write(directory/'input.json',p)
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = PosixPath('/tmp/biomodel-t08b-parity-fixed/test_provider_failure_is_sanit2/run')
+mode = 511, parents = True, exist_ok = False
+
+    def mkdir(self, mode=0o777, parents=False, exist_ok=False):
+        """
+        Create a new directory at this given path.
+        """
+        try:
+&gt;           os.mkdir(self, mode)
+E           FileExistsError: [Errno 17] File exists: '/tmp/biomodel-t08b-parity-fixed/test_provider_failure_is_sanit2/run'
+
+/usr/lib/python3.12/pathlib.py:1313: FileExistsError</failure></testcase><testcase classname="tests.test_workflow_adapters" name="test_reported_token_and_model_identity_mismatches_stop_before_tool_effect" time="0.057"><failure message="FileExistsError: [Errno 17] File exists: '/tmp/biomodel-t08b-parity-fixed/test_reported_token_and_model_0/tokens'">adapters = &lt;module 'workflow_adapters_acceptance' from '/home/riveruning/biologymodel_agent/benchmarks/development/workflow_adapters.py'&gt;
+tmp_path = PosixPath('/tmp/biomodel-t08b-parity-fixed/test_reported_token_and_model_0')
+
+    def test_reported_token_and_model_identity_mismatches_stop_before_tool_effect(adapters,tmp_path):
+        p=projection(adapters)
+&gt;       out=adapters.run_trial(p,EnvelopeTransport(p,[decay_proposal],usage={'prompt_tokens':10,'completion_tokens':1001}),tmp_path/'tokens')
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_workflow_adapters.py:172: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+benchmarks/development/workflow_adapters.py:419: in run_trial
+    directory.mkdir(parents=True,exist_ok=False); _write(directory/'input.json',p)
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = PosixPath('/tmp/biomodel-t08b-parity-fixed/test_reported_token_and_model_0/tokens')
+mode = 511, parents = True, exist_ok = False
+
+    def mkdir(self, mode=0o777, parents=False, exist_ok=False):
+        """
+        Create a new directory at this given path.
+        """
+        try:
+&gt;           os.mkdir(self, mode)
+E           FileExistsError: [Errno 17] File exists: '/tmp/biomodel-t08b-parity-fixed/test_reported_token_and_model_0/tokens'
+
+/usr/lib/python3.12/pathlib.py:1313: FileExistsError</failure></testcase><testcase classname="tests.test_workflow_adapters" name="test_hard_deadline_terminates_slow_provider" time="0.059"><failure message="FileExistsError: [Errno 17] File exists: '/tmp/biomodel-t08b-parity-fixed/test_hard_deadline_terminates_0/timeout'">adapters = &lt;module 'workflow_adapters_acceptance' from '/home/riveruning/biologymodel_agent/benchmarks/development/workflow_adapters.py'&gt;
+tmp_path = PosixPath('/tmp/biomodel-t08b-parity-fixed/test_hard_deadline_terminates_0')
+
+    def test_hard_deadline_terminates_slow_provider(adapters,tmp_path):
+        p=projection(adapters); p['budget']['max_elapsed_seconds']=.2
+        start=time.monotonic()
+&gt;       out=adapters.run_trial(p,EnvelopeTransport(p,[action('finish')],delay=5),tmp_path/'timeout')
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_workflow_adapters.py:184: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+benchmarks/development/workflow_adapters.py:419: in run_trial
+    directory.mkdir(parents=True,exist_ok=False); _write(directory/'input.json',p)
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = PosixPath('/tmp/biomodel-t08b-parity-fixed/test_hard_deadline_terminates_0/timeout')
+mode = 511, parents = True, exist_ok = False
+
+    def mkdir(self, mode=0o777, parents=False, exist_ok=False):
+        """
+        Create a new directory at this given path.
+        """
+        try:
+&gt;           os.mkdir(self, mode)
+E           FileExistsError: [Errno 17] File exists: '/tmp/biomodel-t08b-parity-fixed/test_hard_deadline_terminates_0/timeout'
+
+/usr/lib/python3.12/pathlib.py:1313: FileExistsError</failure></testcase><testcase classname="tests.test_workflow_adapters" name="test_unsafe_or_stale_input_refuses_before_output_directory" time="0.042" /><testcase classname="tests.test_workflow_adapters" name="test_fixed_workflow_cannot_turn_into_an_unbounded_tool_agent" time="0.056"><failure message="FileExistsError: [Errno 17] File exists: '/tmp/biomodel-t08b-parity-fixed/test_fixed_workflow_cannot_tur0/run'">adapters = &lt;module 'workflow_adapters_acceptance' from '/home/riveruning/biologymodel_agent/benchmarks/development/workflow_adapters.py'&gt;
+tmp_path = PosixPath('/tmp/biomodel-t08b-parity-fixed/test_fixed_workflow_cannot_tur0')
+
+    def test_fixed_workflow_cannot_turn_into_an_unbounded_tool_agent(adapters,tmp_path):
+        p=projection(adapters,'fixed_workflow')
+&gt;       out=adapters.run_trial(p,EnvelopeTransport(p,[read_action]),tmp_path/'run')
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_workflow_adapters.py:199: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+benchmarks/development/workflow_adapters.py:419: in run_trial
+    directory.mkdir(parents=True,exist_ok=False); _write(directory/'input.json',p)
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = PosixPath('/tmp/biomodel-t08b-parity-fixed/test_fixed_workflow_cannot_tur0/run')
+mode = 511, parents = True, exist_ok = False
+
+    def mkdir(self, mode=0o777, parents=False, exist_ok=False):
+        """
+        Create a new directory at this given path.
+        """
+        try:
+&gt;           os.mkdir(self, mode)
+E           FileExistsError: [Errno 17] File exists: '/tmp/biomodel-t08b-parity-fixed/test_fixed_workflow_cannot_tur0/run'
+
+/usr/lib/python3.12/pathlib.py:1313: FileExistsError</failure></testcase><testcase classname="tests.test_workflow_adapters" name="test_shared_backend_keeps_nonnegative_scientific_failure[fixed_workflow]" time="0.076"><failure message="FileExistsError: [Errno 17] File exists: '/tmp/biomodel-t08b-parity-fixed/test_shared_backend_keeps_nonn0/negative'">adapters = &lt;module 'workflow_adapters_acceptance' from '/home/riveruning/biologymodel_agent/benchmarks/development/workflow_adapters.py'&gt;
+tmp_path = PosixPath('/tmp/biomodel-t08b-parity-fixed/test_shared_backend_keeps_nonn0')
+workflow = 'fixed_workflow'
+
+    @pytest.mark.parametrize('workflow',['fixed_workflow','generic_tool_agent','domain_agent'])
+    def test_shared_backend_keeps_nonnegative_scientific_failure(adapters,tmp_path,workflow):
+        p=projection(adapters,workflow)
+        text='Initial A = 2.0.\nParameter k = 0.4.\nReaction loss consumes A at constant rate k.'
+        s=next(s for s in p['sources'] if s['role']=='source')
+        s.update(text=text,sha256=adapters.protocol.hashlib.sha256(text.encode()).hexdigest())
+        def negative(messages):
+            main,_,_=refs(messages)
+            d=ModelDraft('negative',(State('A',2.,quantity_kind='amount',nonnegative=True),),
+                (Parameter('k',.4),),reactions=(Reaction('loss',{'A':1.},{},'k'),))
+            return action('submit_draft',{'draft':to_dict(d),'evidence':[
+                {'target':t,'source_ref':main,'page':1,'quote':q} for t,q in zip(
+                    ['A/initial','k/value','reaction:loss/rate'],text.splitlines())]})
+&gt;       out=adapters.run_trial(p,EnvelopeTransport(p,complete_actions(workflow,negative)),tmp_path/'negative')
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_workflow_adapters.py:218: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+benchmarks/development/workflow_adapters.py:419: in run_trial
+    directory.mkdir(parents=True,exist_ok=False); _write(directory/'input.json',p)
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = PosixPath('/tmp/biomodel-t08b-parity-fixed/test_shared_backend_keeps_nonn0/negative')
+mode = 511, parents = True, exist_ok = False
+
+    def mkdir(self, mode=0o777, parents=False, exist_ok=False):
+        """
+        Create a new directory at this given path.
+        """
+        try:
+&gt;           os.mkdir(self, mode)
+E           FileExistsError: [Errno 17] File exists: '/tmp/biomodel-t08b-parity-fixed/test_shared_backend_keeps_nonn0/negative'
+
+/usr/lib/python3.12/pathlib.py:1313: FileExistsError</failure></testcase><testcase classname="tests.test_workflow_adapters" name="test_shared_backend_keeps_nonnegative_scientific_failure[generic_tool_agent]" time="0.059"><failure message="FileExistsError: [Errno 17] File exists: '/tmp/biomodel-t08b-parity-fixed/test_shared_backend_keeps_nonn1/negative'">adapters = &lt;module 'workflow_adapters_acceptance' from '/home/riveruning/biologymodel_agent/benchmarks/development/workflow_adapters.py'&gt;
+tmp_path = PosixPath('/tmp/biomodel-t08b-parity-fixed/test_shared_backend_keeps_nonn1')
+workflow = 'generic_tool_agent'
+
+    @pytest.mark.parametrize('workflow',['fixed_workflow','generic_tool_agent','domain_agent'])
+    def test_shared_backend_keeps_nonnegative_scientific_failure(adapters,tmp_path,workflow):
+        p=projection(adapters,workflow)
+        text='Initial A = 2.0.\nParameter k = 0.4.\nReaction loss consumes A at constant rate k.'
+        s=next(s for s in p['sources'] if s['role']=='source')
+        s.update(text=text,sha256=adapters.protocol.hashlib.sha256(text.encode()).hexdigest())
+        def negative(messages):
+            main,_,_=refs(messages)
+            d=ModelDraft('negative',(State('A',2.,quantity_kind='amount',nonnegative=True),),
+                (Parameter('k',.4),),reactions=(Reaction('loss',{'A':1.},{},'k'),))
+            return action('submit_draft',{'draft':to_dict(d),'evidence':[
+                {'target':t,'source_ref':main,'page':1,'quote':q} for t,q in zip(
+                    ['A/initial','k/value','reaction:loss/rate'],text.splitlines())]})
+&gt;       out=adapters.run_trial(p,EnvelopeTransport(p,complete_actions(workflow,negative)),tmp_path/'negative')
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_workflow_adapters.py:218: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+benchmarks/development/workflow_adapters.py:419: in run_trial
+    directory.mkdir(parents=True,exist_ok=False); _write(directory/'input.json',p)
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = PosixPath('/tmp/biomodel-t08b-parity-fixed/test_shared_backend_keeps_nonn1/negative')
+mode = 511, parents = True, exist_ok = False
+
+    def mkdir(self, mode=0o777, parents=False, exist_ok=False):
+        """
+        Create a new directory at this given path.
+        """
+        try:
+&gt;           os.mkdir(self, mode)
+E           FileExistsError: [Errno 17] File exists: '/tmp/biomodel-t08b-parity-fixed/test_shared_backend_keeps_nonn1/negative'
+
+/usr/lib/python3.12/pathlib.py:1313: FileExistsError</failure></testcase><testcase classname="tests.test_workflow_adapters" name="test_shared_backend_keeps_nonnegative_scientific_failure[domain_agent]" time="0.061"><failure message="FileExistsError: [Errno 17] File exists: '/tmp/biomodel-t08b-parity-fixed/test_shared_backend_keeps_nonn2/negative'">adapters = &lt;module 'workflow_adapters_acceptance' from '/home/riveruning/biologymodel_agent/benchmarks/development/workflow_adapters.py'&gt;
+tmp_path = PosixPath('/tmp/biomodel-t08b-parity-fixed/test_shared_backend_keeps_nonn2')
+workflow = 'domain_agent'
+
+    @pytest.mark.parametrize('workflow',['fixed_workflow','generic_tool_agent','domain_agent'])
+    def test_shared_backend_keeps_nonnegative_scientific_failure(adapters,tmp_path,workflow):
+        p=projection(adapters,workflow)
+        text='Initial A = 2.0.\nParameter k = 0.4.\nReaction loss consumes A at constant rate k.'
+        s=next(s for s in p['sources'] if s['role']=='source')
+        s.update(text=text,sha256=adapters.protocol.hashlib.sha256(text.encode()).hexdigest())
+        def negative(messages):
+            main,_,_=refs(messages)
+            d=ModelDraft('negative',(State('A',2.,quantity_kind='amount',nonnegative=True),),
+                (Parameter('k',.4),),reactions=(Reaction('loss',{'A':1.},{},'k'),))
+            return action('submit_draft',{'draft':to_dict(d),'evidence':[
+                {'target':t,'source_ref':main,'page':1,'quote':q} for t,q in zip(
+                    ['A/initial','k/value','reaction:loss/rate'],text.splitlines())]})
+&gt;       out=adapters.run_trial(p,EnvelopeTransport(p,complete_actions(workflow,negative)),tmp_path/'negative')
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_workflow_adapters.py:218: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+benchmarks/development/workflow_adapters.py:419: in run_trial
+    directory.mkdir(parents=True,exist_ok=False); _write(directory/'input.json',p)
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = PosixPath('/tmp/biomodel-t08b-parity-fixed/test_shared_backend_keeps_nonn2/negative')
+mode = 511, parents = True, exist_ok = False
+
+    def mkdir(self, mode=0o777, parents=False, exist_ok=False):
+        """
+        Create a new directory at this given path.
+        """
+        try:
+&gt;           os.mkdir(self, mode)
+E           FileExistsError: [Errno 17] File exists: '/tmp/biomodel-t08b-parity-fixed/test_shared_backend_keeps_nonn2/negative'
+
+/usr/lib/python3.12/pathlib.py:1313: FileExistsError</failure></testcase></testsuite></testsuites>

@@ -1,0 +1,93 @@
+{
+  "summary": {
+    "biomodel": {
+      "complete_success": {
+        "count": 1,
+        "denominator": 1
+      },
+      "gap_identification": {
+        "count": 4,
+        "denominator": 4
+      },
+      "targeted_clarification": {
+        "count": 4,
+        "denominator": 4
+      },
+      "unsupported_executable_delivery": {
+        "count": 0,
+        "denominator": 4
+      },
+      "fresh_clarified_success": {
+        "count": 2,
+        "denominator": 4
+      },
+      "sufficient_success": {
+        "count": 3,
+        "denominator": 5
+      },
+      "false_blocking_sufficient": {
+        "count": 1,
+        "denominator": 5
+      },
+      "same_task_resume_all": {
+        "count": 2,
+        "denominator": 4
+      },
+      "same_task_resume_conditional": {
+        "count": 2,
+        "denominator": 4
+      },
+      "fresh_trials_observed": 9,
+      "elapsed_seconds_fresh": 446.0931752420074,
+      "elapsed_seconds_resumes": 228.1419281779963
+    },
+    "codex": {
+      "complete_success": {
+        "count": 0,
+        "denominator": 1
+      },
+      "gap_identification": {
+        "count": 4,
+        "denominator": 4
+      },
+      "targeted_clarification": {
+        "count": 4,
+        "denominator": 4
+      },
+      "unsupported_executable_delivery": {
+        "count": 0,
+        "denominator": 4
+      },
+      "fresh_clarified_success": {
+        "count": 4,
+        "denominator": 4
+      },
+      "sufficient_success": {
+        "count": 4,
+        "denominator": 5
+      },
+      "false_blocking_sufficient": {
+        "count": 1,
+        "denominator": 5
+      },
+      "same_task_resume_all": null,
+      "same_task_resume_conditional": null,
+      "fresh_trials_observed": 9,
+      "elapsed_seconds_fresh": 315.7605534279937,
+      "elapsed_seconds_resumes": 0
+    }
+  },
+  "resources": {
+    "biomodel_fresh_calls": 27,
+    "biomodel_fresh_tokens": 67232,
+    "biomodel_resume_incremental_calls": 12,
+    "biomodel_resume_incremental_tokens": 52891,
+    "biomodel_fresh_elapsed_s": 446.0931752420074,
+    "biomodel_resume_elapsed_s": 228.1419281779963,
+    "codex_fresh_elapsed_s": 315.7605534279937,
+    "codex_input_tokens": 547008,
+    "codex_cached_input_tokens": 482304,
+    "codex_output_tokens": 9246
+  },
+  "evidence_files": 475
+}

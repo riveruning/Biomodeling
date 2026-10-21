@@ -1,0 +1,183 @@
+{
+  "task_id": "T07a",
+  "parent_task": "T07",
+  "status": "engineering_accepted",
+  "parent_task_status": "domain_review_and_T07b_pending",
+  "accepted_at_utc": "2026-10-19T11:40:24.271297+00:00",
+  "implementation_owner": "Codex alone",
+  "dsh_or_subagents_used": false,
+  "user_scope": "先完成审核包，暂不加入新论文",
+  "objective": "Reviewable existing retrieval materials, attribution/freshness/split gates and separated development metrics",
+  "baseline": {
+    "accepted_full_passed": 1030,
+    "t06_hashes_match": true,
+    "all_product_sources_and_original_tests_unchanged": true,
+    "original_retrieval_evaluator_and_material_bytes_unchanged": true
+  },
+  "new_benchmark_tool": "benchmarks/development/retrieval_review.py",
+  "new_test_file": "tests/test_retrieval_review_acceptance.py",
+  "new_test_cases": 45,
+  "verification": {
+    "first": {
+      "tests": 34,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "time": 0.261
+    },
+    "expanded": {
+      "tests": 112,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "time": 6.164
+    },
+    "focused-final": {
+      "tests": 114,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "time": 5.894
+    },
+    "full": {
+      "tests": 1074,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "time": 203.454
+    },
+    "nested-label-baseline": {
+      "tests": 1,
+      "failures": 1,
+      "errors": 0,
+      "skipped": 0,
+      "time": 0.068
+    },
+    "final-check": {
+      "tests": 115,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "time": 5.371
+    },
+    "full-final": {
+      "tests": 1075,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "time": 200.358
+    }
+  },
+  "commands": {
+    "legacy_baseline": "PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=src .venv/bin/python benchmarks/development/evaluate_retrieval.py --output artifacts/audit-t07-retrieval-review-20261019/legacy-baseline",
+    "first": "PYTHONDONTWRITEBYTECODE=1 .venv/bin/python -m pytest -q -p no:cacheprovider tests/test_retrieval_review_acceptance.py --basetemp=/tmp/biomodel-t07-first --junitxml=artifacts/audit-t07-retrieval-review-20261019/first.xml",
+    "expanded": "PYTHONDONTWRITEBYTECODE=1 .venv/bin/python -m pytest -q -p no:cacheprovider tests/test_retrieval_review_acceptance.py tests/test_passage_retrieval.py tests/test_source_retrieval.py --basetemp=/tmp/biomodel-t07-expanded --junitxml=artifacts/audit-t07-retrieval-review-20261019/expanded.xml",
+    "focused_final": "PYTHONDONTWRITEBYTECODE=1 .venv/bin/python -m pytest -q -p no:cacheprovider tests/test_retrieval_review_acceptance.py tests/test_passage_retrieval.py tests/test_source_retrieval.py --basetemp=/tmp/biomodel-t07-final-focused --junitxml=artifacts/audit-t07-retrieval-review-20261019/focused-final.xml",
+    "full": "PYTHONDONTWRITEBYTECODE=1 .venv/bin/python -m pytest -q -p no:cacheprovider --basetemp=/tmp/biomodel-t07-full --junitxml=artifacts/audit-t07-retrieval-review-20261019/full.xml",
+    "nested_label_baseline": "PYTHONDONTWRITEBYTECODE=1 .venv/bin/python -m pytest -q -p no:cacheprovider tests/test_retrieval_review_acceptance.py::test_source_page_cannot_smuggle_annotations_in_extra_metadata --basetemp=/tmp/biomodel-t07-nested-label-baseline --junitxml=artifacts/audit-t07-retrieval-review-20261019/nested-label-baseline.xml",
+    "final_check": "PYTHONDONTWRITEBYTECODE=1 .venv/bin/python -m pytest -q -p no:cacheprovider tests/test_retrieval_review_acceptance.py tests/test_passage_retrieval.py tests/test_source_retrieval.py --basetemp=/tmp/biomodel-t07-final-check --junitxml=artifacts/audit-t07-retrieval-review-20261019/final-check.xml",
+    "full_final": "PYTHONDONTWRITEBYTECODE=1 .venv/bin/python -m pytest -q -p no:cacheprovider --basetemp=/tmp/biomodel-t07-full-final --junitxml=artifacts/audit-t07-retrieval-review-20261019/full-final.xml",
+    "prepare": "PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=src .venv/bin/python benchmarks/development/retrieval_review.py prepare --output artifacts/audit-t07-retrieval-review-20261019/review-pack",
+    "development_diagnostic": "PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=src .venv/bin/python benchmarks/development/retrieval_review.py evaluate --packet artifacts/audit-t07-retrieval-review-20261019/review-pack/packet.json --mode development --repeats 3 --output artifacts/audit-t07-retrieval-review-20261019/development-comparison-final",
+    "expected_gate_refusal": "PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=src .venv/bin/python benchmarks/development/retrieval_review.py evaluate --packet artifacts/audit-t07-retrieval-review-20261019/review-pack/packet.json --mode reviewed --output artifacts/audit-t07-retrieval-review-20261019/reviewed-comparison-refused"
+  },
+  "actual_review_state": {
+    "cases": 18,
+    "paper_families": 1,
+    "documents": 21,
+    "required_spans": 21,
+    "review_status": {
+      "pending": 18
+    },
+    "reviewed_comparison_ready": false,
+    "real_paper_count": 0,
+    "semantic_support": "unknown"
+  },
+  "review_packet": "review-pack/packet.json",
+  "review_entry": "review-pack/REVIEW.md",
+  "review_form": "review-pack/review-forms.json",
+  "packet_file_hashes": "review-pack-file-hashes.json",
+  "development_results": "development-comparison-final/results.json",
+  "development_summary": {
+    "lexical_v1": {
+      "cases": 18,
+      "failed_cases": 0,
+      "required_spans": 21,
+      "citation_valid_cases": 18,
+      "invalid_citation_cases": 0,
+      "citation_valid_fraction": 1.0,
+      "not_located_cases": 1,
+      "empty_not_located_results": 1,
+      "covered_required_spans": 10,
+      "required_span_recall": 0.47619047619047616,
+      "complete_positive_cases": 6,
+      "positive_cases": 17,
+      "mean_required_evidence_reciprocal_rank": 0.4117647058823529,
+      "conflict_cases": 3,
+      "complete_conflict_cases": 2,
+      "explicit_missing_cases": 1,
+      "retrieved_missing_cases": 0,
+      "irrelevant_hit_fraction": 0.5,
+      "outside_annotated_span_fraction": 0.9155362886309607,
+      "duplicate_context_fraction": 0.0,
+      "snippet_chars": 7151,
+      "response_json_chars": 12266,
+      "retrieval_ms_total": 20.783639,
+      "retrieval_ms_median": 0.184369
+    },
+    "passage_v2": {
+      "cases": 18,
+      "failed_cases": 0,
+      "required_spans": 21,
+      "citation_valid_cases": 18,
+      "invalid_citation_cases": 0,
+      "citation_valid_fraction": 1.0,
+      "not_located_cases": 1,
+      "empty_not_located_results": 1,
+      "covered_required_spans": 19,
+      "required_span_recall": 0.9047619047619048,
+      "complete_positive_cases": 15,
+      "positive_cases": 17,
+      "mean_required_evidence_reciprocal_rank": 0.7058823529411765,
+      "conflict_cases": 3,
+      "complete_conflict_cases": 3,
+      "explicit_missing_cases": 1,
+      "retrieved_missing_cases": 1,
+      "irrelevant_hit_fraction": 0.3103448275862069,
+      "outside_annotated_span_fraction": 0.4281150159744409,
+      "duplicate_context_fraction": 0.0,
+      "snippet_chars": 2191,
+      "response_json_chars": 8830,
+      "retrieval_ms_total": 16.978582,
+      "retrieval_ms_median": 0.2722485
+    }
+  },
+  "formal_gate": {
+    "status": "refused",
+    "expected_exit_code": 2,
+    "created_output_directory": false
+  },
+  "retrieval_calls": 108,
+  "diff": "changes.patch",
+  "contract": "implementation-contract.md",
+  "execution_plan": "execution-plan.md",
+  "final_hashes": {
+    "benchmarks/development/retrieval_review.py": "e9d86f556f84c62837127c18dc0a65716696b959f1800d89dbc59e44aea803cf",
+    "tests/test_retrieval_review_acceptance.py": "b09d19a2a054e48de2545657893830a8785cb1521d814cafd262cd2ad4cff559",
+    "docs/retrieval-review.md": "ef5c0dbc48a2016b90a576f98b93f90cb8b4e87d0bfe05e61e688b9e6136a766",
+    "docs/optimization-backlog.md": "d68b529d4cbe563335e29db9d65ee5b10ee49161f5193063a9a0c1ab6b851ef4",
+    "docs/seven-point-status.md": "4746757f4b74ae09d89744d511191ae6c2d3ae7341fc80ff41208234b96451fc"
+  },
+  "unchanged_retrieval_source_sha256": "87cddc5d2f7275385edcec6d6bec7ce9827571ac44f55e220dacbb3cdd74f5e4",
+  "unchanged_product_implementation_sha256": "149e4a7e2d5c300cf8f180a388a99c103b257c03413ac97b60c3605f955f57bf",
+  "limitations": [
+    "No actual domain review is complete; all 18 real packet decisions remain pending. T07 overall is not accepted.",
+    "No new papers or independent samples; 18 seen synthetic cases share one conservative family, with zero real papers.",
+    "Family and exact normalized-page checks rely on metadata; no near-duplicate, DOI/preprint resolution or independence proof.",
+    "Review fields establish attributed completeness/freshness, not reviewer identity or expertise.",
+    "Condition A/B conflict label remains a review priority; coverage describes candidate annotations, not verified contradictions.",
+    "Timing includes retrieval only with uncontrolled cache/order noise. Characters are not tokens, cost or Agent success.",
+    "No ranking/default changes, embedding, inference, new dependencies, independent evalset reads or c13/c18 transmission."
+  ],
+  "next_task": "T07b: actual domain decisions, scope-label corrections and reviewed development comparison; new paper material requires a later authorized scope"
+}

@@ -1,0 +1,9 @@
+{
+  "decision": "changes_requested",
+  "checks": 35,
+  "passed": 23,
+  "failed": 12,
+  "dsh_outcome": "error: terminated after partial delivery",
+  "local_module_fix": "interrupted terminal now stores error_type; exact 2-line change",
+  "bounded_revision": "tasks/audit-t03a-complete-integration.json"
+}

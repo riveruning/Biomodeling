@@ -1,0 +1,242 @@
+[
+  {
+    "id": "fixed_workflow--decay--0--initial",
+    "workflow": "fixed_workflow",
+    "case_id": "decay",
+    "repeat": 0,
+    "phase": "initial",
+    "parent_trial_id": null
+  },
+  {
+    "id": "fixed_workflow--translation--0--initial",
+    "workflow": "fixed_workflow",
+    "case_id": "translation",
+    "repeat": 0,
+    "phase": "initial",
+    "parent_trial_id": null
+  },
+  {
+    "id": "fixed_workflow--translation--0--clarified",
+    "workflow": "fixed_workflow",
+    "case_id": "translation",
+    "repeat": 0,
+    "phase": "clarified",
+    "parent_trial_id": "fixed_workflow--translation--0--initial"
+  },
+  {
+    "id": "fixed_workflow--logistic--0--initial",
+    "workflow": "fixed_workflow",
+    "case_id": "logistic",
+    "repeat": 0,
+    "phase": "initial",
+    "parent_trial_id": null
+  },
+  {
+    "id": "fixed_workflow--logistic--0--clarified",
+    "workflow": "fixed_workflow",
+    "case_id": "logistic",
+    "repeat": 0,
+    "phase": "clarified",
+    "parent_trial_id": "fixed_workflow--logistic--0--initial"
+  },
+  {
+    "id": "fixed_workflow--decay--1--initial",
+    "workflow": "fixed_workflow",
+    "case_id": "decay",
+    "repeat": 1,
+    "phase": "initial",
+    "parent_trial_id": null
+  },
+  {
+    "id": "fixed_workflow--translation--1--initial",
+    "workflow": "fixed_workflow",
+    "case_id": "translation",
+    "repeat": 1,
+    "phase": "initial",
+    "parent_trial_id": null
+  },
+  {
+    "id": "fixed_workflow--translation--1--clarified",
+    "workflow": "fixed_workflow",
+    "case_id": "translation",
+    "repeat": 1,
+    "phase": "clarified",
+    "parent_trial_id": "fixed_workflow--translation--1--initial"
+  },
+  {
+    "id": "fixed_workflow--logistic--1--initial",
+    "workflow": "fixed_workflow",
+    "case_id": "logistic",
+    "repeat": 1,
+    "phase": "initial",
+    "parent_trial_id": null
+  },
+  {
+    "id": "fixed_workflow--logistic--1--clarified",
+    "workflow": "fixed_workflow",
+    "case_id": "logistic",
+    "repeat": 1,
+    "phase": "clarified",
+    "parent_trial_id": "fixed_workflow--logistic--1--initial"
+  },
+  {
+    "id": "generic_tool_agent--decay--0--initial",
+    "workflow": "generic_tool_agent",
+    "case_id": "decay",
+    "repeat": 0,
+    "phase": "initial",
+    "parent_trial_id": null
+  },
+  {
+    "id": "generic_tool_agent--translation--0--initial",
+    "workflow": "generic_tool_agent",
+    "case_id": "translation",
+    "repeat": 0,
+    "phase": "initial",
+    "parent_trial_id": null
+  },
+  {
+    "id": "generic_tool_agent--translation--0--clarified",
+    "workflow": "generic_tool_agent",
+    "case_id": "translation",
+    "repeat": 0,
+    "phase": "clarified",
+    "parent_trial_id": "generic_tool_agent--translation--0--initial"
+  },
+  {
+    "id": "generic_tool_agent--logistic--0--initial",
+    "workflow": "generic_tool_agent",
+    "case_id": "logistic",
+    "repeat": 0,
+    "phase": "initial",
+    "parent_trial_id": null
+  },
+  {
+    "id": "generic_tool_agent--logistic--0--clarified",
+    "workflow": "generic_tool_agent",
+    "case_id": "logistic",
+    "repeat": 0,
+    "phase": "clarified",
+    "parent_trial_id": "generic_tool_agent--logistic--0--initial"
+  },
+  {
+    "id": "generic_tool_agent--decay--1--initial",
+    "workflow": "generic_tool_agent",
+    "case_id": "decay",
+    "repeat": 1,
+    "phase": "initial",
+    "parent_trial_id": null
+  },
+  {
+    "id": "generic_tool_agent--translation--1--initial",
+    "workflow": "generic_tool_agent",
+    "case_id": "translation",
+    "repeat": 1,
+    "phase": "initial",
+    "parent_trial_id": null
+  },
+  {
+    "id": "generic_tool_agent--translation--1--clarified",
+    "workflow": "generic_tool_agent",
+    "case_id": "translation",
+    "repeat": 1,
+    "phase": "clarified",
+    "parent_trial_id": "generic_tool_agent--translation--1--initial"
+  },
+  {
+    "id": "generic_tool_agent--logistic--1--initial",
+    "workflow": "generic_tool_agent",
+    "case_id": "logistic",
+    "repeat": 1,
+    "phase": "initial",
+    "parent_trial_id": null
+  },
+  {
+    "id": "generic_tool_agent--logistic--1--clarified",
+    "workflow": "generic_tool_agent",
+    "case_id": "logistic",
+    "repeat": 1,
+    "phase": "clarified",
+    "parent_trial_id": "generic_tool_agent--logistic--1--initial"
+  },
+  {
+    "id": "domain_agent--decay--0--initial",
+    "workflow": "domain_agent",
+    "case_id": "decay",
+    "repeat": 0,
+    "phase": "initial",
+    "parent_trial_id": null
+  },
+  {
+    "id": "domain_agent--translation--0--initial",
+    "workflow": "domain_agent",
+    "case_id": "translation",
+    "repeat": 0,
+    "phase": "initial",
+    "parent_trial_id": null
+  },
+  {
+    "id": "domain_agent--translation--0--clarified",
+    "workflow": "domain_agent",
+    "case_id": "translation",
+    "repeat": 0,
+    "phase": "clarified",
+    "parent_trial_id": "domain_agent--translation--0--initial"
+  },
+  {
+    "id": "domain_agent--logistic--0--initial",
+    "workflow": "domain_agent",
+    "case_id": "logistic",
+    "repeat": 0,
+    "phase": "initial",
+    "parent_trial_id": null
+  },
+  {
+    "id": "domain_agent--logistic--0--clarified",
+    "workflow": "domain_agent",
+    "case_id": "logistic",
+    "repeat": 0,
+    "phase": "clarified",
+    "parent_trial_id": "domain_agent--logistic--0--initial"
+  },
+  {
+    "id": "domain_agent--decay--1--initial",
+    "workflow": "domain_agent",
+    "case_id": "decay",
+    "repeat": 1,
+    "phase": "initial",
+    "parent_trial_id": null
+  },
+  {
+    "id": "domain_agent--translation--1--initial",
+    "workflow": "domain_agent",
+    "case_id": "translation",
+    "repeat": 1,
+    "phase": "initial",
+    "parent_trial_id": null
+  },
+  {
+    "id": "domain_agent--translation--1--clarified",
+    "workflow": "domain_agent",
+    "case_id": "translation",
+    "repeat": 1,
+    "phase": "clarified",
+    "parent_trial_id": "domain_agent--translation--1--initial"
+  },
+  {
+    "id": "domain_agent--logistic--1--initial",
+    "workflow": "domain_agent",
+    "case_id": "logistic",
+    "repeat": 1,
+    "phase": "initial",
+    "parent_trial_id": null
+  },
+  {
+    "id": "domain_agent--logistic--1--clarified",
+    "workflow": "domain_agent",
+    "case_id": "logistic",
+    "repeat": 1,
+    "phase": "clarified",
+    "parent_trial_id": "domain_agent--logistic--1--initial"
+  }
+]

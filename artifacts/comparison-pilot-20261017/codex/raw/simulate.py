@@ -1,0 +1,3 @@
+import json
+
+print(json.dumps({"status": "needs_input", "reason": "source.txt hides Eqs. (1)-(3) and Figure 2B parameter assignments in inaccessible image placeholders and supplies no X(0), Y(0), or Z(0). Provide readable equations, complete parameter assignments including Ki, and initial values with their provenance. experiment.json specifies output times only."}))

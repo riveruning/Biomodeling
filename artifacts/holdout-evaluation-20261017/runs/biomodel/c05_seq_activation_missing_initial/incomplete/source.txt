@@ -1,0 +1,7 @@
+Synthetic, analyst-specified biochemical ODE model; not a published paper. Compartment: single well-mixed compartment of size 1 (dimensionless). All states are concentrations in arbitrary units (a.u.) unless a species entry states otherwise. All parameters are constant in time.
+Mechanism. An enzyme E binds a substrate S reversibly to form the complex E*. The complex dissociates back to E and S; there is no catalytic product step in this model. Both steps are elementary and mass action.
+Equations. dE/dt = -k1*E*S + k2*Es ; dS/dt = -k1*E*S + k2*Es ; dEs/dt = k1*E*S - k2*Es.
+Initial conditions. E(0) = 5.0 a.u. and S(0) = 2.0 a.u. are stated. The initial concentration of the complex E* is NOT reported anywhere in this material, and no statement is provided about whether any complex is present at t = 0.
+Parameters. k1 = 0.75 per minute per a.u.; k2 = 0.2 per minute.
+Experiment. Closed system, sampled every 0.2 min from t = 0 to t = 8 min inclusive.
+Reporting requirement. Report E, S and E* at every sampling time.

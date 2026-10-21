@@ -1,0 +1,15 @@
+{
+  "status": "failed",
+  "calls": 1,
+  "tokens": 0,
+  "questions": [],
+  "problems": [],
+  "model_ref": null,
+  "run_ref": null,
+  "agent_ref": "1c0a2d6ffc0a0c1e746d9095f987247d26ac39506f1559c578bcf2dc001ba3c5",
+  "product_modules_sha256": "446e6f3a01fc692ef8f8da085c81f86a41e75e2b41276be86eb1c5c103c8c47b",
+  "system": "biomodel",
+  "case": "unit_decay",
+  "phase": "clarified",
+  "elapsed_seconds": 0.19348632699984591
+}

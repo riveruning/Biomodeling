@@ -1,0 +1,111 @@
+{
+  "schema_version": "1",
+  "case_id": "gonze2013-fig2b-raw-text",
+  "review": {
+    "status": "pending_human_review",
+    "prepared_by": "Codex assistant visual inspection",
+    "human_reviewer": null
+  },
+  "rtol": 1e-07,
+  "atol": 1e-09,
+  "items": [
+    {
+      "target": "k1/value",
+      "kind": "number",
+      "expected": null,
+      "support": [],
+      "missing_reason": "image_formula_inaccessible_to_text_parser"
+    },
+    {
+      "target": "k2/value",
+      "kind": "number",
+      "expected": null,
+      "support": [],
+      "missing_reason": "image_formula_inaccessible_to_text_parser"
+    },
+    {
+      "target": "k3/value",
+      "kind": "number",
+      "expected": null,
+      "support": [],
+      "missing_reason": "image_formula_inaccessible_to_text_parser"
+    },
+    {
+      "target": "k4/value",
+      "kind": "number",
+      "expected": null,
+      "support": [],
+      "missing_reason": "image_formula_inaccessible_to_text_parser"
+    },
+    {
+      "target": "k5/value",
+      "kind": "number",
+      "expected": null,
+      "support": [],
+      "missing_reason": "image_formula_inaccessible_to_text_parser"
+    },
+    {
+      "target": "k6/value",
+      "kind": "number",
+      "expected": null,
+      "support": [],
+      "missing_reason": "image_formula_inaccessible_to_text_parser"
+    },
+    {
+      "target": "Ki/value",
+      "kind": "number",
+      "expected": null,
+      "support": [],
+      "missing_reason": "image_formula_inaccessible_to_text_parser"
+    },
+    {
+      "target": "n/value",
+      "kind": "number",
+      "expected": null,
+      "support": [],
+      "missing_reason": "image_formula_inaccessible_to_text_parser"
+    },
+    {
+      "target": "rule:X/expression",
+      "kind": "expression",
+      "expected": null,
+      "support": [],
+      "missing_reason": "image_formula_inaccessible_to_text_parser"
+    },
+    {
+      "target": "rule:Y/expression",
+      "kind": "expression",
+      "expected": null,
+      "support": [],
+      "missing_reason": "image_formula_inaccessible_to_text_parser"
+    },
+    {
+      "target": "rule:Z/expression",
+      "kind": "expression",
+      "expected": null,
+      "support": [],
+      "missing_reason": "image_formula_inaccessible_to_text_parser"
+    },
+    {
+      "target": "X/initial",
+      "kind": "number",
+      "expected": null,
+      "support": [],
+      "missing_reason": "not_reported_in_selected_section_and_caption"
+    },
+    {
+      "target": "Y/initial",
+      "kind": "number",
+      "expected": null,
+      "support": [],
+      "missing_reason": "not_reported_in_selected_section_and_caption"
+    },
+    {
+      "target": "Z/initial",
+      "kind": "number",
+      "expected": null,
+      "support": [],
+      "missing_reason": "not_reported_in_selected_section_and_caption"
+    }
+  ]
+}

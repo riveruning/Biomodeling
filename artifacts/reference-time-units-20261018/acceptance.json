@@ -1,0 +1,119 @@
+{
+  "status": "accepted",
+  "created_at": "2026-10-18T11:09:27.240953+00:00",
+  "scope": "result/reference clock metadata across comparison, CLI, replay and agent boundaries",
+  "files": [
+    {
+      "path": "src/biomodel_agent/domain/contracts.py",
+      "staged": "src/biomodel_agent/domain/contracts.py",
+      "before_sha256": "6e56aec977f16a03092df0a64498490fc78368b49c684447a957a4cb706b971d",
+      "after_sha256": "e5992ed8c304b16a2a5c39bbd375d1277985e665af2ba9f084424df657ae46d9"
+    },
+    {
+      "path": "src/biomodel_agent/time_units.py",
+      "staged": "src/biomodel_agent/time_units.py",
+      "before_sha256": "b4dbd584abcce667bb8eb089bc4342e29284a643ff6ee3c14b42388fa03041a2",
+      "after_sha256": "86433c8ec4da7accd6dba91ddf767152abf9801518e1bf185d18047ca081d305"
+    },
+    {
+      "path": "src/biomodel_agent/simulation.py",
+      "staged": "src/biomodel_agent/simulation.py",
+      "before_sha256": "7de90e2aa1c0e654d4ad1e285f88c7fec2174faf2a2f2641ba1df9297aa71659",
+      "after_sha256": "7a9020eb087cfbae0b9b2c6e69f20fe86e9920b55cc304133656a8bb57d68b74"
+    },
+    {
+      "path": "src/biomodel_agent/fitting.py",
+      "staged": "src/biomodel_agent/fitting.py",
+      "before_sha256": "17b37ea04c28916844b46a1ec6da39cb8a038303ce81d2348820993f9720e422",
+      "after_sha256": "ff7a2ae1a15541e57dca79052cd1f51caa705511b93e7861dbfc4e2edecfc727"
+    },
+    {
+      "path": "src/biomodel_agent/validation.py",
+      "staged": "src/biomodel_agent/validation.py",
+      "before_sha256": "a358aa2ecf7c460f3f263fbf5eb08188068f493f21f4a2a69bb1afe90faebb86",
+      "after_sha256": "6be9467a22ab468f51341fce50fbe7f103baf6103c3a1a972ddc719b51467375"
+    },
+    {
+      "path": "src/biomodel_agent/application.py",
+      "staged": "src/biomodel_agent/application.py",
+      "before_sha256": "767f9493da25afb77559d1ee3c677c12b834e086b90e5cc1b71f3f49e7dd0792",
+      "after_sha256": "a82b2279c7fb44cdb32239e11196c8b834579f5c56d284fdc7b098160b7f054d"
+    },
+    {
+      "path": "src/biomodel_agent/agent.py",
+      "staged": "src/biomodel_agent/agent.py",
+      "before_sha256": "c8606da5f45d93cbbdb60fb1e0cb6eae537030e876754bff32b04621b09cfd5f",
+      "after_sha256": "63bbd46ecec55158fc9a2e1fc34191a5c11dc44bf7614f46f9289b9f1cd8c3c9"
+    },
+    {
+      "path": "src/biomodel_agent/cli.py",
+      "staged": "src/biomodel_agent/cli.py",
+      "before_sha256": "d150ca828e5c829ff6f8acb827e196ad907662f654a421b02df6974881d3b8f0",
+      "after_sha256": "31958e54bdc86907afec350f0de2156062149506fdfb38782ad15d656d443a45"
+    },
+    {
+      "path": "src/biomodel_agent/reporting.py",
+      "staged": "src/biomodel_agent/reporting.py",
+      "before_sha256": "cbd032b08b2398f71cdeebef9ce466a075d066a9c8d4ac05f64c0388aa3ab506",
+      "after_sha256": "794a35a1fccd3e8dfa6c4e1fbb97b5b74c7ac841f07ec9a9a04dcd1f3784fc0c"
+    },
+    {
+      "path": "tests/test_reference_time_units.py",
+      "staged": "tests/test_reference_time_units.py",
+      "before_sha256": null,
+      "after_sha256": "733caf6fb7b8a22ac165f33c97460d61f528b6a99684c3dd2ae7e66304752bc1"
+    },
+    {
+      "path": "docs/reference-time-units.md",
+      "staged": "docs/reference-time-units.md",
+      "before_sha256": null,
+      "after_sha256": "d2eaa2505beba7db34e5bef89b877086c7ffd1abb232524e2ac50ad0063099e8"
+    },
+    {
+      "path": "README.md",
+      "staged": "README.md",
+      "before_sha256": "a24b014d252741de638fe7d9be6ff78336cbe5594450632c32839b380450c47c",
+      "after_sha256": "14af688765ccc717aa19f7186a5468d30944c7b9616fb4f2075ba3fcb0285502"
+    }
+  ],
+  "baseline_tests": 402,
+  "tests": {
+    "tests": 431,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "validation": "existing project suite with staged modified modules, 29 new reference time-unit regressions; identical copied storage test keeps spawned imports on staged source",
+  "pytest_log": "pytest.log",
+  "pytest_xml": "pytest.xml",
+  "offline_original_proposals": 3,
+  "new_model_calls": 0,
+  "full_agent_benchmark_success_measured": false,
+  "original_evaluation_modified": false,
+  "independent_holdout": false,
+  "known_limitations": [
+    "both-unlabelled legacy comparisons retain unknown clock status",
+    "no new live LLM performance measurement",
+    "labels are declarations, not source verification; no automatic time conversion"
+  ],
+  "installed_tests": {
+    "tests": 431,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "installed_test_command": [
+    "/home/riveruning/biologymodel_agent/.venv/bin/python",
+    "-m",
+    "pytest",
+    "-q",
+    "-p",
+    "no:cacheprovider",
+    "--basetemp=/tmp/biology-agent-reference-time-installed-20261018",
+    "--junitxml=/home/riveruning/biologymodel_agent/artifacts/reference-time-units-20261018/installed-pytest.xml"
+  ],
+  "installed_test_exit_code": 0,
+  "old_checkpoint_exercise_exit_code": 0,
+  "old_checkpoint_exercise_is_scripted": true,
+  "old_checkpoint_exercise_completed": 3
+}

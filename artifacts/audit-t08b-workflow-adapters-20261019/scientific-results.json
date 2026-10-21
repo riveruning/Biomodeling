@@ -1,0 +1,312 @@
+{
+  "status": "engineering_invariants_passed_analytic_diagnostics_recorded",
+  "scope": "Scripted decisions, actual tools, seen synthetic development controls; not model performance",
+  "planned_phases": 30,
+  "scripted_provider_requests": 58,
+  "online_inference_calls": 0,
+  "actual_reproduction_runs": 12,
+  "convergence_fine_runs": 12,
+  "technical_completed_phases": 12,
+  "initial_scripted_questions": 12,
+  "clarified_phases_blocked_by_shared_grammar": 6,
+  "human_review_decisions": 0,
+  "scientific_runs": [
+    {
+      "trial_id": "fixed_workflow--decay--0--initial",
+      "run_ref": "1d5bc25e4d693f61442885052e0a885ee37e8f3f8c1f250836ec64d11b4face7",
+      "solver_backend": "libRoadRunner/cvode",
+      "cached_from": null,
+      "max_absolute_error_vs_analytic": {
+        "A": 8.080245441632883e-07
+      },
+      "refined_max_absolute_error_vs_analytic": {
+        "A": 1.6048863837880845e-07
+      },
+      "initial_exploratory_2e_6_check_satisfied": true,
+      "last_values": {
+        "A": 0.036631438694426505
+      },
+      "scientific_status": "not_verified",
+      "semantic_support": "unknown"
+    },
+    {
+      "trial_id": "fixed_workflow--translation--0--clarified",
+      "run_ref": "364dcb490c311487363ebf66556949ed4f1007aef4cfd833c10835a16ce55336",
+      "solver_backend": "libRoadRunner/cvode",
+      "cached_from": null,
+      "max_absolute_error_vs_analytic": {
+        "M": 2.5935604264226697e-06,
+        "P": 8.819381784874736e-06
+      },
+      "refined_max_absolute_error_vs_analytic": {
+        "M": 1.655577084314075e-07,
+        "P": 5.00398416924952e-07
+      },
+      "initial_exploratory_2e_6_check_satisfied": false,
+      "last_values": {
+        "M": 1.9816869546716922,
+        "P": 4.864005243565796
+      },
+      "scientific_status": "not_verified",
+      "semantic_support": "unknown"
+    },
+    {
+      "trial_id": "fixed_workflow--decay--1--initial",
+      "run_ref": "0918d4e098d154177bca73def78f9d78e95fa0b06ebd77a4a8cbabf27fe970d8",
+      "solver_backend": "libRoadRunner/cvode",
+      "cached_from": null,
+      "max_absolute_error_vs_analytic": {
+        "A": 8.080245441632883e-07
+      },
+      "refined_max_absolute_error_vs_analytic": {
+        "A": 1.6048863837880845e-07
+      },
+      "initial_exploratory_2e_6_check_satisfied": true,
+      "last_values": {
+        "A": 0.036631438694426505
+      },
+      "scientific_status": "not_verified",
+      "semantic_support": "unknown"
+    },
+    {
+      "trial_id": "fixed_workflow--translation--1--clarified",
+      "run_ref": "932da39c92f08b7bb70af2d9b79fdd9a93ce525222d92fb9216ff63bc9fd1749",
+      "solver_backend": "libRoadRunner/cvode",
+      "cached_from": null,
+      "max_absolute_error_vs_analytic": {
+        "M": 2.5935604264226697e-06,
+        "P": 8.819381784874736e-06
+      },
+      "refined_max_absolute_error_vs_analytic": {
+        "M": 1.655577084314075e-07,
+        "P": 5.00398416924952e-07
+      },
+      "initial_exploratory_2e_6_check_satisfied": false,
+      "last_values": {
+        "M": 1.9816869546716922,
+        "P": 4.864005243565796
+      },
+      "scientific_status": "not_verified",
+      "semantic_support": "unknown"
+    },
+    {
+      "trial_id": "generic_tool_agent--decay--0--initial",
+      "run_ref": "ee5a8b57850ac2ae7d85a99137786e933cd90ba3fa7bce9298991db8826d8aab",
+      "solver_backend": "libRoadRunner/cvode",
+      "cached_from": null,
+      "max_absolute_error_vs_analytic": {
+        "A": 8.080245441632883e-07
+      },
+      "refined_max_absolute_error_vs_analytic": {
+        "A": 1.6048863837880845e-07
+      },
+      "initial_exploratory_2e_6_check_satisfied": true,
+      "last_values": {
+        "A": 0.036631438694426505
+      },
+      "scientific_status": "not_verified",
+      "semantic_support": "unknown"
+    },
+    {
+      "trial_id": "generic_tool_agent--translation--0--clarified",
+      "run_ref": "e60ec52c93e800a514c51b95de0b4ea211e79f84de84b6558c348b6f23647495",
+      "solver_backend": "libRoadRunner/cvode",
+      "cached_from": null,
+      "max_absolute_error_vs_analytic": {
+        "M": 2.5935604264226697e-06,
+        "P": 8.819381784874736e-06
+      },
+      "refined_max_absolute_error_vs_analytic": {
+        "M": 1.655577084314075e-07,
+        "P": 5.00398416924952e-07
+      },
+      "initial_exploratory_2e_6_check_satisfied": false,
+      "last_values": {
+        "M": 1.9816869546716922,
+        "P": 4.864005243565796
+      },
+      "scientific_status": "not_verified",
+      "semantic_support": "unknown"
+    },
+    {
+      "trial_id": "generic_tool_agent--decay--1--initial",
+      "run_ref": "9a718fee76680911866e22625d6754dab0ce2a6915d61e5bd7a9af3f1242ce4f",
+      "solver_backend": "libRoadRunner/cvode",
+      "cached_from": null,
+      "max_absolute_error_vs_analytic": {
+        "A": 8.080245441632883e-07
+      },
+      "refined_max_absolute_error_vs_analytic": {
+        "A": 1.6048863837880845e-07
+      },
+      "initial_exploratory_2e_6_check_satisfied": true,
+      "last_values": {
+        "A": 0.036631438694426505
+      },
+      "scientific_status": "not_verified",
+      "semantic_support": "unknown"
+    },
+    {
+      "trial_id": "generic_tool_agent--translation--1--clarified",
+      "run_ref": "17bd5014b5f9f0311b232b60dffc2dbcad16dd5766381bd736d1804252f99033",
+      "solver_backend": "libRoadRunner/cvode",
+      "cached_from": null,
+      "max_absolute_error_vs_analytic": {
+        "M": 2.5935604264226697e-06,
+        "P": 8.819381784874736e-06
+      },
+      "refined_max_absolute_error_vs_analytic": {
+        "M": 1.655577084314075e-07,
+        "P": 5.00398416924952e-07
+      },
+      "initial_exploratory_2e_6_check_satisfied": false,
+      "last_values": {
+        "M": 1.9816869546716922,
+        "P": 4.864005243565796
+      },
+      "scientific_status": "not_verified",
+      "semantic_support": "unknown"
+    },
+    {
+      "trial_id": "domain_agent--decay--0--initial",
+      "run_ref": "6ba9215c38711db6fc313be5e3665bfc0a05b3f489048a557532d4b9eb5f4adc",
+      "solver_backend": "libRoadRunner/cvode",
+      "cached_from": null,
+      "max_absolute_error_vs_analytic": {
+        "A": 8.080245441632883e-07
+      },
+      "refined_max_absolute_error_vs_analytic": {
+        "A": 1.6048863837880845e-07
+      },
+      "initial_exploratory_2e_6_check_satisfied": true,
+      "last_values": {
+        "A": 0.036631438694426505
+      },
+      "scientific_status": "not_verified",
+      "semantic_support": "unknown"
+    },
+    {
+      "trial_id": "domain_agent--translation--0--clarified",
+      "run_ref": "7aa6f67a709921a26fcdc25f881c4a06f8ba333206bbfbf10e3d2a2a481318e0",
+      "solver_backend": "libRoadRunner/cvode",
+      "cached_from": null,
+      "max_absolute_error_vs_analytic": {
+        "M": 2.5935604264226697e-06,
+        "P": 8.819381784874736e-06
+      },
+      "refined_max_absolute_error_vs_analytic": {
+        "M": 1.655577084314075e-07,
+        "P": 5.00398416924952e-07
+      },
+      "initial_exploratory_2e_6_check_satisfied": false,
+      "last_values": {
+        "M": 1.9816869546716922,
+        "P": 4.864005243565796
+      },
+      "scientific_status": "not_verified",
+      "semantic_support": "unknown"
+    },
+    {
+      "trial_id": "domain_agent--decay--1--initial",
+      "run_ref": "4874205ecf326c010a9428881c882df020bc96293b17c6b85dbcb5ec7462f896",
+      "solver_backend": "libRoadRunner/cvode",
+      "cached_from": null,
+      "max_absolute_error_vs_analytic": {
+        "A": 8.080245441632883e-07
+      },
+      "refined_max_absolute_error_vs_analytic": {
+        "A": 1.6048863837880845e-07
+      },
+      "initial_exploratory_2e_6_check_satisfied": true,
+      "last_values": {
+        "A": 0.036631438694426505
+      },
+      "scientific_status": "not_verified",
+      "semantic_support": "unknown"
+    },
+    {
+      "trial_id": "domain_agent--translation--1--clarified",
+      "run_ref": "9f3b69011821f6f8b5b66bc6c04b264ebdc9610b534a4181a66bca70c71561f0",
+      "solver_backend": "libRoadRunner/cvode",
+      "cached_from": null,
+      "max_absolute_error_vs_analytic": {
+        "M": 2.5935604264226697e-06,
+        "P": 8.819381784874736e-06
+      },
+      "refined_max_absolute_error_vs_analytic": {
+        "M": 1.655577084314075e-07,
+        "P": 5.00398416924952e-07
+      },
+      "initial_exploratory_2e_6_check_satisfied": false,
+      "last_values": {
+        "M": 1.9816869546716922,
+        "P": 4.864005243565796
+      },
+      "scientific_status": "not_verified",
+      "semantic_support": "unknown"
+    }
+  ],
+  "cross_workflow_numeric_comparison": {
+    "decay": {
+      "actual_runs": 6,
+      "max_difference_across_workflows_and_repeats": 0.0
+    },
+    "translation": {
+      "actual_runs": 6,
+      "max_difference_across_workflows_and_repeats": 0.0
+    }
+  },
+  "shared_limit": [
+    {
+      "trial_id": "fixed_workflow--logistic--0--clarified",
+      "questions": [
+        "Please resolve: rule:X/expression: binding unknown: unsupported or incomplete declaration context; cite a complete direct declaration"
+      ],
+      "literal_source_sentence": "The author confirms the intended equation is dX/dt = r*X*(1-X/K).",
+      "cause": "Shared bounded declaration grammar cannot bind the intended-equation prose. No material rewriting or product relaxation applied."
+    },
+    {
+      "trial_id": "fixed_workflow--logistic--1--clarified",
+      "questions": [
+        "Please resolve: rule:X/expression: binding unknown: unsupported or incomplete declaration context; cite a complete direct declaration"
+      ],
+      "literal_source_sentence": "The author confirms the intended equation is dX/dt = r*X*(1-X/K).",
+      "cause": "Shared bounded declaration grammar cannot bind the intended-equation prose. No material rewriting or product relaxation applied."
+    },
+    {
+      "trial_id": "generic_tool_agent--logistic--0--clarified",
+      "questions": [
+        "Please resolve: rule:X/expression: binding unknown: unsupported or incomplete declaration context; cite a complete direct declaration"
+      ],
+      "literal_source_sentence": "The author confirms the intended equation is dX/dt = r*X*(1-X/K).",
+      "cause": "Shared bounded declaration grammar cannot bind the intended-equation prose. No material rewriting or product relaxation applied."
+    },
+    {
+      "trial_id": "generic_tool_agent--logistic--1--clarified",
+      "questions": [
+        "Please resolve: rule:X/expression: binding unknown: unsupported or incomplete declaration context; cite a complete direct declaration"
+      ],
+      "literal_source_sentence": "The author confirms the intended equation is dX/dt = r*X*(1-X/K).",
+      "cause": "Shared bounded declaration grammar cannot bind the intended-equation prose. No material rewriting or product relaxation applied."
+    },
+    {
+      "trial_id": "domain_agent--logistic--0--clarified",
+      "questions": [
+        "Please resolve: rule:X/expression: binding unknown: unsupported or incomplete declaration context; cite a complete direct declaration"
+      ],
+      "literal_source_sentence": "The author confirms the intended equation is dX/dt = r*X*(1-X/K).",
+      "cause": "Shared bounded declaration grammar cannot bind the intended-equation prose. No material rewriting or product relaxation applied."
+    },
+    {
+      "trial_id": "domain_agent--logistic--1--clarified",
+      "questions": [
+        "Please resolve: rule:X/expression: binding unknown: unsupported or incomplete declaration context; cite a complete direct declaration"
+      ],
+      "literal_source_sentence": "The author confirms the intended equation is dX/dt = r*X*(1-X/K).",
+      "cause": "Shared bounded declaration grammar cannot bind the intended-equation prose. No material rewriting or product relaxation applied."
+    }
+  ],
+  "source_support": "unknown",
+  "analytic_check_limit": "The initial exploratory absolute 2e-6 check failed on translation and is retained in scientific-results-first.log. No replacement global-error pass threshold adopted, solver settings and outputs unchanged. Finite/convergence checks remain the existing product criterion.",
+  "next": "Track bounded declaration grammar follow-up separately; no score or benchmark relabeling."
+}

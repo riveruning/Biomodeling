@@ -1,0 +1,35 @@
+{
+  "system": "Talk2Biomodels",
+  "case": "decay",
+  "model": "qwen3.8-chat",
+  "variant": "official_graph_alternative_LLM_module_only_environment",
+  "vendor_source_modified": false,
+  "original_model_available": false,
+  "adaptations": [
+    "namespace bootstrap skips only unrelated root app imports",
+    "caller-supplied ChatOpenAI uses alternative provider/model",
+    "module-specific dependencies; full monorepo extras not installed"
+  ],
+  "environment": {
+    "python": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]",
+    "packages": {
+      "tellurium": null,
+      "antimony": null,
+      "libroadrunner": null,
+      "openai": "1.109.1",
+      "copasi-basico": "0.84",
+      "langgraph": "0.3.34",
+      "langchain-core": "0.3.40",
+      "langchain-openai": "0.3.0",
+      "numpy": "1.26.4",
+      "scipy": "1.17.1"
+    }
+  },
+  "extra_contract_guidance": true,
+  "graph_import_and_construction": "pass",
+  "status": "executed",
+  "simulations": 1,
+  "calls": 2,
+  "tool_calls": [],
+  "elapsed_seconds": 8.545877827004006
+}

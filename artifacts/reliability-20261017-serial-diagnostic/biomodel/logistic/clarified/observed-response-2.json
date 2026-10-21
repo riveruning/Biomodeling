@@ -1,0 +1,28 @@
+{
+  "id": "chatcmpl-8d46bc67-ac8f-4bc9-b5ac-040c0863d179",
+  "created": 1792203301,
+  "model": "qwen3.8-chat",
+  "object": "chat.completion",
+  "choices": [
+    {
+      "finish_reason": "stop",
+      "index": 0,
+      "message": {
+        "content": "{\"action\": \"submit_draft\", \"args\": {\"draft\": {\"id\": \"synthetic_ode\", \"states\": [{\"id\": \"X\", \"initial\": 0.2, \"unit\": \"dimensionless\", \"quantity_kind\": \"variable\", \"nonnegative\": true}], \"parameters\": [{\"id\": \"r\", \"value\": 0.8, \"unit\": \"1/min\", \"origin\": \"source\"}, {\"id\": \"K\", \"value\": 2.0, \"unit\": \"dimensionless\", \"origin\": \"source\"}], \"compartment\": {\"id\": \"C\", \"size\": 1, \"unit\": \"dimensionless\"}, \"reactions\": [], \"rate_rules\": [{\"state\": \"X\", \"expression\": \"r*X*(1-X/K)\"}], \"derived\": [], \"time_unit\": \"minutes\"}, \"evidence\": [{\"target\": \"X/initial\", \"source_ref\": \"57bfebb2f820b39480e1e2c5c1824b78d8f81621c727679ab30d253908235d64\", \"page\": 1, \"quote\": \"Initial X = 0.2.\"}, {\"target\": \"r/value\", \"source_ref\": \"57bfebb2f820b39480e1e2c5c1824b78d8f81621c727679ab30d253908235d64\", \"page\": 1, \"quote\": \"Parameter r = 0.8.\"}, {\"target\": \"K/value\", \"source_ref\": \"57bfebb2f820b39480e1e2c5c1824b78d8f81621c727679ab30d253908235d64\", \"page\": 1, \"quote\": \"Parameter K = 2.0.\"}, {\"target\": \"rule:X/expression\", \"source_ref\": \"57bfebb2f820b39480e1e2c5c1824b78d8f81621c727679ab30d253908235d64\", \"page\": 1, \"quote\": \"The author confirms the intended equation is dX/dt = r*X*(1-X/K).\"}, {\"target\": \"time_unit\", \"source_ref\": \"57bfebb2f820b39480e1e2c5c1824b78d8f81621c727679ab30d253908235d64\", \"page\": 1, \"quote\": \"Time t is in minutes.\"}, {\"target\": \"C/size\", \"source_ref\": \"57bfebb2f820b39480e1e2c5c1824b78d8f81621c727679ab30d253908235d64\", \"page\": 1, \"quote\": \"The fixed compartment has size 1 dimensionless.\"}], \"mechanism\": \"logistic growth ODE\"}, \"reason\": \"Source specifies ODE dX/dt=r*X*(1-X/K) with X0=0.2, r=0.8, K=2.0, minutes.\"}}",
+        "role": "assistant",
+        "provider_specific_fields": {
+          "refusal": null
+        }
+      },
+      "provider_specific_fields": {}
+    }
+  ],
+  "usage": {
+    "completion_tokens": 810,
+    "prompt_tokens": 1185,
+    "total_tokens": 1995,
+    "prompt_tokens_details": {
+      "cached_tokens": 0
+    }
+  }
+}

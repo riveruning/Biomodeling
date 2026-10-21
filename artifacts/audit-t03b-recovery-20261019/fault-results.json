@@ -1,0 +1,59 @@
+{
+  "kind": "offline_scripted_real_science_and_process_exit_not_model_capability",
+  "implementation_sha256": "99efe06289ad36e794f706747b256743c18414d287d59a9625f992b0132d8946",
+  "cases": [
+    {
+      "case": "provider",
+      "exitcode": 41,
+      "execution_ref": "eba7b608e09cbd0c8d2fd5d63de7236798e6a1b411f7072d9bd17691d95cfa78",
+      "diagnosis": "blocked",
+      "reasons": [
+        "external_outcome_unknown"
+      ],
+      "calls_before": 1,
+      "compute_before": 0,
+      "scientific_runs_before": 0,
+      "action": "blocked_without_resubmission",
+      "new_provider_calls": 0
+    },
+    {
+      "case": "result",
+      "exitcode": 42,
+      "execution_ref": "e8cc538cb5f3167cab8b83e60f6f013e45a0d5209193513bd74f756885ded817",
+      "diagnosis": "ready",
+      "reasons": [],
+      "calls_before": 2,
+      "compute_before": 1,
+      "scientific_runs_before": 1,
+      "action": "continued",
+      "state": "completed",
+      "final_ref": "cb396df93a943b2283ab3c05a5a8e05b5de09c5ecb184645a2d115a058806f02",
+      "calls_after": 3,
+      "new_provider_calls": 1,
+      "scientific_runs_after": 1,
+      "all_invocations_exported": true,
+      "same_result_ref": true,
+      "endpoint": 0.6703202833572259,
+      "scientific_status": "not_verified"
+    },
+    {
+      "case": "read",
+      "exitcode": 44,
+      "execution_ref": "b4f783515733aca5e9c98e529dececd25f9bc2b70d9800c9920864ebcf186131",
+      "diagnosis": "ready",
+      "reasons": [],
+      "calls_before": 1,
+      "compute_before": 0,
+      "scientific_runs_before": 0,
+      "action": "continued",
+      "state": "awaiting_input",
+      "final_ref": "0b283030f4b69cd833924ecfca94cf651c465560d340e1588cde5294082a63a5",
+      "calls_after": 2,
+      "new_provider_calls": 1,
+      "scientific_runs_after": 0,
+      "all_invocations_exported": true,
+      "read_reservations": 1,
+      "original_read_reservation_reused": true
+    }
+  ]
+}

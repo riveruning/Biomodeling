@@ -1,0 +1,11 @@
+{
+  "schema_version": "1",
+  "root_ref": "f5af19e1d5cc0fb76a23bbc49e89c94162753e08418ceb48fb997c5c1e801352",
+  "objects_and_blobs": [
+    "51fbe6248701144bf9e686f720254b344c93b19cb7102c4c7bf0cd9dc21db764",
+    "ab87ea4182e862af1354956aae17ed1cb6e62b65675db041a136c3dba8ad29e0",
+    "f5af19e1d5cc0fb76a23bbc49e89c94162753e08418ceb48fb997c5c1e801352"
+  ],
+  "replay": "python -m biomodel_agent replay ROOT_REF --store BUNDLE_DIRECTORY",
+  "note": "Install the same project version and requirements.lock; replay records environment differences."
+}

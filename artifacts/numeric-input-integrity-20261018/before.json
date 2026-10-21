@@ -1,0 +1,74 @@
+[
+  {
+    "case": "boolean",
+    "outcome": {
+      "time_unit": "unknown",
+      "time_unit_status": "unknown",
+      "max_scaled_error": 0.0,
+      "status": "pass",
+      "threshold": 0.001,
+      "scales": {
+        "x": 1.0
+      },
+      "worst": "",
+      "columns": [
+        "x"
+      ]
+    }
+  },
+  {
+    "case": "strings",
+    "outcome": {
+      "time_unit": "unknown",
+      "time_unit_status": "unknown",
+      "max_scaled_error": 0.0,
+      "status": "pass",
+      "threshold": 0.001,
+      "scales": {
+        "x": 1.0
+      },
+      "worst": "",
+      "columns": [
+        "x"
+      ]
+    }
+  },
+  {
+    "case": "reversed",
+    "outcome": {
+      "time_unit": "unknown",
+      "time_unit_status": "unknown",
+      "max_scaled_error": 0.0,
+      "status": "pass",
+      "threshold": 0.001,
+      "scales": {
+        "x": 1.0
+      },
+      "worst": "",
+      "columns": [
+        "x"
+      ]
+    }
+  },
+  {
+    "case": "duplicate",
+    "outcome": {
+      "time_unit": "unknown",
+      "time_unit_status": "unknown",
+      "max_scaled_error": 0.0,
+      "status": "pass",
+      "threshold": 0.001,
+      "scales": {
+        "x": 1.0
+      },
+      "worst": "",
+      "columns": [
+        "x"
+      ]
+    }
+  },
+  {
+    "case": "nonfinite_report",
+    "raised": "values['x'] contains a non-finite value: nan"
+  }
+]

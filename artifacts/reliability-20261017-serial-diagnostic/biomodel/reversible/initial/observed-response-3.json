@@ -1,0 +1,28 @@
+{
+  "id": "chatcmpl-70d99653-34f7-4e14-b034-f4519b507ce9",
+  "created": 1792203407,
+  "model": "qwen3.8-chat",
+  "object": "chat.completion",
+  "choices": [
+    {
+      "finish_reason": "stop",
+      "index": 0,
+      "message": {
+        "content": "{\"action\": \"submit_draft\", \"args\": {\"draft\": {\"compartment\": {\"id\": \"C\", \"size\": 1, \"unit\": \"dimensionless\"}, \"derived\": [], \"id\": \"synthetic_ode_model\", \"parameters\": [{\"id\": \"kf\", \"origin\": \"source\", \"unit\": \"1/minutes\", \"value\": 0.4}, {\"id\": \"kr\", \"origin\": \"source\", \"unit\": \"1/minutes\", \"value\": 0.2}], \"rate_rules\": [{\"expression\": \"-kf*A+kr*B\", \"state\": \"A\"}, {\"expression\": \"kf*A-kr*B\", \"state\": \"B\"}], \"reactions\": [], \"states\": [{\"id\": \"A\", \"initial\": 1.0, \"nonnegative\": false, \"quantity_kind\": \"variable\", \"unit\": \"dimensionless\"}, {\"id\": \"B\", \"initial\": null, \"nonnegative\": false, \"quantity_kind\": \"variable\", \"unit\": \"dimensionless\"}], \"time_unit\": \"minutes\"}, \"evidence\": [{\"page\": 1, \"quote\": \"Time t is in minutes.\", \"source_ref\": \"77ad891e26e7c0200a6a32830f604a74c1e0d80d7c5f462d61a7bef33dbc2c53\", \"target\": \"time_unit\"}, {\"page\": 1, \"quote\": \"The fixed compartment has size 1 dimensionless.\", \"source_ref\": \"77ad891e26e7c0200a6a32830f604a74c1e0d80d7c5f462d61a7bef33dbc2c53\", \"target\": \"C/size\"}, {\"page\": 1, \"quote\": \"Initial A = 1.0.\", \"source_ref\": \"77ad891e26e7c0200a6a32830f604a74c1e0d80d7c5f462d61a7bef33dbc2c53\", \"target\": \"A/initial\"}, {\"page\": 1, \"quote\": \"Initial B is not reported.\", \"source_ref\": \"77ad891e26e7c0200a6a32830f604a74c1e0d80d7c5f462d61a7bef33dbc2c53\", \"target\": \"B/initial\"}, {\"page\": 1, \"quote\": \"Parameter kf = 0.4.\", \"source_ref\": \"77ad891e26e7c0200a6a32830f604a74c1e0d80d7c5f462d61a7bef33dbc2c53\", \"target\": \"kf/value\"}, {\"page\": 1, \"quote\": \"Parameter kr = 0.2.\", \"source_ref\": \"77ad891e26e7c0200a6a32830f604a74c1e0d80d7c5f462d61a7bef33dbc2c53\", \"target\": \"kr/value\"}, {\"page\": 1, \"quote\": \"Equation dA/dt = -kf*A+kr*B.\", \"source_ref\": \"77ad891e26e7c0200a6a32830f604a74c1e0d80d7c5f462d61a7bef33dbc2c53\", \"target\": \"rule:A/expression\"}, {\"page\": 1, \"quote\": \"Equation dB/dt = kf*A-kr*B.\", \"source_ref\": \"77ad891e26e7c0200a6a32830f604a74c1e0d80d7c5f462d61a7bef33dbc2c53\", \"target\": \"rule:B/expression\"}], \"mechanism\": \"Two-state linear ODE system with forward rate kf and reverse rate kr.\"}}",
+        "role": "assistant",
+        "provider_specific_fields": {
+          "refusal": null
+        }
+      },
+      "provider_specific_fields": {}
+    }
+  ],
+  "usage": {
+    "completion_tokens": 989,
+    "prompt_tokens": 2232,
+    "total_tokens": 3221,
+    "prompt_tokens_details": {
+      "cached_tokens": 0
+    }
+  }
+}

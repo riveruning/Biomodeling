@@ -1,0 +1,170 @@
+{
+  "kind": "scripted_offline_real_solver_and_process_exit_checks_not_model_capability",
+  "cases": [
+    {
+      "case": "abrupt_exit_at_provider",
+      "store": "artifacts/audit-t03a-invocations-20261019/fault-evidence/0",
+      "executions": 1,
+      "agent_runs": 0,
+      "scientific_runs": 0,
+      "invocations": [
+        {
+          "name": "respond",
+          "phase": "reserved",
+          "operation_id": "4fb117d9-c118-4bf6-b0de-dc9e76381c40",
+          "call_count": 1,
+          "run_count": 0
+        }
+      ]
+    },
+    {
+      "case": "abrupt_exit_after_result",
+      "store": "artifacts/audit-t03a-invocations-20261019/fault-evidence/1",
+      "executions": 1,
+      "agent_runs": 0,
+      "scientific_runs": 1,
+      "invocations": [
+        {
+          "name": "respond",
+          "phase": "reserved",
+          "operation_id": "0df73845-3c42-461e-9fe8-138d1ecb95fc",
+          "call_count": 1,
+          "run_count": 0
+        },
+        {
+          "name": "respond",
+          "phase": "returned",
+          "operation_id": "0df73845-3c42-461e-9fe8-138d1ecb95fc",
+          "call_count": 1,
+          "run_count": 0
+        },
+        {
+          "name": "submit_draft",
+          "phase": "reserved",
+          "operation_id": "e5ced2b0-486c-4ef2-8284-1a82957e5e81",
+          "call_count": 1,
+          "run_count": 0
+        },
+        {
+          "name": "submit_draft",
+          "phase": "returned",
+          "operation_id": "e5ced2b0-486c-4ef2-8284-1a82957e5e81",
+          "call_count": 1,
+          "run_count": 0
+        },
+        {
+          "name": "respond",
+          "phase": "reserved",
+          "operation_id": "e857f22e-13d2-4a65-8c23-2a2dc06c8e00",
+          "call_count": 2,
+          "run_count": 0
+        },
+        {
+          "name": "respond",
+          "phase": "returned",
+          "operation_id": "e857f22e-13d2-4a65-8c23-2a2dc06c8e00",
+          "call_count": 2,
+          "run_count": 0
+        },
+        {
+          "name": "run",
+          "phase": "reserved",
+          "operation_id": "2d4d32ad-f036-4bb1-b609-5cd5f72a6789",
+          "call_count": 2,
+          "run_count": 1
+        },
+        {
+          "name": "run",
+          "phase": "returned",
+          "operation_id": "2d4d32ad-f036-4bb1-b609-5cd5f72a6789",
+          "call_count": 2,
+          "run_count": 1
+        }
+      ]
+    },
+    {
+      "case": "normal_completed_export",
+      "store": "artifacts/audit-t03a-invocations-20261019/fault-evidence/2",
+      "executions": 1,
+      "agent_runs": 1,
+      "scientific_runs": 1,
+      "invocations": [
+        {
+          "name": "respond",
+          "phase": "reserved",
+          "operation_id": "2581e685-d771-453c-a0d4-8e45e0c5027d",
+          "call_count": 1,
+          "run_count": 0
+        },
+        {
+          "name": "respond",
+          "phase": "returned",
+          "operation_id": "2581e685-d771-453c-a0d4-8e45e0c5027d",
+          "call_count": 1,
+          "run_count": 0
+        },
+        {
+          "name": "submit_draft",
+          "phase": "reserved",
+          "operation_id": "93c52209-5564-4525-a56a-0fba299425b3",
+          "call_count": 1,
+          "run_count": 0
+        },
+        {
+          "name": "submit_draft",
+          "phase": "returned",
+          "operation_id": "93c52209-5564-4525-a56a-0fba299425b3",
+          "call_count": 1,
+          "run_count": 0
+        },
+        {
+          "name": "respond",
+          "phase": "reserved",
+          "operation_id": "e87632a5-129c-4834-b49a-cd7b75ae7f3d",
+          "call_count": 2,
+          "run_count": 0
+        },
+        {
+          "name": "respond",
+          "phase": "returned",
+          "operation_id": "e87632a5-129c-4834-b49a-cd7b75ae7f3d",
+          "call_count": 2,
+          "run_count": 0
+        },
+        {
+          "name": "run",
+          "phase": "reserved",
+          "operation_id": "901b879d-de46-4136-ba8f-b14e60d64fa5",
+          "call_count": 2,
+          "run_count": 1
+        },
+        {
+          "name": "run",
+          "phase": "returned",
+          "operation_id": "901b879d-de46-4136-ba8f-b14e60d64fa5",
+          "call_count": 2,
+          "run_count": 1
+        },
+        {
+          "name": "respond",
+          "phase": "reserved",
+          "operation_id": "2e26b429-8d31-4466-abe3-812cb5712823",
+          "call_count": 3,
+          "run_count": 1
+        },
+        {
+          "name": "respond",
+          "phase": "returned",
+          "operation_id": "2e26b429-8d31-4466-abe3-812cb5712823",
+          "call_count": 3,
+          "run_count": 1
+        }
+      ],
+      "state": "completed",
+      "call_count": 3,
+      "scientific_status": "not_verified",
+      "endpoint": 0.6703202833572259,
+      "all_journal_refs_exported": true
+    }
+  ]
+}

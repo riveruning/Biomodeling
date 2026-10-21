@@ -1,0 +1,71 @@
+F.......................................F.F............................. [ 64%]
+........................................                                 [100%]
+=================================== FAILURES ===================================
+_____________ test_diagnose_is_read_only_and_sequence_is_explicit ______________
+
+tmp_path = PosixPath('/tmp/biomodel-t03b-review/test_diagnose_is_read_only_and0')
+
+    def test_diagnose_is_read_only_and_sequence_is_explicit(tmp_path):
+        store, source, task, j = make(tmp_path)
+        response(j)
+        before = snapshot(store.root)
+        report = recovery.diagnose_execution(store, j.execution_ref)
+        assert report['status'] == 'ready', report
+        assert report['call_count'] == 1 and report['run_count'] == 0
+        assert report['task_ref'] == task and len(report['operations']) == 1
+        pair = report['operations'][0]
+        assert pair['reserved']['sequence'] == pair['terminal']['sequence'] == 1
+>       assert snapshot(store.root) == before
+E       assert {'index.sqlit...n":"1"}', ...} == {'index.sqlit...n":"1"}', ...}
+E         
+E         Omitting 5 identical items, use -vv to show
+E         Differing items:
+E         {'index.sqlite': b'SQLite format 3\x00\x10\x00\x02\x02\x00@  \x00\x00\x00\x02\x00\x00\x00\x03\x00\x00\x00\x00\x00\x00\...6cdb65c7a5cf19bf3392999f7a955efc7c0b\x02D\x04\x81\r\t872d4387f8e27869dfa47fb878b0912473b0760072da0a852cd6d52b55b5e4cc'} != {'index.sqlite': b'SQLite format 3\x00\x10\x00\x02\x02\x00@  \x00\x00\x00\x01\x00\x00\x00\x01\x00\x00\x00\x00\x00\x00\...0\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00'}
+E         Use -v to get more diff
+
+tests/test_recovery_core.py:51: AssertionError
+___ test_negative_scientific_result_does_not_become_completed_after_recovery ___
+
+tmp_path = PosixPath('/tmp/biomodel-t03b-review/test_negative_scientific_resul0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x74c92c90bfb0>
+
+    def test_negative_scientific_result_does_not_become_completed_after_recovery(tmp_path, monkeypatch):
+        store, source, proposal = fixture(tmp_path)
+        _, ref = post_result_crash(store, source, proposal, monkeypatch,
+            experiment_unused=None) if False else (None, None)
+        # Actual deterministic nonnegative failure, with otherwise valid evidence.
+        proposal['draft']['rate_rules'][0]['expression'] = '-2'
+        proposal['draft']['states'][0]['nonnegative'] = True
+        with monkeypatch.context() as patch:
+            patch.setattr(agent, '_run_facts', lambda *a: (_ for _ in ()).throw(SystemExit('negative result')))
+>           with pytest.raises(SystemExit):
+E           Failed: DID NOT RAISE SystemExit
+
+tests/test_recovery_acceptance.py:323: Failed
+__ test_cli_unknown_provider_outcome_needs_no_credentials_and_is_not_retried ___
+
+tmp_path = PosixPath('/tmp/biomodel-t03b-review/test_cli_unknown_provider_outc0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x74c92c8daff0>
+capsys = <_pytest.capture.CaptureFixture object at 0x74c92c908e00>
+
+    def test_cli_unknown_provider_outcome_needs_no_credentials_and_is_not_retried(tmp_path, monkeypatch, capsys):
+        store, source, _ = fixture(tmp_path)
+        with pytest.raises(SystemExit):
+            run(store, source, Scripted([SystemExit('provider interrupted')]))
+        ref = execution(store)
+        monkeypatch.delenv('BIOMODEL_API_KEY', raising=False)
+        monkeypatch.setattr('biomodel_agent.llm.ChatProvider', lambda *a, **k: pytest.fail('provider constructed'))
+        before = store.list()
+>       assert cli.main(['agent-recover', ref, '--store', str(store.root)]) == 2
+E       AssertionError: assert 1 == 2
+E        +  where 1 = <function main at 0x74c92c90c900>(['agent-recover', 'bacc4f20c030884c37559a6b40fe0b77836846c0397c1a38e462e16ab41b6487', '--store', '/tmp/biomodel-t03b-review/test_cli_unknown_provider_outc0/store'])
+E        +    where <function main at 0x74c92c90c900> = cli.main
+
+tests/test_recovery_acceptance.py:358: AssertionError
+----------------------------- Captured stderr call -----------------------------
+error: agent recovery failed: recorded_error_or_interruption_requires_review
+=========================== short test summary info ============================
+FAILED tests/test_recovery_core.py::test_diagnose_is_read_only_and_sequence_is_explicit
+FAILED tests/test_recovery_acceptance.py::test_negative_scientific_result_does_not_become_completed_after_recovery
+FAILED tests/test_recovery_acceptance.py::test_cli_unknown_provider_outcome_needs_no_credentials_and_is_not_retried
+3 failed, 109 passed in 51.79s

@@ -1,0 +1,5 @@
+{"type": "thread.started", "thread_id": "c10c660f-eade-5f1f-b9aa-d22a2b56421e"}
+{"type": "turn.started"}
+{"type": "item.completed", "item": {"id": "tool", "type": "command_execution", "command": "literal interface fixture; no command actually executed", "status": "completed"}}
+{"type": "item.completed", "item": {"id": "message", "type": "agent_message", "text": "Literal offline interface control; not an actual model response."}}
+{"type": "turn.completed", "usage": null}

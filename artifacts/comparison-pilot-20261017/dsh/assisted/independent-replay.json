@@ -1,0 +1,5 @@
+{
+  "exit_code": 0,
+  "stdout": "{\"status\": \"needs_input\", \"reason\": \"Initial values for X, Y, and Z are not specified in the supplied source; researcher input for X0, Y0, and Z0 at t=0 is required before the ODE can be integrated.\"}\n",
+  "stderr": ""
+}

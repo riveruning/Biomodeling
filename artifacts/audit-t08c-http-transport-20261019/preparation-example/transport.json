@@ -1,0 +1,6 @@
+{
+  "base_url": "https://comparison.invalid/v1",
+  "api_key_env": "BIOMODEL_API_KEY",
+  "request_timeout_s": 30.0,
+  "max_response_bytes": 2000000
+}

@@ -1,0 +1,28 @@
+{
+  "id": "chatcmpl-df6fc1f8-a4a5-45ad-ad93-ba81f92e374a",
+  "created": 1792203792,
+  "model": "qwen3.8-chat",
+  "object": "chat.completion",
+  "choices": [
+    {
+      "finish_reason": "stop",
+      "index": 0,
+      "message": {
+        "content": "{\"action\": \"submit_draft\", \"args\": {\"draft\": {\"id\": \"synthetic_ode_d\", \"states\": [{\"id\": \"D\", \"initial\": 1.0, \"unit\": \"dimensionless\", \"quantity_kind\": \"variable\", \"nonnegative\": true}], \"parameters\": [{\"id\": \"k\", \"value\": 0.3, \"unit\": \"per minute\", \"origin\": \"author clarification\"}], \"compartment\": {\"id\": \"C\", \"size\": 1, \"unit\": \"dimensionless\"}, \"reactions\": [], \"rate_rules\": [{\"state\": \"D\", \"expression\": \"-k*D\"}], \"derived\": [], \"time_unit\": \"minutes\"}, \"evidence\": [{\"target\": \"D/initial\", \"source_ref\": \"e5a1b58bd9d0b36e7d3dfa9bf75d2da3a8f552b0601e1a2dfeb72e721e15941a\", \"page\": 1, \"quote\": \"Initial D = 1.0.\"}, {\"target\": \"k/value\", \"source_ref\": \"e5a1b58bd9d0b36e7d3dfa9bf75d2da3a8f552b0601e1a2dfeb72e721e15941a\", \"page\": 1, \"quote\": \"Parameter k = 0.3 per minute; the per-second label was a typo.\"}, {\"target\": \"rule:D/expression\", \"source_ref\": \"e5a1b58bd9d0b36e7d3dfa9bf75d2da3a8f552b0601e1a2dfeb72e721e15941a\", \"page\": 1, \"quote\": \"Equation dD/dt = -k*D.\"}, {\"target\": \"time_unit\", \"source_ref\": \"e5a1b58bd9d0b36e7d3dfa9bf75d2da3a8f552b0601e1a2dfeb72e721e15941a\", \"page\": 1, \"quote\": \"Time t is in minutes.\"}, {\"target\": \"C/size\", \"source_ref\": \"e5a1b58bd9d0b36e7d3dfa9bf75d2da3a8f552b0601e1a2dfeb72e721e15941a\", \"page\": 1, \"quote\": \"The fixed compartment has size 1 dimensionless.\"}], \"mechanism\": \"linear_decay\"}, \"reason\": \"Simple ODE dD/dt=-kD with k=0.3/min, D0=1.0, minutes.\"}}",
+        "role": "assistant",
+        "provider_specific_fields": {
+          "refusal": null
+        }
+      },
+      "provider_specific_fields": {}
+    }
+  ],
+  "usage": {
+    "completion_tokens": 656,
+    "prompt_tokens": 1164,
+    "total_tokens": 1820,
+    "prompt_tokens_details": {
+      "cached_tokens": 0
+    }
+  }
+}

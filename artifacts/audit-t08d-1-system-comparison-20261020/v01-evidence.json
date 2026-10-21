@@ -1,0 +1,87 @@
+{
+  "rows": [
+    {
+      "stage": "original-full",
+      "workflow": "fixed_workflow",
+      "status": "timeout",
+      "executed": true,
+      "tool_calls": 4,
+      "stop_reason": "wall_deadline",
+      "clock_is_fault_injected": false
+    },
+    {
+      "stage": "original-full",
+      "workflow": "generic_tool_agent",
+      "status": "timeout",
+      "executed": true,
+      "tool_calls": 4,
+      "stop_reason": "wall_deadline",
+      "clock_is_fault_injected": false
+    },
+    {
+      "stage": "original-full",
+      "workflow": "domain_agent",
+      "status": "timeout",
+      "executed": false,
+      "tool_calls": 2,
+      "stop_reason": "wall_deadline",
+      "clock_is_fault_injected": false
+    },
+    {
+      "stage": "original-isolated",
+      "workflow": "fixed_workflow",
+      "status": "timeout",
+      "executed": true,
+      "tool_calls": 4,
+      "stop_reason": "wall_deadline",
+      "clock_is_fault_injected": false
+    },
+    {
+      "stage": "original-isolated",
+      "workflow": "generic_tool_agent",
+      "status": "timeout",
+      "executed": true,
+      "tool_calls": 4,
+      "stop_reason": "wall_deadline",
+      "clock_is_fault_injected": false
+    },
+    {
+      "stage": "original-isolated",
+      "workflow": "domain_agent",
+      "status": "timeout",
+      "executed": true,
+      "tool_calls": 4,
+      "stop_reason": "wall_deadline",
+      "clock_is_fault_injected": false
+    },
+    {
+      "stage": "deterministic",
+      "workflow": "fixed_workflow",
+      "status": "timeout",
+      "executed": true,
+      "tool_calls": 4,
+      "stop_reason": "wall_deadline",
+      "clock_is_fault_injected": true
+    },
+    {
+      "stage": "deterministic",
+      "workflow": "generic_tool_agent",
+      "status": "timeout",
+      "executed": true,
+      "tool_calls": 4,
+      "stop_reason": "wall_deadline",
+      "clock_is_fault_injected": true
+    },
+    {
+      "stage": "deterministic",
+      "workflow": "domain_agent",
+      "status": "timeout",
+      "executed": true,
+      "tool_calls": 4,
+      "stop_reason": "wall_deadline",
+      "clock_is_fault_injected": true
+    }
+  ],
+  "scope_amendment": "Only the old scientific-timeout test was modified. Production deadline and adapter sources unchanged.",
+  "interpretation": "The original full domain probe expired before admission; isolated old probes passed. New control waits for confirmed admission then injects elapsed-budget exhaustion in adapter-local clock only, retaining real-time termination and execution/count assertions. Its logical elapsed telemetry is not a performance measurement."
+}

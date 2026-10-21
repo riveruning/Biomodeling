@@ -1,0 +1,76 @@
+{
+  "date": "2026-10-17",
+  "implemented": "attributed researcher clarification and persisted awaiting_input resume",
+  "python_tests": {
+    "tests": 303,
+    "errors": 0,
+    "failures": 0,
+    "skipped": 0
+  },
+  "new_recovery_tests": 30,
+  "changed_product_modules": [
+    "src/biomodel_agent/agent.py",
+    "src/biomodel_agent/agent_tools.py",
+    "src/biomodel_agent/cli.py",
+    "src/biomodel_agent/reporting.py",
+    "src/biomodel_agent/source_review.py"
+  ],
+  "dependencies_unchanged": true,
+  "network_or_llm_calls_this_round": 0,
+  "holdout_accessed": false,
+  "cross_process_demo": {
+    "parent_run_ref": "ece282d3bc0676c8e0892d0cae1370d088945a513b6bdde276d75043f1dca486",
+    "source_ref": "6e33ce8b98fc6b446df732cff55d98f15e01cda6ef6db78e4a5d5e930e289de0",
+    "evidence_type": "synthetic scripted workflow; not an LLM performance evaluation",
+    "resumed_run_ref": "94099c1b34e7a36163a9cff055eddb4005e0b0b9d26c5529b53551fbd1bdf64b",
+    "state": "completed",
+    "call_count": 4,
+    "retry_count": 0,
+    "parent_unchanged": true,
+    "scientific_status": "not_verified",
+    "semantic_support": "unknown",
+    "values": [
+      2.0,
+      1.3406405667144519,
+      0.8986585645602239
+    ],
+    "analytic_reference": [
+      2.0,
+      1.3406400920712787,
+      0.8986579282344431
+    ],
+    "max_absolute_error": 6.363257807340261e-07,
+    "separate_process_phase": true,
+    "holdout_accessed": false
+  },
+  "final_modules_sha256": "247383f706a0ccfdb63c84e45360d79be7c44cf3beb52d6477ba4a63a38cc0de",
+  "node_checks": {
+    "status": "unavailable_in_wsl_path",
+    "reason": "node: command not found",
+    "javascript_changed": false
+  },
+  "scope_limits": [
+    "awaiting_input only, not arbitrary crash recovery",
+    "legacy incomplete checkpoints refused",
+    "attributed assertions are not verified paper facts",
+    "synthetic scripted demo is not a model capability benchmark"
+  ],
+  "evidence_sha256": {
+    "src/biomodel_agent/agent.py": "e91cf0d473c112cd0b1d865d92c0d75db9e3b489366a6b687d51f637efa2eb6f",
+    "src/biomodel_agent/agent_tools.py": "694654c33f39b83cc2f1cd44d93c8f4ee87c081b9320f9041db414f9d33c5e5e",
+    "src/biomodel_agent/cli.py": "d150ca828e5c829ff6f8acb827e196ad907662f654a421b02df6974881d3b8f0",
+    "src/biomodel_agent/reporting.py": "cbd032b08b2398f71cdeebef9ce466a075d066a9c8d4ac05f64c0388aa3ab506",
+    "src/biomodel_agent/source_review.py": "233b3e4919139bfb6964d369bb0a5ff63b57678b20f033248f8a12f9e4572e7f",
+    "tests/test_agent_resume.py": "7861662beaa12642a3675abdd88b0fb4610b25135c0a11f9d6103bbab122ba4b",
+    "benchmarks/development/demo_agent_resume.py": "03bb7fab9f5480deeeca5b90ab5cc461eab1145c79821fe35d6297dabd10d26d",
+    "docs/agent-resume.md": "285107e5dd2c10c71e49b741812035b91d8479ec640e87a42556bb4ffd37d44c",
+    "README.md": "d0af2302c5cd3fdf746f6ceaaad6fe1b79ae89f89a370e128eb107a49917c859",
+    "artifacts/agent-resume-20261017/pytest.xml": "a0247f9fbb1dd493de9d26e7bc7e7a9328da4beceaabbb8f902a3dffef2cbdae",
+    "artifacts/agent-resume-20261017/environment.json": "7d1bb60638572e15d15c5808c912820c284702fb6d26c661ab39b7f890a1a9b9",
+    "artifacts/agent-resume-20261017/changes.patch": "7ae109ceec5f0421b784db38d5448206d10d16f93edc741a6fe90ba1320aa806",
+    "artifacts/agent-resume-20261017/report.md": "285107e5dd2c10c71e49b741812035b91d8479ec640e87a42556bb4ffd37d44c",
+    "artifacts/agent-resume-20261017/two-process-demo/result.json": "7fa7e561b2073891f9794ab614a555ce20f2eebff26fc328839ce6118f474064",
+    "artifacts/agent-resume-20261017/two-process-demo/paused-report.md": "c389158a678494881b991cff5875051386d33b18ee4fc8204736040f5d7c2423",
+    "artifacts/agent-resume-20261017/two-process-demo/resumed-report.md": "c095d3a421daa6d6c87b3ca81d0f57762b36538b5be5c8e6f035045c576f73c7"
+  }
+}

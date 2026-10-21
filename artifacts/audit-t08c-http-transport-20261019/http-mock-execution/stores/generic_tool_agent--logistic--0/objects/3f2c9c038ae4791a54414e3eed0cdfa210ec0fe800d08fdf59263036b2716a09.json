@@ -1,0 +1,1 @@
+{"kind":"evaluation_response","payload":{"content":"{\"action\": \"run\", \"args\": {}}","returned_model":"scripted-fixture","trial_id":"generic_tool_agent--logistic--0--clarified","usage":{}},"refs":["723ccfb06fd782e33cbb153fb2172125382d31f5de31c8bcf15c98eba1f21303"],"schema_version":"1"}

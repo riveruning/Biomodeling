@@ -1,0 +1,55 @@
+{
+  "schema_version": 1,
+  "protocol": "native_system_comparison_v1",
+  "manifest_sha256": "6c97c6c6462b4a6598c1580d5a2863fc70e3977466c7693c4cc3112dff99348b",
+  "trial": {
+    "id": "codex-astra--translation--1--initial",
+    "system_id": "codex-astra",
+    "runtime": "codex_cli",
+    "case_id": "translation",
+    "repeat": 1,
+    "phase": "initial",
+    "parent_trial_id": null
+  },
+  "evidence_kind": "scripted_control",
+  "capture_kind": "codex_jsonl",
+  "capture_sha256": "440b8da757c61b79b2c6ce284d8f2f232ff3fd1c5b037f2e166f0afb3c045b6f",
+  "status": "finished",
+  "session": {
+    "id": "3bbe9172-2d1a-53fc-afe1-402d15685be6",
+    "mode": "none",
+    "parent_record_sha256": null,
+    "identity_authenticated": false
+  },
+  "observation": {
+    "state": "awaiting_input",
+    "completion_claimed": false,
+    "execution_declared": false,
+    "execution_observed": null,
+    "question_texts": [
+      "What is the initial P value?"
+    ],
+    "final_messages": [
+      "Literal offline interface control; not an actual model response."
+    ],
+    "artifacts": []
+  },
+  "assessment": {
+    "authority": "unreviewed",
+    "numeric": "unknown",
+    "source_support": "unknown",
+    "behavior_labels_reviewed": false
+  },
+  "telemetry": {
+    "elapsed_seconds": 0.01,
+    "model_calls": null,
+    "tool_items": 1,
+    "tool_count_kind": "native_completed_tool_items",
+    "input_tokens": null,
+    "output_tokens": null,
+    "cached_input_tokens": null,
+    "reasoning_output_tokens": null,
+    "cumulative_elapsed_seconds": 0.01
+  },
+  "diagnostics": []
+}

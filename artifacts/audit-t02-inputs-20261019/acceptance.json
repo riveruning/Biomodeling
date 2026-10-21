@@ -1,0 +1,104 @@
+{
+  "task": "T02",
+  "status": "accepted",
+  "date": "2026-10-19",
+  "objective": "Consistent strict numeric input types in Python constructors and JSON codec, preserving abnormal output diagnostics",
+  "implementation": "DSH implementation of two production modules; Codex independent tests, review and archival; no Codex production edits",
+  "baseline": {
+    "baseline_passed": 748,
+    "baseline_record": "../audit-t01-verdict-20261019/full-final.xml",
+    "code_test_changes_since_acceptance": []
+  },
+  "independent_red_baseline": {
+    "tests": "63",
+    "failures": "37",
+    "errors": "0",
+    "skipped": "0",
+    "time": "0.472"
+  },
+  "targeted": {
+    "tests": "189",
+    "failures": "0",
+    "errors": "0",
+    "skipped": "0",
+    "time": "17.977"
+  },
+  "full": {
+    "tests": "811",
+    "failures": "0",
+    "errors": "0",
+    "skipped": "0",
+    "time": "125.781"
+  },
+  "scope": {
+    "preexisting_changed": [
+      "src/biomodel_agent/domain/contracts.py",
+      "src/biomodel_agent/domain/serialization.py",
+      "docs/optimization-backlog.md",
+      "docs/seven-point-status.md"
+    ],
+    "unexpected_changes": [],
+    "original_tests_unchanged": true,
+    "codex_production_edits": false
+  },
+  "compatibility": {
+    "run_hash_verified": true,
+    "input_hash_verified": true,
+    "fixture_exact_matches": {
+      "experiment": true,
+      "solver": true,
+      "simulation": true
+    }
+  },
+  "dsh": {
+    "taskId": "audit-t02-strict-inputs",
+    "bridgeTaskId": "7d79c8e6-c846-4535-80f2-dfc8f2251d08",
+    "outcome": "ready_for_review",
+    "elapsedMs": 282196,
+    "polls": 59,
+    "reviews": 17,
+    "changedFiles": [
+      "src/biomodel_agent/domain/contracts.py",
+      "src/biomodel_agent/domain/serialization.py"
+    ],
+    "missingFiles": [],
+    "delivered": true,
+    "acceptance": "not_run",
+    "outputDirectory": "/home/riveruning/biologymodel_agent/.workflow/runs/audit-t02-strict-inputs-1792378264150-8968f562"
+  },
+  "hashes": {
+    "src/biomodel_agent/domain/contracts.py": "afcb5644a4a2e3ba5d16a278a6bc5e71e6b54c8c36bb142087c207d666345c8c",
+    "src/biomodel_agent/domain/serialization.py": "e5666dcd3068597b25349ba76cd9c4275c252c788531af6b2b5fb9a2e2e34aa6",
+    "tests/test_numeric_contract_acceptance.py": "e6d9c15624e9c6b92a79ece87d6267fdd828714f5067ad73ffa135b0d157d275",
+    "benchmarks/inputs/contracts-compatibility/t01-negative-run.json": "44bb043df8b835f54daccf4ce3166f63c54cbb22d5bf516496f9b1b3f3dc968f",
+    "tasks/audit-t02-strict-inputs.json": "b40ef2306085c08d245d8baf4d60fdf15461171ca67b2bc5e9ea929346389d89",
+    "docs/strict-numeric-contracts.md": "95995be4b2aa20c4d0a7f9e97a5c49b4d5c2b0409947c8581aec01df48433591",
+    "docs/optimization-backlog.md": "6b0b325a1297b7776df22df0d93a843188caf62f8c973197f75f743c9ec42a95",
+    "docs/seven-point-status.md": "d43db61f2e4619ee95acbfac0156421dfae7abe16eb641eb2024b3cfd6fbfaa1"
+  },
+  "shared_helper": "contracts.strict_float(value, what)",
+  "intentional_output_exception": "Native float NaN/Inf in SimulationResult value columns preserved for validate_numeric blocking diagnosis; to_dict still refuses them",
+  "product_model_evaluation_calls": 0,
+  "development_provider": "Existing authorized DSH USTC channel; exact usage not provided by supervisor",
+  "c13_c18_materials_sent": false,
+  "new_dependencies": [],
+  "limitations": [
+    "Strict numeric type policy does not implement general scientific semantic review",
+    "Previously coerced stored values cannot reveal original raw input types",
+    "No new max_steps upper bound; constructor acceptance is not authorization for unlimited execution",
+    "No crash recovery changes or model capability claims"
+  ],
+  "artifacts": [
+    "changes.patch",
+    "dsh-delivery.patch",
+    "before/",
+    "dsh-delivery/",
+    "after/",
+    "independent-before.log",
+    "targeted.log",
+    "full.log",
+    "behavior-probe.json",
+    "compatibility-fixture-check.json"
+  ],
+  "next_task": "T03a: persistent invocation records and budget reservations"
+}

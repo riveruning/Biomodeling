@@ -1,0 +1,28 @@
+{
+  "id": "chatcmpl-8f646b93-e43b-493b-a55d-e61a4254e012",
+  "created": 1792239039,
+  "model": "qwen3.8-chat",
+  "object": "chat.completion",
+  "choices": [
+    {
+      "finish_reason": "stop",
+      "index": 0,
+      "message": {
+        "content": "{\"action\": \"run\", \"args\": {}, \"reason\": \"Draft accepted; run the ODE to reproduce the experiment.\"}",
+        "role": "assistant",
+        "provider_specific_fields": {
+          "refusal": null
+        }
+      },
+      "provider_specific_fields": {}
+    }
+  ],
+  "usage": {
+    "completion_tokens": 28,
+    "prompt_tokens": 2463,
+    "total_tokens": 2491,
+    "prompt_tokens_details": {
+      "cached_tokens": 0
+    }
+  }
+}

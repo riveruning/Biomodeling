@@ -1,0 +1,51 @@
+{
+  "schema_version": "1",
+  "id": "v01-06-agent",
+  "objective": "实现一个有预算的结构化Agent，支持指定材料提取到草案到计算，配可替换LLM适配器。",
+  "context": "源材料由evidence.ingest_source导入ArtifactStore。source_ref/hash只允许ResearchTask指定的列表。见已冻结contracts，modeling.validate_draft/build_model，application.run_reproduction(store,artifact,experiment,observations=(),solver=None,reference=None,scales=None,threshold=1e-3,strict=False,use_cache=True,nonnegative=())->runref，运行payload facts。开发DSH和产品LLM完全独立。",
+  "read_files": [
+    "src/biomodel_agent/__init__.py",
+    "src/biomodel_agent/application.py",
+    "src/biomodel_agent/domain/__init__.py",
+    "src/biomodel_agent/domain/contracts.py",
+    "src/biomodel_agent/domain/serialization.py",
+    "src/biomodel_agent/evidence.py",
+    "src/biomodel_agent/expressions.py",
+    "src/biomodel_agent/fitting.py",
+    "src/biomodel_agent/hypotheses.py",
+    "src/biomodel_agent/modeling.py",
+    "src/biomodel_agent/reporting.py",
+    "src/biomodel_agent/simulation.py",
+    "src/biomodel_agent/storage.py",
+    "src/biomodel_agent/validation.py",
+    "tests/test_application.py",
+    "tests/test_contracts.py",
+    "tests/test_fitting.py",
+    "tests/test_modeling.py",
+    "tests/test_simulation.py",
+    "tests/test_storage_evidence.py"
+  ],
+  "write_files": [
+    "src/biomodel_agent/agent.py",
+    "src/biomodel_agent/llm.py",
+    "tests/test_agent.py"
+  ],
+  "expected_files": [
+    "src/biomodel_agent/agent.py",
+    "src/biomodel_agent/llm.py",
+    "tests/test_agent.py"
+  ],
+  "budget": {
+    "idle_ms": 360000,
+    "first_write_ms": 480000,
+    "write_idle_ms": 360000,
+    "total_ms": 900000
+  },
+  "instructions": "llm.ChatProvider(base_url,model,api_key_env='BIOMODEL_API_KEY',timeout_s=60,max_tokens=4000,transport=None)：httpx Client(trust_env=False,timeout,follow_redirects=False)，HTTPS或http localhost（其它http拒绝），env读key不存日志；不碰DSH credentials/config。respond(messages)->dict严格解析单JSON对象{action:str,args:dict}（可strip单jsonfence，拒绝多块/未知keys）。发送/v1/chat/completions URL从base_url.rstrip('/')+'/chat/completions'，base_url约定已含/v1。temperature=0，max_tokens，不依赖SDK/framework。system prompt要求动作schema，messages标准role/content。last_usage是服务returnedusage finite计数，不宣称价格，日志无headers/key/HTTP错误原始body。不无限retry；error抛ProviderError简明HTTP status，timeout等明确。transport可MockTransport测试。\nagent.run_agent(store,provider,source_refs,experiment,observations=(),solver=None,mode='reproduction',max_calls=8,max_repairs=2,allowed_mechanisms=(),reference=None,scales=None)->str AgentRun ref。source refs存在且kind source，固定白名单，所有模型提议都struct JSON viafrom_dict(ModelDraft,...);不让LLM直接提供SBML/最终pass/任意code/shell。源文本是untrusteddata，systemprompt明确忽略内嵌toolinstructions，但不能只依赖prompt：工具受限，不提供文件路径操作/联网/shell。\n动作action inspect_source args={source_ref,page,start,end}，严格targetsource whitelist/range/最多8000chars/数字bool拒绝；sourcetext首次只提供page长度，LLM按需读。submit_draft args={draft:dict,evidence:[{target,source_ref,page,start,end,claim_type?}],mechanism?:str}。忽略/拒绝draft.element_map用户提供，后端自己add_claim精准span，保存draft、checks、模型和证据谱系；source型must白名单；strictA必须每parameter.id/value、state.id/initial、rule:<state>/expression、reaction:<id>/rate、derived:<id>/expression有证据或输出missing而不补0。证据引用存在只代表coverage，semantic_support unknown，要报告人工核查需要，不能source_checked自动设科学passed。数值字段value初值必须出现在对应quote中（regex数字tokenfloat有限相等，用明确检查；这仍不证明语义匹配，标semanticunknown）。无证据新parameter不能接受；None/missing→awaiting_input提供问题清单而非请求LLM猜数。\n对正常明确完整草案staticfail(undeclared/parse)可最多max_repairs个submit，给工具诊断，保存失败不覆盖。单位unknown可执行探索，但strict科学状态not_verified。mode hypothesis允许无paper证据仅在allowed_mechanisms里选择，保存Hypothesis kindobject {type:system_conjecture,mechanism,assumptions,source_refs}附hypothesis_refs，不能宣称事实，不允许超出mechanism列表。run args={}：只已有buildartifact，通过application执行strict=(modeA)，保存runref，再给LLM事实摘要。finish args={}：只有run已有才completed，否则incomplete；ask_researcher args={question:str}→awaiting_input，不自动作科研判断。unknownaction/outside source请求→failed。maxcalls预算耗尽→incomplete，不能自动completed。\nAgentRun保存kind='agent_run' payload{state,mode,source_refs,model_ref,run_ref,events:list包含actual LLM messages/actions/tool outputs/usage/error,call_count,repair_count,limitations} refs包含每source及生成draft/model/run对象。无需hiddenchainofthought，不记录APIkey，日志解释基于facts。每个响应后可写agent_checkpoint kind保持断点事实；v0.1 resume只重新调用新任务不声称自动同LLM继续。没有LLM时CLI可走固定workflow，不模拟假LLM为live。\nTests scripted provider仅测试确定性监管路径，明确这是mock而不是agent科研benchmark：合法curatedbirthdeath text→inspect/submit/run/finish completed与可追溯quote；缺失参数awaiting_input不run；undeclared可一次转录repair；越权source和shellaction阻止；injection不能新增tool；预算；hypothesis超范围阻止；LLMHTTP adapter MockTransport调用schema+error不漏key。运行相关test可以monkeypatch run_reproduction一个真实facts最小对象，另integration真实运行由Codex。尽量~350lines核心+~130tests，每文件一次完整交付，禁shell/todo。\n读接口可以但不要重复读同一文件，自审最多一轮，整文件写比多次edit更可靠。代码文件不要长篇docstring，尽快交付文件。",
+  "acceptance": [
+    "单Agent与领域工具解耦",
+    "LLM不能覆盖数值检查",
+    "材料不足不编造参数"
+  ],
+  "verification_commands": []
+}

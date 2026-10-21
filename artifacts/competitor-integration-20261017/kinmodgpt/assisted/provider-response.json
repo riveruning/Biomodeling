@@ -1,0 +1,28 @@
+{
+  "id": "chatcmpl-7234dd9c-bf2e-4fcf-9685-fc8381d025a0",
+  "created": 1792201567,
+  "model": "qwen3.8-chat",
+  "object": "chat.completion",
+  "choices": [
+    {
+      "finish_reason": "stop",
+      "index": 0,
+      "message": {
+        "content": "- -> X ; km_X_Z * Ki ^ n / ( Ki ^ n + Z ^ n ) ; km_X_Z = 1 ; Ki = 1 ; n = 1\n- X -> ; kdeg_X * X ; kdeg_X = 1\n- -> Y ; kp_X_Y * X ; kp_X_Y = 1\n- Y -> ; kdeg_Y * Y ; kdeg_Y = 1\n- -> Z ; kp_Y_Z * Y ; kp_Y_Z = 1\n- Z -> ; kdeg_Z * Z ; kdeg_Z = 1\n- km_X_Z = 1.0\n- kdeg_X = 0.1\n- kp_X_Y = 1.0\n- kdeg_Y = 0.1\n- kp_Y_Z = 1.0\n- kdeg_Z = 0.1\n- Ki = 1.0\n- n = 10",
+        "role": "assistant",
+        "provider_specific_fields": {
+          "refusal": null
+        }
+      },
+      "provider_specific_fields": {}
+    }
+  ],
+  "usage": {
+    "completion_tokens": 199,
+    "prompt_tokens": 1129,
+    "total_tokens": 1328,
+    "prompt_tokens_details": {
+      "cached_tokens": 0
+    }
+  }
+}

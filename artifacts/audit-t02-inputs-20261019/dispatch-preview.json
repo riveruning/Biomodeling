@@ -1,0 +1,11 @@
+{
+  "task": "audit-t02-strict-inputs",
+  "prompt": "你是 DSH 实现者，Codex 负责指挥、独立审查和验收。\n任务 audit-t02-strict-inputs；工作区 /home/riveruning/biologymodel_agent。只完成本次单一目标：统一Python构造器与JSON入口的严格数值类型边界，同时保留异常计算输出的诊断能力。\n必要背景：用户明确要求继续T02。T01已完成，基线748通过且源码一致。Codex已写63例独立验收，当前37失败26通过。DSH只负责两个生产文件的有限实现，测试由Codex执行，不必新增测试文件。\n允许读取：/home/riveruning/biologymodel_agent/artifacts/audit-t02-inputs-20261019/implementation-contract.md, /home/riveruning/biologymodel_agent/src/biomodel_agent/domain/contracts.py, /home/riveruning/biologymodel_agent/src/biomodel_agent/domain/serialization.py\n仅允许写入：/home/riveruning/biologymodel_agent/src/biomodel_agent/domain/contracts.py, /home/riveruning/biologymodel_agent/src/biomodel_agent/domain/serialization.py\n具体要求：先读implementation-contract.md及两个生产文件，然后直接按5个小步骤编辑。共享数值检查，不改变FrozenMap的元数据能力；SimulationResult数值列保留原生NaN/Inf诊断但拒绝类型隐式转换；float溢出转为ValueError，JSON仍SchemaError。不探索其他文件、不运行shell/测试/联网/子Agent、不修改任务或监督程序。最后简短报告实际改动与限制。\n验收条件：两个入口一致拒绝bool/数字字符串及不合法浮点转换；None、合法值、冻结与历史读取兼容；异常结果列诊断和序列化拒绝边界保留；不改旧测试或科学判据\n只使用明确路径的 read_file、write_file、edit_file 工具；不要使用 todo_write、规划工具、glob、目录扫描、shell、联网或安装工具。\n测试命令由 Codex 审查后执行。不要修改监督脚本、任务卡、权限配置或敏感路径。\n先交付最小可审查文件，不输出长篇计划；若阻塞，报告具体原因，不无限换工具尝试。\n最后简短列出实际文件、接口与限制。完成回复不代表验收通过。",
+  "budget": {
+    "first_activity_ms": 120000,
+    "idle_ms": 150000,
+    "first_write_ms": 180000,
+    "write_idle_ms": 180000,
+    "total_ms": 360000
+  }
+}

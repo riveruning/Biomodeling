@@ -1,0 +1,28 @@
+{
+  "id": "chatcmpl-6a987dfe-9628-4e87-badc-fb8594063515",
+  "created": 1792252780,
+  "model": "qwen3.8-chat",
+  "object": "chat.completion",
+  "choices": [
+    {
+      "finish_reason": "stop",
+      "index": 0,
+      "message": {
+        "content": "{\"action\": \"submit_draft\", \"args\": {\"draft\": {\"id\": \"c09_two_step_saturation_missing_parameter\", \"states\": [{\"id\": \"S\", \"initial\": 1.0, \"unit\": \"a.u.\", \"quantity_kind\": \"variable\", \"nonnegative\": false}], \"parameters\": [{\"id\": \"Vmax\", \"value\": 0.9, \"unit\": \"a.u. per minute\", \"origin\": \"source\"}, {\"id\": \"Km\", \"value\": 1.5, \"unit\": \"a.u.\", \"origin\": \"source\"}, {\"id\": \"KI\", \"value\": 0.8, \"unit\": \"a.u.\", \"origin\": \"researcher\"}], \"compartment\": {\"id\": \"C\", \"size\": 1, \"unit\": \"dimensionless\"}, \"reactions\": [], \"rate_rules\": [{\"state\": \"S\", \"expression\": \"-Vmax*S/(Km + S + S^2/KI)\"}], \"derived\": [], \"time_unit\": \"minute\"}, \"evidence\": [{\"target\": \"S/initial\", \"source_ref\": \"f8eda69ad5e3b55749afabc90e4a65a96df0d3f9c284789d2f0f53b325eab984\", \"page\": 1, \"quote\": \"S(0) = 1.0 a.u.\"}, {\"target\": \"Vmax/value\", \"source_ref\": \"f8eda69ad5e3b55749afabc90e4a65a96df0d3f9c284789d2f0f53b325eab984\", \"page\": 1, \"quote\": \"Vmax = 0.9 a.u. per minute\"}, {\"target\": \"Km/value\", \"source_ref\": \"f8eda69ad5e3b55749afabc90e4a65a96df0d3f9c284789d2f0f53b325eab984\", \"page\": 1, \"quote\": \"Km = 1.5 a.u.\"}, {\"target\": \"KI/value\", \"source_ref\": \"0eec20fb903813fcdf9958659dea7bc3520ee635682b1b333a01bb5dad7ac514\", \"page\": 1, \"quote\": \"The inhibition constant KI = 0.8 a.u.\"}, {\"target\": \"rule:S/expression\", \"source_ref\": \"f8eda69ad5e3b55749afabc90e4a65a96df0d3f9c284789d2f0f53b325eab984\", \"page\": 1, \"quote\": \"dS/dt = -Vmax*S/(Km + S + S^2/KI).\"}, {\"target\": \"compartment/size\", \"source_ref\": \"f8eda69ad5e3b55749afabc90e4a65a96df0d3f9c284789d2f0f53b325eab984\", \"page\": 1, \"quote\": \"single well-mixed compartment of size 1 (dimensionless)\"}, {\"target\": \"time_unit\", \"source_ref\": \"f8eda69ad5e3b55749afabc90e4a65a96df0d3f9c284789d2f0f53b325eab984\", \"page\": 1, \"quote\": \"Vmax = 0.9 a.u. per minute\"}], \"mechanism\": \"Substrate S degraded by a single enzyme with substrate inhibition; rate law dS/dt = -Vmax*S/(Km + S + S^2/KI).\"}, \"reason\": \"All parameters now resolved (KI from researcher reply). Submitting ODE rate-rule model.\"}",
+        "role": "assistant",
+        "provider_specific_fields": {
+          "refusal": null
+        }
+      },
+      "provider_specific_fields": {}
+    }
+  ],
+  "usage": {
+    "completion_tokens": 943,
+    "prompt_tokens": 2001,
+    "total_tokens": 2944,
+    "prompt_tokens_details": {
+      "cached_tokens": 0
+    }
+  }
+}

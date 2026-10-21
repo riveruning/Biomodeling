@@ -1,0 +1,10 @@
+{
+  "exit_code": 0,
+  "timed_out": false,
+  "elapsed_seconds": 0.01,
+  "event_status": "finished",
+  "events_seen": 5,
+  "evidence_kind": "scripted_control",
+  "recording_authenticated": false,
+  "retained_artifact_hashes": {}
+}

@@ -1,0 +1,123 @@
+{
+  "schema_version": 1,
+  "type": "research_planning_backlog_not_execution_authorization",
+  "audit_id": "research-readiness-audit",
+  "report": "docs/research-readiness-audit.md",
+  "owner": "Codex",
+  "implementation_mode": "single_developer_no_DSH_or_subagents",
+  "product_architecture": "single logical agent with deterministic scientific tools",
+  "primary_question": "Can evidence constraints and clarification recovery reduce unsupported ODE modeling execution without unacceptable overblocking or human cost?",
+  "next_task": "T07b-T07c-design",
+  "current_version_evidence": "Engineering accepted; current-version independent real-model advantage unestablished",
+  "comparison_tracks": {
+    "S": "BioModel Agent versus actual Codex product; model, tool and budget differences disclosed",
+    "F": "Same underlying model and common tools: fixed, generic tool and domain workflows"
+  },
+  "candidate_codex_targets": [
+    {"model": "gpt-6.1-sol", "status": "user_requested_candidate"},
+    {"model": "gpt-6-astra", "status": "tentative_interpretation_of_user_Atra"}
+  ],
+  "constraints": [
+    "Service configuration discussion deferred at user request",
+    "No new evaluation papers until scope is explicitly agreed",
+    "No independent evalset access through this planning task",
+    "Old c13/c18 USTC transmission denials remain in force",
+    "Do not overwrite historical artifacts or reinterpret seen cases as holdout",
+    "Candidate model names do not authorize online transmission",
+    "The preceding readiness audit made no product changes; T08d-0 only adds benchmark reporting and documentation"
+  ],
+  "research_definition": {
+    "version": 1,
+    "status": "development_design_not_a_completed_formal_preregistration",
+    "primary_endpoints": ["Correct completion on sufficient material", "Unsupported execution/completion on insufficient material"],
+    "required_tradeoff_metrics": ["Overblocking", "Targeted questions", "Original-task clarification recovery", "Compute and human intervention cost"],
+    "unit_for_formal_inference": "paired paper/mechanism family, not individual repeated phases",
+    "falsification": "Do not claim framework benefit if rejection alone increases, benefits require unequal models/budgets, or module gains do not generalize beyond development families"
+  },
+  "validation_followups": [
+    {
+      "id": "V01",
+      "status": "deterministic_admission_control_verified",
+      "scope": "Tool-admission fault injection replaces the host-speed assumption; production total deadline behavior is unchanged",
+      "evidence": "artifacts/audit-t08d-0-reporting-20261020/deadline-diagnostics.json",
+      "observed": "Two unchanged 0.6-second probes stopped before scientific admission in the first full suite; all three passed in isolation",
+      "root_cause_confirmed": false,
+      "delivery": "artifacts/audit-t08d-1-system-comparison-20261020/v01-evidence.json",
+      "deterministic_controls_passed": 3,
+      "production_performance_improvement_claimed": false
+    }
+  ],
+  "tasks": [
+    {
+      "id": "T08d-0", "priority": "P0", "status": "engineering_accepted",
+      "depends_on": [],
+      "scope": "Research claim and scoring v2: reviewed success/failure, pending adjudication, missing runs and bounds; current support matrix",
+      "steps": ["Preserve A01 reproduction and v1 outputs", "Freeze metric and denominator definitions", "Add versioned reporting without weakening existing validation", "Check actual 30 saved records and adversarial records", "Archive results and compatibility limits"],
+      "acceptance": ["18 completed-but-unreviewed observations are exposed as pending adjudication", "12 initial gap phases use their own eligibility denominators", "Missing and failed runs stay in the planned denominator", "Unreviewed is never awarded success", "Legacy v1 reports remain reproducible"],
+      "effort_estimate": "1-2 focused engineering days",
+      "delivery": "artifacts/audit-t08d-0-reporting-20261020/acceptance.json",
+      "verification": {"new_controls_passed": 51, "full_confirmation_passed": 1360,
+        "first_full_passed": 1358, "first_full_failed": 2,
+        "deadline_isolated_passed": 3, "legacy_results_identical": true,
+        "pending_completion_adjudications": 18, "initial_gap_phases": 12,
+        "scientific_capability_gain_claimed": false}
+    },
+    {
+      "id": "T08d-1", "priority": "P0", "status": "engineering_accepted",
+      "depends_on": ["T08d-0"],
+      "scope": "Separate actual Codex system-comparison protocol and event/output import adapters",
+      "steps": ["Inspect existing Codex sandbox implementation without invoking old runners", "Freeze task bundle and environment visibility", "Implement versioned event/output adapter and parent-session records", "Exercise timeout, error, partial-output and missing-usage controls", "Produce proposed execution bundle without network calls"],
+      "acceptance": ["Actual Codex is not mislabeled generic_tool_agent", "Mock records cannot become live execution evidence", "No evaluator answers or other cases in task runtime", "No implicit replay after unknown remote outcomes", "Fresh and resumed trials distinguished"],
+      "effort_estimate": "2-3 focused engineering days",
+      "delivery": "artifacts/audit-t08d-1-system-comparison-20261020/acceptance.json",
+      "verification": {"new_controls_passed": 67, "full_confirmation_passed": 1427,
+        "first_full_passed": 1426, "first_full_failed": 1,
+        "offline_phases": 30, "historical_product_imports": 10,
+        "literal_native_event_fixtures": 20, "online_model_calls": 0,
+        "OS_probe_scope": "fixed offline Python only, not actual Codex runtime",
+        "existing_test_change": "V01 scientific-admission fault injection only"},
+      "remaining_for_live_stage": ["Service/auth/runtime configuration", "Supervised actual inference capture with runtime visibility verification", "Independent execution and scientific review of delivered artifacts"]
+    },
+    {
+      "id": "T07b-T07c-design", "priority": "P0", "status": "preparation_ready_independent_review_pending",
+      "depends_on": [],
+      "scope": "Existing 18-case adjudication preparation and future paper-family sampling specification",
+      "steps": ["List annotation disagreements and condition-sensitive labels", "Prepare independent reviewer form and source witnesses", "Specify development/pilot/final family splits", "Specify sampling and exclusion rules without collecting new papers"],
+      "acceptance": ["Codex pre-review is never signed as independent domain approval", "Only independently reviewed decisions become reviewed", "Pilot sample sizes are proposals, not publication thresholds", "No new corpus collected this phase"],
+      "external_dependencies": ["Independent domain reviewer", "Future paper scope authorization"],
+      "effort_estimate": "1-2 preparation days; external review time excluded"
+    },
+    {
+      "id": "T08d-2", "priority": "P0", "status": "planned_requires_configuration_and_authorized_scope",
+      "depends_on": ["T08d-1", "T07b-T07c-design"],
+      "scope": "Small real-model pilot, primary Codex system track plus feasible same-model attribution track",
+      "steps": ["Freeze model/runtime/material/budget settings", "Run predetermined schedule preserving failures", "Independently execute and score saved products", "Blind scientific review and record human time", "Estimate formal experiment size and classify failure causes"],
+      "acceptance": ["Every scheduled run retained", "Native resumed-session evidence retained", "Task scientific scores separated from infrastructure outcomes", "No current model capability claims from scripted controls"],
+      "external_dependencies": ["Service configuration discussion", "Specific transmission authorization", "Domain review for scientific claims"]
+    },
+    {
+      "id": "T10a", "priority": "P1", "status": "conditional_on_failure_analysis",
+      "depends_on": ["T08d-2"],
+      "scope": "Condition-aware evidence, justified symbol/unit mapping and targeted clarification",
+      "acceptance": ["Paired valid paraphrase versus genuine conflict controls", "Reduced overblocking without increased false acceptance", "Original citations and derivation witnesses retained", "Fresh validation families after development repair"]
+    },
+    {
+      "id": "T10b", "priority": "P1", "status": "conditional_on_parsing_or_retrieval_bottleneck",
+      "depends_on": ["T08d-2"],
+      "scope": "Mature PDF/formula/OCR adapter or retrieval/reranking experiment chosen by measured errors",
+      "acceptance": ["Raw versus reviewed-transcription inputs evaluated separately", "Original locator and derived-text provenance retained", "Evidence coverage, false binding, irrelevant content, cost and end-to-end result measured", "No default embedding switch based only on toy retrieval gains"]
+    },
+    {
+      "id": "T09a-T08e", "priority": "P1", "status": "planned_after_pilot",
+      "depends_on": ["T08d-2"],
+      "scope": "Primary evidence/clarification ablations, then task-appropriate RAG/Memory/Skill ablations",
+      "acceptance": ["Same model/material/budget and independent scoring", "Removing modules does not remove necessary task information or tool schemas", "Gate-disabling experiments confined to isolated evaluation", "Longitudinal memory tasks test corrections/retractions and cross-project leakage", "No-benefit modules do not trigger unnecessary complexity"]
+    },
+    {
+      "id": "T11", "priority": "P1", "status": "planned_after_design_freeze",
+      "depends_on": ["T08d-2", "T09a-T08e"],
+      "scope": "Final unseen-family experiment, paired statistics and reproducible paper artifact package",
+      "acceptance": ["Final code and scoring frozen before outcomes", "Family-level paired uncertainty rather than counting repeats as independent", "Raw first attempts and negative findings published where permitted", "Clean-environment report regeneration", "If mechanism-discovery claims are added, uncertainty and identifiability evidence required"]
+    }
+  ]
+}

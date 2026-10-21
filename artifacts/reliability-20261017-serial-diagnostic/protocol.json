@@ -1,0 +1,411 @@
+{
+  "schema_version": "1",
+  "frozen_date": "2026-10-17",
+  "cases": {
+    "decay": {
+      "category": "complete",
+      "blocking_target": null,
+      "states": {
+        "A": 2.0
+      },
+      "parameters": {
+        "k": 0.4
+      },
+      "equations": {
+        "A": "-k*A"
+      },
+      "scales": {
+        "A": 2.0
+      },
+      "phases": {
+        "initial": {
+          "source": "benchmarks/inputs/reliability/decay/initial/source.txt",
+          "source_sha256": "ffc2e454726221a03c7cd00fc621579a4b825a0c6c9857e63a61c78698e8f375",
+          "expected_execution": true
+        }
+      }
+    },
+    "turnover": {
+      "category": "complete",
+      "blocking_target": null,
+      "states": {
+        "M": 0.5
+      },
+      "parameters": {
+        "s": 1.2,
+        "d": 0.3
+      },
+      "equations": {
+        "M": "s-d*M"
+      },
+      "scales": {
+        "M": 1.0
+      },
+      "phases": {
+        "initial": {
+          "source": "benchmarks/inputs/reliability/turnover/initial/source.txt",
+          "source_sha256": "5f929e5ea422d3a415e93368b02839b824102c9711136ddc91e2b9360bfc8326",
+          "expected_execution": true
+        }
+      }
+    },
+    "reversible": {
+      "category": "missing_initial",
+      "blocking_target": "B/initial",
+      "states": {
+        "A": 1.0,
+        "B": 0.25
+      },
+      "parameters": {
+        "kf": 0.4,
+        "kr": 0.2
+      },
+      "equations": {
+        "A": "-kf*A+kr*B",
+        "B": "kf*A-kr*B"
+      },
+      "scales": {
+        "A": 1.0,
+        "B": 1.0
+      },
+      "phases": {
+        "initial": {
+          "source": "benchmarks/inputs/reliability/reversible/initial/source.txt",
+          "source_sha256": "f7deb8ac453028ebb77ccae02d3a18e23524375fb03c0719348aeae4e2785ee4",
+          "expected_execution": false
+        },
+        "clarified": {
+          "source": "benchmarks/inputs/reliability/reversible/clarified/source.txt",
+          "source_sha256": "bfe696c17e68783ea4909592cd5476b49c7188c90ea86255145439a55141e9ae",
+          "expected_execution": true
+        }
+      }
+    },
+    "translation": {
+      "category": "missing_initial",
+      "blocking_target": "P/initial",
+      "states": {
+        "M": 1.0,
+        "P": 0.2
+      },
+      "parameters": {
+        "s": 0.8,
+        "dm": 0.4,
+        "kp": 0.6,
+        "dp": 0.2
+      },
+      "equations": {
+        "M": "s-dm*M",
+        "P": "kp*M-dp*P"
+      },
+      "scales": {
+        "M": 1.0,
+        "P": 1.0
+      },
+      "phases": {
+        "initial": {
+          "source": "benchmarks/inputs/reliability/translation/initial/source.txt",
+          "source_sha256": "ce02704af04e7ff8101dd646bd1dcfdbbae0e1df853de87135fc359c9793bed2",
+          "expected_execution": false
+        },
+        "clarified": {
+          "source": "benchmarks/inputs/reliability/translation/clarified/source.txt",
+          "source_sha256": "82ef5f29120b52c01f94f8d7ef3cf04212ab5dd086e09c5859acd008e557989f",
+          "expected_execution": true
+        }
+      }
+    },
+    "binding": {
+      "category": "missing_parameter",
+      "blocking_target": "ka/value",
+      "states": {
+        "A": 1.5,
+        "B": 1.0,
+        "C": 0.0
+      },
+      "parameters": {
+        "ka": 0.15
+      },
+      "equations": {
+        "A": "-ka*A*B",
+        "B": "-ka*A*B",
+        "C": "ka*A*B"
+      },
+      "scales": {
+        "A": 1.5,
+        "B": 1.0,
+        "C": 1.0
+      },
+      "phases": {
+        "initial": {
+          "source": "benchmarks/inputs/reliability/binding/initial/source.txt",
+          "source_sha256": "ccb7cc03d0e671787955856eba834f32bffd68a0f20f24293801ebefad1bf325",
+          "expected_execution": false
+        },
+        "clarified": {
+          "source": "benchmarks/inputs/reliability/binding/clarified/source.txt",
+          "source_sha256": "3ab90f4336e6310d8d49ed97e76bb10996fee9bd2cae05366ddb9e44f7589358",
+          "expected_execution": true
+        }
+      }
+    },
+    "saturation": {
+      "category": "missing_parameter",
+      "blocking_target": "K/value",
+      "states": {
+        "S": 2.0
+      },
+      "parameters": {
+        "V": 0.9,
+        "K": 0.7
+      },
+      "equations": {
+        "S": "-V*S/(K+S)"
+      },
+      "scales": {
+        "S": 2.0
+      },
+      "phases": {
+        "initial": {
+          "source": "benchmarks/inputs/reliability/saturation/initial/source.txt",
+          "source_sha256": "3fc2ba3363aa5690e1a512cbc186ae3b6d879e44d587b5e5eb793220e5d7d1d0",
+          "expected_execution": false
+        },
+        "clarified": {
+          "source": "benchmarks/inputs/reliability/saturation/clarified/source.txt",
+          "source_sha256": "c045b3d89aa4bde018bcfb9f309ed43e1491586bc21d6a7f62a02019b50d8ed5",
+          "expected_execution": true
+        }
+      }
+    },
+    "logistic": {
+      "category": "ambiguous_equation",
+      "blocking_target": "rule:X/expression",
+      "states": {
+        "X": 0.2
+      },
+      "parameters": {
+        "r": 0.8,
+        "K": 2.0
+      },
+      "equations": {
+        "X": "r*X*(1-X/K)"
+      },
+      "scales": {
+        "X": 1.0
+      },
+      "phases": {
+        "initial": {
+          "source": "benchmarks/inputs/reliability/logistic/initial/source.txt",
+          "source_sha256": "14ccb9940189595714b06ca3b5727af5c09b1eb279ea3250d46bc3398e509504",
+          "expected_execution": false
+        },
+        "clarified": {
+          "source": "benchmarks/inputs/reliability/logistic/clarified/source.txt",
+          "source_sha256": "7d01cf55cb1e23f355a026303a12e8350767dcb7c61a88500bd50289e7497ed8",
+          "expected_execution": true
+        }
+      }
+    },
+    "feedback": {
+      "category": "ambiguous_equation",
+      "blocking_target": "rule:R/expression",
+      "states": {
+        "R": 0.2,
+        "P": 0.1
+      },
+      "parameters": {
+        "s": 1.0,
+        "K": 1.0,
+        "dr": 0.4,
+        "kp": 0.7,
+        "dp": 0.3
+      },
+      "equations": {
+        "R": "s/(1+(P/K)**2)-dr*R",
+        "P": "kp*R-dp*P"
+      },
+      "scales": {
+        "R": 1.0,
+        "P": 1.0
+      },
+      "phases": {
+        "initial": {
+          "source": "benchmarks/inputs/reliability/feedback/initial/source.txt",
+          "source_sha256": "be12ace5d82c4592454eaf08a6d72b98bcec15df24a01221d35ea77bb600ab5d",
+          "expected_execution": false
+        },
+        "clarified": {
+          "source": "benchmarks/inputs/reliability/feedback/clarified/source.txt",
+          "source_sha256": "f7138fcecce4a602b9575aeb196b5cceed1320ee822f38294ff29fed681f5b88",
+          "expected_execution": true
+        }
+      }
+    },
+    "unit_decay": {
+      "category": "unit_conflict",
+      "blocking_target": "k/unit",
+      "states": {
+        "D": 1.0
+      },
+      "parameters": {
+        "k": 0.3
+      },
+      "equations": {
+        "D": "-k*D"
+      },
+      "scales": {
+        "D": 1.0
+      },
+      "phases": {
+        "initial": {
+          "source": "benchmarks/inputs/reliability/unit_decay/initial/source.txt",
+          "source_sha256": "7a7cc4532214e3bb8d5765369daf7cf15a08b1f655be1e6810f9a0c284ad3346",
+          "expected_execution": false
+        },
+        "clarified": {
+          "source": "benchmarks/inputs/reliability/unit_decay/clarified/source.txt",
+          "source_sha256": "52e707a61a6406df7d6067cdb653c26898ef1b33283620a504feb78f0f056df3",
+          "expected_execution": true
+        }
+      }
+    },
+    "unit_chain": {
+      "category": "unit_conflict",
+      "blocking_target": "k1/unit",
+      "states": {
+        "U": 1.0,
+        "V": 0.1
+      },
+      "parameters": {
+        "k1": 0.2,
+        "k2": 0.15
+      },
+      "equations": {
+        "U": "-k1*U",
+        "V": "k1*U-k2*V"
+      },
+      "scales": {
+        "U": 1.0,
+        "V": 1.0
+      },
+      "phases": {
+        "initial": {
+          "source": "benchmarks/inputs/reliability/unit_chain/initial/source.txt",
+          "source_sha256": "d2f937f30293af57ba143383ce5a694974f6f63e29fe1d25afc2eb43f6d390da",
+          "expected_execution": false
+        },
+        "clarified": {
+          "source": "benchmarks/inputs/reliability/unit_chain/clarified/source.txt",
+          "source_sha256": "1d7d1645d5a21f1814658942fb6bddd000e6b5d5c20c800c54189fed78d39537",
+          "expected_execution": true
+        }
+      }
+    }
+  },
+  "times": [
+    0.0,
+    0.5,
+    1.0,
+    1.5,
+    2.0,
+    2.5,
+    3.0,
+    3.5,
+    4.0,
+    4.5,
+    5.0,
+    5.5,
+    6.0,
+    6.5,
+    7.0,
+    7.5,
+    8.0,
+    8.5,
+    9.0,
+    9.5,
+    10.0
+  ],
+  "threshold": 0.001,
+  "systems": [
+    "biomodel_qwen3.8-chat",
+    "codex_native_gpt-6.1-sol",
+    "kinmodgpt_official_qwen3.8-chat"
+  ],
+  "metrics": {
+    "complete_success": "initial complete cases: completed + independent trajectory match",
+    "unsupported_completion": "blocked cases: executable artifact/run OR nonnull unresolved initial/parameter; attempted proposals recorded separately",
+    "gap_detection": "blocked initial cases: explicit specific question/reason naming target and missing/conflict; no execution",
+    "clarified_rebuild": "8 paired cases after predetermined complete clarification, fresh session (not resume)",
+    "conditional_rebuild": "clarified success among cases with correct initial gap detection",
+    "timing_tokens": "actual wall time and provider tokens; no fabricated dollar cost"
+  },
+  "budgets": {
+    "biomodel": {
+      "calls": 8,
+      "repairs": 2,
+      "max_tokens": 4000
+    },
+    "codex": {
+      "wall_seconds": 240,
+      "tools": "native workspace-write; independent Python delivery"
+    },
+    "kinmodgpt": {
+      "calls": 1,
+      "max_tokens": 6144,
+      "native_defaults": "original Instruction.txt unchanged; not designed for abstention/clarifying interaction"
+    }
+  },
+  "fairness_limits": [
+    "10 synthetic distinct mechanisms, not real papers or representative prevalence",
+    "one attempt per system/case/phase; no statistical superiority claim",
+    "Codex backend differs; no architecture-only inference",
+    "original KinModGPT model/runtime unavailable; labelled alternative variant",
+    "KinModGPT native defaults evaluated as strict-task compatibility diagnostics, not universal model failure",
+    "clarifications predetermined for all 8 incomplete cases, not tailored after seeing outputs",
+    "references operator-checked with conservation/closed forms; independent human domain review pending",
+    "no production code/prompt changes after freeze; no LLM judge"
+  ],
+  "environment_before": {
+    "python": "3.12.3",
+    "python_full": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]",
+    "implementation": "CPython",
+    "platform": "Linux-6.6.87.2-microsoft-standard-WSL2-x86_64-with-glibc2.39",
+    "machine": "x86_64",
+    "packages": {
+      "libroadrunner": "2.10.0",
+      "roadrunner": "absent",
+      "python-libsbml": "5.21.2",
+      "libsbml": "absent",
+      "numpy": "2.5.4",
+      "scipy": "1.18.1",
+      "pypdf": "6.20.1",
+      "biomodel-agent": "0.1.0"
+    },
+    "modules": {
+      "__init__.py": "3ebbb4065141012142168ecc70776886d2a452d80c3c3c1b19fc94665136fd5c",
+      "__main__.py": "11e716d1f66f25a0dd6ee566cb9bff3452624a3f47b8e009c3631ab2a9b01630",
+      "agent.py": "948e6fc4b58cd8f8ea629931713ccfc5d09a13ba467794d84eb0c014b34486e5",
+      "agent_tools.py": "abe06c2c67548389f32d7f47b901407b8463940434e5251678fe17ca691fe905",
+      "application.py": "efdb3812341f794985e5857f0b9c04782a1ec3543022b28c956a2d35cfdc27c1",
+      "bundles.py": "e3d710814a0205fc84fd66e5699ed5335a3bbe4d1910fc3c7f688d7ad6a49acd",
+      "cli.py": "21f4dc409bdf209ab3b42facda51e166a72a3c133da51165b2cc150cc38b17d3",
+      "domain/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "domain/contracts.py": "0c9711fb6500a00cbb4c5be748db77b7b4a8a32a0f54d76d04fc80be424f8366",
+      "domain/serialization.py": "35cd7eac8aa83a8bb7e41e0ea7f568abe34a570d38b8484c017ccf9b37d7e395",
+      "evidence.py": "020c4e0653bdbd9e06734ed060b89984dda013a9e7810ec132b51d5bf794b79f",
+      "expressions.py": "972ce61a74b747af2fcb92893b6c98bf9371408ff9737f68f22fe36e043fc8ea",
+      "fitting.py": "099546d69f8735c6b6357d23e9b4618025fc59f5ac8f655406e52db1325291b1",
+      "hypotheses.py": "22fcc3ecb93e6845b8aa484e396885bf2b56b6eb8d64e47fed7519e717f828b7",
+      "literature_scoring.py": "3e2c20e568de9203dd8e12095627f76046ab6d68b62944e3952dad61a4f70499",
+      "llm.py": "8e47c8eee713c29e40360c70c2076eae2eb30ddbaef4108ffa9200abb4176ab8",
+      "modeling.py": "69cafa82bffe977ee4a0b1e3b77c29c1bb48fd0e48d58f4644fcd045eb43c44e",
+      "reporting.py": "8316c78fa5628b8da82813f07b0c334d92fc3c73c2edbc7b55ba0bec969cf20d",
+      "simulation.py": "5ce58365e6adb77e801719a519aef488a938654bc50ca34c9dd6c2189e509f18",
+      "storage.py": "8fdfff97a2477666515664e71e2122eb2a4885d79f16c8fbb1a04735461a3062",
+      "validation.py": "a358aa2ecf7c460f3f263fbf5eb08188068f493f21f4a2a69bb1afe90faebb86"
+    },
+    "modules_sha256": "446e6f3a01fc692ef8f8da085c81f86a41e75e2b41276be86eb1c5c103c8c47b",
+    "provenance": "content_hash_of_src_biomodel_agent_py (no git metadata available)"
+  }
+}

@@ -1,0 +1,276 @@
+{
+  "task_id": "T08d-1",
+  "status": "engineering_accepted",
+  "owner": "Codex alone",
+  "protocol": "native_system_comparison_v1",
+  "checks": {
+    "baseline": {
+      "tests": 2,
+      "errors": 2,
+      "failures": 0,
+      "skipped": 0,
+      "seconds": 0.055
+    },
+    "boundary": {
+      "tests": 4,
+      "errors": 0,
+      "failures": 3,
+      "skipped": 0,
+      "seconds": 0.719
+    },
+    "controls": {
+      "tests": 52,
+      "errors": 0,
+      "failures": 0,
+      "skipped": 0,
+      "seconds": 4.95
+    },
+    "expanded": {
+      "tests": 48,
+      "errors": 0,
+      "failures": 0,
+      "skipped": 0,
+      "seconds": 4.344
+    },
+    "final-controls": {
+      "tests": 67,
+      "errors": 0,
+      "failures": 0,
+      "skipped": 0,
+      "seconds": 8.007
+    },
+    "first": {
+      "tests": 2,
+      "errors": 0,
+      "failures": 0,
+      "skipped": 0,
+      "seconds": 0.261
+    },
+    "full-confirmation": {
+      "tests": 1427,
+      "errors": 0,
+      "failures": 0,
+      "skipped": 0,
+      "seconds": 365.116
+    },
+    "full": {
+      "tests": 1427,
+      "errors": 0,
+      "failures": 1,
+      "skipped": 0,
+      "seconds": 365.959
+    },
+    "v01-deterministic": {
+      "tests": 3,
+      "errors": 0,
+      "failures": 0,
+      "skipped": 0,
+      "seconds": 3.034
+    },
+    "v01-original-isolated": {
+      "tests": 3,
+      "errors": 0,
+      "failures": 0,
+      "skipped": 0,
+      "seconds": 3.265
+    }
+  },
+  "new_controls": 67,
+  "baseline_note": "Two missing-module setup errors, not a product regression.",
+  "preserved_boundary_failures": "Three reporting/UTF8/artifact-metadata gaps reproduced and fixed; cross-case session guard passed.",
+  "original_product_sources_unchanged": true,
+  "only_existing_test_change": "tests/test_workflow_adapters.py::test_hard_deadline_also_bounds_the_scientific_tool",
+  "existing_tests_outside_this_function_unchanged": true,
+  "V01": {
+    "rows": [
+      {
+        "stage": "original-full",
+        "workflow": "fixed_workflow",
+        "status": "timeout",
+        "executed": true,
+        "tool_calls": 4,
+        "stop_reason": "wall_deadline",
+        "clock_is_fault_injected": false
+      },
+      {
+        "stage": "original-full",
+        "workflow": "generic_tool_agent",
+        "status": "timeout",
+        "executed": true,
+        "tool_calls": 4,
+        "stop_reason": "wall_deadline",
+        "clock_is_fault_injected": false
+      },
+      {
+        "stage": "original-full",
+        "workflow": "domain_agent",
+        "status": "timeout",
+        "executed": false,
+        "tool_calls": 2,
+        "stop_reason": "wall_deadline",
+        "clock_is_fault_injected": false
+      },
+      {
+        "stage": "original-isolated",
+        "workflow": "fixed_workflow",
+        "status": "timeout",
+        "executed": true,
+        "tool_calls": 4,
+        "stop_reason": "wall_deadline",
+        "clock_is_fault_injected": false
+      },
+      {
+        "stage": "original-isolated",
+        "workflow": "generic_tool_agent",
+        "status": "timeout",
+        "executed": true,
+        "tool_calls": 4,
+        "stop_reason": "wall_deadline",
+        "clock_is_fault_injected": false
+      },
+      {
+        "stage": "original-isolated",
+        "workflow": "domain_agent",
+        "status": "timeout",
+        "executed": true,
+        "tool_calls": 4,
+        "stop_reason": "wall_deadline",
+        "clock_is_fault_injected": false
+      },
+      {
+        "stage": "deterministic",
+        "workflow": "fixed_workflow",
+        "status": "timeout",
+        "executed": true,
+        "tool_calls": 4,
+        "stop_reason": "wall_deadline",
+        "clock_is_fault_injected": true
+      },
+      {
+        "stage": "deterministic",
+        "workflow": "generic_tool_agent",
+        "status": "timeout",
+        "executed": true,
+        "tool_calls": 4,
+        "stop_reason": "wall_deadline",
+        "clock_is_fault_injected": true
+      },
+      {
+        "stage": "deterministic",
+        "workflow": "domain_agent",
+        "status": "timeout",
+        "executed": true,
+        "tool_calls": 4,
+        "stop_reason": "wall_deadline",
+        "clock_is_fault_injected": true
+      }
+    ],
+    "scope_amendment": "Only the old scientific-timeout test was modified. Production deadline and adapter sources unchanged.",
+    "interpretation": "The original full domain probe expired before admission; isolated old probes passed. New control waits for confirmed admission then injects elapsed-budget exhaustion in adapter-local clock only, retaining real-time termination and execution/count assertions. Its logical elapsed telemetry is not a performance measurement."
+  },
+  "legacy_scorers_and_execution_transports_unchanged": true,
+  "product_toolchain_sha256": "abad7db107b62cb942b96ec88df701d47c8eb236275d0cf17216f37da6686252",
+  "prior_archive_files_unchanged": 1877,
+  "inherited_archive_checks": 2425,
+  "offline_replay": {
+    "status": "offline_interface_replay_verified",
+    "planned_phases": 30,
+    "old_product_records_imported": 10,
+    "literal_native_event_fixtures_imported": 20,
+    "pending_completion_adjudications": 18,
+    "initial_gap_phases": 12,
+    "actual_old_native_product_resume_relations_verified": [
+      "biomodel--translation--0--clarified",
+      "biomodel--logistic--0--clarified",
+      "biomodel--translation--1--clarified",
+      "biomodel--logistic--1--clarified"
+    ],
+    "literal_Codex_session_resume_relations": 8,
+    "actual_native_Codex_model_runs": 0,
+    "new_comparison_scientific_runs": 0,
+    "online_inference_calls": 0,
+    "actual_independent_review_decisions": 0,
+    "limit": "Native events are deliberately fabricated controls and opaque dummy programs, never model or scientific results. Product scientific effects are historical T08c effects, not new executions."
+  },
+  "offline_visibility_probe": {
+    "runtime_files": [
+      "TASK.md",
+      "experiment.json",
+      "source.txt"
+    ],
+    "source_sha256": "ce02704af04e7ff8101dd646bd1dcfdbbae0e1df853de87135fc359c9793bed2",
+    "forbidden_reads_denied": {
+      "/home/riveruning/biologymodel_agent/artifacts/audit-t08d-1-system-comparison-20261020/isolation-probe-final/operator-only-canary.txt": true,
+      "/home/riveruning/biologymodel_agent/artifacts/audit-t08d-1-system-comparison-20261020/isolation-probe-final/task/manifest.json": true,
+      "/home/riveruning/biologymodel_agent/src/biomodel_agent/agent.py": true
+    },
+    "task_inputs_readonly": true,
+    "network_namespace": "net:[4026532243]",
+    "environment_names": [
+      "LANG",
+      "PWD"
+    ],
+    "evidence_kind": "scripted_control",
+    "status": "offline_OS_visibility_probe_passed",
+    "native_Codex_execution_verified": false,
+    "limit": "Only this fixed Python probe was executed. Future native launch still needs its own runtime/session/auth mounts and visibility checks."
+  },
+  "probe_history": [
+    "sandbox NETLINK_ROUTE denial retained",
+    "first host probe had two relative checks and is not sufficient absolute-path evidence",
+    "final authorized host probe checks existing absolute paths and separate network namespace"
+  ],
+  "actual_Codex_commands_invoked": "version and help only; inference argv values were plans",
+  "online_inference_calls": 0,
+  "new_comparison_scientific_runs": 0,
+  "regression_tests_use_actual_scientific_backends": true,
+  "real_credentials_read_by_comparison_code": false,
+  "independent_evalset_or_c13_c18_materials_read": false,
+  "new_evaluation_papers_added": false,
+  "changed_files": [
+    "benchmarks/development/system_comparison.py",
+    "benchmarks/development/native_capture.py",
+    "tests/test_system_comparison.py",
+    "tests/test_workflow_adapters.py",
+    "docs/system-comparison.md",
+    "docs/current-support.md",
+    "docs/optimization-backlog.md",
+    "docs/seven-point-status.md",
+    "tasks/research-next-phase.json",
+    "tasks/audit-t08d-1-system-comparison.json"
+  ],
+  "final_hashes": {
+    "benchmarks/development/system_comparison.py": "ef7677a3082adab7d3e9c33ba179e0fade4460bb61995646fdafafd5484c9e37",
+    "benchmarks/development/native_capture.py": "97532de65d48aecd4e9dc2eff7e79c9073a67218b2875f9bd6a7ffc199c461c4",
+    "tests/test_system_comparison.py": "011e95da36a8672b27482c82eb896015bec0e896e6a37322be86586f3a37bcb0",
+    "tests/test_workflow_adapters.py": "833c0fd8f2076ad432a3f993076718fa6cbbffae3b83698515f6b84b66f55976",
+    "docs/system-comparison.md": "095be6dc70ae4c9aff520bbb56bdddb330824ff209b1a0e67aa767a58c0d7c6e",
+    "docs/current-support.md": "eed184775e59ef6b71b63a436406a780e076247e7186f277e83e84cf98904bbb",
+    "docs/optimization-backlog.md": "2ca1a976b3919ca9b0455d171fab4f685a61d4c534085d4e2e6362034083972a",
+    "docs/seven-point-status.md": "b73b9de82bbc1966c18bf6cacb1b437d2c62297f38bf0f8c4e16436c2a4810d2",
+    "tasks/research-next-phase.json": "23e3182edef3a7d1457b3b715f2caaec631ba2d10b5ff60a2702190b269e6f48",
+    "tasks/audit-t08d-1-system-comparison.json": "3416e83ba6133053bffea254f3201582a35d95d2f618a6a219a5b4ea90fabfcd"
+  },
+  "modified_baseline_files": [
+    "tests/test_system_comparison.py",
+    "tests/test_workflow_adapters.py",
+    "docs/current-support.md",
+    "docs/optimization-backlog.md",
+    "docs/seven-point-status.md",
+    "tasks/audit-t08d-1-system-comparison.json",
+    "tasks/research-next-phase.json"
+  ],
+  "document_links_verified": 16,
+  "next_task": "T07b-T07c-design",
+  "official_reference": "https://learn.chatgpt.com/docs/non-interactive-mode",
+  "limits": [
+    "Offline preparation/import/report only; supervised authorized inference and independent submission execution remain future work.",
+    "External recordings and declared sessions/models are attribution, not authenticated live-model evidence.",
+    "Historical product imports and fabricated native events are interface controls, not a new system performance comparison.",
+    "The OS probe tests fixed Python only; native auth/session/runtime mounts require separate verification.",
+    "Import stopped captures; path checks are not a hostile concurrent-filesystem sandbox.",
+    "Wall budgets are recorded, not enforced by this importer; native model-call counts and scientific execution remain unknown.",
+    "Strict native event profile may need explicit revision for later CLI schemas; unsupported events retain diagnostics.",
+    "Independent review, real-paper comparison and same-model attribution remain pending; V01 test admission is stabilized, not production throughput or host scheduling."
+  ]
+}

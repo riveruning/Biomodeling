@@ -1,0 +1,11 @@
+{
+  "status": "pass",
+  "visible_paths": {
+    "/home/riveruning/biomodel_agent_evalset": false,
+    "/home/riveruning/biologymodel_agent/src": false,
+    "/home/riveruning/biologymodel_agent/artifacts/holdout-evaluation-20261017/operator-audit.json": false,
+    "/home/riveruning/biologymodel_agent/artifacts/holdout-evaluation-20261017/evaluator-canary.txt": false,
+    "/work": true
+  },
+  "mechanism": "Bubblewrap mount namespace, only per-stage workspace plus runtime allowlist"
+}

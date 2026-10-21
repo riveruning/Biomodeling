@@ -1,0 +1,239 @@
+[
+  {
+    "action": "submit_draft",
+    "args": {
+      "draft": {
+        "id": "c18_two_pathway_unit_conflict",
+        "states": [
+          {
+            "id": "M",
+            "initial": 5.0,
+            "unit": "a.u.",
+            "quantity_kind": "variable",
+            "nonnegative": false
+          }
+        ],
+        "parameters": [
+          {
+            "id": "kf",
+            "value": 0.18,
+            "unit": "per minute",
+            "origin": "source"
+          },
+          {
+            "id": "kg",
+            "value": 0.12,
+            "unit": "per minute",
+            "origin": "source"
+          }
+        ],
+        "compartment": {
+          "id": "C",
+          "size": 1,
+          "unit": "dimensionless"
+        },
+        "reactions": [],
+        "rate_rules": [
+          {
+            "state": "M",
+            "expression": "-(kf + kg)*M"
+          }
+        ],
+        "derived": [
+          {
+            "id": "v_f",
+            "expression": "kf*M",
+            "unit": "a.u./min"
+          },
+          {
+            "id": "v_g",
+            "expression": "kg*M",
+            "unit": "a.u./min"
+          }
+        ],
+        "time_unit": "minute"
+      },
+      "evidence": [
+        {
+          "target": "M/initial",
+          "source_ref": "4d221b2eeb9104b1c2a9bd1396cb05a95e97c000dc9952b2881e94a87c76028f",
+          "page": 1,
+          "quote": "M(0) = 5.0 a.u."
+        },
+        {
+          "target": "kf/value",
+          "source_ref": "4d221b2eeb9104b1c2a9bd1396cb05a95e97c000dc9952b2881e94a87c76028f",
+          "page": 1,
+          "quote": "kf = 0.18 per minute"
+        },
+        {
+          "target": "kg/value",
+          "source_ref": "4d221b2eeb9104b1c2a9bd1396cb05a95e97c000dc9952b2881e94a87c76028f",
+          "page": 1,
+          "start": 877,
+          "end": 897
+        },
+        {
+          "target": "rule:M/expression",
+          "source_ref": "4d221b2eeb9104b1c2a9bd1396cb05a95e97c000dc9952b2881e94a87c76028f",
+          "page": 1,
+          "quote": "dM/dt = -(kf + kg)*M"
+        },
+        {
+          "target": "derived:v_f/expression",
+          "source_ref": "4d221b2eeb9104b1c2a9bd1396cb05a95e97c000dc9952b2881e94a87c76028f",
+          "page": 1,
+          "quote": "v_f = kf*M"
+        },
+        {
+          "target": "derived:v_g/expression",
+          "source_ref": "4d221b2eeb9104b1c2a9bd1396cb05a95e97c000dc9952b2881e94a87c76028f",
+          "page": 1,
+          "quote": "v_g = kg*M"
+        },
+        {
+          "target": "time_unit",
+          "source_ref": "4d221b2eeb9104b1c2a9bd1396cb05a95e97c000dc9952b2881e94a87c76028f",
+          "page": 1,
+          "quote": "sampled every 0.25 min from t = 0 to t = 8 min"
+        },
+        {
+          "target": "C/size",
+          "source_ref": "4d221b2eeb9104b1c2a9bd1396cb05a95e97c000dc9952b2881e94a87c76028f",
+          "page": 1,
+          "quote": "single well-mixed compartment of size 1 (dimensionless)"
+        },
+        {
+          "target": "kf/unit",
+          "source_ref": "e7e98c2a81330da24ad5e999e8011c36237eb2c279783e1a2e49967feeef6483",
+          "page": 1,
+          "quote": "kf = 0.18 per minute = 10.8 per hour = 0.003 per second",
+          "claim_type": "system_conjecture"
+        }
+      ],
+      "mechanism": "Metabolite M cleared by two parallel irreversible first-order routes (fast kf, slow kg) on the same pool; rate constants add: dM/dt = -(kf+kg)*M."
+    }
+  },
+  {
+    "action": "submit_draft",
+    "args": {
+      "draft": {
+        "id": "c18_two_pathway_unit_conflict",
+        "states": [
+          {
+            "id": "M",
+            "initial": 5.0,
+            "unit": "a.u.",
+            "quantity_kind": "variable",
+            "nonnegative": false
+          }
+        ],
+        "parameters": [
+          {
+            "id": "kf",
+            "value": 0.18,
+            "unit": "per minute",
+            "origin": "source"
+          },
+          {
+            "id": "kg",
+            "value": 0.12,
+            "unit": "per minute",
+            "origin": "source"
+          }
+        ],
+        "compartment": {
+          "id": "C",
+          "size": 1,
+          "unit": "dimensionless"
+        },
+        "reactions": [],
+        "rate_rules": [
+          {
+            "state": "M",
+            "expression": "-(kf + kg)*M"
+          }
+        ],
+        "derived": [
+          {
+            "id": "v_f",
+            "expression": "kf*M",
+            "unit": "a.u./min"
+          },
+          {
+            "id": "v_g",
+            "expression": "kg*M",
+            "unit": "a.u./min"
+          }
+        ],
+        "time_unit": "minute"
+      },
+      "evidence": [
+        {
+          "target": "M/initial",
+          "source_ref": "4d221b2eeb9104b1c2a9bd1396cb05a95e97c000dc9952b2881e94a87c76028f",
+          "page": 1,
+          "quote": "M(0) = 5.0 a.u."
+        },
+        {
+          "target": "kf/value",
+          "source_ref": "e7e98c2a81330da24ad5e999e8011c36237eb2c279783e1a2e49967feeef6483",
+          "page": 1,
+          "quote": "# Pre-written researcher clarification (frozen before any run)\n# case: c18_two_pathway_unit_conflict\n# blocking target: kf/unit\n# This text is appended verbatim to source.txt to form the clarified phase.\n# It was written without observing any system's output.\n\nThe legend's 'per hour' annotation for kf is a typographical error. All three figures describe one physical rate: kf = 0.18 per minute = 10.8 per hour = 0.003 per second. kg = 0.12 per minute as printed. Use the per-minute values directly with the minute timetable; total rate kf + kg = 0.30 per minute.\n"
+        },
+        {
+          "target": "kg/value",
+          "source_ref": "e7e98c2a81330da24ad5e999e8011c36237eb2c279783e1a2e49967feeef6483",
+          "page": 1,
+          "quote": "# Pre-written researcher clarification (frozen before any run)\n# case: c18_two_pathway_unit_conflict\n# blocking target: kf/unit\n# This text is appended verbatim to source.txt to form the clarified phase.\n# It was written without observing any system's output.\n\nThe legend's 'per hour' annotation for kf is a typographical error. All three figures describe one physical rate: kf = 0.18 per minute = 10.8 per hour = 0.003 per second. kg = 0.12 per minute as printed. Use the per-minute values directly with the minute timetable; total rate kf + kg = 0.30 per minute.\n"
+        },
+        {
+          "target": "rule:M/expression",
+          "source_ref": "4d221b2eeb9104b1c2a9bd1396cb05a95e97c000dc9952b2881e94a87c76028f",
+          "page": 1,
+          "quote": "dM/dt = -(kf + kg)*M"
+        },
+        {
+          "target": "derived:v_f/expression",
+          "source_ref": "4d221b2eeb9104b1c2a9bd1396cb05a95e97c000dc9952b2881e94a87c76028f",
+          "page": 1,
+          "quote": "v_f = kf*M"
+        },
+        {
+          "target": "derived:v_g/expression",
+          "source_ref": "4d221b2eeb9104b1c2a9bd1396cb05a95e97c000dc9952b2881e94a87c76028f",
+          "page": 1,
+          "quote": "v_g = kg*M"
+        },
+        {
+          "target": "time_unit",
+          "source_ref": "4d221b2eeb9104b1c2a9bd1396cb05a95e97c000dc9952b2881e94a87c76028f",
+          "page": 1,
+          "quote": "sampled every 0.25 min from t = 0 to t = 8 min"
+        },
+        {
+          "target": "C/size",
+          "source_ref": "4d221b2eeb9104b1c2a9bd1396cb05a95e97c000dc9952b2881e94a87c76028f",
+          "page": 1,
+          "quote": "single well-mixed compartment of size 1 (dimensionless)"
+        },
+        {
+          "target": "kf/unit",
+          "source_ref": "e7e98c2a81330da24ad5e999e8011c36237eb2c279783e1a2e49967feeef6483",
+          "page": 1,
+          "quote": "kf = 0.18 per minute = 10.8 per hour = 0.003 per second",
+          "claim_type": "system_conjecture"
+        }
+      ],
+      "mechanism": "Metabolite M cleared by two parallel irreversible first-order routes (fast kf, slow kg) on the same pool; rate constants add: dM/dt = -(kf+kg)*M."
+    }
+  },
+  {
+    "action": "run",
+    "args": {}
+  },
+  {
+    "action": "finish",
+    "args": {}
+  }
+]

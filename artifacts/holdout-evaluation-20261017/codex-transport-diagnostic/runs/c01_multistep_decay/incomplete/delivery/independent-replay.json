@@ -1,0 +1,8 @@
+{
+  "exit_code": 0,
+  "stdout": "{\"status\": \"needs_input\", \"reason\": \"The mechanism names S1 and S2, but the equations, initial conditions, and reporting requirement name A and B without specifying their correspondence. Are S1 and S2 aliases for A and B, respectively? Confirm that mapping or correct the species names and their associated equations and initial conditions.\"}\n",
+  "stderr": "",
+  "reviewed_sha256": "1552f1985e8cc61a61d9ffcd890441fe0f03bbf5ad34b3c1a400abb1c51f184c",
+  "status": "declined",
+  "reason": "The mechanism names S1 and S2, but the equations, initial conditions, and reporting requirement name A and B without specifying their correspondence. Are S1 and S2 aliases for A and B, respectively? Confirm that mapping or correct the species names and their associated equations and initial conditions."
+}

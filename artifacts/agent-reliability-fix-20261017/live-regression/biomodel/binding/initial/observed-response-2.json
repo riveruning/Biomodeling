@@ -1,0 +1,28 @@
+{
+  "id": "chatcmpl-22f3721f-b48f-4dad-8194-3cc85e612147",
+  "created": 1792237592,
+  "model": "qwen3.8-chat",
+  "object": "chat.completion",
+  "choices": [
+    {
+      "finish_reason": "stop",
+      "index": 0,
+      "message": {
+        "content": "{\"action\": \"submit_draft\", \"args\": {\"draft\": {\"id\": \"synthetic_ode_model\", \"time_unit\": \"minutes\", \"compartment\": {\"id\": \"comp\", \"size\": 1, \"unit\": \"dimensionless\"}, \"states\": [{\"id\": \"A\", \"initial\": 1.5, \"unit\": \"dimensionless\", \"quantity_kind\": \"variable\", \"nonnegative\": false}, {\"id\": \"B\", \"initial\": 1.0, \"unit\": \"dimensionless\", \"quantity_kind\": \"variable\", \"nonnegative\": false}, {\"id\": \"C\", \"initial\": 0.0, \"unit\": \"dimensionless\", \"quantity_kind\": \"variable\", \"nonnegative\": false}], \"parameters\": [{\"id\": \"ka\", \"value\": null, \"unit\": \"unknown\", \"origin\": \"unknown\"}], \"reactions\": [], \"rate_rules\": [{\"state\": \"A\", \"expression\": \"-ka*A*B\"}, {\"state\": \"B\", \"expression\": \"-ka*A*B\"}, {\"state\": \"C\", \"expression\": \"ka*A*B\"}], \"derived\": []}, \"evidence\": [{\"target\": \"time_unit\", \"source_ref\": \"8c78072434ec04dd21309b39232d52423c619a0036f8f3531320a7a711246d37\", \"page\": 1, \"quote\": \"Time t is in minutes.\"}, {\"target\": \"comp/size\", \"source_ref\": \"8c78072434ec04dd21309b39232d52423c619a0036f8f3531320a7a711246d37\", \"page\": 1, \"quote\": \"The fixed compartment has size 1 dimensionless.\"}, {\"target\": \"A/initial\", \"source_ref\": \"8c78072434ec04dd21309b39232d52423c619a0036f8f3531320a7a711246d37\", \"page\": 1, \"quote\": \"Initial A = 1.5.\"}, {\"target\": \"B/initial\", \"source_ref\": \"8c78072434ec04dd21309b39232d52423c619a0036f8f3531320a7a711246d37\", \"page\": 1, \"quote\": \"Initial B = 1.0.\"}, {\"target\": \"C/initial\", \"source_ref\": \"8c78072434ec04dd21309b39232d52423c619a0036f8f3531320a7a711246d37\", \"page\": 1, \"quote\": \"Initial C = 0.0.\"}, {\"target\": \"ka/value\", \"source_ref\": \"8c78072434ec04dd21309b39232d52423c619a0036f8f3531320a7a711246d37\", \"page\": 1, \"quote\": \"Parameter ka is not reported.\"}, {\"target\": \"rule:A/expression\", \"source_ref\": \"8c78072434ec04dd21309b39232d52423c619a0036f8f3531320a7a711246d37\", \"page\": 1, \"quote\": \"Equation dA/dt = -ka*A*B.\"}, {\"target\": \"rule:B/expression\", \"source_ref\": \"8c78072434ec04dd21309b39232d52423c619a0036f8f3531320a7a711246d37\", \"page\": 1, \"quote\": \"Equation dB/dt = -ka*A*B.\"}, {\"target\": \"rule:C/expression\", \"source_ref\": \"8c78072434ec04dd21309b39232d52423c619a0036f8f3531320a7a711246d37\", \"page\": 1, \"quote\": \"Equation dC/dt = ka*A*B.\"}], \"mechanism\": \"Mass-action ODE system with rate constant ka\"}, \"reason\": \"Source fully specifies ODE model; ka value unknown so null.\"}}",
+        "role": "assistant",
+        "provider_specific_fields": {
+          "refusal": null
+        }
+      },
+      "provider_specific_fields": {}
+    }
+  ],
+  "usage": {
+    "completion_tokens": 1144,
+    "prompt_tokens": 1252,
+    "total_tokens": 2396,
+    "prompt_tokens_details": {
+      "cached_tokens": 0
+    }
+  }
+}

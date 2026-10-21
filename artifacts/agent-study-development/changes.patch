@@ -1,0 +1,955 @@
+--- before/src/biomodel_agent/studies.py
++++ after/src/biomodel_agent/studies.py
+@@ -0,0 +1,174 @@
++"""Frozen, bounded adaptation-study plans shared by CLI and the agent tool.
++
++The operator selects supported candidate templates and data before inference.
++Holdout values never appear in the model-facing plan/result summaries.
++"""
++from __future__ import annotations
++
++import math
++from copy import deepcopy
++
++from . import hypotheses
++from .domain.contracts import ExperimentSpec
++from .domain.serialization import from_dict, to_dict
++from .storage import canonical_bytes
++
++PLAN_KIND = 'hypothesis_study_plan'
++PROFILE = 'adaptation_study_v1'
++_CONFIG_KEYS = {'training', 'holdout', 'candidates', 'starts', 'seed', 'max_nfev', 'timeout_s', 'separation_threshold'}
++
++
++def _integer(value, name, lo, hi):
++    if type(value) is not int or not lo <= value <= hi:
++        raise ValueError(f'{name} must be an integer in {lo}..{hi}')
++    return value
++
++
++def _number(value, name, *, positive=False):
++    if isinstance(value, bool) or not isinstance(value, (int, float)):
++        raise ValueError(f'{name} must be a finite number')
++    try:
++        value = float(value)
++    except OverflowError as exc:
++        raise ValueError(f'{name} must be finite') from exc
++    if not math.isfinite(value) or (positive and value <= 0):
++        raise ValueError(f'{name} must be finite' + (' and positive' if positive else ''))
++    return value
++
++
++def _conditions(rows, role, candidates):
++    if not isinstance(rows, (list, tuple)) or len(rows) > 16 or (role == 'training' and not rows):
++        raise ValueError(f'{role} requires at most 16 conditions (training must be nonempty)')
++    result, ids, samples = [], set(), 0
++    for row in rows:
++        if not isinstance(row, dict) or set(row) - {'id', 'role', 'experiment', 'values', 'sigma', 'scales'}:
++            raise ValueError(f'invalid {role} condition fields')
++        if row.get('role') != role:
++            raise ValueError(f'{role} condition role must be explicit')
++        name = row.get('id')
++        if not isinstance(name, str) or not name.strip() or len(name) > 128 or name in ids:
++            raise ValueError(f'{role} conditions need unique nonempty IDs of at most 128 characters')
++        ids.add(name)
++        spec = row.get('experiment')
++        spec = spec if isinstance(spec, ExperimentSpec) else from_dict(ExperimentSpec, spec)
++        if not 2 <= len(spec.times) <= 500 or spec.times[0] < 0 or spec.times[-1] > 10000:
++            raise ValueError('study experiments require 2..500 samples between 0 and 10000')
++        if spec.time_unit not in ('second', 'unknown'):
++            raise ValueError('adaptation templates require experiment time_unit second or explicit unknown')
++        if spec.segments:
++            raise ValueError('study profile supports constant condition overrides, not input segments')
++        shared_states = set.intersection(*(set(s.id for s in d.states) for d in candidates.values()))
++        if not set(spec.initial_overrides).issubset(shared_states):
++            raise ValueError('initial overrides must target a state in every selected candidate')
++        if not set(spec.parameter_overrides).issubset({'u', 'b'}):
++            raise ValueError('only u/b interventions are allowed; fitted parameters remain frozen by the plan')
++        if any(not 0 <= v <= 10 for v in spec.parameter_overrides.values()):
++            raise ValueError('study u/b condition overrides must be between 0 and 10')
++        values, sigma, scales = row.get('values'), row.get('sigma'), row.get('scales', {'response': 1.})
++        if any(not isinstance(item, dict) or set(item) != {'response'} for item in (values, sigma, scales)):
++            raise ValueError('study values, sigma and scales must match the fixed response observation')
++        column = values['response']
++        if not isinstance(column, (list, tuple)) or len(column) != len(spec.times):
++            raise ValueError('response data must match the experiment time grid')
++        result.append({'id': name, 'role': role, 'experiment': to_dict(spec),
++                       'values': {'response': [_number(x, 'response') for x in column]},
++                       'sigma': {'response': _number(sigma['response'], 'sigma', positive=True)},
++                       'scales': {'response': _number(scales['response'], 'scale', positive=True)}})
++        samples += len(column)
++    if samples > 2000:
++        raise ValueError(f'{role} exceeds the 2000-sample budget')
++    return result
++
++
++def _payload(config):
++    if not isinstance(config, dict) or set(config) - _CONFIG_KEYS:
++        raise ValueError('unknown study configuration fields')
++    available = hypotheses.adaptation_candidates()
++    names = config.get('candidates', list(available))
++    if (not isinstance(names, (list, tuple)) or not 1 <= len(names) <= 3
++            or any(not isinstance(n, str) or n not in available for n in names) or len(set(names)) != len(names)):
++        raise ValueError('select 1..3 distinct supported adaptation candidates')
++    candidates = {name: available[name] for name in names}
++    training = _conditions(config.get('training'), 'training', candidates)
++    holdout = _conditions(config.get('holdout', []), 'holdout', candidates)
++    if {r['id'] for r in training} & {r['id'] for r in holdout}:
++        raise ValueError('training and holdout IDs must be disjoint')
++    starts = _integer(config.get('starts', 3), 'starts', 1, 8)
++    seed = _integer(config.get('seed', 17), 'seed', 0, 2**32 - 1)
++    evaluations = _integer(config.get('max_nfev', 100), 'max_nfev', 1, 1000)
++    timeout = _number(config.get('timeout_s', 30.), 'timeout_s', positive=True)
++    if timeout > 90:
++        raise ValueError('study timeout_s must not exceed 90 seconds per candidate fit')
++    threshold = _number(config.get('separation_threshold', .05), 'separation_threshold', positive=True)
++    normalized = {'training': training, 'holdout': holdout, 'candidates': list(names),
++                  'starts': starts, 'seed': seed, 'max_nfev': evaluations,
++                  'timeout_s': timeout, 'separation_threshold': threshold}
++    return {'schema_version': 1, 'profile': PROFILE, 'config': normalized,
++            'candidates': {name: to_dict(draft) for name, draft in candidates.items()},
++            'bounds': {name: {key: list(pair) for key, pair in hypotheses._default_bounds(draft).items()}
++                       for name, draft in candidates.items()},
++            'observations': [{'id': 'response', 'expression': 'x'}],
++            'authority': 'operator_frozen_protocol', 'scientific_status': 'not_verified'}
++
++
++def prepare_study(store, config):
++    """Validate and freeze the complete study before any model or fitting call."""
++    return store.put(PLAN_KIND, _payload(config))
++
++
++def load_plan(store, plan_ref):
++    record = store.get(plan_ref)
++    if record['kind'] != PLAN_KIND:
++        raise ValueError('study_plan_ref must identify a hypothesis study plan')
++    payload = record['payload']
++    if not isinstance(payload, dict) or 'config' not in payload:
++        raise ValueError('invalid study plan')
++    # Reject altered schemas, templates, bounds or scoring rules, rather than
++    # silently changing a frozen protocol after a software upgrade.
++    if canonical_bytes(payload) != canonical_bytes(_payload(payload['config'])):
++        raise ValueError('study plan does not match its versioned profile; prepare a new plan')
++    return payload
++
++
++def plan_summary(store, plan_ref):
++    plan = load_plan(store, plan_ref)
++    config = plan['config']
++    return {'plan_ref': plan_ref, 'profile': plan['profile'], 'candidates': config['candidates'],
++            'training_conditions': len(config['training']), 'holdout_conditions': len(config['holdout']),
++            'starts': config['starts'], 'max_nfev': config['max_nfev'], 'timeout_s': config['timeout_s'],
++            'notice': 'Operator-frozen conjecture templates. Run once; no candidate/bound/data changes. '
++                      'Holdout values are unavailable. Fit and ranking do not prove biological truth.'}
++
++
++def execute_study(store, plan_ref):
++    plan = load_plan(store, plan_ref)
++    from .domain.contracts import ModelDraft
++    candidates = {name: from_dict(ModelDraft, value) for name, value in plan['candidates'].items()}
++    config = deepcopy(plan['config'])
++    result_ref = hypotheses.run_hypothesis_study(
++        store, candidates, config['training'], holdout=config['holdout'],
++        observations=plan['observations'], bounds=plan['bounds'], starts=config['starts'],
++        seed=config['seed'], max_nfev=config['max_nfev'], timeout_s=config['timeout_s'],
++        separation_threshold=config['separation_threshold'])
++    record = store.get(result_ref)
++    usable = sum(c['fit_status'] == 'succeeded' and c['crosscheck']['ok']
++                 for c in record['payload']['candidates'].values())
++    return store.put('hypothesis_study', {**record['payload'], 'plan_ref': plan_ref,
++                                          'scientific_status': 'not_verified',
++                                          'usable_candidates': usable, 'completion_eligible': usable > 0},
++                     refs=tuple(dict.fromkeys([plan_ref, *record['refs']])))
++
++
++def result_summary(store, result_ref):
++    record = store.get(result_ref)
++    if record['kind'] != 'hypothesis_study':
++        raise ValueError('result must identify a hypothesis study')
++    result = record['payload']
++    return {'execution_status': result['status'], 'scientific_status': 'not_verified',
++            'usable_candidates': result.get('usable_candidates', 0),
++            'completion_eligible': result.get('completion_eligible', False),
++            'comparison': deepcopy(result['comparison']),
++            'candidates': {name: {key: deepcopy(candidate[key]) for key in
++                ('fit_status', 'parameters', 'training_weighted_rmse', 'heldout_weighted_rmse', 'heldout_scaled_rmse')}
++                for name, candidate in result['candidates'].items()},
++            'note': 'Only training data entered fitting. Frozen holdout scoring; no refitting or mechanism proof.'}
+--- before/src/biomodel_agent/agent.py
++++ after/src/biomodel_agent/agent.py
+@@ -6,7 +6,7 @@
+ import time
+ from typing import Any
+ 
+-from . import agent_tools, application, time_units, validation, memory, skills
++from . import agent_tools, application, time_units, validation, memory, skills, studies
+ from .domain.contracts import (
+     ExperimentSpec, FrozenMap, ModelArtifact, ObservationSpec, SolverConfig,
+     SimulationResult,
+@@ -16,7 +16,7 @@
+ from .storage import REF_RE, ArtifactError
+ 
+ MODES = ("reproduction", "hypothesis")
+-ACTIONS = ("inspect_source", "search_sources", "recall_memory", "load_skill", "submit_draft", "run", "finish", "ask_researcher")
++ACTIONS = ("inspect_source", "search_sources", "recall_memory", "load_skill", "run_study", "submit_draft", "run", "finish", "ask_researcher")
+ READ_LIMIT = 8000
+ MAX_RESUMPTIONS = 8
+ RESUME_VERSION = 1
+@@ -110,7 +110,8 @@
+               mode: str = "reproduction", max_calls: int = 8, max_repairs: int = 2,
+               allowed_mechanisms: tuple = (), reference: SimulationResult | None = None,
+               scales: dict | None = None, max_retries: int = 2, *,
+-              memory_project: str | None = None, memory_model_ref: str | None = None) -> str:
++              memory_project: str | None = None, memory_model_ref: str | None = None,
++              study_plan_ref: str | None = None) -> str:
+     if type(max_calls) is not int or not 1 <= max_calls <= 50 or type(max_repairs) is not int or not 0 <= max_repairs <= 5:
+         raise ValueError('invalid agent budgets')
+     if type(max_retries) is not int or not 0 <= max_retries <= 5:
+@@ -130,6 +131,15 @@
+     except Exception:
+         raise ValueError("invalid or unavailable source refs")
+ 
++    if study_plan_ref is not None:
++        if mode != 'hypothesis':
++            raise ValueError('a study plan requires hypothesis mode')
++        if reference is not None or scales is not None or observations or solver is not None or allowed_mechanisms:
++            raise ValueError('study protocol is fully frozen by its plan; separate scientific settings are not allowed')
++        study_plan = studies.load_plan(store, study_plan_ref)
++        first_experiment = from_dict(ExperimentSpec, study_plan['config']['training'][0]['experiment'])
++        if experiment != first_experiment:
++            raise ValueError('study task experiment must match the first frozen training condition')
+     if memory_project is None and memory_model_ref is not None:
+         raise ValueError('memory_model_ref requires memory_project')
+     memory_scope = memory.snapshot(store, project_id=memory_project, model_ref=memory_model_ref,
+@@ -137,11 +147,16 @@
+     context_refs = memory_scope['memory_refs'][:] if memory_scope else []
+     if memory_model_ref:
+         context_refs.append(memory_model_ref)
++    if study_plan_ref:
++        context_refs.append(study_plan_ref)
++
++    task_skills = [item for item in skills.catalog()
++                   if (item['name'] == 'constrained_study') == (study_plan_ref is not None)]
+ 
+     # Store the full scientific configuration; evaluator references stay internal.
+     task_ref = store.put("agent_task", {
+         "resume_version": RESUME_VERSION, "mode": mode, "source_refs": source_refs,
+-        "memory_scope": memory_scope, "skill_catalog": skills.catalog(),
++        "memory_scope": memory_scope, "skill_catalog": task_skills, "study_plan_ref": study_plan_ref,
+         "experiment": to_dict(experiment), "solver": to_dict(solver or SolverConfig()),
+         "observations": [to_dict(o) for o in observations],
+         "reference": to_dict(reference) if reference is not None else None,
+@@ -211,6 +226,8 @@
+     validation.validate_scales(task['scales'], reference.values if reference is not None else ())
+     if task.get('memory_scope') is not None:
+         memory.validate_snapshot(store, task['memory_scope'], cp['source_refs'])
++    if task.get('study_plan_ref') is not None:
++        studies.load_plan(store, task['study_plan_ref'])
+     # Preserve bytes and identity exactly. This assertion is not a verified paper correction.
+     blob_ref = store.put_blob(reply.encode('utf-8'))
+     clarification_ref = store.put('researcher_clarification', {
+@@ -252,12 +269,15 @@
+     task_config = store.get(task_ref)['payload']
+     memory_scope = task_config.get('memory_scope')
+     skill_catalog = task_config.get('skill_catalog', [])
++    study_plan_ref = task_config.get('study_plan_ref')
++    study_brief = studies.plan_summary(store, study_plan_ref) if study_plan_ref is not None else None
+     materials = {r: {"pages": [{"page":p["number"],"chars":len(p["text"])} for p in store.get(r)["payload"]["pages"]]} for r in source_refs}
+     messages: list[dict] = [
+         {"role": "system", "content": build_system_prompt()},
+         _user(_json({"materials": materials, "task": {"mode": mode,
+                                                        "experiment": _experiment_brief(experiment), "allowed_mechanisms":list(allowed_mechanisms)},
+-                       "memory_available": memory_scope is not None, "skills": skill_catalog})),
++                       "memory_available": memory_scope is not None, "skills": skill_catalog,
++                       "study": study_brief})),
+     ]
+     model_ref = run_ref = draft_ref = None
+     artifact = None
+@@ -365,6 +385,42 @@
+                                            model_ref, run_ref, source_refs, draft_ref))
+             return finish_session(store, "failed", mode, source_refs, model_ref, run_ref, events,
+                           calls, repairs, checkpoints, draft_ref)
++
++        if study_plan_ref is not None and action in ('submit_draft', 'run'):
++            feedback = {'tool': action, 'ok': False,
++                        'error': 'This task has a frozen study plan. Use run_study; do not submit or evaluate another model.'}
++            events.append({'type': 'tool_error', 'call': calls, **feedback})
++            messages.append(_user(_json(feedback)))
++            continue
++
++        if action == 'run_study':
++            if args or mode != 'hypothesis' or study_plan_ref is None or run_count:
++                feedback = {'tool': action, 'ok': False,
++                            'error': 'run_study requires empty args, an authorized hypothesis study plan, and no previous evaluation.'}
++                events.append({'type': 'tool_error', 'call': calls, **feedback})
++                messages.append(_user(_json(feedback)))
++                continue
++            run_count += 1
++            # Save the consumed execution budget before potentially long fitting.
++            checkpoints.append(save_checkpoint(store, state, calls, repairs, messages,
++                                               model_ref, run_ref, source_refs, draft_ref))
++            try:
++                run_ref = studies.execute_study(store, study_plan_ref)
++                facts = studies.result_summary(store, run_ref)
++            except Exception as exc:
++                failure_ref = store.put('study_execution_failure',
++                    {'plan_ref': study_plan_ref, 'error': f'{type(exc).__name__}: {exc}'}, refs=(study_plan_ref,))
++                events.append({'type': 'tool_error', 'call': calls, 'tool': action,
++                               'error': 'Frozen study execution failed; see internal diagnostic artifact.',
++                               'artifact_refs': [failure_ref]})
++                state = 'incomplete'
++                break
++            feedback = {'tool': action, 'ok': True, 'run_ref': run_ref, **facts}
++            events.append({'type': 'tool_result', 'call': calls, **feedback})
++            messages.append(_user(_json(feedback)))
++            checkpoints.append(save_checkpoint(store, state, calls, repairs, messages,
++                                               model_ref, run_ref, source_refs, draft_ref))
++            continue
+ 
+         if action in ('search_sources', 'recall_memory', 'load_skill'):
+             try:
+@@ -513,9 +569,15 @@
+             if args:
+                 state = "failed"
+                 break
+-            finished_run = store.get(run_ref)["payload"] if run_ref is not None else {}
+-            state = "completed" if (finished_run.get("status") == "succeeded"
+-                                      and finished_run.get("scientific_status") != "failed") else "incomplete"
++            finished_record = store.get(run_ref) if run_ref is not None else None
++            finished_run = finished_record['payload'] if finished_record else {}
++            if study_plan_ref is not None:
++                state = 'completed' if (finished_record and finished_record['kind'] == 'hypothesis_study'
++                                        and finished_run.get('status') == 'completed'
++                                        and finished_run.get('completion_eligible') is True) else 'incomplete'
++            else:
++                state = "completed" if (finished_run.get("status") == "succeeded"
++                                          and finished_run.get("scientific_status") != "failed") else "incomplete"
+             break
+ 
+         if action == "ask_researcher":
+--- before/src/biomodel_agent/cli.py
++++ after/src/biomodel_agent/cli.py
+@@ -163,10 +163,19 @@
+         materials = [ingest_source(store,p) for p in args.source]
+         provider = ChatProvider(base_url=base_url, model=model, api_key_env=args.api_key_env,
+                                 json_mode=args.json_mode)
+-        experiment = from_dict(ExperimentSpec, _load_json(args.experiment, "experiment JSON"))
++        if args.study_plan_ref:
++            from .studies import load_plan
++            plan = load_plan(store, args.study_plan_ref)
++            exp_data = _load_json(args.experiment, "experiment JSON") if args.experiment else plan['config']['training'][0]['experiment']
++        elif args.experiment:
++            exp_data = _load_json(args.experiment, "experiment JSON")
++        else:
++            return _fail('agent requires --experiment or --study-plan-ref')
++        experiment = from_dict(ExperimentSpec, exp_data)
+         ref = agent_mod.run_agent(store,provider,materials,experiment,mode=args.mode,
+                                   allowed_mechanisms=tuple(args.allowed_mechanism),max_calls=args.max_calls,
+-                                  memory_project=args.memory_project, memory_model_ref=args.memory_model_ref)
++                                  memory_project=args.memory_project, memory_model_ref=args.memory_model_ref,
++                                  study_plan_ref=args.study_plan_ref)
+ 
+     except Exception as exc:
+         return _fail(f"agent failed: {exc}")
+@@ -289,6 +298,38 @@
+     return 0
+ 
+ 
++def _cmd_study_prepare(args):
++    from .storage import ArtifactStore
++    from .studies import prepare_study, plan_summary
++    try:
++        config = {'training': _load_json(args.training, 'training JSON'),
++                  'holdout': _load_json(args.holdout, 'holdout JSON') if args.holdout else [],
++                  'starts': args.starts, 'seed': args.seed, 'max_nfev': args.max_nfev,
++                  'timeout_s': args.timeout, 'separation_threshold': args.separation_threshold}
++        if args.candidate:
++            config['candidates'] = args.candidate
++        store = ArtifactStore(args.store)
++        ref = prepare_study(store, config)
++        result = plan_summary(store, ref)
++    except Exception as exc:
++        return _fail(f'study prepare failed: {exc}')
++    print(json.dumps(result, ensure_ascii=False))
++    return 0
++
++
++def _cmd_study_run(args):
++    from .storage import ArtifactStore
++    from .studies import execute_study, result_summary
++    try:
++        store = ArtifactStore(args.store)
++        ref = execute_study(store, args.ref)
++        summary = result_summary(store, ref)
++    except Exception as exc:
++        return _fail(f'study run failed: {exc}')
++    print(json.dumps({'ref': ref, **summary}, ensure_ascii=False))
++    return 0 if summary['completion_eligible'] else 1
++
++
+ def main(argv: list[str] | None = None) -> int:
+     parser = argparse.ArgumentParser(prog="biomodel_agent", description="Fact-driven biology model reproduction CLI")
+     sub = parser.add_subparsers(dest="command", required=True)
+@@ -322,7 +363,7 @@
+ 
+     p = sub.add_parser("agent", help="LLM-guided reproduction or hypothesis study")
+     p.add_argument("--source", action="append", required=True)
+-    p.add_argument("--experiment", required=True)
++    p.add_argument("--experiment", help="required unless a study plan supplies the experiment")
+     _add_store(p)
+     p.add_argument("--base-url")
+     p.add_argument("--model")
+@@ -334,6 +375,7 @@
+     p.add_argument("--allowed-mechanism", action="append", default=[])
+     p.add_argument("--memory-project", help="explicit project namespace for advisory memory")
+     p.add_argument("--memory-model-ref", help="optional model scope within the memory project")
++    p.add_argument("--study-plan-ref", help="operator-frozen adaptation study plan; requires hypothesis mode")
+     p.set_defaults(func=_cmd_agent)
+ 
+     p = sub.add_parser("agent-resume", help="continue an awaiting-input agent with a researcher reply")
+@@ -391,6 +433,23 @@
+     p.add_argument('--query', required=True)
+     p.set_defaults(func=_cmd_source_search)
+ 
++    p = sub.add_parser('study-prepare', help='freeze an adaptation candidate study before execution')
++    _add_store(p)
++    p.add_argument('--training', required=True)
++    p.add_argument('--holdout')
++    p.add_argument('--candidate', action='append', help='supported candidate name; defaults to all three')
++    p.add_argument('--starts', type=int, default=3)
++    p.add_argument('--seed', type=int, default=17)
++    p.add_argument('--max-nfev', type=int, default=100)
++    p.add_argument('--timeout', type=float, default=30.)
++    p.add_argument('--separation-threshold', type=float, default=.05)
++    p.set_defaults(func=_cmd_study_prepare)
++
++    p = sub.add_parser('study-run', help='execute a frozen study without an LLM')
++    _add_store(p)
++    p.add_argument('ref', help='frozen study plan reference')
++    p.set_defaults(func=_cmd_study_run)
++
+     args = parser.parse_args(argv)
+     return args.func(args)
+ 
+--- before/src/biomodel_agent/llm.py
++++ after/src/biomodel_agent/llm.py
+@@ -28,9 +28,14 @@
+     "You drive a budgeted, tool-using modeling agent. Answer with EXACTLY ONE "
+     "JSON object and nothing else:\n"
+     '{"action": "<name>", "args": {...}, "reason": "<short why>"}\n'
+-    "`action` must be one of: inspect_source, search_sources, recall_memory, load_skill, submit_draft, run, finish, "
++    "`action` must be one of: inspect_source, search_sources, recall_memory, load_skill, run_study, submit_draft, run, finish, "
+     "ask_researcher.\n"
+     "args:\n"
++    "  run_study: {} (only when the task supplies study: a frozen hypothesis plan; execute at most once)\n"
++    "A frozen study task must use run_study, not submit_draft/run. Never change its candidates, "
++    "bounds, data roles or comparison rules. No data-reading tool exposes holdout values. "
++    "A completed study can report no adequate candidate or indistinguishable candidates; "
++    "this is a valid negative result, not proof of a mechanism.\n"
+     "  search_sources: {query: str} (1..256 chars, lexical retrieval only in authorized task materials)\n"
+     "  recall_memory: {query: str} (only when memory_available; advisory project memory, never a source)\n"
+     "  load_skill: {name: str} (only a name in the supplied skill catalog)\n"
+--- before/src/biomodel_agent/skills.py
++++ after/src/biomodel_agent/skills.py
+@@ -2,6 +2,17 @@
+ from copy import deepcopy
+ 
+ _SKILLS = {
++    'constrained_study': {
++        'version': 1, 'purpose': 'Execute one operator-frozen adaptation candidate study.',
++        'steps': [
++            'Require an authorized frozen study plan; do not change its candidates, bounds or data roles.',
++            'Use run_study with no arguments once; fitting receives training conditions only.',
++            'Read the fixed holdout ranking after fitting. Do not tune or rerun after seeing it.',
++            'Report failed or indistinguishable candidates honestly; finish with the stored study outcome.',
++        ],
++        'limitations': ['Limited adaptation templates, not open mechanism discovery.',
++                        'A winning candidate is not biological proof or a global identifiability result.'],
++    },
+     'ode_reproduction': {
+         'version': 1, 'purpose': 'Reconstruct a supported ODE from authorized materials.',
+         'steps': [
+--- before/src/biomodel_agent/reporting.py
++++ after/src/biomodel_agent/reporting.py
+@@ -79,6 +79,17 @@
+                           f"Parent run: `{p.get('parent_run_ref')}`",
+                           f"Checkpoint: `{p.get('checkpoint_ref')}`",
+                           f"Remaining calls: {max(0, task['max_calls'] - p['call_count'])}"])
++            if task.get('study_plan_ref'):
++                lines.extend(['', '## Frozen study', '', f"Plan: `{task['study_plan_ref']}`"])
++                if p.get('run_ref'):
++                    study_record = store.get(p['run_ref'])
++                    if study_record['kind'] == 'hypothesis_study':
++                        study = study_record['payload']
++                        lines.extend([f"Ranking: **{study['comparison']['ranking']}**",
++                                      f"Selected candidate: `{study['comparison']['winner']}`",
++                                      f"Usable candidates: {study.get('usable_candidates', 0)}",
++                                      'Scientific status: **not_verified**',
++                                      'Training-only fitting; frozen holdout comparison; no mechanism proof.'])
+             for clarification_ref in p.get('clarification_refs', []):
+                 reply = store.get(clarification_ref)['payload']
+                 lines.extend(['', f"Researcher assertion from {reply['respondent']} (`{clarification_ref}`)",
+--- before/tests/test_agent_studies.py
++++ after/tests/test_agent_studies.py
+@@ -0,0 +1,279 @@
++"""Frozen hypothesis study tool: real fitting, scope and holdout isolation."""
++from copy import deepcopy
++import json
++import math
++
++import pytest
++
++from biomodel_agent import agent, agent_tools, bundles, cli, evidence, fitting, reporting, studies
++from biomodel_agent.domain.contracts import ExperimentSpec
++from biomodel_agent.domain.serialization import from_dict
++from biomodel_agent.storage import ArtifactStore
++
++
++def condition(name='train', role='training', *, bad=False):
++    times = [0., .5, 1., 2., 4.]
++    return {'id': name, 'role': role, 'experiment': {'times': times, 'time_unit': 'second'},
++            'values': {'response': [99. if bad else 2. * (1. - math.exp(-t)) for t in times]},
++            'sigma': {'response': .01}, 'scales': {'response': 1.}}
++
++
++def config():
++    return {'training': [condition()], 'holdout': [condition('private-holdout-id', 'holdout')],
++            'candidates': ['cand_baseline'], 'starts': 1, 'max_nfev': 60, 'timeout_s': 20.}
++
++
++@pytest.fixture
++def setup(tmp_path):
++    store = ArtifactStore(tmp_path / 'store')
++    path = tmp_path / 'protocol.txt'; path.write_text('Compare only the operator-authorized adaptation templates.')
++    source = evidence.ingest_source(store, path)
++    plan = studies.prepare_study(store, config())
++    exp = from_dict(ExperimentSpec, studies.load_plan(store, plan)['config']['training'][0]['experiment'])
++    return store, source, plan, exp
++
++
++class Scripted:
++    last_usage = {}
++    def __init__(self, actions): self.actions = iter(actions); self.calls = []
++    def respond(self, messages):
++        self.calls.append(deepcopy(messages))
++        return next(self.actions)
++
++
++def act(action, **args): return {'action': action, 'args': args}
++
++
++def start(setup, provider, **kwargs):
++    store, source, plan, exp = setup
++    return agent.run_agent(store, provider, [source], exp, mode='hypothesis', study_plan_ref=plan, **kwargs)
++
++
++def test_plan_is_frozen_and_model_summary_hides_dataset_values(setup):
++    store, _, plan, _ = setup
++    summary = studies.plan_summary(store, plan)
++    assert summary['training_conditions'] == summary['holdout_conditions'] == 1
++    assert summary['candidates'] == ['cand_baseline']
++    text = json.dumps(summary)
++    assert 'private-holdout-id' not in text and 'values' not in summary
++    data = config(); same = studies.prepare_study(store, data); data['training'][0]['values']['response'][0] = 42.
++    assert same == plan and studies.load_plan(store, plan)['config']['training'][0]['values']['response'][0] == 0.
++
++
++@pytest.mark.parametrize('change', [
++    {'candidates': []}, {'candidates': ['invented']}, {'candidates': ['cand_baseline'] * 2},
++    {'starts': True}, {'starts': 9}, {'seed': -1}, {'max_nfev': 1001}, {'max_nfev': '100'},
++    {'timeout_s': float('inf')}, {'timeout_s': 91}, {'timeout_s': False},
++    {'separation_threshold': 0}, {'bounds': {'k': [0, 10]}}, {'training': []},
++])
++def test_invalid_plan_rejected_without_writing(setup, change):
++    store, _, _, _ = setup; before = store.list()
++    with pytest.raises(ValueError): studies.prepare_study(store, {**config(), **change})
++    assert store.list() == before
++
++
++@pytest.mark.parametrize('field,value', [
++    ('role', 'holdout'), ('sigma', {'response': True}), ('sigma', {'response': 0}),
++    ('scales', {'response': '1'}), ('values', {'wrong': [1] * 5}),
++    ('values', {'response': [float('nan')] * 5}), ('values', {'response': [True] * 5}),
++    ('values', {'response': [1.]}), ('notes', 'unrecognized'),
++])
++def test_bad_dataset_protocol_fails_before_any_fit(setup, field, value):
++    store, _, _, _ = setup; before = store.list(); data = config(); data['training'][0][field] = value
++    with pytest.raises(ValueError): studies.prepare_study(store, data)
++    assert store.list() == before
++
++
++def test_data_roles_and_ids_are_disjoint(setup):
++    store, _, _, _ = setup; data = config(); data['holdout'][0]['id'] = 'train'
++    with pytest.raises(ValueError, match='disjoint'): studies.prepare_study(store, data)
++    data = config(); data['holdout'][0]['role'] = 'training'
++    with pytest.raises(ValueError, match='role'): studies.prepare_study(store, data)
++
++
++@pytest.mark.parametrize('experiment', [
++    {'times': [0., 1.], 'time_unit': 'minute'},
++    {'times': [0., 1.], 'parameter_overrides': {'k': .7}},
++    {'times': [0., 1.], 'parameter_overrides': {'b': 11.}},
++    {'times': [0., 1.], 'initial_overrides': {'z': 0.}},
++    {'times': [-1., 1.]}, {'times': [0., 10001.]},
++])
++def test_unsupported_experiment_profile_is_rejected(setup, experiment):
++    store, _, _, _ = setup; data = config(); data['training'][0]['experiment'] = experiment
++    data['training'][0]['values']['response'] = [0., 1.]
++    with pytest.raises(ValueError): studies.prepare_study(store, data)
++
++
++def test_forged_or_wrong_kind_plan_is_rejected_before_model_call(setup):
++    store, source, plan, exp = setup; original = store.get(plan)['payload']
++    changed = deepcopy(original); changed['bounds']['cand_baseline']['k'] = [.01, 100.]
++    altered = store.put(studies.PLAN_KIND, changed)
++    for ref in [source, altered]:
++        before = store.list(); provider = Scripted([])
++        with pytest.raises(ValueError):
++            agent.run_agent(store, provider, [source], exp, mode='hypothesis', study_plan_ref=ref)
++        assert not provider.calls and store.list() == before
++
++
++def test_plan_requires_hypothesis_mode_and_its_frozen_experiment(setup):
++    store, source, plan, exp = setup
++    with pytest.raises(ValueError, match='hypothesis mode'):
++        agent.run_agent(store, Scripted([]), [source], exp, study_plan_ref=plan)
++    with pytest.raises(ValueError, match='first frozen training'):
++        agent.run_agent(store, Scripted([]), [source], ExperimentSpec((0., 1.)), mode='hypothesis', study_plan_ref=plan)
++
++
++def test_real_fit_agent_tool_holdout_isolation_and_report(setup, tmp_path, monkeypatch):
++    store, _, plan, _ = setup; received = []; original = fitting.fit_parameters
++    def spy(artifact, training, *args, **kwargs):
++        received.append(deepcopy(training))
++        return original(artifact, training, *args, **kwargs)
++    monkeypatch.setattr(fitting, 'fit_parameters', spy)
++    provider = Scripted([act('load_skill', name='constrained_study'), act('run_study'), act('finish')])
++    root = start(setup, provider)
++    run = store.get(root)['payload']; result = store.get(run['run_ref'])['payload']
++    assert run['state'] == 'completed' and run['call_count'] == 3
++    assert len(received) == 1 and all(r['role'] == 'training' and r['id'] == 'train' for r in received[0])
++    assert result['plan_ref'] == plan and result['completion_eligible']
++    assert result['candidates']['cand_baseline']['parameters']['k'] == pytest.approx(2., abs=1e-4)
++    assert result['candidates']['cand_baseline']['parameters']['d'] == pytest.approx(1., abs=1e-4)
++    assert result['candidates']['cand_baseline']['heldout_scaled_rmse'] < 1e-5
++    assert result['comparison']['winner'] == 'cand_baseline' and result['scientific_status'] == 'not_verified'
++    messages = json.dumps(provider.calls)
++    assert 'private-holdout-id' not in messages and '"values"' not in messages
++    assert 'best_compatible_candidate' in reporting.render_report(store, root)
++    exported = bundles.export_bundle(store, root, tmp_path / 'bundle')
++    assert plan in exported['objects_and_blobs']
++
++
++def test_heldout_failure_is_an_honest_negative_result(setup):
++    store, source, _, _ = setup; data = config(); data['holdout'] = [condition('negative-holdout', 'holdout', bad=True)]
++    plan = studies.prepare_study(store, data)
++    provider = Scripted([act('run_study'), act('finish')])
++    root = start((store, source, plan, setup[3]), provider)
++    run = store.get(root)['payload']; result = store.get(run['run_ref'])['payload']
++    assert run['state'] == 'completed' and result['comparison']['ranking'] == 'none_adequate'
++    assert result['comparison']['winner'] is None and result['scientific_status'] == 'not_verified'
++    assert result['candidates']['cand_baseline']['heldout_weighted_rmse'] > 3.
++
++
++def test_no_plan_or_nonempty_args_cannot_start_or_modify_a_study(setup, monkeypatch):
++    store, source, _, exp = setup
++    monkeypatch.setattr(studies, 'execute_study', lambda *a: pytest.fail('unauthorized study executed'))
++    provider = Scripted([act('run_study')])
++    result = store.get(agent.run_agent(store, provider, [source], exp, max_calls=1))['payload']
++    assert result['state'] == 'incomplete' and result['run_ref'] is None
++    provider = Scripted([act('run_study', bounds={'k': [.01, 100.]})])
++    result = store.get(start(setup, provider, max_calls=1))['payload']
++    assert result['state'] == 'incomplete' and result['run_ref'] is None
++
++
++def test_frozen_study_cannot_submit_another_model(setup, monkeypatch):
++    monkeypatch.setattr(agent_tools, 'submit_draft', lambda *a: pytest.fail('changed candidate was submitted'))
++    store = setup[0]; provider = Scripted([act('submit_draft', draft={}), act('run')])
++    result = store.get(start(setup, provider, max_calls=2))['payload']
++    assert result['state'] == 'incomplete' and result['run_ref'] is None
++    assert sum(e['type'] == 'tool_error' for e in result['events']) == 2
++
++
++def test_timeout_only_study_does_not_become_completed(setup, monkeypatch):
++    store, _, _, _ = setup
++    monkeypatch.setattr(fitting, 'fit_parameters', lambda *a, **kw:
++                        {'status': 'timed_out', 'best': None, 'starts': [], 'diagnostics': ['test timeout']})
++    provider = Scripted([act('run_study'), act('run_study'), act('finish')])
++    result = store.get(start(setup, provider))['payload']
++    study = store.get(result['run_ref'])['payload']
++    assert result['state'] == 'incomplete' and not study['completion_eligible']
++    assert study['usable_candidates'] == 0 and study['comparison']['winner'] is None
++    assert len(store.list('fitting')) == 1
++    assert any(e['type'] == 'tool_error' and e.get('tool') == 'run_study' for e in result['events'])
++
++
++def test_resume_after_evaluation_cannot_refit_after_seeing_holdout(setup, monkeypatch):
++    store, _, _, _ = setup
++    first = start(setup, Scripted([act('run_study'), act('ask_researcher', question='How should results be described?')]))
++    original = store.get(first)['payload']; fitted = store.list('fitting')
++    monkeypatch.setattr(studies, 'execute_study', lambda *a: pytest.fail('second evaluation executed'))
++    provider = Scripted([act('run_study'), act('finish')])
++    resumed = store.get(agent.resume_agent(store, provider, first, 'Report the limitations.', respondent='Researcher'))['payload']
++    assert resumed['state'] == 'completed' and resumed['call_count'] == 4
++    assert resumed['run_ref'] == original['run_ref'] and store.list('fitting') == fitted
++
++
++def test_failure_diagnostic_is_saved_without_leaking_into_model_context(setup, monkeypatch):
++    store, _, _, _ = setup
++    def failure(*args): raise RuntimeError('PRIVATE_INTERNAL_CANARY')
++    monkeypatch.setattr(studies, 'execute_study', failure)
++    provider = Scripted([act('run_study')])
++    run = store.get(start(setup, provider))['payload']
++    assert run['state'] == 'incomplete' and run['run_ref'] is None
++    refs = store.list('study_execution_failure')
++    assert len(refs) == 1 and 'PRIVATE_INTERNAL_CANARY' in store.get(refs[0])['payload']['error']
++    assert refs[0] in store.get(store.list('agent_run')[-1])['refs']
++    assert 'PRIVATE_INTERNAL_CANARY' not in json.dumps(run['events'])
++
++
++def test_cli_prepare_and_offline_run(setup, tmp_path, capsys):
++    store, _, _, _ = setup; data = config()
++    train = tmp_path / 'training.json'; train.write_text(json.dumps(data['training']))
++    holdout = tmp_path / 'holdout.json'; holdout.write_text(json.dumps(data['holdout']))
++    common = ['--store', str(store.root)]
++    assert cli.main(['study-prepare', *common, '--training', str(train), '--holdout', str(holdout),
++                     '--candidate', 'cand_baseline', '--starts', '1', '--max-nfev', '60']) == 0
++    plan = json.loads(capsys.readouterr().out)['plan_ref']
++    assert cli.main(['study-run', plan, *common]) == 0
++    result = json.loads(capsys.readouterr().out)
++    assert result['completion_eligible'] and result['candidates']['cand_baseline']['parameters']['k'] == pytest.approx(2., abs=1e-4)
++
++
++def test_cli_agent_uses_plan_experiment_without_separate_file(setup, tmp_path, monkeypatch, capsys):
++    store, _, plan, _ = setup
++    provider = Scripted([act('run_study'), act('finish')])
++    import biomodel_agent.llm as llm
++    monkeypatch.setattr(llm, 'ChatProvider', lambda **kwargs: provider)
++    monkeypatch.setenv('BIOMODEL_API_KEY', 'offline-test-value')
++    source_path = tmp_path / 'protocol.txt'
++    assert cli.main(['agent', '--store', str(store.root), '--source', str(source_path),
++                     '--mode', 'hypothesis', '--study-plan-ref', plan,
++                     '--base-url', 'https://example.invalid/v1', '--model', 'scripted']) == 0
++    assert json.loads(capsys.readouterr().out)['state'] == 'completed'
++
++
++@pytest.mark.parametrize('with_holdout', [False, True])
++def test_analytically_equivalent_training_candidates_require_intervention_to_separate(tmp_path, with_holdout):
++    # Feedback: x'=2-1.2x-z, z'=.2x. Feed-forward: x'=2(1-z)-x, z'=.2(1-z).
++    # Both have x(t)=2.5(exp(-.2t)-exp(-t)) from zero states. Under b=0,
++    # the feedback x(t)=(5/3)(1-exp(-1.2t)); this differentiates the structures.
++    times = [i * .5 for i in range(61)]
++    train = {'id': 'analytic_training', 'role': 'training', 'experiment': {'times': times, 'time_unit': 'second'},
++             'values': {'response': [2.5 * (math.exp(-.2*t) - math.exp(-t)) for t in times]},
++             'sigma': {'response': .01}, 'scales': {'response': 1.}}
++    hold = {'id': 'analytic_intervention', 'role': 'holdout',
++            'experiment': {'times': times, 'time_unit': 'second', 'parameter_overrides': {'b': 0.}},
++            'values': {'response': [(5/3) * (1 - math.exp(-1.2*t)) for t in times]},
++            'sigma': {'response': .01}, 'scales': {'response': 1.}}
++    store = ArtifactStore(tmp_path / 'study')
++    plan = studies.prepare_study(store, {'training': [train], 'holdout': [hold] if with_holdout else [],
++                                       'starts': 1, 'max_nfev': 100, 'timeout_s': 30.})
++    result = store.get(studies.execute_study(store, plan))['payload']
++    assert result['candidates']['cand_feedback']['training_weighted_rmse'] < .001
++    assert result['candidates']['cand_feedforward']['training_weighted_rmse'] < .001
++    if with_holdout:
++        assert result['comparison']['ranking'] == 'best_compatible_candidate'
++        assert result['comparison']['winner'] == 'cand_feedback'
++        assert result['candidates']['cand_feedback']['heldout_scaled_rmse'] < 1e-5
++    else:
++        assert result['comparison']['ranking'] == 'indistinguishable_from_training'
++        assert result['comparison']['winner'] is None
++
++
++@pytest.mark.parametrize('study_mode', [False, True])
++def test_skill_catalog_only_advertises_procedures_compatible_with_task(setup, study_mode):
++    store, source, _, exp = setup
++    unavailable = 'ode_reproduction' if study_mode else 'constrained_study'
++    provider = Scripted([act('load_skill', name=unavailable)])
++    root = start(setup, provider, max_calls=1) if study_mode else agent.run_agent(store, provider, [source], exp, max_calls=1)
++    result = store.get(root)['payload']; task = store.get(result['task_ref'])['payload']
++    assert unavailable not in [s['name'] for s in task['skill_catalog']]
++    assert result['state'] == 'incomplete'
++    assert any(e['type'] == 'tool_error' and e.get('tool') == 'load_skill' for e in result['events'])
+--- before/benchmarks/development/demo_agent_study.py
++++ after/benchmarks/development/demo_agent_study.py
+@@ -0,0 +1,79 @@
++"""Offline scripted agent actions + real fit and frozen holdout comparison.
++
++Analytic synthetic data, not an autonomous model performance measurement.
++Usage: PYTHONPATH=src .venv/bin/python benchmarks/development/demo_agent_study.py --output /tmp/new-study-demo
++"""
++from __future__ import annotations
++
++import argparse
++from copy import deepcopy
++import json
++import math
++from pathlib import Path
++
++from biomodel_agent import agent, evidence, reporting, studies
++from biomodel_agent.domain.contracts import ExperimentSpec
++from biomodel_agent.domain.serialization import from_dict
++from biomodel_agent.storage import ArtifactStore
++
++
++class ScriptedProvider:
++    last_usage = {}
++    def __init__(self):
++        self.actions = iter([{'action': 'run_study', 'args': {}}, {'action': 'finish', 'args': {}}])
++        self.calls = []
++    def respond(self, messages):
++        self.calls.append(deepcopy(messages))
++        return next(self.actions)
++
++
++def dump(path, value):
++    path.write_text(json.dumps(value, indent=2, ensure_ascii=False, allow_nan=False))
++
++
++def main():
++    parser = argparse.ArgumentParser()
++    parser.add_argument('--output', required=True)
++    args = parser.parse_args()
++    out = Path(args.output)
++    if out.exists():
++        raise ValueError('output directory must not exist; preserve prior evidence')
++    out.mkdir(parents=True)
++    store = ArtifactStore(out / 'store')
++    times = [i * .5 for i in range(61)]
++    common = {'sigma': {'response': .01}, 'scales': {'response': 1.}}
++    training = {**common, 'id': 'analytic-training', 'role': 'training',
++                'experiment': {'times': times, 'time_unit': 'second'},
++                'values': {'response': [2.5 * (math.exp(-.2*t) - math.exp(-t)) for t in times]}}
++    holdout = {**common, 'id': 'private-intervention', 'role': 'holdout',
++               'experiment': {'times': times, 'time_unit': 'second', 'parameter_overrides': {'b': 0.}},
++               'values': {'response': [(5/3) * (1 - math.exp(-1.2*t)) for t in times]}}
++    source_path = out / 'protocol.txt'
++    source_path.write_text('Synthetic constrained adaptation study. Compare only the frozen candidate templates. '
++                           'Fitting is not a biological truth claim. Do not alter the protocol after holdout scoring.')
++    source = evidence.ingest_source(store, source_path)
++    config = {'training': [training], 'holdout': [holdout], 'starts': 1, 'max_nfev': 100, 'timeout_s': 30.}
++    dump(out / 'operator-config.json', config)
++    plan_ref = studies.prepare_study(store, config)
++    provider = ScriptedProvider()
++    exp = from_dict(ExperimentSpec, studies.load_plan(store, plan_ref)['config']['training'][0]['experiment'])
++    root = agent.run_agent(store, provider, [source], exp, mode='hypothesis', study_plan_ref=plan_ref)
++    run = store.get(root)['payload']
++    result = store.get(run['run_ref'])['payload'] if run['run_ref'] else {}
++    dump(out / 'scripted-requests.json', provider.calls)
++    (out / 'report.md').write_text(reporting.render_report(store, root))
++    if run['run_ref']:
++        (out / 'study-report.md').write_text(reporting.render_report(store, run['run_ref']))
++    summary = {'type': 'scripted_actions_with_real_fitting', 'autonomous_model_score': False,
++               'new_model_requests': 0, 'root_ref': root, 'plan_ref': plan_ref,
++               'study_ref': run['run_ref'], 'state': run['state'], 'calls': run['call_count'],
++               'comparison': result.get('comparison'), 'scientific_status': result.get('scientific_status'),
++               'candidates': studies.result_summary(store, run['run_ref'])['candidates'] if run['run_ref'] else {}}
++    dump(out / 'results.json', summary)
++    assert run['state'] == 'completed' and result['comparison']['winner'] == 'cand_feedback', summary
++    assert 'private-intervention' not in json.dumps(provider.calls)
++    print(json.dumps(summary, ensure_ascii=False))
++
++
++if __name__ == '__main__':
++    main()
+--- before/docs/agent-study-tool.md
++++ after/docs/agent-study-tool.md
+@@ -0,0 +1,78 @@
++# Agent 的受约束拟合与候选比较工具
++
++本轮把已有的参数拟合与候选比较计算接入 Agent，而不是仅能从独立 Python/CLI 调用。首版采用明确、有限的 adaptation_study_v1 场景：反馈、前馈及基线三个候选模板，可选其中 1–3 个；固定观测为有符号偏差 response=x。模板是系统猜想，不是论文事实，也不代表开放式机制发现。
++
++## 流程
++
++1. 操作者提供 training/holdout 数据，选择允许的候选和计算预算，生成不可变 study plan。
++2. 创建 hypothesis 模式的 Agent 任务，绑定该 plan。技能目录仅展示相容的 constrained_study 指引；普通任务不展示此指引。模型只看到候选名称、条件数量和预算，不收到数据数组或留出条件 ID。
++3. Agent 可加载 constrained_study 指引并调用 `run_study {}`。输入不接受候选、边界、数据、阈值或新的 plan_ref。
++4. 工具调用现有研究内核：只把训练条件交给拟合器，多起点估计；通过 libRoadRunner 交叉核对；冻结拟合参数后评分留出条件。
++5. 返回结果摘要并保存研究产物、数据、拟合和环境记录。Agent 可以结束并生成报告，不能在同一执行分支中再拟合或换模型。
++
++新工具与原动作共享 LLM 调用预算，不添加隐式重试。计算预算独立冻结在 plan 中：每候选拟合 1–8 起点、每起点最多 1000 次优化函数评估、每候选拟合超时不超过 90 秒，默认 30 秒；这些不是整个研究的总墙钟时限，交叉核对与留出预测另走原有计算路径。
++
++## 数据与协议校验
++
++plan 在任何模型或拟合调用之前检查两个数据分组的显式角色、互不重复的条件 ID、时间网格、列长度、有限值、正噪声标准差和固定尺度。留出数据允许在准备阶段作格式校验，但不会作为优化器输入。操作者仍需保证数据划分在科学上独立；仅检查 role/ID 不能证明没有人为重复使用数据。
++
++每组最多 16 个条件、2000 个采样点，每条件 2–500 点，时间范围 0–10000。实验时钟为 second 或保持 unknown；后者不构成单位验证。首版只支持常量 u/b 干预（0–10），初值覆盖须对全部选定候选有定义，不支持分段刺激。k/d/h 的拟合边界来自版本化候选配置，不能通过本工具临时扩大。更一般的模型和观测需新增并验证相应 profile。
++
++plan 保存完整候选草稿、边界、观测、数据和评分协议。读取时重新核对 profile；模板或协议被改变则拒绝执行，而不是悄悄替换旧计划。数值后端版本和代码环境仍随结果记录，不承诺跨版本逐位复现。
++
++## 完成与失败
++
++- 真实拟合和交叉核对有效，但没有候选适合数据，或候选无法区分：可正常交付负结果；winner 不伪造。
++- 所有拟合失败、超时或交叉核对失败：usable_candidates=0，Agent 不得标记 completed。
++- 研究执行抛异常：保存内部诊断及 plan 依赖，任务 incomplete，不把诊断原文送给模型。
++- 执行后即使又暂停、收到研究者回复并恢复，也沿用已消耗的研究执行次数，不能再次拟合。
++
++至多一次是每条 Agent 执行分支的约束，不是整个存储的全局调用锁。操作者显式创建新任务、重复调用 study-run 或从较早暂停点建立替代分支，仍可能再次计算；相同冻结协议不会因此获得修改候选或用留出值重拟合的权限。任意崩溃点的自动恢复仍未实现。
++
++所有研究结果保留 scientific_status=not_verified。拟合好、留出误差小或排名第一，都不证明机制真实、参数全局可辨识或具有置信区间。
++
++## 使用
++
++数据 JSON 为条件列表，每项包含 id、role、experiment、values、sigma，可选 scales；当前观测列为 response。可使用已有开发输入检查命令：
++
++```bash
++.venv/bin/python -m biomodel_agent study-prepare --store artifacts/my-study \
++  --training benchmarks/inputs/adaptation/training.json \
++  --holdout benchmarks/inputs/adaptation/holdout.json --starts 2
++```
++
++记下返回的 plan_ref。直接运行冻结研究，不调用 LLM：
++
++```bash
++.venv/bin/python -m biomodel_agent study-run PLAN_REF --store artifacts/my-study
++```
++
++或者由 Agent 决定何时执行这条已授权研究流程（沿用原模型服务配置）：
++
++```bash
++.venv/bin/python -m biomodel_agent agent --store artifacts/my-study \
++  --source protocol.txt --mode hypothesis --study-plan-ref PLAN_REF
++```
++
++study plan 已提供实验，故不必另给 --experiment；若显式给出，必须与首个训练条件一致。此类任务不接受另行指定 solver、observations、reference、scales 或 allowed_mechanisms，以免绕过或混淆冻结协议。普通复现任务继续使用原 --experiment 流程。
++
++返回 agent_run 的 run_ref 指向 hypothesis_study。两者均支持现有 report/export；研究报告包含逐候选拟合状态、训练与留出误差、条件实验建议及限制。Agent 报告也显示冻结计划、排名、候选选择与未核验科学状态。
++
++Python API：studies.prepare_study、execute_study、plan_summary、result_summary，以及 run_agent(..., mode='hypothesis', study_plan_ref=...)。
++
++## 验证与演示
++
++新增 46 项回归覆盖协议拒绝、数据角色隔离、模板/边界篡改、真实拟合与交叉核对、留出失败负结果、重复执行、恢复、超时、内部错误、CLI 和报告。测试与演示使用脚本动作，不调用模型，不代表自主推理成绩。
++
++解析案例的反馈模型 x'=2−1.2x−z、z'=.2x，与前馈模型 x'=2(1−z)−x、z'=.2(1−z)，从零状态出发均有训练解 x(t)=2.5(exp(−.2t)−exp(−t))。因此仅训练集时应报告无法区分。将抑制臂 b 冻结为零后，两者产生不同预测；解析反馈参考为 (5/3)(1−exp(−1.2t))。回归核对系统只在加入该预设干预后区分候选。
++
++可重跑完整离线演示，输出目录须不存在：
++
++```bash
++PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=src .venv/bin/python \
++  benchmarks/development/demo_agent_study.py --output /tmp/new-agent-study-demo
++```
++
++本轮实际演示保存在 artifacts/agent-study-development/offline-demo-final/，包含解析数据、冻结 plan、脚本请求、真实拟合/比较、研究报告和结果摘要。反馈/前馈在训练数据上都近乎精确匹配，留出干预才支持反馈候选；科学状态保持 not_verified。数值详情以 results.json 和完整验收记录为准。
++
++本轮未增加依赖、未进行新的产品模型调用，也未修改或重新评分独立测试集。该功能补齐了工具调用和研究编排；模型能否自主正确选择它仍需另行评测。
+--- before/docs/v0.1.md
++++ after/docs/v0.1.md
+@@ -1,6 +1,8 @@
+ # v0.1 实际架构与使用
+ 
+ 版本：0.1.0；交付日期：2026-10-15。本文件描述实际实现；原始提案描述设计意图。当前交付是可靠计算与受约束建模的研究原型，A 的通用文献提取和 B 的开放式机制发现仍需研究。
++
++后续实现更新：受约束 B 研究现已通过冻结计划与 `run_study` 接入 Agent，见 [Agent 拟合与候选比较](agent-study-tool.md)。下文保留初版交付时的能力边界。
+ 
+ ## 运行架构
+ 
+--- before/README.md
++++ after/README.md
+@@ -118,3 +118,5 @@
+ 
+ 后续能力：[项目记忆、材料检索与操作指引](docs/memory-and-retrieval.md)。支持带来源和范围的持久记忆、更正/撤回、授权材料检索、两项版本化流程与任务恢复；继续采用单 Agent，共享原预算。
+ 
++
++后续研究工具：[Agent 拟合与候选比较](docs/agent-study-tool.md)。用户冻结候选、数据和预算后，Agent 可执行一次训练拟合与留出比较；保留负结果、阻止重复试验，并提供可重跑的离线演示。

@@ -1,0 +1,40 @@
+{
+  "evidence_type": "scripted_offline_real_solver_regression_not_model_capability",
+  "agent_ref": "fd414934fc0a6800b57415139d5da648b603520605da5de03edc5ed33b34eb50",
+  "run_ref": "2f51852c97e2f039427be632c1359608f6775029691bb92b1a11f94559150fed",
+  "agent_state": "incomplete",
+  "calls": 3,
+  "execution_status": "succeeded",
+  "scientific_status": "failed",
+  "x": [
+    1.0,
+    0.1999999999999993,
+    -0.6000000000000008
+  ],
+  "numeric_checks": [
+    {
+      "code": "finite",
+      "message": "all output values are finite",
+      "severity": "blocking",
+      "status": "pass"
+    },
+    {
+      "code": "nonnegative",
+      "message": "'x' reached -0.6000000000000008 < -1e-09",
+      "severity": "blocking",
+      "status": "fail"
+    },
+    {
+      "code": "conservation",
+      "message": "conservation/mass-balance checking is not implemented; not a pass",
+      "severity": "informational",
+      "status": "not_run"
+    },
+    {
+      "code": "convergence",
+      "message": "solver refinement (rtol/atol / 10): 2.220446049250313e-16 vs threshold 0.001",
+      "severity": "blocking",
+      "status": "pass"
+    }
+  ]
+}

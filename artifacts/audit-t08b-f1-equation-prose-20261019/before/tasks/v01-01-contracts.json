@@ -1,0 +1,46 @@
+{
+  "schema_version": "1",
+  "id": "v01-01-contracts",
+  "objective": "实现可用的最小领域契约、严格JSON编解码与Python包，不实现后端。",
+  "context": "Python3.12项目。空目标文件已准备。Codex会直接使用PYTHONPATH=src .venv/bin/python -m pytest，不需你安装或执行命令。字段定义冻结为下面约定，后续其他模块将依赖它们。",
+  "read_files": [
+    "src/biomodel_agent/domain/__init__.py"
+  ],
+  "write_files": [
+    "pyproject.toml",
+    "src/biomodel_agent/__init__.py",
+    "src/biomodel_agent/domain/contracts.py",
+    "src/biomodel_agent/domain/serialization.py",
+    "tests/test_contracts.py"
+  ],
+  "expected_files": [
+    "pyproject.toml",
+    "src/biomodel_agent/__init__.py",
+    "src/biomodel_agent/domain/contracts.py",
+    "src/biomodel_agent/domain/serialization.py",
+    "tests/test_contracts.py"
+  ],
+  "instructions": "只读本任务列出的文件，勿读所有架构文档。使用frozen dataclasses，字段集合用tuple，映射采用可pickle的FrozenMap（tuple pairs实现Mapping，不用MappingProxyType）。构造时将list/dict复制归一化为tuple/FrozenMap，调用者修改原输入不能影响快照。数值finite校验，None用于明确缺失，不填0。ID正则 [A-Za-z_][A-Za-z0-9_]*，跨state/parameter/compartment/reaction/derived需避免冲突。最小定义：\nParameter(id,value:float|None,unit='unknown',origin='unknown')；State(id,initial:float|None,unit='unknown',quantity_kind='variable',nonnegative=False)；Compartment(id='cell',size=1.0,unit='dimensionless')且size>0；Reaction(id,reactants:FrozenMap,products:FrozenMap,rate:str)，计量正有限；RateRule(state,expression)；Derived(id,expression,unit='unknown')；ModelDraft(id,states:tuple,parameters:tuple=(),compartment:Compartment默认factory,reactions:tuple=(),rate_rules:tuple=(),derived:tuple=(),time_unit='second',element_map:FrozenMap=(),hypothesis_refs:tuple=(),parent_ref:str|None=None)。草案允许None初值/参数，缺失在后端静态检查再阻止；不同方程重复/冲突由后端检测。\nModelArtifact(id,sbml,element_map:FrozenMap=(),parent_ref=None,format='sbml',kind='ode',sha256计算为init=False)，sbml字符串非空，id有效，只有sbml是执行真值。\nInputSegment(time:float,values:FrozenMap)。ExperimentSpec(times:tuple,initial_overrides:FrozenMap=(),parameter_overrides:FrozenMap=(),segments:tuple=())，times非空有限严格升序，segment time有限升序不能重复，overrides有限数值。\nObservationSpec(id,expression,unit='unknown')；SolverConfig(rtol=1e-7,atol=1e-10,timeout_s=30,max_steps=100000)，正有限容限与timeout。\nCheck(code,status,message,severity='blocking') status限定pass/fail/unknown/not_applicable/not_run，severity限定blocking/warning/informational；ValidationReport(checks:tuple)暴露 can_execute（没有blocking fail）、fully_passed（无fail/unknown/not_run，允许not_applicable），禁止unknown自动当pass。\nSimulationResult(status,times:tuple=(),values:FrozenMap=(),checks:ValidationReport空默认,diagnostics:tuple=(),backend='',elapsed_s=0.0)，values各列tuple；status限定succeeded/failed/timed_out/cancelled/unsupported。保持数学验证与后端状态独立。\nserialization.py提供 to_dict(obj) 与 from_dict(cls,data)。通过明确dataclass字段和get_type_hints递归重建，支持tuple、Optional、FrozenMap，不接受未知字段，schema错误需清晰ValueError；不要eval/exec，也不要import任意类路径。to_dict不包含init=False计算sha字段（或from_dict验证并忽略正确hash），JSON roundtrip ModelDraft/Experiment/Solver合法。\npyproject setuptools src布局名称biomodel-agent/version0.1.0，dependencies numpy scipy python-libsbml libroadrunner pypdf httpx；test optional pytest；pytest pythonpath=['src'],testpaths=['tests']。 __init__只导出__version__。\n测试行为：NaN/Inf参数/初值/重复时间拒绝；None保留；嵌套输入不可变且pickle roundtrip；序列化JSON roundtrip、未知字段拒绝；artifact哈希随SBML变化；unknown检查不能宣称fully_passed。总代码控制~350行，避免无意义字段测试。不要执行测试；只文件读写，最后简短列文件和限制。",
+  "acceptance": [
+    "dataclass快照不可受外部修改",
+    "序列化拒绝未知字段",
+    "None和unknown保持明确",
+    "测试由Codex执行"
+  ],
+  "verification_commands": [
+    [
+      ".venv/bin/python",
+      "-m",
+      "pytest",
+      "tests/test_contracts.py",
+      "-q"
+    ]
+  ],
+  "budget": {
+    "first_activity_ms": 120000,
+    "idle_ms": 180000,
+    "first_write_ms": 300000,
+    "write_idle_ms": 300000,
+    "total_ms": 600000
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "status": "needs_input",
+  "parameters": [
+    {"id": "kf", "value": null, "unit": null},
+    {"id": "kg", "value": 0.12, "unit": "min^-1"}
+  ],
+  "states": [
+    {"id": "M", "initial": 5.0}
+  ],
+  "equations": [
+    {"state": "M", "expression": "-(kf + kg)*M"}
+  ],
+  "questions": [
+    "What is the intended value of kf in min^-1: 0.18 (as specified by the parameter table and equivalently by the 10.8 per hour instruction), or 0.003 (equivalent to the legend's 0.18 per hour)?"
+  ],
+  "limitations": [
+    "The parameter table states kf = 0.18 per minute, but the equations legend states kf = 0.18 per hour for the same symbol. These are incompatible rates. The legend also instructs entering kf as 10.8 per hour for an hourly timetable, which agrees with the table but contradicts its own 0.18 per hour annotation. No precedence is specified; kf's physical value and unit remain unresolved.",
+    "M is a concentration in a.u. The experiment requires 33 sampling times in minutes from 0 through 8 inclusive at intervals of 0.25. Both rate constants must be expressed consistently with minutes before simulation. No trajectory is supplied pending clarification of kf."
+  ]
+}

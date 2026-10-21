@@ -1,0 +1,30 @@
+{
+  "schema_version": "1",
+  "id": "v01-07-fit-core",
+  "objective": "实现B受约束候选建模、多起点参数估计、干预留出比较和不确定性报告。",
+  "context": "SBML唯一执行真值。拟合初期仅支持constantparameters+parameterstate rate-rules（反应/fundef/derived等拟合明确unsupported，不影响模拟）。根进程拿着holdout，不把它传拟合worker。frozen领域契约和store已定义。所有现成numpy/scipy在.venv，禁shell/todo。",
+  "read_files": [
+    "src/biomodel_agent/domain/contracts.py",
+    "src/biomodel_agent/expressions.py",
+    "src/biomodel_agent/modeling.py"
+  ],
+  "write_files": [
+    "src/biomodel_agent/fitting.py"
+  ],
+  "expected_files": [
+    "src/biomodel_agent/fitting.py"
+  ],
+  "budget": {
+    "idle_ms": 360000,
+    "first_write_ms": 480000,
+    "write_idle_ms": 360000,
+    "total_ms": 900000
+  },
+  "instructions": "fitting.fit_parameters(artifact,training,observations,bounds,starts=3,seed=17,max_nfev=100,timeout_s=90)->dict。training是list[{id,experiment:to_dict(ExperimentSpec),values:{observable_id:list},sigma:{observable_id:positivefloat},role:'training'}]。bounds {param_id:(lo,hi)}有限lo<hi，只constant无assignmenttargetparameters；strictgrid/column长度finite和sigma正，role非training拒绝。多起点保存每start initial/final/cost/status/nfev/error，fixedseed，weighted least_squares((prediction-y)/sigma)，cost用于halfchisquare，显式trainingdata/noiseprotocolhash。派生不支持不删除。成功best fitted values+predictions（按condition），uncertainty={method:'local_sensitivity',rank,parameter_count,condition_number:null ifsingular,global_identifiability:'unknown',confidence_intervals:'not_run',endpoint_spread:...}，bounds不能叫CI。无法收敛/allfailed没有best伪值。\n拟合使用一个spawn进程处理每candidate，父Queue.get(timeout)超时terminatejoin，不为每次residual启动子进程。SciPy solve_ivp从SBML rate-rules编译readonly RHS：libSBML读parameters/raterules和初值，formulaToL3String→expressions safeevaluate，每condition独立初值，constant overrides先应用，times[0]初始无预平衡；stimulussegment准确分段integrate且端点右连续观测。观察表达式统一安全evaluate，不直接state到data隐式映射。拒绝reaction/assignments/functiondefs/initialassignment/dynamiccompartment profile以免假支持。普通inputtimeovers必须static支持。estimatedparameter若conditionparameter_override同键拒绝（不默默忽略）。为抑制失败探索residual数值failed可返大固定罚项但保存失败次数，不能把罚解标成成功（best需重新成功计算）。predict(artifact,experiment,observations,parameters)->dict提供同一个compiler运行输出，只有科研受控API，无任意exec。\n\n仅交付fitting.py≤250行，hypotheses与tests后续独立任务。不要读取无关文件或测试；只读允许接口一遍然后write完整文件。禁todo/shell/scan。",
+  "acceptance": [
+    "不同机制从空模型构建",
+    "holdout不能参加拟合",
+    "局部诊断不冒充结构可辨识证明"
+  ],
+  "verification_commands": []
+}

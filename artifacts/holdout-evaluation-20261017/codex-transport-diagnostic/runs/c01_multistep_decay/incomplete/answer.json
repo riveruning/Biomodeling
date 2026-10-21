@@ -1,0 +1,26 @@
+{
+  "status": "needs_input",
+  "parameters": [
+    {"id": "k1", "value": 0.85, "unit": "min^-1"},
+    {"id": "k2", "value": 0.25, "unit": "min^-1"}
+  ],
+  "states": [
+    {"id": "A", "initial": 4.0},
+    {"id": "B", "initial": 0.0},
+    {"id": "S1", "initial": null},
+    {"id": "S2", "initial": null}
+  ],
+  "equations": [
+    {"state": "A", "expression": "-k1*A"},
+    {"state": "B", "expression": "k1*A - k2*B"},
+    {"state": "S1", "expression": null},
+    {"state": "S2", "expression": null}
+  ],
+  "questions": [
+    "Are the mechanism species S1 and S2 aliases for A and B, respectively? The mechanism names S1 -> S2 followed by S2 clearance, whereas the equations, initial conditions, and reporting requirement name A and B without specifying that correspondence. Please confirm that mapping or correct the species names and their associated equations and initial conditions."
+  ],
+  "limitations": [
+    "The supplied A and B equations, initial concentrations (a.u.), rate constants, and sampling times are individually specified, but their correspondence to the mechanism species S1 and S2 is not stated. Execution is blocked pending that species mapping.",
+    "S1 and S2 entries record unresolved mechanism names, not an assumption that they are additional independent states. Their initial values and equations remain null until the naming is reconciled."
+  ]
+}

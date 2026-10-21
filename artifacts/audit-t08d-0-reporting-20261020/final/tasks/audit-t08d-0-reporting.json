@@ -1,0 +1,8 @@
+{
+  "task_id": "T08d-0",
+  "owner": "Codex alone",
+  "objective": "Freeze a bounded research question and add versioned adjudication-aware reporting over existing v1 comparison records, preserving legacy scoring and actual material boundaries.",
+  "write_scope": ["benchmarks/development/evaluation_reporting.py", "tests/test_evaluation_reporting.py", "docs/evaluation-reporting.md", "docs/current-support.md", "docs/agent-study-tool.md", "docs/optimization-backlog.md", "docs/seven-point-status.md", "README.md", "tasks/research-next-phase.json", "tasks/audit-t08d-0-reporting.json", "artifacts/audit-t08d-0-reporting-20261020"],
+  "constraints": ["No product source, existing tests, legacy scorer, adapters or HTTP transport changes", "No old artifact or source material changes", "No real credentials, online inference, new evaluation papers, independent evalset or c13/c18 materials", "No DSH or subagents", "Reporting is not independent review or capability evidence", "Unknown and operational outcomes stay in fixed denominators"],
+  "acceptance": ["Missing-capability baseline and actual 30-record legacy reproduction", "Eighteen completed records pending adjudication, twelve gap phases separately eligible", "Explicit missing/invalid/not-run/operational failure and unknown budget outcomes", "Pending recovery depends on original parent evidence", "Strict v1 input validation and fixed material/evidence boundaries retained", "Legacy scores byte-equivalent JSON values with unchanged scorer source", "Current support matrix and research endpoints with falsification criteria", "Appropriate regressions, raw results, original-file hashes, snapshots and patch"]
+}

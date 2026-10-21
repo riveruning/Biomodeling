@@ -1,0 +1,28 @@
+{
+  "id": "chatcmpl-5cc5048b-02eb-4a1a-a377-99ece8f6dd12",
+  "created": 1792252471,
+  "model": "qwen3.8-chat",
+  "object": "chat.completion",
+  "choices": [
+    {
+      "finish_reason": "stop",
+      "index": 0,
+      "message": {
+        "content": "{\"action\": \"submit_draft\", \"args\": {\"draft\": {\"id\": \"s1_to_s2_clearance\", \"time_unit\": \"min\", \"compartment\": {\"id\": \"C\", \"size\": 1, \"unit\": \"dimensionless\"}, \"states\": [{\"id\": \"A\", \"initial\": 4.0, \"unit\": \"a.u.\", \"quantity_kind\": \"concentration\", \"nonnegative\": false}, {\"id\": \"B\", \"initial\": 0.0, \"unit\": \"a.u.\", \"quantity_kind\": \"concentration\", \"nonnegative\": false}], \"parameters\": [{\"id\": \"k1\", \"value\": 0.85, \"unit\": \"per minute\", \"origin\": \"source\"}, {\"id\": \"k2\", \"value\": 0.25, \"unit\": \"per minute\", \"origin\": \"source\"}], \"reactions\": [], \"rate_rules\": [{\"state\": \"A\", \"expression\": \"-k1*A\"}, {\"state\": \"B\", \"expression\": \"k1*A - k2*B\"}], \"derived\": []}, \"evidence\": [{\"target\": \"A/initial\", \"source_ref\": \"306e5d1cdd11cefc9fa15075ee0d25440a4edc431979a96f3d22a1484a4b1c44\", \"page\": 1, \"quote\": \"A(0) = 4.0 a.u.; B(0) = 0.0 a.u.\"}, {\"target\": \"B/initial\", \"source_ref\": \"306e5d1cdd11cefc9fa15075ee0d25440a4edc431979a96f3d22a1484a4b1c44\", \"page\": 1, \"quote\": \"A(0) = 4.0 a.u.; B(0) = 0.0 a.u.\"}, {\"target\": \"k1/value\", \"source_ref\": \"306e5d1cdd11cefc9fa15075ee0d25440a4edc431979a96f3d22a1484a4b1c44\", \"page\": 1, \"quote\": \"k1 = 0.85 per minute; k2 = 0.25 per minute.\"}, {\"target\": \"k2/value\", \"source_ref\": \"306e5d1cdd11cefc9fa15075ee0d25440a4edc431979a96f3d22a1484a4b1c44\", \"page\": 1, \"quote\": \"k1 = 0.85 per minute; k2 = 0.25 per minute.\"}, {\"target\": \"rule:A/expression\", \"source_ref\": \"306e5d1cdd11cefc9fa15075ee0d25440a4edc431979a96f3d22a1484a4b1c44\", \"page\": 1, \"quote\": \"dA/dt = -k1*A ; dB/dt = k1*A - k2*B.\"}, {\"target\": \"rule:B/expression\", \"source_ref\": \"306e5d1cdd11cefc9fa15075ee0d25440a4edc431979a96f3d22a1484a4b1c44\", \"page\": 1, \"quote\": \"dA/dt = -k1*A ; dB/dt = k1*A - k2*B.\"}, {\"target\": \"time_unit\", \"source_ref\": \"306e5d1cdd11cefc9fa15075ee0d25440a4edc431979a96f3d22a1484a4b1c44\", \"page\": 1, \"quote\": \"sampled every 0.25 min from t = 0 to t = 8 min inclusive.\"}, {\"target\": \"C/size\", \"source_ref\": \"306e5d1cdd11cefc9fa15075ee0d25440a4edc431979a96f3d22a1484a4b1c44\", \"page\": 1, \"quote\": \"single well-mixed compartment of size 1 (dimensionless)\"}], \"mechanism\": \"S1 (A) -> S2 (B) irreversible, then B cleared first-order\"}, \"reason\": \"Source gives explicit ODEs, ICs, parameters, compartment; build rate-rule model.\"}",
+        "role": "assistant",
+        "provider_specific_fields": {
+          "refusal": null
+        }
+      },
+      "provider_specific_fields": {}
+    }
+  ],
+  "usage": {
+    "completion_tokens": 1127,
+    "prompt_tokens": 1437,
+    "total_tokens": 2564,
+    "prompt_tokens_details": {
+      "cached_tokens": 0
+    }
+  }
+}

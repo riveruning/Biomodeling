@@ -1,0 +1,38 @@
+{
+  "system": "KinModGPT",
+  "variant": "official_pipeline_alternative_LLM_modern_runtime",
+  "model": "qwen3.8-chat",
+  "original_model": "gpt-4",
+  "case": "complete",
+  "original_model_available_in_configured_provider": false,
+  "environment": {
+    "python": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]",
+    "packages": {
+      "tellurium": "2.2.11.2",
+      "antimony": "3.2.0",
+      "libroadrunner": "2.10.0",
+      "openai": "0.27.0",
+      "copasi-basico": null,
+      "langgraph": null,
+      "langchain-core": null,
+      "langchain-openai": null,
+      "numpy": "2.5.4",
+      "scipy": "1.18.1"
+    }
+  },
+  "vendor_source_modified": false,
+  "adaptations": [
+    "replace talk_to_GPT outside vendor module with equivalent Chat Completions messages and alternative model",
+    "use Python 3.12/Tellurium 2.2.11.2 instead of original macOS Python 3.7/Tellurium 2.2.3"
+  ],
+  "task_eligibility": "complete is simulation; assisted is diagnostic for unreported initial defaults, not native abstention benchmark",
+  "status": "executed",
+  "initial_values": {
+    "X": 0.1,
+    "Y": 0.2,
+    "Z": 0.3
+  },
+  "elapsed_seconds": 2.8462968849999015,
+  "calls": 1,
+  "reported_tokens": 1287
+}

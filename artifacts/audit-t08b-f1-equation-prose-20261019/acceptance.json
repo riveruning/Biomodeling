@@ -1,0 +1,125 @@
+{
+  "task_id": "T08b-F1",
+  "status": "engineering_accepted",
+  "parent_T08_actual_model_comparison": "pending",
+  "checks": {
+    "baseline-corrected": {
+      "tests": 63,
+      "failures": 16,
+      "errors": 0,
+      "skipped": 0,
+      "time": 1.646
+    },
+    "baseline": {
+      "tests": 63,
+      "failures": 18,
+      "errors": 0,
+      "skipped": 0,
+      "time": 2.737
+    },
+    "focused": {
+      "tests": 224,
+      "failures": 1,
+      "errors": 0,
+      "skipped": 0,
+      "time": 61.6
+    },
+    "full": {
+      "tests": 1235,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "time": 302.367
+    },
+    "timeout-recheck": {
+      "tests": 3,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "time": 3.299
+    }
+  },
+  "baseline_note": "Initial 18 failures included two overstrict test status expectations (existing value grammar can conservatively return mismatch). Corrected before product edit: 16 failed / 47 passed. Both raw logs preserved.",
+  "focused_initial_issue": "223 passed / 1 failed: a pre-existing 0.6-second domain timeout control expired before scientific reservation (executed=false). Meter/result/store preserved; isolated all-three recheck passed; full run used original unchanged tests and deadline.",
+  "new_controls": 63,
+  "original_tests_modified": [],
+  "prior_artifact_files_unchanged": 1089,
+  "original_baseline_files": 215,
+  "original_baseline_files_changed": [
+    "docs/evidence-binding.md",
+    "docs/optimization-backlog.md",
+    "docs/seven-point-status.md",
+    "docs/workflow-adapters.md",
+    "src/biomodel_agent/bindings.py"
+  ],
+  "control_freeze": {
+    "old_toolchain_sha256": "149e4a7e2d5c300cf8f180a388a99c103b257c03413ac97b60c3605f955f57bf",
+    "new_toolchain_sha256": "abad7db107b62cb942b96ec88df701d47c8eb236275d0cf17216f37da6686252",
+    "changed_manifest_fields": [
+      "toolchain_sha256"
+    ],
+    "source_and_experiment_entries_identical": true,
+    "scripts_byte_identical": true,
+    "scripts_sha256": "9f74d42b63e36eec35ead0fb364961e590cbb976ad8f80cec4a0ac5269b147ed",
+    "stale_manifest": {
+      "status": "refused_before_provider_and_output",
+      "reason": "scientific tool implementation/environment changed"
+    },
+    "planned_phases": 30,
+    "model_inference_calls": 0,
+    "evidence_kind": "scripted_control"
+  },
+  "actual_execution": {
+    "status": "adapter_execution_complete",
+    "planned_trials": 30,
+    "finished_records": 30,
+    "operational_statuses": {
+      "finished": 30
+    },
+    "observed_states": {
+      "completed": 18,
+      "awaiting_input": 12
+    },
+    "provider_requests": 66,
+    "online_inference_calls": 0,
+    "scientific_execution_attempts": 18,
+    "evidence_kind": "scripted_control",
+    "scientific_support": "unknown",
+    "note": "Adapter execution evidence; scripted decisions and unreviewed assessments are not model capability scores."
+  },
+  "scientific_diagnostics": "scientific-results.json",
+  "actual_native_domain_resumes": 4,
+  "strict_SBML_revalidation_exercised": true,
+  "binding_schema_version": 1,
+  "semantic_support": "unknown",
+  "implementation_fingerprint_guard_unchanged": true,
+  "source_materials_and_scripts_unchanged": true,
+  "original_completed_solver_outputs_unchanged": 12,
+  "changed_files": [
+    "src/biomodel_agent/bindings.py",
+    "tests/test_intended_equation_binding.py",
+    "docs/evidence-binding.md",
+    "docs/workflow-adapters.md",
+    "docs/optimization-backlog.md",
+    "docs/seven-point-status.md",
+    "tasks/audit-t08b-f1-equation-prose.json"
+  ],
+  "final_hashes": {
+    "src/biomodel_agent/bindings.py": "4dfb838738e0effcd18cb8de8bf86f8e01d0ee674ae1935f715a10403ee4cc19",
+    "tests/test_intended_equation_binding.py": "2c82d7ad1945b717694b963bd06002b8a0fa88396c8dc8a4aede5f3462aa42f4",
+    "docs/evidence-binding.md": "e196f91a4474c53d520c8f8a453d7a2cd84ad84f894213cbbf1a08c8a5d5c6da",
+    "docs/workflow-adapters.md": "52d2c60552555f15fe4bad173e15fff03eff2a85625eaf249b7260407d8330fb",
+    "docs/optimization-backlog.md": "98fba8ae119618cb06e3e7b12fffc864953e85fcb15cd1b80c663b5adb5faaaf",
+    "docs/seven-point-status.md": "718037f2ce42ec05a69b14ce0e2b1bb85e6a486930bf2038c90d3ea708f91685",
+    "tasks/audit-t08b-f1-equation-prose.json": "681aa2aee588c0253b543b89d69772e5505fc682e0e1651c7811969496cf6df3"
+  },
+  "diff": "changes.patch",
+  "limits": [
+    "Two explicit English forms only; no general language understanding, cross-sentence scope proof, units or biological endorsement.",
+    "All controls are seen synthetic development tasks and literal scripted decisions; assessments remain unreviewed.",
+    "Analytic errors are diagnostics under unchanged solver settings. No post hoc precision threshold was adopted.",
+    "Legacy source fingerprints are not migrated or bypassed; the replay has a new manifest and new stores.",
+    "T07 independent review and T08 actual same-model comparisons/ablations remain pending.",
+    "No online inference, credentials, new papers, dependencies, independent evalset or rejected c13/c18 USTC transmission."
+  ]
+}

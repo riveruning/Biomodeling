@@ -1,0 +1,54 @@
+EE                                                                       [100%]
+==================================== ERRORS ====================================
+___ ERROR at setup of test_actual_saved_unreviewed_completions_stay_pending ____
+
+    @pytest.fixture
+    def reporting():
+        spec = importlib.util.spec_from_file_location('evaluation_reporting_test',
+            ROOT/'benchmarks/development/evaluation_reporting.py')
+        module = importlib.util.module_from_spec(spec)
+>       spec.loader.exec_module(module)
+
+tests/test_evaluation_reporting.py:17: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+<frozen importlib._bootstrap_external>:991: in exec_module
+    ???
+<frozen importlib._bootstrap_external>:1128: in get_code
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <_frozen_importlib_external.SourceFileLoader object at 0x74750660eb40>
+path = '/home/riveruning/biologymodel_agent/benchmarks/development/evaluation_reporting.py'
+
+>   ???
+E   FileNotFoundError: [Errno 2] No such file or directory: '/home/riveruning/biologymodel_agent/benchmarks/development/evaluation_reporting.py'
+
+<frozen importlib._bootstrap_external>:1186: FileNotFoundError
+____________ ERROR at setup of test_actual_legacy_scores_stay_exact ____________
+
+    @pytest.fixture
+    def reporting():
+        spec = importlib.util.spec_from_file_location('evaluation_reporting_test',
+            ROOT/'benchmarks/development/evaluation_reporting.py')
+        module = importlib.util.module_from_spec(spec)
+>       spec.loader.exec_module(module)
+
+tests/test_evaluation_reporting.py:17: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+<frozen importlib._bootstrap_external>:991: in exec_module
+    ???
+<frozen importlib._bootstrap_external>:1128: in get_code
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <_frozen_importlib_external.SourceFileLoader object at 0x747506634200>
+path = '/home/riveruning/biologymodel_agent/benchmarks/development/evaluation_reporting.py'
+
+>   ???
+E   FileNotFoundError: [Errno 2] No such file or directory: '/home/riveruning/biologymodel_agent/benchmarks/development/evaluation_reporting.py'
+
+<frozen importlib._bootstrap_external>:1186: FileNotFoundError
+=========================== short test summary info ============================
+ERROR tests/test_evaluation_reporting.py::test_actual_saved_unreviewed_completions_stay_pending
+ERROR tests/test_evaluation_reporting.py::test_actual_legacy_scores_stay_exact
+2 errors in 0.05s

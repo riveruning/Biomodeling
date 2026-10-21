@@ -1,0 +1,75 @@
+........FFF                                                              [100%]
+=================================== FAILURES ===================================
+__________ test_valid_reference_pass_survives_cache_and_agent_summary __________
+
+tmp_path = PosixPath('/tmp/biomodel-t01-independent-dsh/test_valid_reference_pass_surv0')
+
+    def test_valid_reference_pass_survives_cache_and_agent_summary(tmp_path):
+        store = ArtifactStore(tmp_path)
+        _, draft, _ = proposal(store)
+        exp = ExperimentSpec((0.,1.))
+        reference = SimulationResult('succeeded',exp.times,{'x':(1.,math.exp(-.4))})
+        artifact = modeling.build_model(draft)
+        original = application.run_reproduction(store, artifact, exp, reference=reference, scales={'x':1.})
+        cached = application.run_reproduction(store, artifact, exp, reference=reference, scales={'x':1.})
+        for ref in (original,cached):
+            run = store.get(ref)['payload']
+            assert run['scientific_status']=='passed_structured_reference'
+>           assert agent._run_facts(run)['scientific_status']=='passed_structured_reference'
+E           AssertionError: assert 'not_verified' == 'passed_structured_reference'
+E             
+E             - passed_structured_reference
+E             + not_verified
+
+artifacts/audit-t01-verdict-20261019/test_independent_acceptance.py:136: AssertionError
+_ test_reference_pass_with_missing_or_unknown_numeric_validation_stays_unknown[checks0] _
+
+tmp_path = PosixPath('/tmp/biomodel-t01-independent-dsh/test_reference_pass_with_missi0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x76bff8389340>
+checks = ()
+
+    @pytest.mark.parametrize('checks', [(), (Check('finite','pass','finite'),
+        Check('convergence','unknown','not established',severity='blocking'))])
+    def test_reference_pass_with_missing_or_unknown_numeric_validation_stays_unknown(tmp_path, monkeypatch, checks):
+        store = ArtifactStore(tmp_path)
+        _, draft, _ = proposal(store)
+        exp = ExperimentSpec((0.,1.))
+        monkeypatch.setattr(application, '_numeric_report', lambda *a,**kw:ValidationReport(checks))
+        ref = application.run_reproduction(store, modeling.build_model(draft), exp,
+            reference=SimulationResult('succeeded',exp.times,{'x':(1.,math.exp(-.4))}),scales={'x':1.},use_cache=False)
+        assert store.get(ref)['payload']['comparison']['status']=='pass'
+>       assert store.get(ref)['payload']['scientific_status']=='not_verified'
+E       AssertionError: assert 'failed' == 'not_verified'
+E         
+E         - not_verified
+E         + failed
+
+artifacts/audit-t01-verdict-20261019/test_independent_acceptance.py:150: AssertionError
+_ test_reference_pass_with_missing_or_unknown_numeric_validation_stays_unknown[checks1] _
+
+tmp_path = PosixPath('/tmp/biomodel-t01-independent-dsh/test_reference_pass_with_missi1')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x76bff7b6bb30>
+checks = (Check(code='finite', status='pass', message='finite', severity='blocking'), Check(code='convergence', status='unknown', message='not established', severity='blocking'))
+
+    @pytest.mark.parametrize('checks', [(), (Check('finite','pass','finite'),
+        Check('convergence','unknown','not established',severity='blocking'))])
+    def test_reference_pass_with_missing_or_unknown_numeric_validation_stays_unknown(tmp_path, monkeypatch, checks):
+        store = ArtifactStore(tmp_path)
+        _, draft, _ = proposal(store)
+        exp = ExperimentSpec((0.,1.))
+        monkeypatch.setattr(application, '_numeric_report', lambda *a,**kw:ValidationReport(checks))
+        ref = application.run_reproduction(store, modeling.build_model(draft), exp,
+            reference=SimulationResult('succeeded',exp.times,{'x':(1.,math.exp(-.4))}),scales={'x':1.},use_cache=False)
+        assert store.get(ref)['payload']['comparison']['status']=='pass'
+>       assert store.get(ref)['payload']['scientific_status']=='not_verified'
+E       AssertionError: assert 'failed' == 'not_verified'
+E         
+E         - not_verified
+E         + failed
+
+artifacts/audit-t01-verdict-20261019/test_independent_acceptance.py:150: AssertionError
+=========================== short test summary info ============================
+FAILED artifacts/audit-t01-verdict-20261019/test_independent_acceptance.py::test_valid_reference_pass_survives_cache_and_agent_summary
+FAILED artifacts/audit-t01-verdict-20261019/test_independent_acceptance.py::test_reference_pass_with_missing_or_unknown_numeric_validation_stays_unknown[checks0]
+FAILED artifacts/audit-t01-verdict-20261019/test_independent_acceptance.py::test_reference_pass_with_missing_or_unknown_numeric_validation_stays_unknown[checks1]
+3 failed, 8 passed in 9.76s

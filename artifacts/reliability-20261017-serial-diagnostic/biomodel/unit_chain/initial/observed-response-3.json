@@ -1,0 +1,28 @@
+{
+  "id": "chatcmpl-1300b668-f4c5-4860-a14d-0061525afc40",
+  "created": 1792203721,
+  "model": "qwen3.8-chat",
+  "object": "chat.completion",
+  "choices": [
+    {
+      "finish_reason": "stop",
+      "index": 0,
+      "message": {
+        "content": "{\"action\": \"submit_draft\", \"args\": {\"draft\": {\"compartment\": {\"id\": \"C\", \"size\": 1, \"unit\": \"dimensionless\"}, \"derived\": [], \"id\": \"synthetic_ode_model\", \"parameters\": [{\"id\": \"k1\", \"origin\": \"equation legend\", \"unit\": \"per minute\", \"value\": 0.2}, {\"id\": \"k2\", \"origin\": \"parameter table\", \"unit\": \"per minute\", \"value\": 0.15}], \"rate_rules\": [{\"expression\": \"-k1*U\", \"state\": \"U\"}, {\"expression\": \"k1*U-k2*V\", \"state\": \"V\"}], \"reactions\": [], \"states\": [{\"id\": \"U\", \"initial\": 1.0, \"nonnegative\": true, \"quantity_kind\": \"variable\", \"unit\": \"dimensionless\"}, {\"id\": \"V\", \"initial\": 0.1, \"nonnegative\": true, \"quantity_kind\": \"variable\", \"unit\": \"dimensionless\"}], \"time_unit\": \"minutes\"}, \"evidence\": [{\"page\": 1, \"quote\": \"Initial U = 1.0.\", \"source_ref\": \"86db644e605b9337dc33d8e171200f5832373f76108e1b1ab71849959ec0bd6e\", \"target\": \"U/initial\"}, {\"page\": 1, \"quote\": \"Initial V = 0.1.\", \"source_ref\": \"86db644e605b9337dc33d8e171200f5832373f76108e1b1ab71849959ec0bd6e\", \"target\": \"V/initial\"}, {\"page\": 1, \"quote\": \"Parameter k1 = 0.2.\", \"source_ref\": \"86db644e605b9337dc33d8e171200f5832373f76108e1b1ab71849959ec0bd6e\", \"target\": \"k1/value\"}, {\"page\": 1, \"quote\": \"Parameter k2 = 0.15.\", \"source_ref\": \"86db644e605b9337dc33d8e171200f5832373f76108e1b1ab71849959ec0bd6e\", \"target\": \"k2/value\"}, {\"page\": 1, \"quote\": \"Equation dU/dt = -k1*U.\", \"source_ref\": \"86db644e605b9337dc33d8e171200f5832373f76108e1b1ab71849959ec0bd6e\", \"target\": \"rule:U/expression\"}, {\"page\": 1, \"quote\": \"Equation dV/dt = k1*U-k2*V.\", \"source_ref\": \"86db644e605b9337dc33d8e171200f5832373f76108e1b1ab71849959ec0bd6e\", \"target\": \"rule:V/expression\"}, {\"page\": 1, \"quote\": \"Time t is in minutes.\", \"source_ref\": \"86db644e605b9337dc33d8e171200f5832373f76108e1b1ab71849959ec0bd6e\", \"target\": \"time_unit\"}, {\"page\": 1, \"quote\": \"The fixed compartment has size 1 dimensionless.\", \"source_ref\": \"86db644e605b9337dc33d8e171200f5832373f76108e1b1ab71849959ec0bd6e\", \"target\": \"C/size\"}, {\"page\": 1, \"quote\": \"States are dimensionless abstract activities.\", \"source_ref\": \"86db644e605b9337dc33d8e171200f5832373f76108e1b1ab71849959ec0bd6e\", \"target\": \"U/unit\"}], \"mechanism\": \"ODE system with two abstract activities U and V; U decays linearly and feeds V which also decays.\"}}",
+        "role": "assistant",
+        "provider_specific_fields": {
+          "refusal": null
+        }
+      },
+      "provider_specific_fields": {}
+    }
+  ],
+  "usage": {
+    "completion_tokens": 1107,
+    "prompt_tokens": 2225,
+    "total_tokens": 3332,
+    "prompt_tokens_details": {
+      "cached_tokens": 0
+    }
+  }
+}

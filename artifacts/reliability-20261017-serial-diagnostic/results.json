@@ -1,0 +1,773 @@
+{
+  "rows": [
+    {
+      "system": "biomodel",
+      "case": "decay",
+      "phase": "initial",
+      "category": "complete",
+      "expected_execution": true,
+      "status": "failed",
+      "elapsed_seconds": 28.61815490200388,
+      "calls": 2,
+      "tokens": 2631,
+      "executable_artifact": false,
+      "actual_trajectory": false,
+      "gap_evidence": "",
+      "numeric": {
+        "status": "not_run"
+      },
+      "successful_execution": false
+    },
+    {
+      "system": "biomodel",
+      "case": "turnover",
+      "phase": "initial",
+      "category": "complete",
+      "expected_execution": true,
+      "status": "failed",
+      "elapsed_seconds": 24.1975339060009,
+      "calls": 2,
+      "tokens": 2805,
+      "executable_artifact": false,
+      "actual_trajectory": false,
+      "gap_evidence": "",
+      "numeric": {
+        "status": "not_run"
+      },
+      "successful_execution": false
+    },
+    {
+      "system": "biomodel",
+      "case": "reversible",
+      "phase": "initial",
+      "category": "missing_initial",
+      "expected_execution": false,
+      "status": "awaiting_input",
+      "elapsed_seconds": 48.264161195998895,
+      "calls": 3,
+      "tokens": 6290,
+      "executable_artifact": false,
+      "actual_trajectory": false,
+      "gap_evidence": "Unknown citation target 'compartment/size'; allowed targets: ['A/initial', 'A/unit', 'B/initial', 'B/unit', 'C/size', 'C/unit', 'kf/unit', 'kf/value', 'kr/unit', 'kr/value', 'rule:A/expression', 'rule:B/expression', 'time_unit']\nB/initial",
+      "numeric": {
+        "status": "not_run"
+      },
+      "successful_execution": false,
+      "unsupported_proposal": false,
+      "unsupported_completion": false,
+      "gap_detected": true
+    },
+    {
+      "system": "biomodel",
+      "case": "reversible",
+      "phase": "clarified",
+      "category": "missing_initial",
+      "expected_execution": true,
+      "status": "failed",
+      "elapsed_seconds": 31.40212538599735,
+      "calls": 2,
+      "tokens": 3023,
+      "executable_artifact": false,
+      "actual_trajectory": false,
+      "gap_evidence": "",
+      "numeric": {
+        "status": "not_run"
+      },
+      "successful_execution": false
+    },
+    {
+      "system": "biomodel",
+      "case": "translation",
+      "phase": "initial",
+      "category": "missing_initial",
+      "expected_execution": false,
+      "status": "failed",
+      "elapsed_seconds": 40.074134116002824,
+      "calls": 2,
+      "tokens": 3284,
+      "executable_artifact": false,
+      "actual_trajectory": false,
+      "gap_evidence": "",
+      "numeric": {
+        "status": "not_run"
+      },
+      "successful_execution": false,
+      "unsupported_proposal": false,
+      "unsupported_completion": false,
+      "gap_detected": false
+    },
+    {
+      "system": "biomodel",
+      "case": "translation",
+      "phase": "clarified",
+      "category": "missing_initial",
+      "expected_execution": true,
+      "status": "completed",
+      "elapsed_seconds": 106.07594718000473,
+      "calls": 6,
+      "tokens": 24578,
+      "executable_artifact": true,
+      "actual_trajectory": true,
+      "gap_evidence": "State.unit: expected str, got NoneType\nstate 'M' is nonnegative but driven by a rate rule; nonnegativity is not representable in the supported profile\nstate 'P' is nonnegative but driven by a rate rule; nonnegativity is not representable in the supported profile\n2 structural problem(s) found",
+      "numeric": {
+        "status": "pass",
+        "max_scaled_error": 8.8193806133674e-06,
+        "threshold": 0.001
+      },
+      "successful_execution": true
+    },
+    {
+      "system": "biomodel",
+      "case": "binding",
+      "phase": "initial",
+      "category": "missing_parameter",
+      "expected_execution": false,
+      "status": "failed",
+      "elapsed_seconds": 33.68296931200166,
+      "calls": 2,
+      "tokens": 3227,
+      "executable_artifact": false,
+      "actual_trajectory": false,
+      "gap_evidence": "",
+      "numeric": {
+        "status": "not_run"
+      },
+      "successful_execution": false,
+      "unsupported_proposal": false,
+      "unsupported_completion": false,
+      "gap_detected": false
+    },
+    {
+      "system": "biomodel",
+      "case": "binding",
+      "phase": "clarified",
+      "category": "missing_parameter",
+      "expected_execution": true,
+      "status": "failed",
+      "elapsed_seconds": 34.2498447379985,
+      "calls": 2,
+      "tokens": 3152,
+      "executable_artifact": false,
+      "actual_trajectory": false,
+      "gap_evidence": "",
+      "numeric": {
+        "status": "not_run"
+      },
+      "successful_execution": false
+    },
+    {
+      "system": "biomodel",
+      "case": "saturation",
+      "phase": "initial",
+      "category": "missing_parameter",
+      "expected_execution": false,
+      "status": "failed",
+      "elapsed_seconds": 29.02830379599618,
+      "calls": 2,
+      "tokens": 2779,
+      "executable_artifact": false,
+      "actual_trajectory": false,
+      "gap_evidence": "",
+      "numeric": {
+        "status": "not_run"
+      },
+      "successful_execution": false,
+      "unsupported_proposal": false,
+      "unsupported_completion": false,
+      "gap_detected": false
+    },
+    {
+      "system": "biomodel",
+      "case": "saturation",
+      "phase": "clarified",
+      "category": "missing_parameter",
+      "expected_execution": true,
+      "status": "failed",
+      "elapsed_seconds": 26.038914493001357,
+      "calls": 2,
+      "tokens": 2798,
+      "executable_artifact": false,
+      "actual_trajectory": false,
+      "gap_evidence": "",
+      "numeric": {
+        "status": "not_run"
+      },
+      "successful_execution": false
+    },
+    {
+      "system": "biomodel",
+      "case": "logistic",
+      "phase": "initial",
+      "category": "ambiguous_equation",
+      "expected_execution": false,
+      "status": "awaiting_input",
+      "elapsed_seconds": 18.80969142799586,
+      "calls": 2,
+      "tokens": 2135,
+      "executable_artifact": false,
+      "actual_trajectory": false,
+      "gap_evidence": "The source gives two equally authoritative alternatives for dX/dt: (A) r*X*(1-X/K) or (B) r*X*(1-X)/K, and does not specify which was used. Which one should the reproduction model use?",
+      "numeric": {
+        "status": "not_run"
+      },
+      "successful_execution": false,
+      "unsupported_proposal": false,
+      "unsupported_completion": false,
+      "gap_detected": true
+    },
+    {
+      "system": "biomodel",
+      "case": "logistic",
+      "phase": "clarified",
+      "category": "ambiguous_equation",
+      "expected_execution": true,
+      "status": "failed",
+      "elapsed_seconds": 29.461260887001117,
+      "calls": 2,
+      "tokens": 2920,
+      "executable_artifact": false,
+      "actual_trajectory": false,
+      "gap_evidence": "",
+      "numeric": {
+        "status": "not_run"
+      },
+      "successful_execution": false
+    },
+    {
+      "system": "biomodel",
+      "case": "feedback",
+      "phase": "initial",
+      "category": "ambiguous_equation",
+      "expected_execution": false,
+      "status": "awaiting_input",
+      "elapsed_seconds": 20.028274231000978,
+      "calls": 2,
+      "tokens": 2196,
+      "executable_artifact": false,
+      "actual_trajectory": false,
+      "gap_evidence": "The source gives two equally authoritative alternatives for dR/dt: s/(1+(P/K)**2)-dr*R OR s/(1+(P/K))-dr*R, and does not specify which was used. Which one should the reproduction use?",
+      "numeric": {
+        "status": "not_run"
+      },
+      "successful_execution": false,
+      "unsupported_proposal": false,
+      "unsupported_completion": false,
+      "gap_detected": true
+    },
+    {
+      "system": "biomodel",
+      "case": "feedback",
+      "phase": "clarified",
+      "category": "ambiguous_equation",
+      "expected_execution": true,
+      "status": "failed",
+      "elapsed_seconds": 36.563821884999925,
+      "calls": 2,
+      "tokens": 3543,
+      "executable_artifact": false,
+      "actual_trajectory": false,
+      "gap_evidence": "",
+      "numeric": {
+        "status": "not_run"
+      },
+      "successful_execution": false
+    },
+    {
+      "system": "biomodel",
+      "case": "unit_decay",
+      "phase": "initial",
+      "category": "unit_conflict",
+      "expected_execution": false,
+      "status": "failed",
+      "elapsed_seconds": 24.24522558600438,
+      "calls": 2,
+      "tokens": 2690,
+      "executable_artifact": false,
+      "actual_trajectory": false,
+      "gap_evidence": "",
+      "numeric": {
+        "status": "not_run"
+      },
+      "successful_execution": false,
+      "unsupported_proposal": false,
+      "unsupported_completion": false,
+      "gap_detected": false
+    },
+    {
+      "system": "biomodel",
+      "case": "unit_decay",
+      "phase": "clarified",
+      "category": "unit_conflict",
+      "expected_execution": true,
+      "status": "failed",
+      "elapsed_seconds": 24.057349635004357,
+      "calls": 2,
+      "tokens": 2737,
+      "executable_artifact": false,
+      "actual_trajectory": false,
+      "gap_evidence": "",
+      "numeric": {
+        "status": "not_run"
+      },
+      "successful_execution": false
+    },
+    {
+      "system": "biomodel",
+      "case": "unit_chain",
+      "phase": "initial",
+      "category": "unit_conflict",
+      "expected_execution": false,
+      "status": "completed",
+      "elapsed_seconds": 86.20921565599565,
+      "calls": 6,
+      "tokens": 21177,
+      "executable_artifact": true,
+      "actual_trajectory": true,
+      "gap_evidence": "State.unit: expected str, got NoneType\nstate 'U' is nonnegative but driven by a rate rule; nonnegativity is not representable in the supported profile\nstate 'V' is nonnegative but driven by a rate rule; nonnegativity is not representable in the supported profile\n2 structural problem(s) found",
+      "numeric": {
+        "status": "not_scored_unresolved_source"
+      },
+      "successful_execution": false,
+      "unsupported_proposal": false,
+      "unsupported_completion": true,
+      "gap_detected": false
+    },
+    {
+      "system": "biomodel",
+      "case": "unit_chain",
+      "phase": "clarified",
+      "category": "unit_conflict",
+      "expected_execution": true,
+      "status": "failed",
+      "elapsed_seconds": 30.33456639400538,
+      "calls": 2,
+      "tokens": 3103,
+      "executable_artifact": false,
+      "actual_trajectory": false,
+      "gap_evidence": "",
+      "numeric": {
+        "status": "not_run"
+      },
+      "successful_execution": false
+    },
+    {
+      "system": "kinmodgpt",
+      "case": "decay",
+      "phase": "initial",
+      "category": "complete",
+      "expected_execution": true,
+      "status": "executed",
+      "elapsed_seconds": 4.843569780001417,
+      "calls": 1,
+      "tokens": 768,
+      "executable_artifact": true,
+      "actual_trajectory": true,
+      "gap_evidence": "",
+      "numeric": {
+        "status": "pass",
+        "max_scaled_error": 3.0377653876811905e-06,
+        "threshold": 0.001
+      },
+      "successful_execution": true
+    },
+    {
+      "system": "kinmodgpt",
+      "case": "turnover",
+      "phase": "initial",
+      "category": "complete",
+      "expected_execution": true,
+      "status": "executed",
+      "elapsed_seconds": 6.313215242997103,
+      "calls": 1,
+      "tokens": 792,
+      "executable_artifact": true,
+      "actual_trajectory": true,
+      "gap_evidence": "",
+      "numeric": {
+        "status": "pass",
+        "max_scaled_error": 1.0333974951315383e-05,
+        "threshold": 0.001
+      },
+      "successful_execution": true
+    },
+    {
+      "system": "kinmodgpt",
+      "case": "reversible",
+      "phase": "initial",
+      "category": "missing_initial",
+      "expected_execution": false,
+      "status": "executed",
+      "elapsed_seconds": 6.0737560850029695,
+      "calls": 1,
+      "tokens": 815,
+      "executable_artifact": true,
+      "actual_trajectory": true,
+      "gap_evidence": "",
+      "numeric": {
+        "status": "not_scored_unresolved_source"
+      },
+      "successful_execution": false,
+      "unsupported_proposal": false,
+      "unsupported_completion": true,
+      "gap_detected": false
+    },
+    {
+      "system": "kinmodgpt",
+      "case": "reversible",
+      "phase": "clarified",
+      "category": "missing_initial",
+      "expected_execution": true,
+      "status": "failed",
+      "elapsed_seconds": 6.780442727002082,
+      "calls": 1,
+      "tokens": 852,
+      "executable_artifact": false,
+      "actual_trajectory": false,
+      "gap_evidence": "",
+      "numeric": {
+        "status": "not_run"
+      },
+      "successful_execution": false
+    },
+    {
+      "system": "kinmodgpt",
+      "case": "translation",
+      "phase": "initial",
+      "category": "missing_initial",
+      "expected_execution": false,
+      "status": "executed",
+      "elapsed_seconds": 6.190976884994598,
+      "calls": 1,
+      "tokens": 853,
+      "executable_artifact": true,
+      "actual_trajectory": true,
+      "gap_evidence": "",
+      "numeric": {
+        "status": "not_scored_unresolved_source"
+      },
+      "successful_execution": false,
+      "unsupported_proposal": false,
+      "unsupported_completion": true,
+      "gap_detected": false
+    },
+    {
+      "system": "kinmodgpt",
+      "case": "translation",
+      "phase": "clarified",
+      "category": "missing_initial",
+      "expected_execution": true,
+      "status": "executed",
+      "elapsed_seconds": 6.047915622999426,
+      "calls": 1,
+      "tokens": 890,
+      "executable_artifact": true,
+      "actual_trajectory": true,
+      "gap_evidence": "",
+      "numeric": {
+        "status": "pass",
+        "max_scaled_error": 1.3610318102763586e-05,
+        "threshold": 0.001
+      },
+      "successful_execution": true
+    },
+    {
+      "system": "kinmodgpt",
+      "case": "binding",
+      "phase": "initial",
+      "category": "missing_parameter",
+      "expected_execution": false,
+      "status": "executed",
+      "elapsed_seconds": 3.1417482799952268,
+      "calls": 1,
+      "tokens": 834,
+      "executable_artifact": true,
+      "actual_trajectory": true,
+      "gap_evidence": "",
+      "numeric": {
+        "status": "not_scored_unresolved_source"
+      },
+      "successful_execution": false,
+      "unsupported_proposal": false,
+      "unsupported_completion": true,
+      "gap_detected": false
+    },
+    {
+      "system": "kinmodgpt",
+      "case": "binding",
+      "phase": "clarified",
+      "category": "missing_parameter",
+      "expected_execution": true,
+      "status": "executed",
+      "elapsed_seconds": 4.489793139997346,
+      "calls": 1,
+      "tokens": 859,
+      "executable_artifact": true,
+      "actual_trajectory": true,
+      "gap_evidence": "",
+      "numeric": {
+        "status": "pass",
+        "max_scaled_error": 2.3589582203165094e-06,
+        "threshold": 0.001
+      },
+      "successful_execution": true
+    },
+    {
+      "system": "kinmodgpt",
+      "case": "saturation",
+      "phase": "initial",
+      "category": "missing_parameter",
+      "expected_execution": false,
+      "status": "executed",
+      "elapsed_seconds": 3.2454809470000328,
+      "calls": 1,
+      "tokens": 781,
+      "executable_artifact": true,
+      "actual_trajectory": true,
+      "gap_evidence": "",
+      "numeric": {
+        "status": "not_scored_unresolved_source"
+      },
+      "successful_execution": false,
+      "unsupported_proposal": false,
+      "unsupported_completion": true,
+      "gap_detected": false
+    },
+    {
+      "system": "kinmodgpt",
+      "case": "saturation",
+      "phase": "clarified",
+      "category": "missing_parameter",
+      "expected_execution": true,
+      "status": "executed",
+      "elapsed_seconds": 5.330670810995798,
+      "calls": 1,
+      "tokens": 804,
+      "executable_artifact": true,
+      "actual_trajectory": true,
+      "gap_evidence": "",
+      "numeric": {
+        "status": "fail",
+        "max_scaled_error": 1.0,
+        "threshold": 0.001
+      },
+      "successful_execution": false
+    },
+    {
+      "system": "kinmodgpt",
+      "case": "logistic",
+      "phase": "initial",
+      "category": "ambiguous_equation",
+      "expected_execution": false,
+      "status": "executed",
+      "elapsed_seconds": 6.307071053000982,
+      "calls": 1,
+      "tokens": 809,
+      "executable_artifact": true,
+      "actual_trajectory": true,
+      "gap_evidence": "",
+      "numeric": {
+        "status": "not_scored_unresolved_source"
+      },
+      "successful_execution": false,
+      "unsupported_proposal": false,
+      "unsupported_completion": true,
+      "gap_detected": false
+    },
+    {
+      "system": "kinmodgpt",
+      "case": "logistic",
+      "phase": "clarified",
+      "category": "ambiguous_equation",
+      "expected_execution": true,
+      "status": "executed",
+      "elapsed_seconds": 4.6294395990043995,
+      "calls": 1,
+      "tokens": 870,
+      "executable_artifact": true,
+      "actual_trajectory": true,
+      "gap_evidence": "",
+      "numeric": {
+        "status": "pass",
+        "max_scaled_error": 1.3517244162430941e-05,
+        "threshold": 0.001
+      },
+      "successful_execution": true
+    },
+    {
+      "system": "kinmodgpt",
+      "case": "feedback",
+      "phase": "initial",
+      "category": "ambiguous_equation",
+      "expected_execution": false,
+      "status": "executed",
+      "elapsed_seconds": 4.399300386001414,
+      "calls": 1,
+      "tokens": 946,
+      "executable_artifact": true,
+      "actual_trajectory": true,
+      "gap_evidence": "",
+      "numeric": {
+        "status": "not_scored_unresolved_source"
+      },
+      "successful_execution": false,
+      "unsupported_proposal": false,
+      "unsupported_completion": true,
+      "gap_detected": false
+    },
+    {
+      "system": "kinmodgpt",
+      "case": "feedback",
+      "phase": "clarified",
+      "category": "ambiguous_equation",
+      "expected_execution": true,
+      "status": "executed",
+      "elapsed_seconds": 3.4309096119977767,
+      "calls": 1,
+      "tokens": 980,
+      "executable_artifact": true,
+      "actual_trajectory": true,
+      "gap_evidence": "",
+      "numeric": {
+        "status": "pass",
+        "max_scaled_error": 2.541089332064317e-06,
+        "threshold": 0.001
+      },
+      "successful_execution": true
+    },
+    {
+      "system": "kinmodgpt",
+      "case": "unit_decay",
+      "phase": "initial",
+      "category": "unit_conflict",
+      "expected_execution": false,
+      "status": "executed",
+      "elapsed_seconds": 3.609355272994435,
+      "calls": 1,
+      "tokens": 788,
+      "executable_artifact": true,
+      "actual_trajectory": true,
+      "gap_evidence": "",
+      "numeric": {
+        "status": "not_scored_unresolved_source"
+      },
+      "successful_execution": false,
+      "unsupported_proposal": false,
+      "unsupported_completion": true,
+      "gap_detected": false
+    },
+    {
+      "system": "kinmodgpt",
+      "case": "unit_decay",
+      "phase": "clarified",
+      "category": "unit_conflict",
+      "expected_execution": true,
+      "status": "executed",
+      "elapsed_seconds": 3.383525468998414,
+      "calls": 1,
+      "tokens": 831,
+      "executable_artifact": true,
+      "actual_trajectory": true,
+      "gap_evidence": "",
+      "numeric": {
+        "status": "fail",
+        "max_scaled_error": 1.0,
+        "threshold": 0.001
+      },
+      "successful_execution": false
+    },
+    {
+      "system": "kinmodgpt",
+      "case": "unit_chain",
+      "phase": "initial",
+      "category": "unit_conflict",
+      "expected_execution": false,
+      "status": "executed",
+      "elapsed_seconds": 5.361780781997368,
+      "calls": 1,
+      "tokens": 880,
+      "executable_artifact": true,
+      "actual_trajectory": true,
+      "gap_evidence": "",
+      "numeric": {
+        "status": "not_scored_unresolved_source"
+      },
+      "successful_execution": false,
+      "unsupported_proposal": false,
+      "unsupported_completion": true,
+      "gap_detected": false
+    },
+    {
+      "system": "kinmodgpt",
+      "case": "unit_chain",
+      "phase": "clarified",
+      "category": "unit_conflict",
+      "expected_execution": true,
+      "status": "executed",
+      "elapsed_seconds": 4.590520265002851,
+      "calls": 1,
+      "tokens": 908,
+      "executable_artifact": true,
+      "actual_trajectory": true,
+      "gap_evidence": "",
+      "numeric": {
+        "status": "fail",
+        "max_scaled_error": 1.0,
+        "threshold": 0.001
+      },
+      "successful_execution": false
+    }
+  ],
+  "summary": {
+    "biomodel": {
+      "complete_success": {
+        "count": 0,
+        "denominator": 2
+      },
+      "unsupported_completion": {
+        "count": 1,
+        "denominator": 8
+      },
+      "gap_detection": {
+        "count": 3,
+        "denominator": 8
+      },
+      "clarified_rebuild": {
+        "count": 1,
+        "denominator": 8
+      },
+      "conditional_rebuild": {
+        "count": 0,
+        "denominator": 3
+      },
+      "wall_seconds_sum": 671.3414947270139,
+      "provider_tokens_sum": 95068,
+      "incomplete_or_failed_trials": 13
+    },
+    "kinmodgpt": {
+      "complete_success": {
+        "count": 2,
+        "denominator": 2
+      },
+      "unsupported_completion": {
+        "count": 8,
+        "denominator": 8
+      },
+      "gap_detection": {
+        "count": 0,
+        "denominator": 8
+      },
+      "clarified_rebuild": {
+        "count": 4,
+        "denominator": 8
+      },
+      "conditional_rebuild": {
+        "count": 0,
+        "denominator": 0
+      },
+      "wall_seconds_sum": 88.16947195998364,
+      "provider_tokens_sum": 15260,
+      "incomplete_or_failed_trials": 1
+    }
+  },
+  "context": "Separate all-case diagnostic, never replaces initial trials; no Codex rerun."
+}

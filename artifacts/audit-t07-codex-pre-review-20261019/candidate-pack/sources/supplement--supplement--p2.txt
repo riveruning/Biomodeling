@@ -1,0 +1,1 @@
+Table S2: the parameter k_bind = 0.07 per second for the binding assay.

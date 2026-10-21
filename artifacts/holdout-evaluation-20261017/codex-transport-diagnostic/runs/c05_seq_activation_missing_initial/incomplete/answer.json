@@ -1,0 +1,24 @@
+{
+  "status": "needs_input",
+  "parameters": [
+    {"id": "k1", "value": 0.75, "unit": "min^-1 a.u.^-1"},
+    {"id": "k2", "value": 0.2, "unit": "min^-1"}
+  ],
+  "states": [
+    {"id": "E", "initial": 5.0},
+    {"id": "S", "initial": 2.0},
+    {"id": "Es", "initial": null}
+  ],
+  "equations": [
+    {"state": "E", "expression": "-k1*E*S + k2*Es"},
+    {"state": "S", "expression": "-k1*E*S + k2*Es"},
+    {"state": "Es", "expression": "k1*E*S - k2*Es"}
+  ],
+  "questions": [
+    "What is the initial concentration Es(0) of the complex E* in a.u.?"
+  ],
+  "limitations": [
+    "The source calls the complex E* in prose and Es in its equations; experiment.json requests Es.",
+    "Es(0) is explicitly unreported. E(0) and S(0) specify free species concentrations and do not determine Es(0); a closed system does not imply an initially absent complex. No trajectory can be determined at the 41 requested sampling times without this initial condition."
+  ]
+}

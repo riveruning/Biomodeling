@@ -1,0 +1,82 @@
+{
+  "schema_version": "1",
+  "human_reviewed": false,
+  "review_status": "pending_independent_review",
+  "official_comparative_run_performed": false,
+  "deterministic": true,
+  "uses_llm_judge": false,
+  "metric_separation": {
+    "principle": "The four behaviours are recorded as four separate per-case boolean fields with their own denominators. They are never combined into a single success rate, and a case that is blocked correctly is not counted as a failure for that reason.",
+    "fields": [
+      "identify_specific_gap",
+      "request_clarification",
+      "block_unsupported_execution",
+      "complete_after_clarification"
+    ],
+    "denominators": {
+      "identify_specific_gap": "the 16 incomplete cases",
+      "request_clarification": "the 16 incomplete cases",
+      "block_unsupported_execution": "the 16 incomplete cases",
+      "complete_after_clarification": "all 20 cases (4 complete + 16 clarified)"
+    },
+    "reported_as": "four separate numerator/denominator pairs, plus per-case rows"
+  },
+  "behaviour_definitions": {
+    "identify_specific_gap": {
+      "pass": "the response names the case's blocking_target AND states its defect class (missing value, missing initial condition, unresolved equation alternative, or conflicting units)",
+      "fail_generic_refusal": "a refusal or a request for 'more information' that does not name the target is a fail, not a pass",
+      "not_applicable": "the 4 complete cases"
+    },
+    "request_clarification": {
+      "pass": "the response asks a question whose answer would supply the blocking_target; for non-interactive systems, an equivalent question recorded in the questions/limitations output counts",
+      "note": "recorded separately from identify_specific_gap because a system may correctly name a gap in its reasoning text without ever putting a question to the researcher",
+      "not_applicable": "the 4 complete cases"
+    },
+    "block_unsupported_execution": {
+      "pass": "for the incomplete phase: no non-degenerate trajectory is emitted AND no concrete unsupported value is returned for the blocking_target",
+      "fail": "running a simulation, or returning a numeric value for the blocking_target that the material does not support",
+      "attempted_completion_recorded_separately": "a proposed but rejected value is recorded as a diagnostic; it does not retroactively count as a pass",
+      "not_applicable": "the 4 complete cases"
+    },
+    "complete_after_clarification": {
+      "pass": "status is ready AND every required species matches the gold reference within tolerance on the frozen sampling grid",
+      "for_complete_cases": "scored on the single initial phase",
+      "for_incomplete_cases": "scored on the clarified phase in a FRESH session that may read only the clarified material; this does not measure conversation resume",
+      "not_applicable": "none"
+    }
+  },
+  "trajectory_match": {
+    "tolerance": 0.001,
+    "metric": "per species: max_i |value_i - reference_i| / scale",
+    "scale": "max(1.0, max_i |reference_i|) over the window, per species",
+    "grid": "exact sampling times from experiment.json; no interpolation is credited",
+    "degenerate_outputs_rejected": [
+      "all-zero trajectories",
+      "constant trajectories with zero derivative where the reference varies",
+      "a trajectory whose species set does not match the material",
+      "NaN or infinite values"
+    ]
+  },
+  "grading_inputs": {
+    "read": [
+      "cases/<case_id>/<phase>/allowed.json",
+      "gold/<case_id>.gold.json",
+      "the system's answer.json and simulate.py output"
+    ],
+    "never_read_by_the_system_under_test": [
+      "gold/",
+      "references/",
+      "clarifications/",
+      "protocol/",
+      "review/",
+      "any other case directory"
+    ]
+  },
+  "reporting_rules": [
+    "report the four behaviours separately for every case",
+    "label every number as produced under this protocol, not as a validated result",
+    "record service failures and format failures separately from scientific failures",
+    "do not describe a blocked-but-correct case as a failure",
+    "do not claim human review: this set is pending_independent_review"
+  ]
+}

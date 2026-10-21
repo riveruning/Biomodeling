@@ -1,0 +1,25 @@
+{
+  "case": "c18_two_pathway_unit_conflict",
+  "phase": "resume",
+  "status": "completed",
+  "calls_cumulative": 7,
+  "calls_incremental": 5,
+  "repair_count": 2,
+  "original_response_sha256": {
+    "/home/riveruning/biologymodel_agent/artifacts/holdout-evaluation-20261017/runs/biomodel/c18_two_pathway_unit_conflict/incomplete/resume/response-01.json": "dc0a6c3bf52e564d28bbab118b89f16d746d2f33c68385bbead39302a7b9c693"
+  },
+  "scripted_actions": 4,
+  "new_model_requests": 0,
+  "numeric": {
+    "status": "pass",
+    "max_scaled_error": 4.766109864107193e-07,
+    "per_species": {
+      "M": 4.766109864107193e-07
+    },
+    "reference_sha256": "7358189a5c61ffa3fbb0fbfb02b1b65469aaef7f0d6cd52baea214e67f73922a"
+  },
+  "parent_unchanged": true,
+  "additional_outputs": [],
+  "output_contract_exact": true,
+  "scientific_status": "not_verified"
+}

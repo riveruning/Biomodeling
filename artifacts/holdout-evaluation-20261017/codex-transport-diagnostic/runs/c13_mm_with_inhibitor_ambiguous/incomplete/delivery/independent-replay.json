@@ -1,0 +1,8 @@
+{
+  "exit_code": 0,
+  "stdout": "{\"status\": \"needs_input\", \"reason\": \"The source does not determine whether I in dS/dt = -Vmax*S/(Km*(1 + I/KI) + S) denotes the constant free inhibitor state (I(0) = 2.0 a.u., dI/dt = 0) or includes the growing enzyme-bound inhibitor fraction. Clarify which definition applies; if free-plus-bound is intended, supply the equation and any initial conditions and parameters needed for the bound contribution, and specify whether reported I is free or total.\"}\n",
+  "stderr": "",
+  "reviewed_sha256": "00a037a57408399e1db253160da3b599fbe1857eacceef97d01296cf821bf698",
+  "status": "declined",
+  "reason": "The source does not determine whether I in dS/dt = -Vmax*S/(Km*(1 + I/KI) + S) denotes the constant free inhibitor state (I(0) = 2.0 a.u., dI/dt = 0) or includes the growing enzyme-bound inhibitor fraction. Clarify which definition applies; if free-plus-bound is intended, supply the equation and any initial conditions and parameters needed for the bound contribution, and specify whether reported I is free or total."
+}

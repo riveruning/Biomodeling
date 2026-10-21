@@ -1,0 +1,29 @@
+{
+  "status": "needs_input",
+  "parameters": [
+    {
+      "id": "k",
+      "value": 0.3,
+      "unit": "unresolved: per second versus per minute"
+    }
+  ],
+  "states": [
+    {
+      "id": "D",
+      "initial": 1.0
+    }
+  ],
+  "equations": [
+    {
+      "state": "D",
+      "expression": "-k*D"
+    }
+  ],
+  "questions": [
+    "Is k = 0.3 per second, as labeled in the parameter table, or 0.3 per minute, as labeled in the equation legend? Time t is in minutes; these imply k = 18 per minute and k = 0.3 per minute, respectively."
+  ],
+  "limitations": [
+    "The two unit labels for k are equally authoritative and no correction is supplied. Simulation is blocked until its unit is resolved; neither interpretation has been selected.",
+    "D is dimensionless, t is in minutes, and the fixed compartment size is 1 dimensionless."
+  ]
+}

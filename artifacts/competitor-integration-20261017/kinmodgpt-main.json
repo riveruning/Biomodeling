@@ -1,0 +1,101 @@
+{
+  "sha": "2b337a3d472e7d482ddb34bb25743d7618285430",
+  "node_id": "C_kwDOJR_9KNoAKDJiMzM3YTNkNDcyZTdkNDgyZGRiMzRiYjI1NzQzZDc2MTgyODU0MzA",
+  "commit": {
+    "author": {
+      "name": "kmaeda16",
+      "email": "40183437+kmaeda16@users.noreply.github.com",
+      "date": "2023-06-12T14:31:57Z"
+    },
+    "committer": {
+      "name": "GitHub",
+      "email": "noreply@github.com",
+      "date": "2023-06-12T14:31:57Z"
+    },
+    "message": "Update README.md",
+    "tree": {
+      "sha": "cdfa3dc84859d6a43578a777c207dca92595d3e7",
+      "url": "https://api.github.com/repos/kmaeda16/KinModGPT/git/trees/cdfa3dc84859d6a43578a777c207dca92595d3e7"
+    },
+    "url": "https://api.github.com/repos/kmaeda16/KinModGPT/git/commits/2b337a3d472e7d482ddb34bb25743d7618285430",
+    "comment_count": 0,
+    "verification": {
+      "verified": true,
+      "reason": "valid",
+      "signature": "-----BEGIN PGP SIGNATURE-----\n\nwsBcBAABCAAQBQJkhyxdCRBK7hj4Ov3rIwAAk2kIAJ2IZchTHw+v6CObMOKdzMpQ\nQWkctYG9Ysu22jZ+IiZaSIJBpU+F+5herL8yKGQgGXJxq6b/h9Lva3qo2O5F3Mk8\nMhXLitbGv3xgzWLzekJIJnYnTuvN2GMyBdTCNX0QZfiVymM8opdP6rpVWxhacDi5\nYz4vWRPdBgsdbX+La6fWK4A/I8ysP1zDKPWqeWXsE7Snv9L7RrCdqjk1bVegIPUb\ngDSP0JoZXe7qNytx6Xx7AiT1gb4x1VaKt5gl1Lq7HAD/vjFpLRxDrGPjB1M7zCIF\nEm18zlA4xFHNyceo+PdTzGu5Sbm2qUNL2UrCDmcXfiP717muKKs1UfSzDSkCeGM=\n=g76x\n-----END PGP SIGNATURE-----\n",
+      "payload": "tree cdfa3dc84859d6a43578a777c207dca92595d3e7\nparent ae4667036427dfe45daf956fe635ee08c6918e67\nauthor kmaeda16 <40183437+kmaeda16@users.noreply.github.com> 1686580317 +0900\ncommitter GitHub <noreply@github.com> 1686580317 +0900\n\nUpdate README.md",
+      "verified_at": "2024-01-16T19:59:59Z"
+    }
+  },
+  "url": "https://api.github.com/repos/kmaeda16/KinModGPT/commits/2b337a3d472e7d482ddb34bb25743d7618285430",
+  "html_url": "https://github.com/kmaeda16/KinModGPT/commit/2b337a3d472e7d482ddb34bb25743d7618285430",
+  "comments_url": "https://api.github.com/repos/kmaeda16/KinModGPT/commits/2b337a3d472e7d482ddb34bb25743d7618285430/comments",
+  "author": {
+    "login": "kmaeda16",
+    "id": 40183437,
+    "node_id": "MDQ6VXNlcjQwMTgzNDM3",
+    "avatar_url": "https://avatars.githubusercontent.com/u/40183437?v=4",
+    "gravatar_id": "",
+    "url": "https://api.github.com/users/kmaeda16",
+    "html_url": "https://github.com/kmaeda16",
+    "followers_url": "https://api.github.com/users/kmaeda16/followers",
+    "following_url": "https://api.github.com/users/kmaeda16/following{/other_user}",
+    "gists_url": "https://api.github.com/users/kmaeda16/gists{/gist_id}",
+    "starred_url": "https://api.github.com/users/kmaeda16/starred{/owner}{/repo}",
+    "subscriptions_url": "https://api.github.com/users/kmaeda16/subscriptions",
+    "organizations_url": "https://api.github.com/users/kmaeda16/orgs",
+    "repos_url": "https://api.github.com/users/kmaeda16/repos",
+    "events_url": "https://api.github.com/users/kmaeda16/events{/privacy}",
+    "received_events_url": "https://api.github.com/users/kmaeda16/received_events",
+    "type": "User",
+    "user_view_type": "public",
+    "site_admin": false
+  },
+  "committer": {
+    "login": "web-flow",
+    "id": 19864447,
+    "node_id": "MDQ6VXNlcjE5ODY0NDQ3",
+    "avatar_url": "https://avatars.githubusercontent.com/u/19864447?v=4",
+    "gravatar_id": "",
+    "url": "https://api.github.com/users/web-flow",
+    "html_url": "https://github.com/web-flow",
+    "followers_url": "https://api.github.com/users/web-flow/followers",
+    "following_url": "https://api.github.com/users/web-flow/following{/other_user}",
+    "gists_url": "https://api.github.com/users/web-flow/gists{/gist_id}",
+    "starred_url": "https://api.github.com/users/web-flow/starred{/owner}{/repo}",
+    "subscriptions_url": "https://api.github.com/users/web-flow/subscriptions",
+    "organizations_url": "https://api.github.com/users/web-flow/orgs",
+    "repos_url": "https://api.github.com/users/web-flow/repos",
+    "events_url": "https://api.github.com/users/web-flow/events{/privacy}",
+    "received_events_url": "https://api.github.com/users/web-flow/received_events",
+    "type": "User",
+    "user_view_type": "public",
+    "site_admin": false
+  },
+  "parents": [
+    {
+      "sha": "ae4667036427dfe45daf956fe635ee08c6918e67",
+      "url": "https://api.github.com/repos/kmaeda16/KinModGPT/commits/ae4667036427dfe45daf956fe635ee08c6918e67",
+      "html_url": "https://github.com/kmaeda16/KinModGPT/commit/ae4667036427dfe45daf956fe635ee08c6918e67"
+    }
+  ],
+  "stats": {
+    "total": 2,
+    "additions": 1,
+    "deletions": 1
+  },
+  "files": [
+    {
+      "sha": "b41576afaea31774cb0d0033df970db6eea9b150",
+      "filename": "README.md",
+      "status": "modified",
+      "additions": 1,
+      "deletions": 1,
+      "changes": 2,
+      "blob_url": "https://github.com/kmaeda16/KinModGPT/blob/2b337a3d472e7d482ddb34bb25743d7618285430/README.md",
+      "raw_url": "https://github.com/kmaeda16/KinModGPT/raw/2b337a3d472e7d482ddb34bb25743d7618285430/README.md",
+      "contents_url": "https://api.github.com/repos/kmaeda16/KinModGPT/contents/README.md?ref=2b337a3d472e7d482ddb34bb25743d7618285430",
+      "patch": "@@ -5,7 +5,7 @@\n - **README.md** is what you are reading now.\n \n ## Citation\n-Kazuhiro Maeda and Hiroyuki Kurata, Automatic Generation of SBML Kinetic Models from Natural Language Texts using GPT, 2023\n+Maeda, K.; Kurata, H. Automatic Generation of SBML Kinetic Models from Natural Language Texts Using GPT. Int. J. Mol. Sci. 2023, 24, 7296. https://doi.org/10.3390/ijms24087296\n \n \n ===============  "
+    }
+  ]
+}

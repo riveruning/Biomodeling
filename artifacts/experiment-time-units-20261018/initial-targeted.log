@@ -1,0 +1,44 @@
+.....................................F.................................. [ 80%]
+..................                                                       [100%]
+=================================== FAILURES ===================================
+_______ test_cli_accepts_explicit_experiment_clock_and_reports_mismatch ________
+
+tmp_path = PosixPath('/tmp/biology-agent-time-targeted-20261018/test_cli_accepts_explicit_expe0')
+capsys = <_pytest.capture.CaptureFixture object at 0x7291c12fa600>
+
+    def test_cli_accepts_explicit_experiment_clock_and_reports_mismatch(tmp_path, capsys):
+        artifact_path = tmp_path / 'model.xml'; artifact_path.write_text(decay().sbml)
+        experiment_path = tmp_path / 'experiment.json'
+        experiment_path.write_text(json.dumps({'times': [0., 1.], 'time_unit': 'minute'}))
+>       code = cli.main(['run', '--sbml', str(artifact_path), '--experiment', str(experiment_path),
+                         '--store', str(tmp_path / 'store')])
+
+tests/test_experiment_time_units.py:223: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+src/biomodel_agent/cli.py:308: in main
+    args = parser.parse_args(argv)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.12/argparse.py:1911: in parse_args
+    self.error(msg % ' '.join(argv))
+/usr/lib/python3.12/argparse.py:2677: in error
+    self.exit(2, _('%(prog)s: error: %(message)s\n') % args)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = ArgumentParser(prog='biomodel_agent', usage=None, description='Fact-driven biology model reproduction CLI', formatter_class=<class 'argparse.HelpFormatter'>, conflict_handler='error', add_help=True)
+status = 2, message = 'biomodel_agent: error: unrecognized arguments: --sbml\n'
+
+    def exit(self, status=0, message=None):
+        if message:
+            self._print_message(message, _sys.stderr)
+>       _sys.exit(status)
+E       SystemExit: 2
+
+/usr/lib/python3.12/argparse.py:2664: SystemExit
+----------------------------- Captured stderr call -----------------------------
+usage: biomodel_agent [-h]
+                      {validate,run,replay,report,agent,agent-resume,hypothesis,export}
+                      ...
+biomodel_agent: error: unrecognized arguments: --sbml
+=========================== short test summary info ============================
+FAILED tests/test_experiment_time_units.py::test_cli_accepts_explicit_experiment_clock_and_reports_mismatch
+1 failed, 89 passed in 17.96s

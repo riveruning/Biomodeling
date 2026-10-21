@@ -1,0 +1,84 @@
+[
+  {
+    "sha": "4b9990b708102bd237939bcb668b476d70a1c79d",
+    "node_id": "C_kwDONIFsItoAKDRiOTk5MGI3MDgxMDJiZDIzNzkzOWJjYjY2OGI0NzZkNzBhMWM3OWQ",
+    "commit": {
+      "author": {
+        "name": "Ansh Kumar",
+        "email": "anshkumar.info@gmail.com",
+        "date": "2025-10-30T11:14:12Z"
+      },
+      "committer": {
+        "name": "GitHub",
+        "email": "noreply@github.com",
+        "date": "2025-10-30T11:14:12Z"
+      },
+      "message": "chores: update sonarcloud to run module specific jobs (#317)\n\n* chores: revert back to old sonar cloud\n\n* chores: updated version\n\n* chores: update sonarcloud to run module specific jobs",
+      "tree": {
+        "sha": "94c9836c90d8f5b463c5b8eef8680f662b0dff07",
+        "url": "https://api.github.com/repos/VirtualPatientEngine/AIAgents4Pharma/git/trees/94c9836c90d8f5b463c5b8eef8680f662b0dff07"
+      },
+      "url": "https://api.github.com/repos/VirtualPatientEngine/AIAgents4Pharma/git/commits/4b9990b708102bd237939bcb668b476d70a1c79d",
+      "comment_count": 0,
+      "verification": {
+        "verified": true,
+        "reason": "valid",
+        "signature": "-----BEGIN PGP SIGNATURE-----\n\nwsFcBAABCAAQBQJpA0iECRC1aQ7uu5UhlAAAMh4QABPasXWXWmPmuFdm37C8Qqzh\noY1wIu4cevrcWWGZVJo/6j8tkjr3n+2jUyJVyTHeehUOgkxm7oV1xe9uxr3+8u0H\nDPCqWHOqv2oB1fftA+r26J19N3o4bOa99tt822ut3HQN2NsLtCpjrNhRoIITT2Dr\newYh4VnyjFWGx8bcm3nT1w8MQQ4eeCMgoY6y3PSAPHsMj6fErdSj/gPDabspXhEe\nbQq08VxUBNNNrU8Nxr6WZ0xOQLcGaBMxE7zj2QgvoNyFFyDt8Iubjtz1CzVy227n\nLVdkuo+agSrzeK5r0xOxEy+9KeL5CEWyU4yFYbkXlelUwwlUB7UJMU7jMBpfQJ22\nlhYPAvIcLC1C5BxCfv29DAX3APbPVk9D48S6+vg6g6eYRB5ngFxiS5/R2tYdgq2B\n3ZSD1ngK2nU1mjVx0XY25sXtklUaBgNG1LFGtorLWgSkHwUoP8+v4j9NU8yL8T3u\nKg4WCryVKvFTDx/MB5tjD7AwbgXtHPwuctOgsZSPKXRVNgrxTCzXncppxy3FB+G4\n6D9JTe2ilkbIKePT4SsAH8Kfu0AUBQ7J6l0JeON29PMf5xcQ9q6efhKB2YaP4WmT\n9QLtbV4SRUFuDcMdXK+3Pz03CT3Lh2/boVQv3RV2oil9mV2lJqSTSLRuV/iCPYQ/\n2vInT3SHHBjwK7xq7kz0\n=Q+52\n-----END PGP SIGNATURE-----\n",
+        "payload": "tree 94c9836c90d8f5b463c5b8eef8680f662b0dff07\nparent eabaed370bf48b264a78119c3125cd3f783273c3\nauthor Ansh Kumar <anshkumar.info@gmail.com> 1761822852 +0100\ncommitter GitHub <noreply@github.com> 1761822852 +0100\n\nchores: update sonarcloud to run module specific jobs (#317)\n\n* chores: revert back to old sonar cloud\n\n* chores: updated version\n\n* chores: update sonarcloud to run module specific jobs",
+        "verified_at": "2025-10-30T11:14:12Z"
+      }
+    },
+    "url": "https://api.github.com/repos/VirtualPatientEngine/AIAgents4Pharma/commits/4b9990b708102bd237939bcb668b476d70a1c79d",
+    "html_url": "https://github.com/VirtualPatientEngine/AIAgents4Pharma/commit/4b9990b708102bd237939bcb668b476d70a1c79d",
+    "comments_url": "https://api.github.com/repos/VirtualPatientEngine/AIAgents4Pharma/commits/4b9990b708102bd237939bcb668b476d70a1c79d/comments",
+    "author": {
+      "login": "ansh-info",
+      "id": 137184040,
+      "node_id": "U_kgDOCC1DKA",
+      "avatar_url": "https://avatars.githubusercontent.com/u/137184040?v=4",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/ansh-info",
+      "html_url": "https://github.com/ansh-info",
+      "followers_url": "https://api.github.com/users/ansh-info/followers",
+      "following_url": "https://api.github.com/users/ansh-info/following{/other_user}",
+      "gists_url": "https://api.github.com/users/ansh-info/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/ansh-info/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/ansh-info/subscriptions",
+      "organizations_url": "https://api.github.com/users/ansh-info/orgs",
+      "repos_url": "https://api.github.com/users/ansh-info/repos",
+      "events_url": "https://api.github.com/users/ansh-info/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/ansh-info/received_events",
+      "type": "User",
+      "user_view_type": "public",
+      "site_admin": false
+    },
+    "committer": {
+      "login": "web-flow",
+      "id": 19864447,
+      "node_id": "MDQ6VXNlcjE5ODY0NDQ3",
+      "avatar_url": "https://avatars.githubusercontent.com/u/19864447?v=4",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/web-flow",
+      "html_url": "https://github.com/web-flow",
+      "followers_url": "https://api.github.com/users/web-flow/followers",
+      "following_url": "https://api.github.com/users/web-flow/following{/other_user}",
+      "gists_url": "https://api.github.com/users/web-flow/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/web-flow/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/web-flow/subscriptions",
+      "organizations_url": "https://api.github.com/users/web-flow/orgs",
+      "repos_url": "https://api.github.com/users/web-flow/repos",
+      "events_url": "https://api.github.com/users/web-flow/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/web-flow/received_events",
+      "type": "User",
+      "user_view_type": "public",
+      "site_admin": false
+    },
+    "parents": [
+      {
+        "sha": "eabaed370bf48b264a78119c3125cd3f783273c3",
+        "url": "https://api.github.com/repos/VirtualPatientEngine/AIAgents4Pharma/commits/eabaed370bf48b264a78119c3125cd3f783273c3",
+        "html_url": "https://github.com/VirtualPatientEngine/AIAgents4Pharma/commit/eabaed370bf48b264a78119c3125cd3f783273c3"
+      }
+    ]
+  }
+]

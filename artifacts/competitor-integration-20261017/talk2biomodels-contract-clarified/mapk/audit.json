@@ -1,0 +1,293 @@
+[
+  {
+    "type": "model_start",
+    "messages": [
+      [
+        {
+          "type": "system",
+          "data": {
+            "content": "You are Talk2BioModels agent. If the user asks for the uploaded model, then pass the use_uploaded_model argument as True. If the user asks for simulation or param_scan or steady state, suggest a value for the `experiment_name` argument.\nIf the user asks question related to the uploaded document/pdf/article/document, use the tool `query_article` to answer the question. Please note that the `experiment_name` argument may be unrelated to the question asked.\n",
+            "additional_kwargs": {},
+            "response_metadata": {},
+            "type": "system",
+            "name": null,
+            "id": null
+          }
+        },
+        {
+          "type": "human",
+          "data": {
+            "content": "Using the uploaded SBML model, simulate from time 0 through 1800 with exactly 120 equal output intervals (121 output points including both endpoints). Keep all initial values and parameters unchanged. Retain numerical time-course data for all dynamic species. Do not fetch another model or use external sources. No plot or secondary question analysis is requested.\nIntegration API clarification: this is a locally uploaded model. Omit the optional biomodel_id field entirely; do not pass null or invent an ID. Use use_uploaded_sbml_file=true. In this implementation time_data.interval is the NUMBER of output intervals, not the time step. Use duration=1800.0 and interval=120. Only a simulate_model tool call is needed.",
+            "additional_kwargs": {},
+            "response_metadata": {},
+            "type": "human",
+            "name": null,
+            "id": "3749e9a3-ed39-41c3-9f71-667c2509783b",
+            "example": false
+          }
+        }
+      ]
+    ]
+  },
+  {
+    "type": "model_end",
+    "llm_output": {
+      "token_usage": {
+        "completion_tokens": 93,
+        "prompt_tokens": 4149,
+        "total_tokens": 4242,
+        "completion_tokens_details": null,
+        "prompt_tokens_details": {
+          "audio_tokens": null,
+          "cached_tokens": 3072
+        }
+      },
+      "model_name": "qwen3.8-chat",
+      "system_fingerprint": null
+    },
+    "messages": [
+      {
+        "type": "ai",
+        "data": {
+          "content": "",
+          "additional_kwargs": {
+            "tool_calls": [
+              {
+                "id": "call-db33a734-8038-4fb2-a645-647a9d10f4dc",
+                "function": {
+                  "arguments": "{\"sys_bio_model\":{\"use_uploaded_sbml_file\":true},\"arg_data\":{\"experiment_name\":\"uploaded_model_0_1800_120intervals\",\"time_data\":{\"duration\":1800.0,\"interval\":120}}}",
+                  "name": "simulate_model"
+                },
+                "type": "function"
+              }
+            ],
+            "refusal": null
+          },
+          "response_metadata": {
+            "token_usage": {
+              "completion_tokens": 93,
+              "prompt_tokens": 4149,
+              "total_tokens": 4242,
+              "completion_tokens_details": null,
+              "prompt_tokens_details": {
+                "audio_tokens": null,
+                "cached_tokens": 3072
+              }
+            },
+            "model_name": "qwen3.8-chat",
+            "system_fingerprint": null,
+            "finish_reason": "tool_calls",
+            "logprobs": null
+          },
+          "type": "ai",
+          "name": null,
+          "id": "run-fe9f3a6d-85f2-42b7-91eb-6d2486a289e9-0",
+          "example": false,
+          "tool_calls": [
+            {
+              "name": "simulate_model",
+              "args": {
+                "sys_bio_model": {
+                  "use_uploaded_sbml_file": true
+                },
+                "arg_data": {
+                  "experiment_name": "uploaded_model_0_1800_120intervals",
+                  "time_data": {
+                    "duration": 1800.0,
+                    "interval": 120
+                  }
+                }
+              },
+              "id": "call-db33a734-8038-4fb2-a645-647a9d10f4dc",
+              "type": "tool_call"
+            }
+          ],
+          "invalid_tool_calls": [],
+          "usage_metadata": {
+            "input_tokens": 4149,
+            "output_tokens": 93,
+            "total_tokens": 4242,
+            "input_token_details": {
+              "cache_read": 3072
+            },
+            "output_token_details": {}
+          }
+        }
+      }
+    ]
+  },
+  {
+    "type": "model_start",
+    "messages": [
+      [
+        {
+          "type": "system",
+          "data": {
+            "content": "You are Talk2BioModels agent. If the user asks for the uploaded model, then pass the use_uploaded_model argument as True. If the user asks for simulation or param_scan or steady state, suggest a value for the `experiment_name` argument.\nIf the user asks question related to the uploaded document/pdf/article/document, use the tool `query_article` to answer the question. Please note that the `experiment_name` argument may be unrelated to the question asked.\n",
+            "additional_kwargs": {},
+            "response_metadata": {},
+            "type": "system",
+            "name": null,
+            "id": null
+          }
+        },
+        {
+          "type": "human",
+          "data": {
+            "content": "Using the uploaded SBML model, simulate from time 0 through 1800 with exactly 120 equal output intervals (121 output points including both endpoints). Keep all initial values and parameters unchanged. Retain numerical time-course data for all dynamic species. Do not fetch another model or use external sources. No plot or secondary question analysis is requested.\nIntegration API clarification: this is a locally uploaded model. Omit the optional biomodel_id field entirely; do not pass null or invent an ID. Use use_uploaded_sbml_file=true. In this implementation time_data.interval is the NUMBER of output intervals, not the time step. Use duration=1800.0 and interval=120. Only a simulate_model tool call is needed.",
+            "additional_kwargs": {},
+            "response_metadata": {},
+            "type": "human",
+            "name": null,
+            "id": "3749e9a3-ed39-41c3-9f71-667c2509783b",
+            "example": false
+          }
+        },
+        {
+          "type": "ai",
+          "data": {
+            "content": "",
+            "additional_kwargs": {
+              "tool_calls": [
+                {
+                  "id": "call-db33a734-8038-4fb2-a645-647a9d10f4dc",
+                  "function": {
+                    "arguments": "{\"sys_bio_model\":{\"use_uploaded_sbml_file\":true},\"arg_data\":{\"experiment_name\":\"uploaded_model_0_1800_120intervals\",\"time_data\":{\"duration\":1800.0,\"interval\":120}}}",
+                    "name": "simulate_model"
+                  },
+                  "type": "function"
+                }
+              ],
+              "refusal": null
+            },
+            "response_metadata": {
+              "token_usage": {
+                "completion_tokens": 93,
+                "prompt_tokens": 4149,
+                "total_tokens": 4242,
+                "completion_tokens_details": null,
+                "prompt_tokens_details": {
+                  "audio_tokens": null,
+                  "cached_tokens": 3072
+                }
+              },
+              "model_name": "qwen3.8-chat",
+              "system_fingerprint": null,
+              "finish_reason": "tool_calls",
+              "logprobs": null
+            },
+            "type": "ai",
+            "name": null,
+            "id": "run-fe9f3a6d-85f2-42b7-91eb-6d2486a289e9-0",
+            "example": false,
+            "tool_calls": [
+              {
+                "name": "simulate_model",
+                "args": {
+                  "sys_bio_model": {
+                    "use_uploaded_sbml_file": true
+                  },
+                  "arg_data": {
+                    "experiment_name": "uploaded_model_0_1800_120intervals",
+                    "time_data": {
+                      "duration": 1800.0,
+                      "interval": 120
+                    }
+                  }
+                },
+                "id": "call-db33a734-8038-4fb2-a645-647a9d10f4dc",
+                "type": "tool_call"
+              }
+            ],
+            "invalid_tool_calls": [],
+            "usage_metadata": {
+              "input_tokens": 4149,
+              "output_tokens": 93,
+              "total_tokens": 4242,
+              "input_token_details": {
+                "cache_read": 3072
+              },
+              "output_token_details": {}
+            }
+          }
+        },
+        {
+          "type": "tool",
+          "data": {
+            "content": "Simulation results of uploaded_model_0_1800_120intervals",
+            "additional_kwargs": {},
+            "response_metadata": {},
+            "type": "tool",
+            "name": "simulate_model",
+            "id": "580554cd-e06d-4db4-9abc-ef5b190593f5",
+            "tool_call_id": "call-db33a734-8038-4fb2-a645-647a9d10f4dc",
+            "artifact": {
+              "y_axis_label": "nmol",
+              "x_axis_label": "s"
+            },
+            "status": "success"
+          }
+        }
+      ]
+    ]
+  },
+  {
+    "type": "model_end",
+    "llm_output": {
+      "token_usage": {
+        "completion_tokens": 190,
+        "prompt_tokens": 4277,
+        "total_tokens": 4467,
+        "completion_tokens_details": null,
+        "prompt_tokens_details": {
+          "audio_tokens": null,
+          "cached_tokens": 3072
+        }
+      },
+      "model_name": "qwen3.8-chat",
+      "system_fingerprint": null
+    },
+    "messages": [
+      {
+        "type": "ai",
+        "data": {
+          "content": "The simulation of the uploaded SBML model has been completed successfully.\n\n**Experiment details:**\n- **Experiment name:** `uploaded_model_0_1800_120intervals`\n- **Model source:** Locally uploaded SBML file (`use_uploaded_sbml_file=true`, no `biomodel_id` used)\n- **Time range:** 0 → 1800\n- **Output intervals:** 120 equal intervals → 121 output points (including both endpoints)\n- **Initial values & parameters:** All kept unchanged (no overrides applied)\n- **Data retained:** Full numerical time-course data for all dynamic species\n\nNo plot, secondary question analysis, or external model fetch was performed, as requested. The numerical time-course data for all dynamic species is now available for the experiment `uploaded_model_0_1800_120intervals`.",
+          "additional_kwargs": {
+            "refusal": null
+          },
+          "response_metadata": {
+            "token_usage": {
+              "completion_tokens": 190,
+              "prompt_tokens": 4277,
+              "total_tokens": 4467,
+              "completion_tokens_details": null,
+              "prompt_tokens_details": {
+                "audio_tokens": null,
+                "cached_tokens": 3072
+              }
+            },
+            "model_name": "qwen3.8-chat",
+            "system_fingerprint": null,
+            "finish_reason": "stop",
+            "logprobs": null
+          },
+          "type": "ai",
+          "name": null,
+          "id": "run-3ab22954-6237-4758-ad75-9cd5d4fd600f-0",
+          "example": false,
+          "tool_calls": [],
+          "invalid_tool_calls": [],
+          "usage_metadata": {
+            "input_tokens": 4277,
+            "output_tokens": 190,
+            "total_tokens": 4467,
+            "input_token_details": {
+              "cache_read": 3072
+            },
+            "output_token_details": {}
+          }
+        }
+      }
+    ]
+  }
+]

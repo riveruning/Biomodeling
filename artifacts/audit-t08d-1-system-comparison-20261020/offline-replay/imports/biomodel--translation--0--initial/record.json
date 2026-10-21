@@ -1,0 +1,55 @@
+{
+  "schema_version": 1,
+  "protocol": "native_system_comparison_v1",
+  "manifest_sha256": "6c97c6c6462b4a6598c1580d5a2863fc70e3977466c7693c4cc3112dff99348b",
+  "trial": {
+    "id": "biomodel--translation--0--initial",
+    "system_id": "biomodel",
+    "runtime": "biomodel_agent",
+    "case_id": "translation",
+    "repeat": 0,
+    "phase": "initial",
+    "parent_trial_id": null
+  },
+  "evidence_kind": "scripted_control",
+  "capture_kind": "product_v1_record",
+  "capture_sha256": "2d3194fb7e644390b7323005ae30c6341c70d247d6a508517de579dce373faae",
+  "status": "finished",
+  "session": {
+    "id": "72880049bceee5807685d7e010ae74d8067c7bfa88025a3b07c27d2e0e9d5919",
+    "mode": "none",
+    "parent_record_sha256": null,
+    "identity_authenticated": false
+  },
+  "observation": {
+    "state": "awaiting_input",
+    "completion_claimed": false,
+    "execution_declared": false,
+    "execution_observed": false,
+    "question_texts": [
+      "What is the initial P value?"
+    ],
+    "final_messages": [],
+    "artifacts": []
+  },
+  "assessment": {
+    "authority": "unreviewed",
+    "numeric": "unknown",
+    "source_support": "unknown",
+    "behavior_labels_reviewed": false
+  },
+  "telemetry": {
+    "elapsed_seconds": 0.434049812000012,
+    "model_calls": 2,
+    "tool_items": 1,
+    "tool_count_kind": "domain_tool_invocations",
+    "input_tokens": null,
+    "output_tokens": null,
+    "cached_input_tokens": null,
+    "reasoning_output_tokens": null,
+    "cumulative_elapsed_seconds": 0.434049812000012
+  },
+  "diagnostics": [
+    "product_v1_observation_attribution_not_identity_authentication"
+  ]
+}

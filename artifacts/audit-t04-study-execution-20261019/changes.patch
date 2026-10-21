@@ -1,0 +1,1170 @@
+--- a/src/biomodel_agent/agent.py
++++ b/src/biomodel_agent/agent.py
+@@ -745,8 +745,7 @@
+             finished_run = finished_record['payload'] if finished_record else {}
+             if study_plan_ref is not None:
+                 state = 'completed' if (finished_record and finished_record['kind'] == 'hypothesis_study'
+-                                        and finished_run.get('status') == 'completed'
+-                                        and finished_run.get('completion_eligible') is True) else 'incomplete'
++                                        and studies.result_summary(store, run_ref)['completion_eligible']) else 'incomplete'
+             else:
+                 # Technical completion requires a succeeded execution AND no
+                 # explicit failure (shared verdict; stored scientific_status
+--- a/src/biomodel_agent/cli.py
++++ b/src/biomodel_agent/cli.py
+@@ -268,25 +268,26 @@
+ 
+ def _cmd_hypothesis(args) -> int:
+     from .storage import ArtifactStore
+-    from .hypotheses import run_hypothesis_study
+-    from .hypotheses import adaptation_candidates
++    from .studies import prepare_study, execute_study, result_summary
+     try:
+         store = ArtifactStore(args.store)
+         training = _load_json(args.training, "training JSON")
+         holdout = _load_json(args.holdout, "holdout JSON") if args.holdout else ()
+-        ref = run_hypothesis_study(store, adaptation_candidates(), training, holdout=holdout, starts=args.starts)
++        config = {'training': training, 'holdout': list(holdout), 'starts': args.starts,
++                  'seed': args.seed, 'max_nfev': args.max_nfev, 'timeout_s': args.timeout,
++                  'total_timeout_s': args.total_timeout, 'separation_threshold': args.separation_threshold}
++        if args.candidate:
++            config['candidates'] = args.candidate
++        plan_ref = prepare_study(store, config)
++        ref = execute_study(store, plan_ref)
++        summary = result_summary(store, ref)
+     except Exception as exc:
+         return _fail(f"hypothesis study failed: {exc}")
+-    record = store.get(ref)
+-    payload = record.get("payload", {}) if isinstance(record, dict) else {}
+-    status = payload.get("status")
+-    print(json.dumps({"ref": ref, "status": status,
+-                      "best_candidate": payload.get("best_candidate")}))
++    print(json.dumps({'ref': ref, 'plan_ref': plan_ref, 'status': summary['execution_status'],
++                      'best_candidate': summary['comparison']['winner'], **summary}, ensure_ascii=False))
+     # Biological uncertainty is acceptable: a completed study with no
+     # definitive answer is still a successful execution.
+-    if status == "failed":
+-        return 1
+-    return 0
++    return 0 if summary['completion_eligible'] else 1
+ 
+ 
+ def _add_store(sp) -> None:
+@@ -360,7 +361,8 @@
+         config = {'training': _load_json(args.training, 'training JSON'),
+                   'holdout': _load_json(args.holdout, 'holdout JSON') if args.holdout else [],
+                   'starts': args.starts, 'seed': args.seed, 'max_nfev': args.max_nfev,
+-                  'timeout_s': args.timeout, 'separation_threshold': args.separation_threshold}
++                  'timeout_s': args.timeout, 'total_timeout_s': args.total_timeout,
++                  'separation_threshold': args.separation_threshold}
+         if args.candidate:
+             config['candidates'] = args.candidate
+         store = ArtifactStore(args.store)
+@@ -463,6 +465,12 @@
+     p.add_argument("--holdout")
+     _add_store(p)
+     p.add_argument("--starts", type=int, default=3)
++    p.add_argument('--candidate', action='append', help='supported candidate; defaults to all three')
++    p.add_argument('--seed', type=int, default=17)
++    p.add_argument('--max-nfev', type=int, default=100)
++    p.add_argument('--timeout', type=float, default=30., help='per-candidate fitting cap in seconds')
++    p.add_argument('--total-timeout', type=float, default=300., help='total scientific study budget in seconds, at most 600')
++    p.add_argument('--separation-threshold', type=float, default=.05)
+     p.set_defaults(func=_cmd_hypothesis)
+ 
+     p = sub.add_parser('export',help='export a verified research bundle')
+@@ -514,6 +522,7 @@
+     p.add_argument('--seed', type=int, default=17)
+     p.add_argument('--max-nfev', type=int, default=100)
+     p.add_argument('--timeout', type=float, default=30.)
++    p.add_argument('--total-timeout', type=float, default=300., help='total study budget in seconds, at most 600')
+     p.add_argument('--separation-threshold', type=float, default=.05)
+     p.set_defaults(func=_cmd_study_prepare)
+ 
+--- a/src/biomodel_agent/fitting.py
++++ b/src/biomodel_agent/fitting.py
+@@ -15,6 +15,7 @@
+ from . import expressions, modeling, time_units
+ from .domain.contracts import ExperimentSpec, ObservationSpec
+ from .domain.serialization import to_dict, from_dict
++from .deadlines import Deadline, DeadlineExceeded
+ 
+ 
+ class Unsupported(ValueError):
+@@ -54,7 +55,7 @@
+         allowed = set(self.states)|set(self.constants)|set(self.compartments)|{'time'}
+         self.rhs = [expressions.parse_expression(libsbml.formulaToL3String(by_target[s]), allowed) for s in self.states]
+ 
+-    def predict(self, experiment, observations, parameters):
++    def _inputs(self, experiment, observations, parameters):
+         spec = _experiment(experiment)
+         clock = time_units.time_unit_check(spec.time_unit, self.time_scale)
+         if clock.status == 'fail':
+@@ -81,8 +82,13 @@
+         observations = _observations(observations)
+         allowed = set(state)|set(params)|set(self.compartments)|{'time'}
+         obs_trees = {o['id']:expressions.parse_expression(o['expression'],allowed) for o in observations}
++        return spec, params, state, segments, obs_trees
++
++    def predict(self, experiment, observations, parameters):
++        spec, params, state, segments, obs_trees = self._inputs(experiment, observations, parameters)
++        t0,tlast = spec.times[0],spec.times[-1]
+         columns = {s:[] for s in self.states}
+-        observed = {o['id']:[] for o in observations}
++        observed = {name: [] for name in obs_trees}
+         rows = {}
+         y = np.array([state[s] for s in self.states],dtype=float)
+         boundaries = sorted({t0,tlast}|set(segments))
+@@ -118,8 +124,53 @@
+         return {'status':'succeeded','times':list(spec.times),'time_unit':spec.time_unit,'states':columns,'observables':observed,'parameters':dict(parameters)}
+ 
+ 
+-def predict(artifact, experiment, observations, parameters):
+-    return _Compiler(artifact).predict(experiment,observations,parameters)
++def _predict_worker(payload, out):
++    try:
++        out.put(_Compiler(payload[0]).predict(*payload[1:]))
++    except Exception as exc:
++        out.put({'status': 'failed', 'diagnostics': [f'{type(exc).__name__}: {exc}']})
++
++
++def _bounded_worker(target, payload, deadline):
++    """Budget includes spawn/wait; reap before returning or propagating a crash."""
++    ctx = mp.get_context('spawn')
++    out = ctx.Queue()
++    process = ctx.Process(target=target, args=(payload, out), daemon=True)
++    started = False
++    try:
++        deadline.remaining()
++        process.start()
++        started = True
++        while True:
++            try:
++                result = out.get(timeout=min(.05, deadline.remaining()))
++                deadline.remaining()
++                return result
++            except queue.Empty:
++                if not process.is_alive():
++                    return {'status': 'failed', 'best': None, 'starts': [],
++                            'diagnostics': ['scientific worker exited without a result']}
++    finally:
++        if started or process.pid is not None:
++            if process.is_alive():
++                process.terminate()
++            process.join(timeout=.2)
++            if process.is_alive():
++                process.kill()
++                process.join(timeout=.2)
++            if process.is_alive():
++                raise RuntimeError('scientific worker could not be stopped')
++        out.close()
++        out.join_thread()
++
++
++def predict(artifact, experiment, observations, parameters, *, timeout_s=None):
++    if timeout_s is None:
++        return _Compiler(artifact).predict(experiment,observations,parameters)
++    result = _bounded_worker(_predict_worker, (artifact, experiment, observations, parameters), Deadline(timeout_s))
++    if result.get('status') != 'succeeded':
++        raise ValueError('; '.join(result.get('diagnostics', ['prediction failed'])))
++    return result
+ 
+ 
+ def _prepare(artifact, training, observations, bounds):
+@@ -153,7 +204,7 @@
+         if set(spec.parameter_overrides)&set(bounds) or any(set(s.values)&set(bounds) for s in spec.segments):
+             raise ValueError('condition overrides conflict with fitted parameters')
+         # Validate mappings and protocols before spawning.
+-        compiler.predict(spec,obs,{k:(float(v[0])+float(v[1]))/2 for k,v in bounds.items()})
++        compiler._inputs(spec,obs,{k:(float(v[0])+float(v[1]))/2 for k,v in bounds.items()})
+         rows.append({**row,'experiment':to_dict(spec)})
+     return compiler,rows,obs
+ 
+@@ -216,32 +267,21 @@
+ 
+ def fit_parameters(artifact,training,observations,bounds,starts=3,seed=17,max_nfev=100,timeout_s=90):
+     started = time.monotonic()
++    deadline = Deadline(timeout_s)
+     if isinstance(starts,bool) or not isinstance(starts,int) or not 1<=starts<=8:
+         raise ValueError('starts must be an integer between 1 and 8')
+     if isinstance(max_nfev,bool) or not isinstance(max_nfev,int) or not 1<=max_nfev<=1000:
+         raise ValueError('max_nfev must be between 1 and 1000')
+-    if isinstance(seed,bool) or not isinstance(seed,int) or not math.isfinite(timeout_s) or timeout_s<=0:
++    if isinstance(seed,bool) or not isinstance(seed,int):
+         raise ValueError('finite positive timeout and integer seed required')
+     try:
+         _,rows,obs = _prepare(artifact,training,observations,bounds)
+     except Unsupported as exc:
+         return {'status':'unsupported','best':None,'starts':[],'diagnostics':[str(exc)]}
+-    ctx = mp.get_context('spawn')
+-    out = ctx.Queue()
+-    process = ctx.Process(target=_fit_worker,args=((artifact,rows,obs,bounds,starts,seed,max_nfev),out),daemon=True)
+-    process.start()
+-    try:
+-        try:
+-            result = out.get(timeout=timeout_s)
+-        except queue.Empty:
+-            result = {'status':'timed_out','best':None,'starts':[],'diagnostics':['fit budget exhausted']}
+-    finally:
+-        process.join(timeout=1)
+-        if process.is_alive():
+-            process.terminate()
+-            process.join(timeout=2)
+-        out.close()
+-        out.join_thread()
++    try:
++        result = _bounded_worker(_fit_worker, (artifact,rows,obs,bounds,starts,seed,max_nfev), deadline)
++    except DeadlineExceeded:
++        result = {'status':'timed_out','best':None,'starts':[],'diagnostics':['fit budget exhausted']}
+     digest = lambda obj: hashlib.sha256(json.dumps(obj,sort_keys=True,allow_nan=False,separators=(',',':')).encode()).hexdigest()
+     result.update(training_data_hash=digest(rows),noise_protocol_hash=digest([r['sigma'] for r in rows]),wall_time_s=time.monotonic()-started,backend='SciPy/DOP853/least_squares',seed=seed,
+                   optimizer={'bounds':{k:list(map(float,v)) for k,v in bounds.items()},'starts':starts,'seed':seed,'max_nfev':max_nfev,'timeout_s':timeout_s,'method':'least_squares/trf','rtol':1e-9,'atol':1e-11,'profile':'rate_rule_fitting_v1','noise':'independent Gaussian with declared known sigma'})
+--- a/src/biomodel_agent/hypotheses.py
++++ b/src/biomodel_agent/hypotheses.py
+@@ -25,14 +25,17 @@
+ 
+ import math
+ import platform
++from dataclasses import replace
+ 
+ import numpy as np
+ 
+ from . import fitting, modeling, simulation
+ from .domain import serialization
+ from .domain.contracts import (
+-    Compartment, ExperimentSpec, ModelDraft, Parameter, RateRule, State, ObservationSpec,
++    Compartment, ExperimentSpec, ModelDraft, Parameter, RateRule, State, ObservationSpec, SolverConfig,
+ )
++from .deadlines import Deadline, positive_seconds
++from .storage import canonical_bytes
+ 
+ __all__ = ["adaptation_candidates", "run_hypothesis_study"]
+ 
+@@ -43,6 +46,70 @@
+ _T = "second"
+ _U = "dimensionless"
+ _UNKNOWN = "unknown"
++DEFAULT_TOTAL_TIMEOUT_S = 300.
++MAX_TOTAL_TIMEOUT_S = 600.
++
++
++def _finite_score(value):
++    try:
++        return (isinstance(value, (int, float)) and not isinstance(value, bool)
++                and math.isfinite(value) and value >= 0)
++    except OverflowError:
++        return False
++
++
++def study_verdict(payload):
++    """Derive completion from phase/number facts, never stored success flags.
++
++    Valid negative results and indistinguishability are complete science
++    computations. Missing or failed computations do not imply a rejected model.
++    """
++    candidates = payload.get('candidates') or {}
++    reasons, usable, timed_out = [], 0, False
++    protocol = payload.get('protocol') or {}
++    holdout_count = protocol.get('holdout_count')
++    if type(holdout_count) is not int or holdout_count < 0:
++        reasons.append('missing_frozen_holdout_count')
++    if not candidates:
++        reasons.append('no_candidates_evaluated')
++    for name, item in candidates.items():
++        phases = item.get('phase_status') or {}
++        cross = item.get('crosscheck') or {}
++        valid = (item.get('fit_status') == 'succeeded' and cross.get('ok') is True
++                 and _finite_score(cross.get('scaled_max_error')) and cross['scaled_max_error'] <= _XRR_TOL
++                 and _finite_score(item.get('training_weighted_rmse')))
++        usable += int(valid)
++        if not valid:
++            reasons.append(f'{name}:fit_crosscheck_or_training_unavailable')
++        for phase in ('build', 'fit', 'crosscheck', 'training_score', 'holdout', 'suggestion'):
++            state = phases.get(phase)
++            allowed = ('succeeded', 'not_applicable') if phase in ('holdout', 'suggestion') else ('succeeded',)
++            if state not in allowed:
++                reasons.append(f'{name}:{phase}:{state or "unknown"}')
++            timed_out |= state == 'timed_out'
++        if holdout_count:
++            if (phases.get('holdout') != 'succeeded' or not _finite_score(item.get('heldout_weighted_rmse'))
++                    or not _finite_score(item.get('heldout_scaled_rmse'))):
++                reasons.append(f'{name}:heldout_result_unavailable')
++        if valid and item['training_weighted_rmse'] <= 3 and phases.get('suggestion') != 'succeeded':
++            reasons.append(f'{name}:intervention_prediction_unavailable')
++    deadline = payload.get('deadline') or {}
++    if not _finite_score(deadline.get('elapsed_s')) or not _finite_score(deadline.get('total_timeout_s')):
++        reasons.append('missing_deadline_evidence')
++    elif deadline['elapsed_s'] >= deadline['total_timeout_s'] or deadline.get('exhausted') is True:
++        reasons.append('total_deadline_exhausted')
++        timed_out = True
++    phase_records = deadline.get('phases', [])
++    if not phase_records or not any(p.get('phase') == 'comparison' for p in phase_records):
++        reasons.append('missing_comparison_phase_evidence')
++    for phase in phase_records:
++        if phase.get('status') != 'succeeded':
++            reasons.append(f'{phase.get("candidate") or "study"}:{phase.get("phase")}:computation_{phase.get("status")}')
++            timed_out |= phase.get('status') == 'timed_out'
++    complete = not reasons
++    status = 'completed' if complete else 'timed_out' if timed_out else 'incomplete' if usable else 'failed'
++    return {'status': status, 'completion_eligible': complete, 'usable_candidates': usable,
++            'scientific_status': 'not_verified', 'failure_reasons': list(dict.fromkeys(reasons))}
+ 
+ 
+ def _state(id: str) -> State:
+@@ -116,93 +183,232 @@
+     return math.sqrt(sum(weighted)/len(weighted)),math.sqrt(sum(scaled)/len(scaled))
+ 
+ 
+-def run_hypothesis_study(store,candidates,training,holdout=(),observations=(),bounds=None,
+-                         starts=3,seed=17,max_nfev=100,timeout_s=90,separation_threshold=.05):
+-    if not candidates or not training or not math.isfinite(separation_threshold) or separation_threshold<=0:
+-        raise ValueError('nonempty candidates/training and positive separation threshold required')
+-    obs = [serialization.to_dict(o) if isinstance(o,ObservationSpec) else dict(o) for o in observations] if observations else [{'id':'response','expression':'x'}]
++
++def run_hypothesis_study(store, candidates, training, holdout=(), observations=(), bounds=None,
++                         starts=3, seed=17, max_nfev=100, timeout_s=90, separation_threshold=.05,
++                         *, total_timeout_s=DEFAULT_TOTAL_TIMEOUT_S, deadline_origin='explicit_execution_budget'):
++    deadline = Deadline(total_timeout_s, maximum=MAX_TOTAL_TIMEOUT_S)
++    positive_seconds(timeout_s)
++    positive_seconds(separation_threshold, 'separation_threshold')
++    if not candidates or not training:
++        raise ValueError('nonempty candidates and training required')
++    obs = [serialization.to_dict(o) if isinstance(o, ObservationSpec) else dict(o)
++           for o in observations] if observations else [{'id': 'response', 'expression': 'x'}]
+     train = [_condition(c) for c in training]
+-    if any(r['role']!='training' for r in train):
++    if any(row['role'] != 'training' for row in train):
+         raise ValueError('optimizer may only receive training conditions')
+-    # Data are preserved in full; only train is sent to the fitting worker.
+-    data_ref = store.put('dataset',{'conditions':train,'role':'training'})
+-    refs = [data_ref]
+-    records = {}
+-    for name,draft in candidates.items():
+-        hypothesis_ref = store.put('hypothesis',{'claim_type':'system_conjecture','mechanism':name,'assumptions':list(draft.hypothesis_refs),'limitations':['candidate template, not open mechanism discovery']})
+-        from dataclasses import replace
+-        draft = replace(draft,hypothesis_refs=(hypothesis_ref,))
+-        draft_ref = store.put('model_draft',serialization.to_dict(draft),refs=(hypothesis_ref,))
+-        artifact = modeling.build_model(draft)
+-        model_ref = store.put('model',serialization.to_dict(artifact),refs=(draft_ref,))
+-        fit = fitting.fit_parameters(artifact,train,obs,(bounds or {}).get(name,_default_bounds(draft)),starts=starts,seed=seed,max_nfev=max_nfev,timeout_s=timeout_s)
+-        fit_ref = store.put('fitting',fit,refs=(model_ref,data_ref))
+-        refs.append(fit_ref)
+-        rec = {'artifact':artifact,'fit':fit,'model_ref':model_ref,'fit_ref':fit_ref,'xrr':{'ok':False,'scaled_max_error':None}}
+-        if fit['status']=='succeeded':
+-            try:
+-                parameters = fit['best']['parameters']
+-                spec = serialization.from_dict(ExperimentSpec,train[0]['experiment'])
+-                spec = replace(spec,parameter_overrides={**dict(spec.parameter_overrides),**parameters})
+-                rr = simulation.simulate(artifact,spec,tuple(ObservationSpec(**o) for o in obs))
+-                predicted = fit['predictions'][train[0]['id']]['observables']
+-                if rr.status!='succeeded':
+-                    raise ValueError(str(rr.diagnostics))
+-                error = max(abs(a-b) for o in obs for a,b in zip(rr.values[o['id']],predicted[o['id']]))
+-                rec['xrr'] = {'ok':error<=1e-3,'scaled_max_error':error,'scale':1.,'parameters':'frozen fitted values','observations':obs}
+-            except Exception as exc:
+-                rec['xrr']['error'] = f'{type(exc).__name__}: {exc}'
+-        cross_ref = store.put('crosscheck',rec['xrr'],refs=(fit_ref,))
++    data_ref = store.put('dataset', {'conditions': train, 'role': 'training'})
++    refs, audit, records = [data_ref], [], {}
++
++    def phase(stage, name, callback, *, cap=None, condition=None):
++        start, allotted, value = deadline.elapsed(), 0., None
++        status, error_type = 'succeeded', None
++        try:
++            allotted = deadline.remaining(cap)
++            value = callback(allotted)
++            deadline.remaining()
++            if isinstance(value, dict) and value.get('status') in ('failed', 'timed_out', 'unsupported'):
++                status = value['status']
++        except TimeoutError:
++            status, error_type = 'timed_out', 'TimeoutError'
++        except Exception as exc:
++            status, error_type = 'failed', type(exc).__name__
++        record = {'phase': stage, 'candidate': name, 'status': status,
++                  'allotted_s': allotted, 'elapsed_s': deadline.elapsed() - start}
++        if condition is not None:
++            record['condition_id'] = condition
++        if error_type:
++            record['error_type'] = error_type
++        audit.append(record)
++        return value, status
++
++    for name, original in candidates.items():
++        item = {'fit_status': 'not_run', 'model_ref': None, 'fit_ref': None,
++                'crosscheck': {'ok': False, 'scaled_max_error': None}, 'parameters': None,
++                'training_weighted_rmse': None, 'heldout_weighted_rmse': None,
++                'heldout_scaled_rmse': None,
++                'phase_status': {p: 'not_run' for p in ('build', 'fit', 'crosscheck', 'training_score', 'holdout', 'suggestion')}}
++        rec = records[name] = {'item': item, 'artifact': None, 'fit': None}
++        def build(_budget):
++            hypothesis_ref = store.put('hypothesis', {'claim_type': 'system_conjecture', 'mechanism': name,
++                'assumptions': list(original.hypothesis_refs), 'limitations': ['candidate template, not open mechanism discovery']})
++            draft = replace(original, hypothesis_refs=(hypothesis_ref,))
++            draft_ref = store.put('model_draft', serialization.to_dict(draft), refs=(hypothesis_ref,))
++            refs.append(draft_ref)
++            artifact = modeling.build_model(draft)
++            item['model_ref'] = store.put('model', serialization.to_dict(artifact), refs=(draft_ref,))
++            refs.append(item['model_ref'])
++            return artifact
++        artifact, status = phase('build', name, build)
++        item['phase_status']['build'] = status
++        if status != 'succeeded':
++            continue
++        rec['artifact'] = artifact
++        fit, status = phase('fit', name, lambda budget: fitting.fit_parameters(artifact, train, obs,
++            (bounds or {}).get(name, _default_bounds(original)), starts=starts, seed=seed,
++            max_nfev=max_nfev, timeout_s=budget), cap=timeout_s)
++        try:
++            if not isinstance(fit, dict):
++                raise ValueError('fit returned no structured result')
++            canonical_bytes(fit)
++            if status == 'succeeded' and (fit.get('status') != 'succeeded'
++                    or not isinstance(fit.get('best'), dict) or not isinstance(fit['best'].get('parameters'), dict)):
++                raise ValueError('fit returned no frozen parameter endpoint')
++        except (ValueError, TypeError):
++            fit = {'status': status if status != 'succeeded' else 'failed', 'best': None,
++                   'starts': [], 'diagnostics': ['no finite structured fitting result']}
++            if status == 'succeeded':
++                status = 'failed'
++                audit[-1]['status'] = status
++        item['phase_status']['fit'] = status
++        item['fit_status'] = status
++        item['fit_ref'] = store.put('fitting', fit, refs=(item['model_ref'], data_ref))
++        refs.append(item['fit_ref'])
++        rec['fit'] = fit
++        if status != 'succeeded':
++            continue
++        item['parameters'] = fit.get('best', {}).get('parameters')
++        def crosscheck(budget):
++            parameters = fit['best']['parameters']
++            spec = serialization.from_dict(ExperimentSpec, train[0]['experiment'])
++            spec = replace(spec, parameter_overrides={**dict(spec.parameter_overrides), **parameters})
++            rr = simulation.simulate(artifact, spec, tuple(ObservationSpec(**o) for o in obs),
++                                     SolverConfig(timeout_s=budget))
++            if rr.status == 'timed_out':
++                raise TimeoutError('cross-backend simulation timed out')
++            if rr.status != 'succeeded' or rr.times != spec.times:
++                raise ValueError('cross-backend simulation failed or returned another time grid')
++            predicted = fit['predictions'][train[0]['id']]['observables']
++            errors = []
++            for observation in obs:
++                oid = observation['id']
++                left, right = rr.values[oid], predicted[oid]
++                if len(left) != len(spec.times) or len(right) != len(spec.times):
++                    raise ValueError('cross-backend shape mismatch')
++                errors.extend(abs(float(a) - float(b)) for a, b in zip(left, right))
++            if not errors or not all(math.isfinite(error) for error in errors):
++                raise ValueError('cross-backend results are nonfinite')
++            error = max(errors)
++            return {'status': 'succeeded' if error <= _XRR_TOL else 'failed', 'ok': error <= _XRR_TOL,
++                    'scaled_max_error': error, 'scale': 1., 'parameters': 'frozen fitted values', 'observations': obs}
++        cross, status = phase('crosscheck', name, crosscheck, cap=30.)
++        item['phase_status']['crosscheck'] = status
++        item['crosscheck'] = cross or {'ok': False, 'scaled_max_error': None, 'status': status}
++        cross_ref = store.put('crosscheck', item['crosscheck'], refs=(item['fit_ref'],))
+         refs.append(cross_ref)
+-        records[name] = rec
+-    # Holdout is read only after all optimization and cross-checks have ended.
++        if status != 'succeeded':
++            continue
++        def training_score(_budget):
++            cost = fit['best']['cost']
++            if not _finite_score(cost):
++                raise ValueError('invalid training cost')
++            score = math.sqrt(2 * cost / sum(len(r['experiment']['times']) * len(obs) for r in train))
++            if not _finite_score(score):
++                raise ValueError('nonfinite training score')
++            return score
++        score, status = phase('training_score', name, training_score)
++        item['phase_status']['training_score'] = status
++        if status == 'succeeded':
++            item['training_weighted_rmse'] = score
++
++    # No holdout values enter an optimizer. Read the scoring corpus after all fits.
+     hold = [_condition(c) for c in holdout]
+-    if any(r['role']!='holdout' for r in hold):
++    if any(row['role'] != 'holdout' for row in hold):
+         raise ValueError('holdout must explicitly carry role holdout')
+-    hold_ref = store.put('dataset',{'conditions':hold,'role':'holdout'})
++    hold_ref = store.put('dataset', {'conditions': hold, 'role': 'holdout'})
+     refs.append(hold_ref)
+-    summary = {}
+-    for name,rec in records.items():
+-        fit = rec['fit']
+-        item = {'fit_status':fit['status'],'model_ref':rec['model_ref'],'fit_ref':rec['fit_ref'],'crosscheck':rec['xrr'],'parameters':fit.get('best',{}).get('parameters') if fit.get('best') else None,'training_weighted_rmse':None,'heldout_weighted_rmse':None,'heldout_scaled_rmse':None}
+-        if fit['status']=='succeeded' and rec['xrr']['ok']:
+-            item['training_weighted_rmse'] = math.sqrt(2*fit['best']['cost']/sum(len(r['experiment']['times'])*len(obs) for r in train))
+-            try:
+-                scores = [_scores(r,fitting.predict(rec['artifact'],r['experiment'],obs,fit['best']['parameters'])['observables']) for r in hold]
+-                if scores:
+-                    item['heldout_weighted_rmse'] = math.sqrt(sum(s[0]**2 for s in scores)/len(scores))
+-                    item['heldout_scaled_rmse'] = math.sqrt(sum(s[1]**2 for s in scores)/len(scores))
+-            except Exception as exc:
+-                item['prediction_error'] = str(exc)
+-        summary[name] = item
+-    adequate = {n:r for n,r in summary.items() if r['training_weighted_rmse'] is not None and r['training_weighted_rmse']<=3}
+-    ranking,winner = 'none_adequate',None
+-    if not hold and adequate:
+-        ranking = 'indistinguishable_from_training' if len(adequate)>1 else 'single_training_compatible_candidate'
+-    elif hold:
+-        supported = {n:r for n,r in adequate.items() if r['heldout_weighted_rmse'] is not None and r['heldout_weighted_rmse']<=3}
+-        if supported:
+-            ordered = sorted(supported,key=lambda n:supported[n]['heldout_scaled_rmse'])
+-            if len(ordered)>1 and supported[ordered[1]]['heldout_scaled_rmse']-supported[ordered[0]]['heldout_scaled_rmse']<separation_threshold:
+-                ranking = 'indistinguishable'
+-            else:
+-                ranking,winner = 'best_compatible_candidate',ordered[0]
+-    # Conditional prediction-based suggestion; never a promise about a real experiment.
++    suggestion_predictions = {}
+     suggested = dict(train[0]['experiment'])
+-    suggested['parameter_overrides'] = {**suggested.get('parameter_overrides',{}),'b':0.}
+-    suggestion_predictions = {}
+-    for name,rec in records.items():
+-        if name in adequate:
+-            try:
+-                suggestion_predictions[name] = fitting.predict(rec['artifact'],suggested,obs,rec['fit']['best']['parameters'])['observables']
+-            except ValueError:
+-                pass
+-    gap = 0.
+-    names = list(suggestion_predictions)
+-    for i,name in enumerate(names):
+-        for other in names[i+1:]:
+-            gap = max(gap,max(abs(a-b) for o in obs for a,b in zip(suggestion_predictions[name][o['id']],suggestion_predictions[other][o['id']])))
+-    suggestion = {'intervention':'b=0','experiment':suggested,'predictions':suggestion_predictions,'max_nominal_prediction_gap':gap,'scale':1.,'is_verification_of_existing_holdout':any(r['experiment']['parameter_overrides'].get('b')==0 for r in hold),'limitation':'Conditional on candidate structures and nominal fitted values; parameter uncertainty not fully propagated.'}
++    suggested['parameter_overrides'] = {**suggested.get('parameter_overrides', {}), 'b': 0.}
++    for name, rec in records.items():
++        item, fit = rec['item'], rec['fit']
++        if item['phase_status']['training_score'] != 'succeeded':
++            continue
++        scores, statuses = [], []
++        for row in hold:
++            def heldout_score(budget):
++                predicted = fitting.predict(rec['artifact'], row['experiment'], obs,
++                    fit['best']['parameters'], timeout_s=budget)['observables']
++                return _scores(row, predicted)
++            score, status = phase('holdout', name, heldout_score, cap=30., condition=row['id'])
++            statuses.append(status)
++            if status != 'succeeded':
++                break
++            scores.append(score)
++        item['phase_status']['holdout'] = ('timed_out' if 'timed_out' in statuses else
++            'failed' if any(s != 'succeeded' for s in statuses) else 'succeeded' if hold else 'not_applicable')
++        if scores and len(scores) == len(hold):
++            item['heldout_weighted_rmse'] = math.sqrt(sum(s[0]**2 for s in scores) / len(scores))
++            item['heldout_scaled_rmse'] = math.sqrt(sum(s[1]**2 for s in scores) / len(scores))
++        if item['training_weighted_rmse'] > 3:
++            item['phase_status']['suggestion'] = 'not_applicable'
++            continue
++        def intervention(budget):
++            predicted = fitting.predict(rec['artifact'], suggested, obs, fit['best']['parameters'],
++                                         timeout_s=budget)['observables']
++            for observation in obs:
++                column = predicted[observation['id']]
++                if len(column) != len(suggested['times']) or not all(math.isfinite(float(x)) for x in column):
++                    raise ValueError('invalid intervention prediction')
++            return predicted
++        predicted, status = phase('suggestion', name, intervention, cap=30.)
++        item['phase_status']['suggestion'] = status
++        if status == 'succeeded':
++            suggestion_predictions[name] = predicted
++
++    summary = {name: rec['item'] for name, rec in records.items()}
++    adequate = {name: item for name, item in summary.items()
++                if item['training_weighted_rmse'] is not None and item['training_weighted_rmse'] <= 3}
++    def compare(_budget):
++        ranking, winner = 'none_adequate', None
++        if not hold and adequate:
++            ranking = 'indistinguishable_from_training' if len(adequate) > 1 else 'single_training_compatible_candidate'
++        elif hold:
++            supported = {name: item for name, item in adequate.items()
++                         if item['heldout_weighted_rmse'] is not None and item['heldout_weighted_rmse'] <= 3}
++            if supported:
++                ordered = sorted(supported, key=lambda name: supported[name]['heldout_scaled_rmse'])
++                if len(ordered) > 1 and supported[ordered[1]]['heldout_scaled_rmse'] - supported[ordered[0]]['heldout_scaled_rmse'] < separation_threshold:
++                    ranking = 'indistinguishable'
++                else:
++                    ranking, winner = 'best_compatible_candidate', ordered[0]
++        gap = 0.
++        names = list(suggestion_predictions)
++        for index, name in enumerate(names):
++            for other in names[index+1:]:
++                for observation in obs:
++                    for left, right in zip(suggestion_predictions[name][observation['id']], suggestion_predictions[other][observation['id']]):
++                        difference = abs(left-right)
++                        if not math.isfinite(difference):
++                            raise ValueError('nonfinite intervention separation')
++                        gap = max(gap, difference)
++        return ranking, winner, gap
++    compared, comparison_status = phase('comparison', None, compare)
++    ranking, winner, gap = compared if comparison_status == 'succeeded' else ('incomplete_computation', None, None)
+     from .application import environment_fingerprint
+-    payload = {'status':'completed','environment':environment_fingerprint(),'candidates':summary,'comparison':{'ranking':ranking,'winner':winner,'separation_threshold':separation_threshold,'adequacy_weighted_rmse':3,'note':'Specified known independent Gaussian noise; no significance test or proof of mechanism'},'experiment_suggestion':suggestion,'protocol':{'seed':seed,'starts':starts,'max_nfev':max_nfev,'timeout_s':timeout_s,'observations':obs,'training_ref':data_ref,'holdout_ref':hold_ref},'limitations':['Synthetic, linearized candidate templates; not open mechanism discovery','Local sensitivity and bounds are not global identifiability or confidence intervals','Readout x is a signed deviation, not a concentration','d/h units unknown; not fully dimensionally verified','No holdout refitting; no biological truth claim']}
+-    return store.put('hypothesis_study',payload,refs=refs)
++    payload = {'status': 'incomplete', 'environment': environment_fingerprint(), 'candidates': summary,
++        'comparison': {'ranking': ranking, 'winner': winner, 'separation_threshold': separation_threshold,
++            'adequacy_weighted_rmse': 3, 'note': 'Specified known independent Gaussian noise; no significance test or proof of mechanism'},
++        'experiment_suggestion': {'intervention': 'b=0', 'experiment': suggested, 'predictions': suggestion_predictions,
++            'max_nominal_prediction_gap': gap, 'scale': 1.,
++            'is_verification_of_existing_holdout': any(row['experiment']['parameter_overrides'].get('b') == 0 for row in hold),
++            'limitation': 'Conditional on candidate structures and nominal fitted values; parameter uncertainty not fully propagated.'},
++        'protocol': {'seed': seed, 'starts': starts, 'max_nfev': max_nfev, 'timeout_s': timeout_s,
++            'total_timeout_s': deadline.timeout_s, 'observations': obs, 'training_ref': data_ref,
++            'holdout_ref': hold_ref, 'holdout_count': len(hold), 'prediction_timeout_s': 30., 'execution_policy_version': 1},
++        'deadline': {'version': 1, 'total_timeout_s': deadline.timeout_s, 'origin': deadline_origin,
++            'elapsed_s': deadline.elapsed(), 'phases': audit,
++            'cleanup_note': 'Numerical workers are bounded; process reaping and durable result I/O may add cleanup overhead.'},
++        'limitations': ['Synthetic, linearized candidate templates; not open mechanism discovery',
++            'Local sensitivity and bounds are not global identifiability or confidence intervals',
++            'Readout x is a signed deviation, not a concentration', 'd/h units unknown; not fully dimensionally verified',
++            'No holdout refitting; no biological truth claim']}
++    payload['deadline']['exhausted'] = payload['deadline']['elapsed_s'] >= deadline.timeout_s
++    verdict = study_verdict(payload)
++    payload.update(verdict)
++    if not verdict['completion_eligible']:
++        payload['comparison'].update(ranking='incomplete_computation', winner=None)
++        payload['experiment_suggestion']['max_nominal_prediction_gap'] = None
++    payload['experiment_suggestion']['status'] = ('succeeded' if verdict['completion_eligible'] and adequate else
++        'not_applicable' if verdict['completion_eligible'] else 'incomplete')
++    return store.put('hypothesis_study', payload, refs=refs)
+--- a/src/biomodel_agent/reporting.py
++++ b/src/biomodel_agent/reporting.py
+@@ -55,7 +55,16 @@
+         lines.extend(['','## Evidence and limits','',f'Citation coverage: {source["coverage"]}',f'Semantic support: **{source["semantic_support"]}**',f'Missing targets: `{json.dumps(source["missing"])}`',f'Invalid refs: `{json.dumps(source["invalid"])}`',f'Units: **{source["units_status"]}**','- A matching trajectory does not establish paper fidelity or biological truth.','- Citation presence is not a semantic support proof.','- Unrequested biological invariants are not assumed; conservation checking is not_run.','- passed_structured_reference denotes numerical agreement on the frozen execution benchmark only.'])
+         lines.extend(['','## Environment','',f'Python: `{p["environment"]["python"]}`',f'Source hash: `{p["environment"]["code_sha256"]}`' if 'code_sha256' in p['environment'] else f'Environment: `{json.dumps(p["environment"].get("packages",{}),sort_keys=True)}`'])
+     elif record['kind']=='hypothesis_study':
+-        lines.extend([f'Study execution: **{p["status"]}**','', '## Frozen candidate comparison','',json.dumps(p['comparison'],ensure_ascii=False,indent=2),'','| Candidate | Fit | Training weighted RMSE | Held-out scaled RMSE | Cross-backend check |','|---|---|---|---|---|'])
++        from .hypotheses import study_verdict
++        verdict = study_verdict(p)
++        comparison = dict(p['comparison'])
++        if not verdict['completion_eligible']:
++            comparison.update(ranking='incomplete_computation', winner=None)
++        lines.extend([f'Study execution: **{verdict["status"]}**',
++                      f'Completion eligible: **{verdict["completion_eligible"]}**',
++                      f'Failure reasons: `{json.dumps(verdict["failure_reasons"])}`',
++                      f'Total scientific budget: {p.get("protocol", {}).get("total_timeout_s", "unknown")} seconds',
++                      '', '## Frozen candidate comparison','',json.dumps(comparison,ensure_ascii=False,indent=2),'','| Candidate | Fit | Training weighted RMSE | Held-out scaled RMSE | Cross-backend check |','|---|---|---|---|---|'])
+         for name,r in p['candidates'].items():
+             lines.append(f'| {name} | {r["fit_status"]} | {r["training_weighted_rmse"]} | {r["heldout_scaled_rmse"]} | {r["crosscheck"]["ok"]} |')
+         suggestion = p['experiment_suggestion']
+--- a/src/biomodel_agent/studies.py
++++ b/src/biomodel_agent/studies.py
+@@ -14,7 +14,8 @@
+ from .storage import canonical_bytes
+ 
+ PLAN_KIND = 'hypothesis_study_plan'
+-PROFILE = 'adaptation_study_v1'
++PROFILE = 'adaptation_study_v2'
++LEGACY_PROFILE = 'adaptation_study_v1'
+ _CONFIG_KEYS = {'training', 'holdout', 'candidates', 'starts', 'seed', 'max_nfev', 'timeout_s', 'separation_threshold'}
+ 
+ 
+@@ -80,8 +81,9 @@
+     return result
+ 
+ 
+-def _payload(config):
+-    if not isinstance(config, dict) or set(config) - _CONFIG_KEYS:
++def _payload(config, *, version=2):
++    allowed = _CONFIG_KEYS | ({'total_timeout_s'} if version == 2 else set())
++    if not isinstance(config, dict) or set(config) - allowed:
+         raise ValueError('unknown study configuration fields')
+     available = hypotheses.adaptation_candidates()
+     names = config.get('candidates', list(available))
+@@ -103,7 +105,11 @@
+     normalized = {'training': training, 'holdout': holdout, 'candidates': list(names),
+                   'starts': starts, 'seed': seed, 'max_nfev': evaluations,
+                   'timeout_s': timeout, 'separation_threshold': threshold}
+-    return {'schema_version': 1, 'profile': PROFILE, 'config': normalized,
++    if version == 2:
++        from .deadlines import positive_seconds
++        normalized['total_timeout_s'] = positive_seconds(config.get('total_timeout_s', hypotheses.DEFAULT_TOTAL_TIMEOUT_S),
++            'total_timeout_s', maximum=hypotheses.MAX_TOTAL_TIMEOUT_S)
++    return {'schema_version': version, 'profile': PROFILE if version == 2 else LEGACY_PROFILE, 'config': normalized,
+             'candidates': {name: to_dict(draft) for name, draft in candidates.items()},
+             'bounds': {name: {key: list(pair) for key, pair in hypotheses._default_bounds(draft).items()}
+                        for name, draft in candidates.items()},
+@@ -125,7 +131,10 @@
+         raise ValueError('invalid study plan')
+     # Reject altered schemas, templates, bounds or scoring rules, rather than
+     # silently changing a frozen protocol after a software upgrade.
+-    if canonical_bytes(payload) != canonical_bytes(_payload(payload['config'])):
++    version = payload.get('schema_version')
++    if type(version) is not int or version not in (1, 2):
++        raise ValueError('unsupported study plan version')
++    if canonical_bytes(payload) != canonical_bytes(_payload(payload['config'], version=version)):
+         raise ValueError('study plan does not match its versioned profile; prepare a new plan')
+     return payload
+ 
+@@ -136,6 +145,8 @@
+     return {'plan_ref': plan_ref, 'profile': plan['profile'], 'candidates': config['candidates'],
+             'training_conditions': len(config['training']), 'holdout_conditions': len(config['holdout']),
+             'starts': config['starts'], 'max_nfev': config['max_nfev'], 'timeout_s': config['timeout_s'],
++            'total_timeout_s': config.get('total_timeout_s', hypotheses.DEFAULT_TOTAL_TIMEOUT_S),
++            'deadline_origin': 'operator_frozen_protocol' if plan['schema_version'] == 2 else 'legacy_execution_default',
+             'notice': 'Operator-frozen conjecture templates. Run once; no candidate/bound/data changes. '
+                       'Holdout values are unavailable. Fit and ranking do not prove biological truth.'}
+ 
+@@ -149,13 +160,12 @@
+         store, candidates, config['training'], holdout=config['holdout'],
+         observations=plan['observations'], bounds=plan['bounds'], starts=config['starts'],
+         seed=config['seed'], max_nfev=config['max_nfev'], timeout_s=config['timeout_s'],
+-        separation_threshold=config['separation_threshold'])
++        separation_threshold=config['separation_threshold'],
++        total_timeout_s=config.get('total_timeout_s', hypotheses.DEFAULT_TOTAL_TIMEOUT_S),
++        deadline_origin='operator_frozen_protocol' if plan['schema_version'] == 2 else 'legacy_execution_default')
+     record = store.get(result_ref)
+-    usable = sum(c['fit_status'] == 'succeeded' and c['crosscheck']['ok']
+-                 for c in record['payload']['candidates'].values())
+     return store.put('hypothesis_study', {**record['payload'], 'plan_ref': plan_ref,
+-                                          'scientific_status': 'not_verified',
+-                                          'usable_candidates': usable, 'completion_eligible': usable > 0},
++                                          **hypotheses.study_verdict(record['payload'])},
+                      refs=tuple(dict.fromkeys([plan_ref, *record['refs']])))
+ 
+ 
+@@ -164,11 +174,16 @@
+     if record['kind'] != 'hypothesis_study':
+         raise ValueError('result must identify a hypothesis study')
+     result = record['payload']
+-    return {'execution_status': result['status'], 'scientific_status': 'not_verified',
+-            'usable_candidates': result.get('usable_candidates', 0),
+-            'completion_eligible': result.get('completion_eligible', False),
+-            'comparison': deepcopy(result['comparison']),
++    verdict = hypotheses.study_verdict(result)
++    comparison = deepcopy(result['comparison'])
++    if not verdict['completion_eligible']:
++        comparison.update(ranking='incomplete_computation', winner=None)
++    return {'execution_status': verdict['status'], 'scientific_status': 'not_verified',
++            'usable_candidates': verdict['usable_candidates'],
++            'completion_eligible': verdict['completion_eligible'], 'failure_reasons': verdict['failure_reasons'],
++            'total_timeout_s': result.get('protocol', {}).get('total_timeout_s'),
++            'comparison': comparison,
+             'candidates': {name: {key: deepcopy(candidate[key]) for key in
+-                ('fit_status', 'parameters', 'training_weighted_rmse', 'heldout_weighted_rmse', 'heldout_scaled_rmse')}
++                ('fit_status', 'parameters', 'training_weighted_rmse', 'heldout_weighted_rmse', 'heldout_scaled_rmse', 'phase_status') if key in candidate}
+                 for name, candidate in result['candidates'].items()},
+             'note': 'Only training data entered fitting. Frozen holdout scoring; no refitting or mechanism proof.'}
+--- /dev/null
++++ b/src/biomodel_agent/deadlines.py
+@@ -0,0 +1,36 @@
++"""Monotonic elapsed-time budgets shared across bounded scientific phases."""
++from __future__ import annotations
++
++import math
++import time
++
++
++class DeadlineExceeded(TimeoutError):
++    pass
++
++
++def positive_seconds(value, name='timeout_s', maximum=None):
++    if isinstance(value, bool) or not isinstance(value, (int, float)):
++        raise ValueError(f'{name} must be a finite positive number')
++    try:
++        value = float(value)
++    except OverflowError as exc:
++        raise ValueError(f'{name} must be finite') from exc
++    if not math.isfinite(value) or value <= 0 or (maximum is not None and value > maximum):
++        raise ValueError(f'{name} must be positive and finite' + (f', at most {maximum}' if maximum else ''))
++    return value
++
++
++class Deadline:
++    def __init__(self, timeout_s, *, maximum=None):
++        self.timeout_s = positive_seconds(timeout_s, maximum=maximum)
++        self.started = time.monotonic()
++
++    def elapsed(self):
++        return max(0., time.monotonic() - self.started)
++
++    def remaining(self, cap=None):
++        remaining = self.timeout_s - self.elapsed()
++        if remaining <= 0:
++            raise DeadlineExceeded('scientific execution deadline exhausted')
++        return min(remaining, positive_seconds(cap)) if cap is not None else remaining
+--- /dev/null
++++ b/tests/test_study_execution_acceptance.py
+@@ -0,0 +1,280 @@
++"""Codex acceptance for T04: shared facts, total budgets and bounded prediction."""
++from copy import deepcopy
++import json
++import math
++import multiprocessing as mp
++import time
++
++import pytest
++
++from biomodel_agent import agent, cli, fitting, hypotheses, modeling, studies, recovery, simulation, reporting
++from biomodel_agent.domain.contracts import ExperimentSpec, SimulationResult
++from biomodel_agent.domain.serialization import from_dict
++from biomodel_agent.storage import ArtifactStore
++from biomodel_agent.deadlines import Deadline
++from test_agent_studies import Scripted, act, config
++
++
++def prepared(tmp_path, **options):
++    store = ArtifactStore(tmp_path / 'store')
++    settings = {**config(), **options}
++    plan = studies.prepare_study(store, settings)
++    source = store.put('source', {'pages': [{'number': 1, 'text': 'Frozen candidate study.'}]})
++    exp = from_dict(ExperimentSpec, settings['training'][0]['experiment'])
++    return store, settings, plan, source, exp
++
++
++def fail_fits(*a, **k):
++    return {'status': 'timed_out', 'best': None, 'starts': [], 'diagnostics': ['injected timeout']}
++
++
++def test_core_all_fit_timeouts_cannot_claim_completed(tmp_path, monkeypatch):
++    store, settings, _, _, _ = prepared(tmp_path)
++    monkeypatch.setattr(fitting, 'fit_parameters', fail_fits)
++    candidates = {'cand_baseline': hypotheses.adaptation_candidates()['cand_baseline']}
++    result = store.get(hypotheses.run_hypothesis_study(store, candidates, settings['training'],
++        settings['holdout'], starts=1))['payload']
++    assert result['status'] != 'completed'
++    assert result['completion_eligible'] is False and result['comparison']['winner'] is None
++
++
++def test_legacy_cli_all_fit_timeouts_must_fail(tmp_path, monkeypatch, capsys):
++    store, settings, _, _, _ = prepared(tmp_path)
++    training = tmp_path / 'training.json'; training.write_text(json.dumps(settings['training']))
++    holdout = tmp_path / 'holdout.json'; holdout.write_text(json.dumps(settings['holdout']))
++    monkeypatch.setattr(fitting, 'fit_parameters', fail_fits)
++    code = cli.main(['hypothesis', '--training', str(training), '--holdout', str(holdout),
++                     '--starts', '1', '--store', str(store.root)])
++    assert code != 0
++
++
++def test_heldout_prediction_failure_is_not_completed_research(tmp_path, monkeypatch):
++    store, _, plan, _, _ = prepared(tmp_path)
++    monkeypatch.setattr(fitting, 'predict', lambda *a, **k: (_ for _ in ()).throw(ValueError('prediction unavailable')))
++    result = store.get(studies.execute_study(store, plan))['payload']
++    assert result['completion_eligible'] is False
++    assert result['status'] != 'completed' and result['comparison']['winner'] is None
++
++
++def test_fit_preflight_never_runs_parent_ode_before_timeout(monkeypatch):
++    from test_research_workflows import decay, training_data
++    monkeypatch.setattr(fitting, 'solve_ivp', lambda *a, **k: pytest.fail('parent ODE escaped deadline'))
++    result = fitting.fit_parameters(decay(), training_data(), [{'id': 'signal', 'expression': 'x'}],
++                                    {'d': (.1, 1.5)}, starts=1, timeout_s=.001)
++    assert result['status'] == 'timed_out'
++
++
++def test_new_plan_freezes_total_study_budget(tmp_path):
++    store, _, plan, _, _ = prepared(tmp_path, total_timeout_s=7.)
++    payload = studies.load_plan(store, plan)
++    assert payload['schema_version'] == 2
++    assert payload['config']['total_timeout_s'] == 7.
++    assert studies.plan_summary(store, plan)['total_timeout_s'] == 7.
++
++
++@pytest.mark.parametrize('value', [True, '5', 0., -1., float('nan'), float('inf'), 601., 10**400])
++def test_bad_total_timeout_rejected_before_artifact_writes(tmp_path, value):
++    store = ArtifactStore(tmp_path / 'store')
++    before = store.list()
++    with pytest.raises(ValueError):
++        studies.prepare_study(store, {**config(), 'total_timeout_s': value})
++    assert store.list() == before
++
++
++def slow_prediction(payload, out):
++    time.sleep(5)
++    out.put({'status': 'succeeded', 'observables': {'response': [0., 0.]}})
++
++
++def test_bounded_prediction_matches_analytic_solution():
++    candidate = modeling.build_model(hypotheses.adaptation_candidates()['cand_baseline'])
++    result = fitting.predict(candidate, ExperimentSpec((0., .5, 1.), time_unit='second'),
++        [{'id': 'response', 'expression': 'x'}], {'k': 2., 'd': 1.}, timeout_s=5.)
++    assert result['observables']['response'] == pytest.approx([0., 2*(1-math.exp(-.5)), 2*(1-math.exp(-1.))], abs=1e-7)
++
++
++def test_prediction_timeout_stops_worker(tmp_path, monkeypatch):
++    candidate = modeling.build_model(hypotheses.adaptation_candidates()['cand_baseline'])
++    monkeypatch.setattr(fitting, '_predict_worker', slow_prediction, raising=False)
++    before = {p.pid for p in mp.active_children()}
++    start = time.monotonic()
++    with pytest.raises(TimeoutError):
++        fitting.predict(candidate, ExperimentSpec((0., 1.), time_unit='second'),
++            [{'id': 'response', 'expression': 'x'}], {'k': 2., 'd': 1.}, timeout_s=.03)
++    assert time.monotonic() - start < 2.
++    assert {p.pid for p in mp.active_children()} == before
++
++
++@pytest.mark.parametrize('scenario', ['fit_timeout', 'prediction_error', 'valid_negative', 'success'])
++def test_three_entries_share_the_exact_frozen_plan_and_verdict(tmp_path, monkeypatch, capsys, scenario):
++    settings = config()
++    settings.update(seed=19, total_timeout_s=30.)
++    if scenario == 'valid_negative':
++        settings['holdout'][0]['values']['response'] = [99.] * 5
++    store, _, plan, source, exp = prepared(tmp_path, **settings)
++    training = tmp_path / 'training.json'; training.write_text(json.dumps(settings['training']))
++    holdout = tmp_path / 'holdout.json'; holdout.write_text(json.dumps(settings['holdout']))
++    if scenario == 'fit_timeout':
++        monkeypatch.setattr(fitting, 'fit_parameters', fail_fits)
++    if scenario == 'prediction_error':
++        monkeypatch.setattr(fitting, 'predict', lambda *a, **k: (_ for _ in ()).throw(ValueError('prediction unavailable')))
++    code1 = cli.main(['hypothesis', '--training', str(training), '--holdout', str(holdout),
++        '--candidate', 'cand_baseline', '--starts', '1', '--seed', '19', '--max-nfev', '60',
++        '--timeout', '20', '--total-timeout', '30', '--store', str(store.root)])
++    first = json.loads(capsys.readouterr().out)
++    assert first['plan_ref'] == plan
++    code2 = cli.main(['study-run', plan, '--store', str(store.root)])
++    second = json.loads(capsys.readouterr().out)
++    provider = Scripted([act('run_study'), act('finish')])
++    final = store.get(agent.run_agent(store, provider, [source], exp,
++        mode='hypothesis', study_plan_ref=plan))['payload']
++    records = [store.get(ref)['payload'] for ref in (first['ref'], second['ref'], final['run_ref'])]
++    projected = [(r['status'], r['completion_eligible'], r['comparison'],
++                  r['candidates']['cand_baseline']['phase_status']) for r in records]
++    assert projected[0] == projected[1] == projected[2]
++    assert all(r['plan_ref'] == plan and r['protocol']['total_timeout_s'] == 30. for r in records)
++    assert len(store.list('agent_execution')) == 1
++    assert all(row['role'] == 'training' for row in settings['training'])
++    if scenario in ('fit_timeout', 'prediction_error'):
++        assert code1 == code2 == 1 and final['state'] == 'incomplete'
++        assert all(r['comparison']['winner'] is None for r in records)
++    else:
++        assert code1 == code2 == 0 and final['state'] == 'completed'
++        assert all(r['scientific_status'] == 'not_verified' for r in records)
++        if scenario == 'valid_negative':
++            assert all(r['comparison']['ranking'] == 'none_adequate' for r in records)
++
++
++def virtual_science(monkeypatch, settings):
++    clock = {'elapsed': 0.}
++    budgets = {'fit': [], 'crosscheck': [], 'predict': []}
++    class VirtualDeadline(Deadline):
++        def elapsed(self):
++            return clock['elapsed']
++    monkeypatch.setattr(hypotheses, 'Deadline', VirtualDeadline)
++    def values(spec):
++        return [2*(1-math.exp(-t)) for t in spec['times']]
++    def fit(artifact, training, observations, bounds, **kwargs):
++        budgets['fit'].append(kwargs['timeout_s']); clock['elapsed'] += 2.
++        return {'status': 'succeeded', 'best': {'parameters': {'k': 2., 'd': 1.}, 'cost': 0.},
++                'predictions': {r['id']: {'observables': {'response': values(r['experiment'])}} for r in training}}
++    def cross(artifact, spec, observations, solver):
++        budgets['crosscheck'].append(solver.timeout_s); clock['elapsed'] += 1.
++        return SimulationResult('succeeded', spec.times, {'response': values({'times': spec.times})}, time_unit='second')
++    def predict(artifact, spec, obs, parameters, **kwargs):
++        budgets['predict'].append(kwargs['timeout_s']); clock['elapsed'] += 1.
++        return {'status': 'succeeded', 'observables': {'response': values(spec)}}
++    monkeypatch.setattr(fitting, 'fit_parameters', fit)
++    monkeypatch.setattr(simulation, 'simulate', cross)
++    monkeypatch.setattr(fitting, 'predict', predict)
++    return clock, budgets
++
++
++@pytest.mark.parametrize('candidates,total,expected_fit,expected_cross,expected_predict', [
++    (['cand_baseline'], 3.5, [3.5], [1.5], [.5]),
++    (['cand_baseline', 'cand_feedforward'], 5.5, [5.5, 2.5], [3.5, .5], []),
++])
++def test_global_budget_is_consumed_across_phases_and_candidates(tmp_path, monkeypatch,
++        candidates, total, expected_fit, expected_cross, expected_predict):
++    store, settings, plan, _, _ = prepared(tmp_path, candidates=candidates, total_timeout_s=total)
++    clock, budgets = virtual_science(monkeypatch, settings)
++    result = store.get(studies.execute_study(store, plan))['payload']
++    assert result['status'] == 'timed_out' and not result['completion_eligible']
++    assert budgets == {'fit': expected_fit, 'crosscheck': expected_cross, 'predict': expected_predict}
++    assert result['deadline']['elapsed_s'] == clock['elapsed'] and result['deadline']['exhausted'] is True
++    assert result['comparison']['winner'] is None
++    assert result['experiment_suggestion']['max_nominal_prediction_gap'] is None
++
++
++def test_legacy_v1_plan_is_preserved_and_execution_default_is_disclosed(tmp_path):
++    from pathlib import Path
++    original = json.loads((Path(__file__).resolve().parents[1] /
++        'artifacts/audit-t04-study-execution-20261019/baseline-plan-v1.json').read_text())['payload']
++    store = ArtifactStore(tmp_path / 'store')
++    ref = store.put(studies.PLAN_KIND, original)
++    before = deepcopy(store.get(ref))
++    assert studies.load_plan(store, ref) == original
++    summary = studies.plan_summary(store, ref)
++    assert summary['deadline_origin'] == 'legacy_execution_default'
++    result = store.get(studies.execute_study(store, ref))['payload']
++    assert result['deadline']['origin'] == 'legacy_execution_default'
++    assert result['protocol']['total_timeout_s'] == 300.
++    assert result['completion_eligible'] and store.get(ref) == before
++
++
++def test_timed_out_study_recovery_adopts_result_without_refitting_or_resetting_deadline(tmp_path, monkeypatch):
++    store, _, plan, source, exp = prepared(tmp_path, total_timeout_s=4.)
++    monkeypatch.setattr(fitting, 'fit_parameters', fail_fits)
++    summary = studies.result_summary
++    with monkeypatch.context() as patch:
++        patch.setattr(studies, 'result_summary', lambda *a: (_ for _ in ()).throw(SystemExit('returned timeout result')))
++        with pytest.raises(SystemExit):
++            agent.run_agent(store, Scripted([act('run_study')]), [source], exp,
++                            mode='hypothesis', study_plan_ref=plan)
++    execution_ref = store.list('agent_execution')[0]
++    report = recovery.diagnose_execution(store, execution_ref)
++    assert report['status'] == 'ready'
++    result_ref = report['adoptable_result_refs'][0]
++    original = deepcopy(store.get(result_ref))
++    monkeypatch.setattr(fitting, 'fit_parameters', lambda *a, **k: pytest.fail('timed-out fit repeated'))
++    final = store.get(agent.recover_agent(store, Scripted([act('finish')]), execution_ref))['payload']
++    assert final['state'] == 'incomplete' and final['call_count'] == 2 and final['run_ref'] == result_ref
++    assert store.get(result_ref) == original and len(store.list('fitting')) == 1
++    assert len([o for o in recovery.diagnose_execution(store, execution_ref)['operations']
++                if o['reserved']['name'] == 'run_study']) == 1
++
++
++def exit_prediction(payload, out):
++    import os
++    os._exit(21)
++
++
++def test_prediction_worker_crash_is_failure_and_is_reaped(monkeypatch):
++    candidate = modeling.build_model(hypotheses.adaptation_candidates()['cand_baseline'])
++    monkeypatch.setattr(fitting, '_predict_worker', exit_prediction)
++    before = {p.pid for p in mp.active_children()}
++    with pytest.raises(ValueError, match='without a result'):
++        fitting.predict(candidate, ExperimentSpec((0., 1.), time_unit='second'),
++            [{'id': 'response', 'expression': 'x'}], {'k': 2., 'd': 1.}, timeout_s=5.)
++    assert {p.pid for p in mp.active_children()} == before
++
++
++def test_prediction_parent_interrupt_also_stops_worker(monkeypatch):
++    candidate = modeling.build_model(hypotheses.adaptation_candidates()['cand_baseline'])
++    monkeypatch.setattr(fitting, '_predict_worker', slow_prediction)
++    class InterruptDeadline:
++        def __init__(self, *a):
++            self.calls = 0
++        def remaining(self):
++            self.calls += 1
++            if self.calls > 1:
++                raise KeyboardInterrupt('injected during worker wait')
++            return 1.
++    monkeypatch.setattr(fitting, 'Deadline', InterruptDeadline)
++    before = {p.pid for p in mp.active_children()}
++    with pytest.raises(KeyboardInterrupt):
++        fitting.predict(candidate, ExperimentSpec((0., 1.), time_unit='second'),
++            [{'id': 'response', 'expression': 'x'}], {'k': 2., 'd': 1.}, timeout_s=5.)
++    assert {p.pid for p in mp.active_children()} == before
++
++
++@pytest.mark.parametrize('failure', ['fit', 'crosscheck', 'training', 'holdout', 'suggestion', 'deadline'])
++def test_actual_failure_facts_override_stored_completed_flags(tmp_path, monkeypatch, failure):
++    store, settings, plan, _, _ = prepared(tmp_path)
++    virtual_science(monkeypatch, settings)
++    result = store.get(studies.execute_study(store, plan))['payload']
++    item = result['candidates']['cand_baseline']
++    assert result['completion_eligible'] is True
++    if failure == 'fit': item['fit_status'] = 'failed'
++    elif failure == 'crosscheck': item['crosscheck']['ok'] = False
++    elif failure == 'training': item['training_weighted_rmse'] = None
++    elif failure == 'holdout': item['heldout_weighted_rmse'] = None
++    elif failure == 'suggestion': item['phase_status']['suggestion'] = 'failed'
++    else: result['deadline']['exhausted'] = True
++    result.update(status='completed', completion_eligible=True)
++    ref = store.put('hypothesis_study', result)
++    summary = studies.result_summary(store, ref)
++    assert summary['completion_eligible'] is False and summary['execution_status'] != 'completed'
++    assert summary['comparison']['winner'] is None
++    report = reporting.render_report(store, ref)
++    assert 'Study execution: **completed**' not in report
+--- /dev/null
++++ b/docs/study-execution-deadline.md
+@@ -0,0 +1,58 @@
++# 统一研究入口与科学计算总期限（T04）
++
++任务来自[优化队列](optimization-backlog.md)。本轮由用户明确要求 Codex 独立实现、审查与验收，没有再派发 DSH 任务。继续采用单 Agent 与确定性工具，不涉及外部模型或独立评测材料。
++
++## 已复现的问题
++
++旧 `hypothesis` 命令直接调用研究内核，而 `study-run` 和 Agent 使用冻结计划适配层。内核不论是否全部拟合失败都保存 `status=completed`；旧命令据此返回成功。适配层只检查是否至少有一个拟合/交叉检查可用，不能阻断留出预测失败或部分候选计算缺失。
++
++另有两处预算缺口：拟合预检在主进程实际求解 ODE，随后才启动受超时约束的优化器；拟合后的留出预测与干预预测也在主进程直接执行。单个拟合超时不等于整个研究有期限。
++
++实施前独立基线15项中7失败、8通过；失败覆盖上述入口、计算完成判据与预测预算缺失。原始输出保存在[T04验收目录](../artifacts/audit-t04-study-execution-20261019/)。
++
++## 共用执行层与完成判据
++
++`hypothesis` 现在先冻结计划，再走与 `study-run` 和 Agent 相同的 `studies.execute_study`；科学内核仍是 `hypotheses.run_hypothesis_study`。两条CLI提供相同的候选、起点、种子、迭代上限、拟合上限、总期限和排序阈值设置。旧命令默认单次拟合上限由90秒统一为30秒；可以显式指定，冻结计划每次拟合仍最多90秒。
++
++共用 `hypotheses.study_verdict` 从实际阶段、有限数值、交叉检查及期限记录导出结果；内核、计划结果摘要、命令行、研究报告和 Agent 的完成判断使用该判据，不用已有 `status` / `completion_eligible` 成功字符串覆盖失败事实。
++
++| 状态 | 含义 |
++|---|---|
++| completed | 所选候选的必要计算完成；允许结论为无合适候选或不可区分 |
++| timed_out | 总期限或某个必要计算阶段超时；保留已经保存的事实 |
++| incomplete | 存在可用的拟合/交叉检查，但其他必要计算未完成 |
++| failed | 没有可用候选计算 |
++
++每个候选记录建模、拟合、交叉检查、训练评分、留出评分、适用的实验建议阶段状态。交叉检查同时验证采样长度、时间网格和有限误差。任一必要计算缺失时，不宣称确定赢家，不把计算失败写成“所有模型被数据否定”，建议预测差异也保留为None。
++
++有效的科学负结果保持区分：若拟合、交叉检查和预测真实完成，但训练/留出误差不满足冻结门槛，研究仍可完成，排序为 `none_adequate`、无赢家。所有这类候选比较的科学状态仍为 `not_verified`，不是生物机制证明。
++
++## 总期限如何生效
++
++新计划为 `schema_version=2 / adaptation_study_v2`，显式冻结 `total_timeout_s`，默认300秒、最多600秒。原 `timeout_s` 保留为每个候选的拟合上限。一个单调时钟从科学研究工具入口开始，覆盖候选建模、拟合、交叉检查、留出预测、干预预测和比较；阶段之间、候选之间不重置。
++
++每次调用最多得到剩余时间。交叉检查与单次预测另有30秒上限，拟合使用冻结的每次上限；实际分配取二者较小值。阶段前后检查时间，记录候选、阶段、分配秒数、耗时与错误类型；已经耗尽预算时不再启动后续计算。结果另保留总预算来源、耗时及是否耗尽。
++
++拟合预检现在只做静态模型、映射、数据和时间单位检查，不在主进程积分。拟合CPU与研究内预测CPU分别在可终止的 spawned worker 中执行；等待也计入预算。worker超时、无结果退出或主进程收到中断时，执行终止与回收，不留下继续计算的子进程。原无 `timeout_s` 的独立 `fitting.predict` API 保持原行为，研究入口明确使用受限调用。
++
++此期限约束一次研究工具的科学工作。此前的 LLM 讨论、研究者等待、最终回复与恢复审计写入不计入该科学预算，仍遵守原各请求和调用次数限制。静态验证、不可中断的本地文件写入及进程回收可能增加墙钟开销；这不是硬实时或操作系统断电保证。
++
++## 兼容与中断恢复
++
++旧v1计划按其原规范精确验证并保持不可变；本轮保存了修改前生成的真实v1负载，确认没有猜测重建。执行旧计划时明确声明 `legacy_execution_default` 的300秒预算，在计划摘要与新结果中说明来源，不把新字段回写成原计划内容。
++
++旧研究产物的原始数值、状态和历史仍可读取，不覆盖旧对象。若旧产物缺少必要阶段/预算证据，当前完成判据保守拒绝重新宣称计算已完成；既有 Agent 记录的历史状态不会被回写。源码变化也继续受 T03b 的恢复指纹兼容检查约束，不绕过版本门槛迁移旧故障记录。
++
++[T03b受控恢复](controlled-recovery.md)的所有者锁、一次科学调用和已返回结果认领规则保留。研究超时也会返回实际保存的研究产物；在结果返回后崩溃，恢复复用同一个引用及其原预算事实，不重拟合、不重新分配一个科学期限。工具结果未知时仍阻断，不从部分产物中猜测最新结果。
++
++## 实际验证
++
++首轮111项检查通过。扩展31项独立验收覆盖同一冻结计划的三个入口、有效负结果、预测失败、跨阶段与跨候选预算、旧v1兼容、worker超时/退出/中断回收，以及超时研究的结果认领。最终完整回归926项通过，186.94秒，无失败、错误或跳过；原有测试文件保持不变。命令、源码哈希及实际结果见[验收记录](../artifacts/audit-t04-study-execution-20261019/acceptance.json)。
++
++可复查的[实际科学产物](../artifacts/audit-t04-study-execution-20261019/scientific-results.json)包括：
++
++- 同一正例三个入口都拟合得到约 `k=2、d=1`，留出 scaled RMSE 约 `3.89e-10`，排序一致。
++- 同一有效负例三个入口都完成计算，留出 scaled RMSE 约 `97.85`，均无赢家；没有伪装成计算失败。
++- 实际极短科学期限在建模阶段耗尽，保存 `timed_out` 产物，未启动拟合；随后故障恢复沿用同一结果，拟合产物数量保持0，没有遗留数值子进程。预算分配到拟合、交叉检查和预测的负控制另由受控时钟测试验证。
++
++这些是离线脚本动作、真实确定性计算与故障验证，不是新的真实模型科研能力成绩。没有读取独立留出集，也没有发送 c13/c18 材料或重试已被拒绝的在线回归。
+--- a/docs/optimization-backlog.md
++++ b/docs/optimization-backlog.md
+@@ -10,8 +10,8 @@
+ | T02 | Python 构造器与 JSON 数值校验不一致 | **已验收**：[结果与限制](strict-numeric-contracts.md) | DSH两文件实现，独立审查无生产修正；定向189通过，完整811通过，保留异常结果诊断与合法历史读取 |
+ | T03a | 工具调用与调用预算缺少一致的持久化边界 | **已验收**：[结果与限制](invocation-journal.md) | 版本化预留/返回/错误/中断、平坦引用及继承计数；定向233通过，完整849通过；尚无自动恢复 |
+ | T03b | 受控中断恢复、结果认领、执行所有者与重试分类 | **已验收**：[结果与限制](controlled-recovery.md) | 只读诊断、冻结初态/源码版本、返回值认领、进程所有者与恢复收据；定向113通过，完整895通过；未知外部/部分计算结果及异常路径保守阻断 |
+-| T04 | 旧 hypothesis / study-run / Agent 研究入口不同，预测不受统一期限控制 | **下一项** | T01、T03a/T03b；共享冻结用例，区分所有计算失败与科学负结果，整个研究有 deadline |
+-| T05 | 引文中的数值可错绑目标，公式可不对应草稿 | 待实施 | T01；新增结构化证据记录，先覆盖直接赋值、简单公式和符号映射；未知语法待审核 |
++| T04 | 旧 hypothesis / study-run / Agent 研究入口不同，预测不受统一期限控制 | **已验收**：[结果与限制](study-execution-deadline.md) | Codex独立实现；相同冻结计划/裁决、科学总期限、受限预测与v1兼容；首轮111、扩展31、完整926通过，T03b超时结果认领保留 |
++| T05 | 引文中的数值可错绑目标，公式可不对应草稿 | **下一项** | T01；新增结构化证据记录，先覆盖直接赋值、简单公式和符号映射；未知语法待审核 |
+ | T06 | PDF 只有 pypdf 逐页文本，尚未接入成熟解析结果 | 待实施 | T05 位置契约；薄适配成熟解析输出，保留原 PDF、版本和页/块定位，失败不伪造内容 |
+ | T07 | 检索目前只有待独立审核的合成开发对照 | 待材料审核 / 实施 | 标注可先准备，端到端依赖 T05/T06；按论文划分材料，评价覆盖、错引、干扰、上下文与耗时，实测决定 embedding |
+ | T08 | 缺同底层模型、近预算的真实 Agent 公平评价 | 待协议与领域审核 | T01 稳定后；分报完成、缺口、追问、无依据执行、过度阻断、恢复、调用/耗时/人工介入；已见材料仅作开发回归 |
+@@ -29,7 +29,9 @@
+ 
+ T03b已归档[原DSH任务卡](../tasks/audit-t03b-recovery-core.json)、[执行与分工变更记录](../artifacts/audit-t03b-recovery-20261019/execution-plan.md)。DSH请求与最小READY探测均超时、零代码交付；用户明确授权本轮由Codex接手实现。原测试未修改，实际进程退出、模拟/拟合结果认领、恢复再次中断及只读预留补齐均留档。没有把受控恢复称为任意中断自动恢复，也不猜测旧记录的缺失初态。
+ 
+-下一项T04先用同一冻结研究案例比较旧hypothesis、study-run与Agent入口，复现当前裁决/期限差异；明确研究总deadline如何分配到拟合、预测和比较，再统一共用执行层。分别验证计算失败、超时、有效科学负结果，以及中断后不重复执行；保留T03b的调用预算、所有者与结果认领边界。
++T04按用户要求由Codex独立实现，[执行计划](../artifacts/audit-t04-study-execution-20261019/execution-plan.md)与[实际产物](../artifacts/audit-t04-study-execution-20261019/scientific-results.json)已归档。旧hypothesis命令走共用冻结计划层；拟合、交叉检查与预测消耗同一科学总期限；计算失败不能成为有效负结论，真实负结果仍可完成。新v2计划显式冻结总预算，旧v1计划精确兼容并披露执行默认预算；超时结果恢复不重算。
++
++下一项T05先冻结“引文中存在相同数值但目标错误”“公式文本与草稿不对应”的最小负例，以及正确直接赋值/公式的正控制；建立带目标、声明类型、数值/表达式与原文位置的结构化支持关系。先覆盖可验证的直接赋值、简单表达式和显式符号映射，无法确认的语法保留unknown并交由审核，不把检索相关或数值出现等同于证据支持。
+ 
+ 任务不涉及 c13/c18 材料、独立评测材料、密钥或外部模型评价。此前四次 USTC 外发审批拒绝仍有效，不重试或改道。
+ 
+--- a/docs/seven-point-status.md
++++ b/docs/seven-point-status.md
+@@ -8,7 +8,7 @@
+ | Memory | 项目/模型/来源范围的持久记忆，更正/撤回，任务快照与恢复；本轮新增有界工作上下文、原历史留存和实际发送审计 | 尚无自动生成并审核记忆候选的流程；大规模索引、跨副本撤回同步和真实长任务行为评测未完成 |
+ | RAG | 授权材料内的关键词检索、精确原文偏移、确定性排序与扫描/输出预算；新增可选片段排序、冻结方法与18例合成开发对照 | 开发标注待独立审核；尚无语义检索/重排、多模态公式或开放文献搜索，长陈述边界与词汇差异仍有限 |
+ | Tool Use | 材料读取/检索、记忆召回、技能读取、草稿/引用校验、模拟，以及冻结的训练拟合/留出比较 | 拟合仍限已验证的 profile；更多工具应由真实案例需求驱动，不开放任意代码来绕过科学契约 |
+-| 工作流 | 追问、归属回复、暂停/恢复、版本与预算冻结、一次研究执行、完整事实报告；本轮新增容量拦截与恢复前预检 | 任意崩溃点自动恢复、跨分支全局费用/执行限额、较复杂的研究修改与失效传播仍有限 |
++| 工作流 | 追问、归属回复、暂停/恢复、版本与预算冻结、一次研究执行、持久调用记录、受控故障恢复/结果认领及本地所有者；统一研究入口与科学总期限 | 任意崩溃点自动恢复、跨分支全局费用/执行限额、较复杂的研究修改与失效传播仍有限；科学工具总期限不包含此前LLM讨论或研究者等待 |
+ | Skill | 固定版本的 ODE 复现、澄清复核、受约束研究指引；目录随任务模式冻结，不改变权限或科学判据 | 仍为少量内置流程；可增加有独立科学案例验收的技能，不急于通用插件市场 |
+ | Evaluation | 完整数值/故障回归、解析解、研究恢复与原检查点演练；本轮新增上下文保留/字符量消融和错误负控制 | 尚缺专家审核的未见科研任务、相同底层模型的通用工具基线和真实模块消融。脚本动作不能替代这些证据 |
+ 
+@@ -18,4 +18,4 @@
+ 
+ 此前四次 c13/c18 USTC 在线回归仍待明确的材料外发授权，未用新的工具改道重试。当前离线开发没有更新原冻结版模型成绩或把已见材料当作新留出集。
+ 
+-2026-10-19 架构复审发现验证失败聚合、证据目标绑定及异常恢复缺口，已保存[审计后的优化任务队列](optimization-backlog.md)。按单项任务卡推进；[T01 运行裁决](run-verdict.md)、[T02 输入契约](strict-numeric-contracts.md)、[T03a 调用记录](invocation-journal.md)及[T03b受控恢复与结果认领](controlled-recovery.md)已验收。T03b在DSH通道超时后，经用户明确授权改由Codex实现与验收；完整回归895项通过，覆盖实际进程退出、已返回模拟/拟合认领、未知结果阻断、只读预留恢复和并发所有者。下一项为T04研究入口与总期限统一；仍不承诺任意中断自动恢复，这些结果不表示真实模型科研能力提升。
++2026-10-19 架构复审发现验证失败聚合、证据目标绑定及异常恢复缺口，已保存[审计后的优化任务队列](optimization-backlog.md)。按单项目标推进；[T01 运行裁决](run-verdict.md)、[T02 输入契约](strict-numeric-contracts.md)、[T03a 调用记录](invocation-journal.md)、[T03b受控恢复](controlled-recovery.md)及[T04统一研究入口与科学总期限](study-execution-deadline.md)已验收。T03b在DSH超时后经用户授权改由Codex实施；T04按用户要求由Codex独立完成，完整回归926项通过，三个入口同一计划的正例/有效负例与超时认领均留档。下一项为T05结构化证据目标绑定；仍不承诺任意中断自动恢复，这些结果不表示真实模型科研能力提升。

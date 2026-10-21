@@ -1,0 +1,20 @@
+{
+  "status": "completed",
+  "calls": 6,
+  "tokens": 21177,
+  "questions": [],
+  "problems": [
+    "State.unit: expected str, got NoneType",
+    "state 'U' is nonnegative but driven by a rate rule; nonnegativity is not representable in the supported profile",
+    "state 'V' is nonnegative but driven by a rate rule; nonnegativity is not representable in the supported profile",
+    "2 structural problem(s) found"
+  ],
+  "model_ref": "fda04eaf6d1a613b984a0374864d0d78ff7868aacca90323e16a2f48d20b5a2d",
+  "run_ref": "ff3444b1b94a9ed2d3f550df9d3eea403276b98b84cfa15b2a5543b7273ecaca",
+  "agent_ref": "c4adecd366d326aeb8145ac18a7166427fdb2b4a5d90f01d68334cc6c58ecf62",
+  "product_modules_sha256": "446e6f3a01fc692ef8f8da085c81f86a41e75e2b41276be86eb1c5c103c8c47b",
+  "system": "biomodel",
+  "case": "unit_chain",
+  "phase": "initial",
+  "elapsed_seconds": 86.20921565599565
+}

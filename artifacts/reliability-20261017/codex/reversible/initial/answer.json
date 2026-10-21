@@ -1,0 +1,22 @@
+{
+  "status": "needs_input",
+  "parameters": [
+    {"id": "kf", "value": 0.4, "unit": "min^-1"},
+    {"id": "kr", "value": 0.2, "unit": "min^-1"}
+  ],
+  "states": [
+    {"id": "A", "initial": 1.0},
+    {"id": "B", "initial": null}
+  ],
+  "equations": [
+    {"state": "A", "expression": "-kf*A+kr*B"},
+    {"state": "B", "expression": "kf*A-kr*B"}
+  ],
+  "questions": [
+    "What is the initial value of B at the same initial time as A = 1.0?"
+  ],
+  "limitations": [
+    "The initial value of B is not reported; a unique trajectory cannot be simulated.",
+    "Parameter units min^-1 are inferred from the supplied equations, dimensionless states, and time in minutes."
+  ]
+}

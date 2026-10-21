@@ -1,0 +1,258 @@
+{
+  "status": "engineering_and_numeric_invariants_passed",
+  "planned_phases": 30,
+  "observed_states": {
+    "completed": 18,
+    "awaiting_input": 12
+  },
+  "http_mock_requests_and_receipts": 66,
+  "online_inference_calls": 0,
+  "actual_reproduction_runs": 18,
+  "convergence_fine_runs": 18,
+  "unchanged_numeric_outputs_vs_F1": 18,
+  "native_original_task_resumes": [
+    "domain_agent--translation--0--clarified",
+    "domain_agent--logistic--0--clarified",
+    "domain_agent--translation--1--clarified",
+    "domain_agent--logistic--1--clarified"
+  ],
+  "per_case_actual_runs": {
+    "decay": 6,
+    "translation": 6,
+    "logistic": 6
+  },
+  "max_numeric_difference_across_workflows": 0,
+  "source_support": "unknown",
+  "human_review_decisions": 0,
+  "scientific_runs": [
+    {
+      "trial_id": "fixed_workflow--decay--0--initial",
+      "run_ref": "5325ab94bfc7f566e9f3de87c8fb110024e665e6da41e99d2363bc150b60eff8",
+      "max_absolute_error_vs_analytic": {
+        "A": 8.080245441632883e-07
+      },
+      "refined_max_absolute_error_vs_analytic": {
+        "A": 1.6048863837880845e-07
+      },
+      "scientific_status": "not_verified",
+      "semantic_support": "unknown"
+    },
+    {
+      "trial_id": "fixed_workflow--translation--0--clarified",
+      "run_ref": "db2ffbf251c9eabc717b21d61f49380b5ba9c4c2a73b527e6cc2a78876c4ecbf",
+      "max_absolute_error_vs_analytic": {
+        "M": 2.5935604264226697e-06,
+        "P": 8.819381784874736e-06
+      },
+      "refined_max_absolute_error_vs_analytic": {
+        "M": 1.655577084314075e-07,
+        "P": 5.00398416924952e-07
+      },
+      "scientific_status": "not_verified",
+      "semantic_support": "unknown"
+    },
+    {
+      "trial_id": "fixed_workflow--logistic--0--clarified",
+      "run_ref": "7e57842c7be040982a0274ddb6ea8d144d85f0c6a8de771a889f130e8f3bbbef",
+      "max_absolute_error_vs_analytic": {
+        "X": 1.3040657189655747e-06
+      },
+      "refined_max_absolute_error_vs_analytic": {
+        "X": 2.299989763088206e-07
+      },
+      "scientific_status": "not_verified",
+      "semantic_support": "unknown"
+    },
+    {
+      "trial_id": "fixed_workflow--decay--1--initial",
+      "run_ref": "93c33a7e9fbde80456eab043169075133bdec33d1feff36247193099e1677239",
+      "max_absolute_error_vs_analytic": {
+        "A": 8.080245441632883e-07
+      },
+      "refined_max_absolute_error_vs_analytic": {
+        "A": 1.6048863837880845e-07
+      },
+      "scientific_status": "not_verified",
+      "semantic_support": "unknown"
+    },
+    {
+      "trial_id": "fixed_workflow--translation--1--clarified",
+      "run_ref": "cd3c780a397d73e1ef396c04bcd0f28d1ac249a6496d55642b5565d89c78beee",
+      "max_absolute_error_vs_analytic": {
+        "M": 2.5935604264226697e-06,
+        "P": 8.819381784874736e-06
+      },
+      "refined_max_absolute_error_vs_analytic": {
+        "M": 1.655577084314075e-07,
+        "P": 5.00398416924952e-07
+      },
+      "scientific_status": "not_verified",
+      "semantic_support": "unknown"
+    },
+    {
+      "trial_id": "fixed_workflow--logistic--1--clarified",
+      "run_ref": "194af44442fc66e71ba249c2bb49b0044348c38d60325c5e00012d1d12e6069a",
+      "max_absolute_error_vs_analytic": {
+        "X": 1.3040657189655747e-06
+      },
+      "refined_max_absolute_error_vs_analytic": {
+        "X": 2.299989763088206e-07
+      },
+      "scientific_status": "not_verified",
+      "semantic_support": "unknown"
+    },
+    {
+      "trial_id": "generic_tool_agent--decay--0--initial",
+      "run_ref": "04f4ff363b2e2974a1ca10dace7c5b81efbfc4792e49b2b1935340e00420f03a",
+      "max_absolute_error_vs_analytic": {
+        "A": 8.080245441632883e-07
+      },
+      "refined_max_absolute_error_vs_analytic": {
+        "A": 1.6048863837880845e-07
+      },
+      "scientific_status": "not_verified",
+      "semantic_support": "unknown"
+    },
+    {
+      "trial_id": "generic_tool_agent--translation--0--clarified",
+      "run_ref": "a73b8b297786f08cff195db7dc585a630fda016a364da022194a912eba391e75",
+      "max_absolute_error_vs_analytic": {
+        "M": 2.5935604264226697e-06,
+        "P": 8.819381784874736e-06
+      },
+      "refined_max_absolute_error_vs_analytic": {
+        "M": 1.655577084314075e-07,
+        "P": 5.00398416924952e-07
+      },
+      "scientific_status": "not_verified",
+      "semantic_support": "unknown"
+    },
+    {
+      "trial_id": "generic_tool_agent--logistic--0--clarified",
+      "run_ref": "2e1f25c6c5cdbfe24e7793fcacf9f961bfea563de0eea121a38b118dcc4d25a5",
+      "max_absolute_error_vs_analytic": {
+        "X": 1.3040657189655747e-06
+      },
+      "refined_max_absolute_error_vs_analytic": {
+        "X": 2.299989763088206e-07
+      },
+      "scientific_status": "not_verified",
+      "semantic_support": "unknown"
+    },
+    {
+      "trial_id": "generic_tool_agent--decay--1--initial",
+      "run_ref": "1e1f89a33d35248edac354fbc77a419b92db412f305d29880a1208f57d546ff4",
+      "max_absolute_error_vs_analytic": {
+        "A": 8.080245441632883e-07
+      },
+      "refined_max_absolute_error_vs_analytic": {
+        "A": 1.6048863837880845e-07
+      },
+      "scientific_status": "not_verified",
+      "semantic_support": "unknown"
+    },
+    {
+      "trial_id": "generic_tool_agent--translation--1--clarified",
+      "run_ref": "603518303212f39fe47b0fcc848b7313bec6913f439b9f6633f5232faff9866f",
+      "max_absolute_error_vs_analytic": {
+        "M": 2.5935604264226697e-06,
+        "P": 8.819381784874736e-06
+      },
+      "refined_max_absolute_error_vs_analytic": {
+        "M": 1.655577084314075e-07,
+        "P": 5.00398416924952e-07
+      },
+      "scientific_status": "not_verified",
+      "semantic_support": "unknown"
+    },
+    {
+      "trial_id": "generic_tool_agent--logistic--1--clarified",
+      "run_ref": "b2bdd557aae8be9bd7a6835eb0adabb3bed72dc7b1b82e3e107851acf470fb71",
+      "max_absolute_error_vs_analytic": {
+        "X": 1.3040657189655747e-06
+      },
+      "refined_max_absolute_error_vs_analytic": {
+        "X": 2.299989763088206e-07
+      },
+      "scientific_status": "not_verified",
+      "semantic_support": "unknown"
+    },
+    {
+      "trial_id": "domain_agent--decay--0--initial",
+      "run_ref": "1ad3021e13da8fcaf6a34843089ff4b4d64583eca1231bf0671e6307bb21de13",
+      "max_absolute_error_vs_analytic": {
+        "A": 8.080245441632883e-07
+      },
+      "refined_max_absolute_error_vs_analytic": {
+        "A": 1.6048863837880845e-07
+      },
+      "scientific_status": "not_verified",
+      "semantic_support": "unknown"
+    },
+    {
+      "trial_id": "domain_agent--translation--0--clarified",
+      "run_ref": "ebb92f62ea516fa591c2c6269e040b9ed1c931efc3fbe6375f0cd76de560be79",
+      "max_absolute_error_vs_analytic": {
+        "M": 2.5935604264226697e-06,
+        "P": 8.819381784874736e-06
+      },
+      "refined_max_absolute_error_vs_analytic": {
+        "M": 1.655577084314075e-07,
+        "P": 5.00398416924952e-07
+      },
+      "scientific_status": "not_verified",
+      "semantic_support": "unknown"
+    },
+    {
+      "trial_id": "domain_agent--logistic--0--clarified",
+      "run_ref": "19d7226bb4c070e7f2c1d420b0e54d2f6873f0181816f5bdbdd25a2a6729599d",
+      "max_absolute_error_vs_analytic": {
+        "X": 1.3040657189655747e-06
+      },
+      "refined_max_absolute_error_vs_analytic": {
+        "X": 2.299989763088206e-07
+      },
+      "scientific_status": "not_verified",
+      "semantic_support": "unknown"
+    },
+    {
+      "trial_id": "domain_agent--decay--1--initial",
+      "run_ref": "f7fcbafe72ade4a0c2b6756f8484c80bff643f9ad91e79b4a5abf24898b41ded",
+      "max_absolute_error_vs_analytic": {
+        "A": 8.080245441632883e-07
+      },
+      "refined_max_absolute_error_vs_analytic": {
+        "A": 1.6048863837880845e-07
+      },
+      "scientific_status": "not_verified",
+      "semantic_support": "unknown"
+    },
+    {
+      "trial_id": "domain_agent--translation--1--clarified",
+      "run_ref": "ad87c290e58df81765f23ff6f782c66c87f68720d18a23958fcc4815fd7e72ae",
+      "max_absolute_error_vs_analytic": {
+        "M": 2.5935604264226697e-06,
+        "P": 8.819381784874736e-06
+      },
+      "refined_max_absolute_error_vs_analytic": {
+        "M": 1.655577084314075e-07,
+        "P": 5.00398416924952e-07
+      },
+      "scientific_status": "not_verified",
+      "semantic_support": "unknown"
+    },
+    {
+      "trial_id": "domain_agent--logistic--1--clarified",
+      "run_ref": "2aacdb17dc6e932bce84fb0bd11a959f626a79a743e4702fa800219df32a82bc",
+      "max_absolute_error_vs_analytic": {
+        "X": 1.3040657189655747e-06
+      },
+      "refined_max_absolute_error_vs_analytic": {
+        "X": 2.299989763088206e-07
+      },
+      "scientific_status": "not_verified",
+      "semantic_support": "unknown"
+    }
+  ],
+  "limit": "Literal scripted decisions over in-memory HTTP. Numeric diagnostics do not authenticate model identity, provide semantic approval or constitute real model comparison. Existing solver checks/settings and all prior precision failures remain unchanged."
+}

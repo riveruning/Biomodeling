@@ -1,0 +1,7 @@
+# Pre-written researcher clarification (frozen before any run)
+# case: c09_two_step_saturation_missing_parameter
+# blocking target: KI/value
+# This text is appended verbatim to source.txt to form the clarified phase.
+# It was written without observing any system's output.
+
+The inhibition constant KI = 0.8 a.u. It was omitted from the parameter table by mistake.

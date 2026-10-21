@@ -1,0 +1,13 @@
+{
+  "created_utc": "2026-10-17T15:54:20.703160+00:00",
+  "launcher_sha256": "af3716a67c4c6413f003a5615aa800bb37d95a8abb912564c59e479f33f774fc",
+  "system": "codex",
+  "case_order": [
+    "c01_multistep_decay",
+    "c05_seq_activation_missing_initial",
+    "c09_two_step_saturation_missing_parameter",
+    "c13_mm_with_inhibitor_ambiguous",
+    "c18_two_pathway_unit_conflict"
+  ],
+  "codex_prompt": "Read TASK.md, source.txt and experiment.json. Complete this one task using only this workspace. Write answer.json and simulate.py even when blocked. Do not read credentials, browse, install packages or delegate. Do not run the generated simulation here; an independent evaluator will review and execute it with numpy/scipy. If blocked, record a specific clarification question in answer.json and stop. Do not ask the operator during this run."
+}

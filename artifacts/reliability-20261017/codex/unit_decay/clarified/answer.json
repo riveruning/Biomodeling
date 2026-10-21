@@ -1,0 +1,17 @@
+{
+  "status": "ready",
+  "parameters": [
+    {"id": "k", "value": 0.3, "unit": "min^-1"}
+  ],
+  "states": [
+    {"id": "D", "initial": 1.0}
+  ],
+  "equations": [
+    {"state": "D", "expression": "-k*D"}
+  ],
+  "questions": [],
+  "limitations": [
+    "The author clarification supersedes the conflicting table label: k is 0.3 per minute, with no conversion.",
+    "Time is in minutes; D and the fixed compartment size of 1 are dimensionless."
+  ]
+}

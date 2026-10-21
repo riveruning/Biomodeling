@@ -1,0 +1,1 @@
+{"kind":"evaluation_reservation","payload":{"charged_tools":["build_sbml"],"operation":"submit_draft","phase_counts":{"model_calls":1,"run_attempts":0,"tool_calls":1},"prior_totals":{"elapsed_seconds":0.3120612330021686,"model_calls":2,"run_attempts":0,"tool_calls":1},"trial_id":"domain_agent--translation--1--clarified"},"refs":[],"schema_version":"1"}

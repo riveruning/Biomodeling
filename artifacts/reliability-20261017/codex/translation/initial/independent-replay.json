@@ -1,0 +1,5 @@
+{
+  "exit_code": 0,
+  "stdout": "{\"status\": \"needs_input\", \"reason\": \"Initial P is not reported. What is the initial dimensionless activity P at t = 0 minutes?\"}\n",
+  "stderr": ""
+}

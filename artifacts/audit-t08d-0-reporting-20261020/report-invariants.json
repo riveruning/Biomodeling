@@ -1,0 +1,14 @@
+{
+  "status": "saved_record_report_invariants_verified",
+  "planned_phases": 30,
+  "pending_completion_adjudications": 18,
+  "initial_gap_phases": 12,
+  "all_behavior_target_labels_pending": true,
+  "legacy_json_results_identical": true,
+  "manifest_and_records_unchanged": true,
+  "bounds_are_confidence_intervals": false,
+  "model_capability_change_claimed": false,
+  "new_scientific_runs": 0,
+  "online_inference_calls": 0,
+  "actual_independent_review_decisions": 0
+}

@@ -1,0 +1,7 @@
+Synthetic, analyst-specified biochemical ODE model; not a published paper. Compartment: single well-mixed compartment of size 1 (dimensionless). All states are concentrations in arbitrary units (a.u.) unless a species entry states otherwise. All parameters are constant in time.
+Mechanism. A specific substrate S1 is converted irreversibly to a non-specific product S2. S2 is subsequently cleared by a first-order process. Both steps are elementary mass-action steps.
+Equations. dA/dt = -k1*A ; dB/dt = k1*A - k2*B.
+Initial conditions. A(0) = 4.0 a.u.; B(0) = 0.0 a.u.
+Parameters. k1 = 0.85 per minute; k2 = 0.25 per minute.
+Experiment. The system is closed apart from the two reactions above, held at constant temperature and pH, and sampled every 0.25 min from t = 0 to t = 8 min inclusive.
+Reporting requirement. Report A and B at every sampling time.

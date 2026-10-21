@@ -1,0 +1,75 @@
+{
+  "created_utc": "2026-10-17T15:52:58.975436+00:00",
+  "type": "exploratory_synthetic_pilot",
+  "human_domain_review": "pending",
+  "cases": [
+    "c01_multistep_decay",
+    "c05_seq_activation_missing_initial",
+    "c09_two_step_saturation_missing_parameter",
+    "c13_mm_with_inhibitor_ambiguous",
+    "c18_two_pathway_unit_conflict"
+  ],
+  "selection": "first unambiguous case in each category, ordered by case ID; no system outputs observed before selection",
+  "fresh_phases_per_system": 9,
+  "systems": [
+    "biomodel:qwen3.8-chat",
+    "codex:gpt-6.1-sol"
+  ],
+  "candidate_freeze": "candidate-freeze.json",
+  "same_backbone_causal_comparison": false,
+  "metrics": [
+    "complete correct execution (1 case)",
+    "specific gap identification (4 cases)",
+    "requested clarification (4 cases)",
+    "unsupported executable delivery (4 cases)",
+    "fresh clarified correct execution (4 cases)",
+    "false blocking (5 sufficient phases)",
+    "actual same-task product resume (conditional on awaiting_input; original total budget)"
+  ],
+  "numeric_rule": {
+    "sampling": "exact frozen grid; no interpolation",
+    "tolerance": 0.001,
+    "scale": "max(1,max(abs(reference))) per required species"
+  },
+  "code_execution": "Codex delivery independently reviewed then replayed with no network; no source correction",
+  "clarification_release": "Pre-written reply copied only after original product run has paused; fresh clarified tasks scored separately.",
+  "budgets": {
+    "biomodel": {
+      "max_calls_total": 8,
+      "max_repairs": 2,
+      "max_retries": 2,
+      "max_tokens": 4000,
+      "timeout_s": 90,
+      "json_mode": true,
+      "pacing_seconds": 5
+    },
+    "codex": {
+      "model": "gpt-6.1-sol",
+      "reasoning": "medium",
+      "wall_limit_s": 240,
+      "tool_and_token_budget": "native runtime; not equated to product call budget"
+    }
+  },
+  "phase_order": "case ID order; incomplete then fresh clarified; product resume then next case",
+  "failure_policy": "preserve every first result; stop on authentication failure or persistent rate limiting; no selective reruns",
+  "isolation": {
+    "files_visible_to_task": [
+      "source.txt",
+      "experiment.json",
+      "TASK.md"
+    ],
+    "allowed_json_visible": false,
+    "runtime": "Bubblewrap mount namespace; parent gold and project trees not mounted"
+  },
+  "limitations": [
+    "5 selected synthetic cases are not representative of real papers",
+    "six audited boundary cases excluded before model outputs",
+    "not a formal benchmark or superiority claim",
+    "models and inference budgets differ"
+  ],
+  "adapter_sha256": {
+    "prepare_holdout_pilot.py": "c8e1f7176520586f6b1372e09eae333beff04c68ea232cc91b5af6b8a4117e40",
+    "holdout_sandbox.py": "98296253f8091d9a06e0c5d02aceffbb4db7963df9f1c8c893ffc6228d4d5a93",
+    "run_holdout_product.py": "32a1354e59af6c1a49f9108f996602a6621b04d48a6857fc6facf6ac23c10a41"
+  }
+}

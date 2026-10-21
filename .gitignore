@@ -1,0 +1,21 @@
+.venv/
+.workflow/
+artifacts/development/
+__pycache__/
+.pytest_cache/
+*.egg-info/
+build/
+dist/
+
+# Local credentials and agent settings
+.env
+.env.*
+!.env.example
+.agents/
+.aws/
+.codex/
+
+# Downloaded third-party environments and source checkouts
+artifacts/competitor-integration-20261017/runtime/
+artifacts/competitor-integration-20261017/runtime-t2b/
+artifacts/competitor-integration-20261017/vendor/

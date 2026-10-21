@@ -1,0 +1,8 @@
+Traceback (most recent call last):
+  File "/home/riveruning/biologymodel_agent/artifacts/audit-t08b-workflow-adapters-20261019/audit-scientific-results.py", line 72, in <module>
+    if __name__=='__main__': main()
+                             ^^^^^^
+  File "/home/riveruning/biologymodel_agent/artifacts/audit-t08b-workflow-adapters-20261019/audit-scientific-results.py", line 44, in main
+    assert all(v<2e-6 for v in errors.values()), errors
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: {'M': 2.5935604264226697e-06, 'P': 8.819381784874736e-06}

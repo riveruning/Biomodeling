@@ -1,0 +1,916 @@
+--- /dev/null
++++ b/benchmarks/development/retrieval_review.py
+@@ -0,0 +1,490 @@
++"""Offline retrieval review preparation and development measurement, protocol v1."""
++from __future__ import annotations
++
++import argparse
++from collections import Counter, defaultdict
++from copy import deepcopy
++from datetime import datetime
++import hashlib
++import json
++from pathlib import Path
++import re
++from statistics import median
++import time
++
++from biomodel_agent import retrieval
++from biomodel_agent.storage import ArtifactStore
++
++PROTOCOL = 'retrieval_review_v1'
++REQUIRED_ROLES = {'support_candidate', 'conflict_candidate', 'missing_statement'}
++ROLES = REQUIRED_ROLES | {'related_context', 'distractor'}
++REVIEW_CHECKS = {'source_span', 'target_scope', 'answerability', 'paper_grouping'}
++MAX_PACKET_BYTES = 10_000_000
++ID = re.compile(r'[A-Za-z0-9_-]{1,100}\Z')
++
++
++def digest(value):
++    raw = json.dumps(value, sort_keys=True, ensure_ascii=False, separators=(',', ':'), allow_nan=False)
++    return hashlib.sha256(raw.encode()).hexdigest()
++
++
++def _integer(value, name, low, high):
++    if type(value) is not int or not low <= value <= high:
++        raise ValueError(f'{name} must be an integer in {low}..{high}')
++    return value
++
++
++def _id(value):
++    if not isinstance(value, str) or not ID.fullmatch(value):
++        raise ValueError('invalid material/case identifier')
++    return value
++
++
++def content(packet):
++    return {**packet, 'cases': [{k: v for k, v in c.items() if k != 'review'} for c in packet['cases']]}
++
++
++def case_digest(packet, case):
++    return digest({'protocol': packet['protocol'], 'corpus_id': packet['corpus_id'],
++                   'origin': packet['origin'], 'exposure': packet['exposure'],
++                   'annotation_author': packet['annotation_author'], 'budget': packet['budget'],
++                   'case': {k: v for k, v in case.items() if k != 'review'}})
++
++
++def build_packet(legacy):
++    """Convert already-seen synthetic controls; do not invent domain approvals."""
++    packet = {'schema_version': 1, 'protocol': PROTOCOL, 'corpus_id': 'retrieval-development-20261019',
++              'origin': 'synthetic_development', 'exposure': 'seen_development',
++              'usage': 'development_only', 'annotation_author': 'Codex development candidate annotations',
++              'budget': {'limit': 3, 'max_chars': 1200}, 'cases': []}
++    for old in legacy['cases']:
++        category = old['category']
++        expectation = ('conflicting' if category == 'conflict' else 'explicit_missing' if category == 'missing'
++                       else 'not_located' if not old['anchors'] else 'answerable')
++        note = old['annotation_note']
++        if old['id'] == 'clarification_scope':
++            note += ' Review priority: condition A/B statements may be compatible; the legacy conflict label is only a retrieval candidate, not a verified scientific contradiction.'
++        role = {'conflicting': 'conflict_candidate', 'explicit_missing': 'missing_statement'}.get(expectation, 'support_candidate')
++        sources = []
++        for s in old['sources']:
++            sources.append({**deepcopy(s), 'role': 'supplement' if s['id'] == 'supplement' else
++                            'clarification' if s['id'] == 'clarification' else 'main',
++                            'pages_sha256': digest(s['pages'])})
++        packet['cases'].append({'id': old['id'], 'category': category, 'query': old['query'],
++                                'paper_family_id': 'shared-synthetic-development-template', 'split': 'development',
++                                'sources': sources,
++                                'anchors': [dict(deepcopy(a), id=f'a{i}', role=role) for i, a in enumerate(old['anchors'], 1)],
++                                'expectation': expectation, 'annotation_note': note,
++                                'review': {'status': 'pending', 'reviewer': None, 'reviewed_at': None,
++                                           'reviewed_sha256': None, 'notes': '',
++                                           'checks': {k: False for k in sorted(REVIEW_CHECKS)}}})
++    validate_packet(packet)
++    return packet
++
++
++def validate_packet(packet):
++    """Validate all material/review state before any storage or retrieval."""
++    if not isinstance(packet, dict) or set(packet) != {'schema_version', 'protocol', 'corpus_id', 'origin', 'exposure', 'usage', 'annotation_author', 'budget', 'cases'}:
++        raise ValueError('unknown or missing packet fields')
++    if type(packet['schema_version']) is not int or packet['schema_version'] != 1 or packet['protocol'] != PROTOCOL:
++        raise ValueError('unsupported review protocol')
++    _id(packet['corpus_id'])
++    if (packet['origin'] not in ('synthetic_development', 'paper_development') or
++            packet['exposure'] not in ('seen_development', 'not_established') or packet['usage'] != 'development_only'):
++        raise ValueError('review packet cannot assert independent holdout status')
++    if packet['origin'] == 'synthetic_development' and packet['exposure'] != 'seen_development':
++        raise ValueError('synthetic development material must retain seen exposure')
++    if not isinstance(packet['annotation_author'], str) or not packet['annotation_author'].strip():
++        raise ValueError('annotation author required')
++    budget = packet['budget']
++    if not isinstance(budget, dict) or set(budget) != {'limit', 'max_chars'}:
++        raise ValueError('invalid frozen budget')
++    _integer(budget['limit'], 'limit', 1, 10)
++    _integer(budget['max_chars'], 'max_chars', 256, 8000)
++    if not isinstance(packet['cases'], list) or not 1 <= len(packet['cases']) <= 200:
++        raise ValueError('expected 1..200 cases')
++    ids, families, page_splits, total_chars = set(), {}, {}, 0
++    for case in packet['cases']:
++        if not isinstance(case, dict) or set(case) != {'id', 'category', 'query', 'paper_family_id', 'split', 'sources', 'anchors', 'expectation', 'annotation_note', 'review'}:
++            raise ValueError('unknown or missing case fields')
++        ident = _id(case['id'])
++        if ident in ids:
++            raise ValueError('duplicate case id')
++        ids.add(ident)
++        family = _id(case['paper_family_id'])
++        split = case['split']
++        if split not in ('development', 'comparison_candidate'):
++            raise ValueError('invalid split')
++        if family in families and families[family] != split:
++            raise ValueError('paper family crosses splits (main/supplement/version leakage)')
++        families[family] = split
++        if packet['exposure'] == 'seen_development' and split != 'development':
++            raise ValueError('seen development material cannot be promoted to a comparison split')
++        retrieval._validate_query(case['query'])
++        if not isinstance(case['category'], str) or not case['category'] or not isinstance(case['annotation_note'], str):
++            raise ValueError('invalid case category/annotation note')
++        sources, pages, page_count, chars = set(), {}, 0, 0
++        if not isinstance(case['sources'], list) or not 1 <= len(case['sources']) <= 64:
++            raise ValueError('expected 1..64 authorized documents per case')
++        for source in case['sources']:
++            if not isinstance(source, dict) or set(source) != {'id', 'role', 'pages', 'pages_sha256'} or source['role'] not in ('main', 'supplement', 'clarification', 'correction'):
++                raise ValueError('invalid document fields/role')
++            sid = _id(source['id'])
++            if sid in sources:
++                raise ValueError('duplicate source id')
++            sources.add(sid)
++            if source['pages_sha256'] != digest(source['pages']):
++                raise ValueError('material hash mismatch')
++            if not isinstance(source['pages'], list) or any(not isinstance(p, dict) or set(p) != {'number', 'text'} for p in source['pages']):
++                raise ValueError('source page fields must contain only number and text; labels belong outside sources')
++            for page in retrieval._validate_pages(source['pages'], sid):
++                pages[sid, page['number']] = page['text']
++                page_count += 1
++                chars += len(page['text'])
++                # Conservatively catch identical normalized nonblank pages in
++                # different splits, even if family identifiers were changed.
++                normalized = ' '.join(page['text'].split()).casefold()
++                if normalized:
++                    key = digest(normalized)
++                    if key in page_splits and page_splits[key] != split:
++                        raise ValueError('duplicate material crosses splits')
++                    page_splits[key] = split
++        total_chars += chars
++        if page_count > 2000 or chars > 2_000_000 or total_chars > 4_000_000:
++            raise ValueError('material scan budget exceeded')
++        if not isinstance(case['anchors'], list) or len(case['anchors']) > 200:
++            raise ValueError('invalid annotation count')
++        aids, spans = set(), set()
++        roles = Counter()
++        for a in case['anchors']:
++            if not isinstance(a, dict) or set(a) != {'id', 'source_id', 'page', 'start', 'end', 'quote', 'role'}:
++                raise ValueError('invalid annotation fields')
++            aid = _id(a['id'])
++            if aid in aids or a['role'] not in ROLES:
++                raise ValueError('duplicate annotation id or invalid evidence role')
++            aids.add(aid)
++            if any(type(a[k]) is not int for k in ('page', 'start', 'end')):
++                raise ValueError('annotation positions must be strict integers')
++            key = (a['source_id'], a['page'])
++            text = pages.get(key)
++            span = (*key, a['start'], a['end'])
++            if text is None or not 0 <= a['start'] < a['end'] <= len(text) or text[a['start']:a['end']] != a['quote']:
++                raise ValueError('invalid annotation source/span/quote')
++            if span in spans:
++                raise ValueError('duplicate annotation span inflates denominators')
++            spans.add(span)
++            roles[a['role']] += 1
++        required = sum(roles[k] for k in REQUIRED_ROLES)
++        expectation = case['expectation']
++        if (expectation not in ('answerable', 'conflicting', 'explicit_missing', 'not_located', 'inaccessible') or
++                expectation == 'answerable' and not roles['support_candidate'] or
++                expectation == 'conflicting' and roles['conflict_candidate'] < 2 or
++                expectation == 'explicit_missing' and not roles['missing_statement'] or
++                expectation in ('not_located', 'inaccessible') and required):
++            raise ValueError('answerability and required evidence roles disagree')
++        review = case['review']
++        if not isinstance(review, dict) or set(review) != {'status', 'reviewer', 'reviewed_at', 'reviewed_sha256', 'notes', 'checks'}:
++            raise ValueError('invalid review fields')
++        if review['status'] not in ('pending', 'approved', 'changes_requested', 'excluded'):
++            raise ValueError('invalid review status')
++        if not isinstance(review['checks'], dict) or set(review['checks']) != REVIEW_CHECKS or any(type(v) is not bool for v in review['checks'].values()):
++            raise ValueError('review checklist requires named booleans')
++        if review['status'] in ('approved', 'excluded'):
++            if (not isinstance(review['reviewer'], str) or not review['reviewer'].strip() or
++                    review['reviewer'].strip().casefold() == packet['annotation_author'].strip().casefold() or not isinstance(review['notes'], str) or not review['notes'].strip()):
++                raise ValueError('attributed reviewer distinct from author and review notes required')
++            try:
++                stamp = datetime.fromisoformat(review['reviewed_at'].replace('Z', '+00:00'))
++                if stamp.tzinfo is None:
++                    raise ValueError('timezone required')
++            except (ValueError, TypeError, AttributeError) as exc:
++                raise ValueError('review time with timezone required') from exc
++            if review['reviewed_sha256'] != case_digest(packet, case):
++                raise ValueError('stale review: content/group/budget changed')
++            if review['status'] == 'approved' and not all(review['checks'].values()):
++                raise ValueError('approved review needs complete scientific/scope checklist')
++    return {'cases': len(ids), 'paper_families': len(families),
++            'documents': sum(len(c['sources']) for c in packet['cases']),
++            'required_spans': sum(a['role'] in REQUIRED_ROLES for c in packet['cases'] for a in c['anchors']),
++            'review_status': dict(Counter(c['review']['status'] for c in packet['cases'])),
++            'reviewed_comparison_ready': (all(c['review']['status'] in ('approved', 'excluded') for c in packet['cases'])
++                                          and any(c['review']['status'] == 'approved' for c in packet['cases'])),
++            'real_paper_count': 0 if packet['origin'] == 'synthetic_development' else None,
++            'semantic_support': 'unknown'}
++
++
++def gate(packet, mode):
++    audit = validate_packet(packet)
++    if mode not in ('development', 'reviewed'):
++        raise ValueError('mode must be development or reviewed')
++    if mode == 'reviewed' and any(c['review']['status'] not in ('approved', 'excluded') for c in packet['cases']):
++        raise ValueError('review gate: complete attributed decisions required before comparison')
++    selected = [c for c in packet['cases'] if c['review']['status'] != 'excluded']
++    if not selected:
++        raise ValueError('review gate: no included cases')
++    return audit, selected
++
++
++def apply_reviews(packet, form):
++    validate_packet(packet)
++    if not isinstance(form, dict) or set(form) != {'protocol', 'content_sha256', 'decisions'} or form['protocol'] != PROTOCOL or form['content_sha256'] != digest(content(packet)) or not isinstance(form['decisions'], dict):
++        raise ValueError('stale or incompatible review form')
++    out = deepcopy(packet)
++    by_id = {c['id']: c for c in out['cases']}
++    if set(form['decisions'])-set(by_id):
++        raise ValueError('review for unknown case')
++    for ident, decision in form['decisions'].items():
++        by_id[ident]['review'] = deepcopy(decision)
++    validate_packet(out)
++    return out
++
++
++def _union_length(spans):
++    end, total = -1, 0
++    for a, b in sorted(spans):
++        total += max(0, b-max(a, end))
++        end = max(end, b)
++    return total
++
++
++def score_output(case, refs, output, budget):
++    pages = {(refs[s['id']], p['number']): p['text'] for s in case['sources'] for p in s['pages']}
++    hits = output['results']
++    if not isinstance(hits, list) or len(hits) > budget['limit']:
++        raise ValueError('invalid hit count')
++    _integer(output['returned_chars'], 'returned_chars', 0, budget['max_chars'])
++    if output['returned_chars'] != sum(len(h['text']) for h in hits):
++        raise ValueError('returned character count mismatch')
++    seen, page_ranges = set(), defaultdict(list)
++    overlaps, candidates, annotated_chars = [], [], 0
++    required = [a for a in case['anchors'] if a['role'] in REQUIRED_ROLES]
++    for h in hits:
++        key = (h['source_ref'], h['page'])
++        if any(type(h[k]) is not int for k in ('page', 'start', 'end')) or key not in pages:
++            raise ValueError('foreign source/page or invalid offset type')
++        if not 0 <= h['start'] < h['end'] <= len(pages[key]) or pages[key][h['start']:h['end']] != h['text'] or len(h['text']) > 600:
++            raise ValueError('invalid exact source citation')
++        span = (*key, h['start'], h['end'])
++        if span in seen:
++            raise ValueError('duplicate retrieval hit')
++        seen.add(span)
++        page_ranges[key].append((h['start'], h['end']))
++        matched, required_match = [], False
++        for a in case['anchors']:
++            if h['source_ref'] == refs[a['source_id']] and h['page'] == a['page']:
++                left, right = max(h['start'], a['start']), min(h['end'], a['end'])
++                if left < right and a['role'] != 'distractor':
++                    matched.append((left, right))
++                    required_match |= a['role'] in REQUIRED_ROLES
++        annotated_chars += _union_length(matched)
++        overlaps.append(bool(matched))
++        candidates.append(required_match)
++    covered = [any(h['source_ref'] == refs[a['source_id']] and h['page'] == a['page'] and
++                   h['start'] <= a['start'] and h['end'] >= a['end'] for h in hits) for a in required]
++    first = next((i+1 for i, flag in enumerate(candidates) if flag), None)
++    chars = output['returned_chars']
++    return {'required_spans': len(required), 'covered_required_spans': sum(covered),
++            'all_required_spans_covered': all(covered) if required else None,
++            'conflict_complete': all(covered) if case['expectation'] == 'conflicting' else None,
++            'explicit_missing_retrieved': all(covered) if case['expectation'] == 'explicit_missing' else None,
++            'empty_result': not hits, 'hit_count': len(hits), 'irrelevant_hits': overlaps.count(False),
++            'hits_without_required_evidence_overlap': candidates.count(False),
++            'required_evidence_reciprocal_rank': 1/first if first else 0.,
++            'snippet_chars': chars, 'annotated_chars': annotated_chars,
++            'unique_source_chars': sum(_union_length(s) for s in page_ranges.values()),
++            'response_json_chars': len(json.dumps(output, ensure_ascii=False, separators=(',', ':'))),
++            'exact_offsets': True, 'semantic_support': 'unknown'}
++
++
++def _summary(rows):
++    valid = [r for r in rows if r['status'] == 'ok']
++    scores = [r['scores'] for r in valid]
++    denominator = sum(r['required_spans'] for r in rows)
++    hit_count = sum(s['hit_count'] for s in scores)
++    chars = sum(s['snippet_chars'] for s in scores)
++    positives = sum(r['required_spans'] > 0 for r in rows)
++    conflicts = [r for r in rows if r['expectation'] == 'conflicting']
++    missing = [r for r in rows if r['expectation'] == 'explicit_missing']
++    negatives = [r for r in rows if r['expectation'] == 'not_located']
++    invalid = sum(r.get('error_stage') == 'citation_validation' for r in rows)
++    times = sorted(t for r in rows for t in r['retrieval_ms'])
++    return {'cases': len(rows), 'failed_cases': len(rows)-len(valid), 'required_spans': denominator,
++            'citation_valid_cases': len(valid), 'invalid_citation_cases': invalid,
++            'citation_valid_fraction': len(valid)/(len(valid)+invalid) if len(valid)+invalid else None,
++            'not_located_cases': len(negatives),
++            'empty_not_located_results': sum(r['status'] == 'ok' and r['scores']['empty_result'] for r in negatives),
++            'covered_required_spans': sum(s['covered_required_spans'] for s in scores),
++            'required_span_recall': sum(s['covered_required_spans'] for s in scores)/denominator if denominator else None,
++            'complete_positive_cases': sum(s['all_required_spans_covered'] is True for s in scores),
++            'positive_cases': positives,
++            'mean_required_evidence_reciprocal_rank': sum(s['required_evidence_reciprocal_rank'] for s in scores)/positives if positives else None,
++            'conflict_cases': len(conflicts), 'complete_conflict_cases': sum(r['status'] == 'ok' and r['scores']['conflict_complete'] for r in conflicts),
++            'explicit_missing_cases': len(missing), 'retrieved_missing_cases': sum(r['status'] == 'ok' and r['scores']['explicit_missing_retrieved'] for r in missing),
++            'irrelevant_hit_fraction': sum(s['irrelevant_hits'] for s in scores)/hit_count if hit_count else None,
++            'outside_annotated_span_fraction': 1-sum(s['annotated_chars'] for s in scores)/chars if chars else None,
++            'duplicate_context_fraction': 1-sum(s['unique_source_chars'] for s in scores)/chars if chars else None,
++            'snippet_chars': chars, 'response_json_chars': sum(s['response_json_chars'] for s in scores),
++            'retrieval_ms_total': sum(times), 'retrieval_ms_median': median(times) if times else None}
++
++
++def _run_config(packet, mode, methods, repeats):
++    audit, selected = gate(packet, mode)
++    _integer(repeats, 'repeats', 1, 5)
++    if not isinstance(methods, (tuple, list)) or not methods or any(not isinstance(m, str) for m in methods) or len(set(methods)) != len(methods):
++        raise ValueError('expected unique nonempty methods')
++    for method in methods:
++        retrieval.validate_method(method)
++    return audit, selected
++
++
++def evaluate(packet, store, *, mode='development', methods=('lexical_v1', 'passage_v2'), repeats=3):
++    audit, selected = _run_config(packet, mode, methods, repeats)
++    rows = []
++    for case in selected:
++        # Opaque document identity keeps identical main/supplement text distinct.
++        # No case labels, annotations, expected values or reviewer notes are stored.
++        refs = {s['id']: store.put('source', {'pages': [{'number': p['number'], 'text': p['text']} for p in s['pages']],
++                'evaluation_document_id': digest(s['id'])}) for s in case['sources']}
++        for method in methods:
++            row = {'case_id': case['id'], 'category': case['category'], 'paper_family_id': case['paper_family_id'],
++                   'review_status': case['review']['status'], 'expectation': case['expectation'], 'method': method,
++                   'required_spans': sum(a['role'] in REQUIRED_ROLES for a in case['anchors']),
++                   'retrieval_ms': [], 'status': 'ok'}
++            try:
++                stage = 'retrieval'
++                output = None
++                for _ in range(repeats):
++                    start = time.perf_counter_ns()
++                    try:
++                        current = retrieval.search_sources(store, list(refs.values()), case['query'], method=method, **packet['budget'])
++                    finally:
++                        row['retrieval_ms'].append((time.perf_counter_ns()-start)/1e6)
++                    row['output'] = deepcopy(current)
++                    if current.get('method') != method or current.get('query') != case['query']:
++                        raise ValueError('retriever changed method or query')
++                    if output is not None and output != current:
++                        raise ValueError('retriever outputs are not deterministic')
++                    output = deepcopy(current)
++                stage = 'citation_validation'
++                row.update(output=output, scores=score_output(case, refs, output, packet['budget']))
++            except (ValueError, KeyError, TypeError) as exc:
++                row.update(status='error', error_stage=stage, error=f'{type(exc).__name__}: {exc}', scores=None)
++            rows.append(row)
++    return {'status': 'reviewed_development_comparison' if mode == 'reviewed' else 'development_diagnostic_pending_domain_review',
++            'protocol': PROTOCOL, 'mode': mode, 'usage': 'development_only', 'audit': audit,
++            'packet_content_sha256': digest(content(packet)), 'reviewed_packet_sha256': digest(packet),
++            'budget': deepcopy(packet['budget']), 'repeats': repeats, 'method_order': list(methods),
++            'summary': {m: _summary([r for r in rows if r['method'] == m]) for m in methods},
++            'by_category': {m: {c: _summary([r for r in rows if r['method'] == m and r['category'] == c])
++                                for c in sorted({r['category'] for r in rows})} for m in methods},
++            'by_paper_family': {m: {f: _summary([r for r in rows if r['method'] == m and r['paper_family_id'] == f])
++                                    for f in sorted({r['paper_family_id'] for r in rows})} for m in methods},
++            'by_review_status': {m: {s: _summary([r for r in rows if r['method'] == m and r['review_status'] == s])
++                                     for s in sorted({r['review_status'] for r in rows})} for m in methods},
++            'rows': rows, 'semantic_support': 'unknown',
++            'limitations': ['All results remain development evidence; no independent holdout or Agent capability score.',
++                            'Attributed review checks freshness and completeness, not reviewer identity or qualification.',
++                            'Span overlap/coverage does not prove semantic or biological support.',
++                            'Unannotated context is not necessarily irrelevant. Characters are not tokens or costs.',
++                            'Timing covers retrieval only, excludes parsing, review, source import and LLM; cache/order/noise are uncontrolled.']}
++
++
++def _read(path):
++    with Path(path).open('rb') as source:
++        raw = source.read(MAX_PACKET_BYTES+1)
++    if len(raw) > MAX_PACKET_BYTES:
++        raise ValueError('review input byte budget exceeded')
++    def pairs(items):
++        obj = {}
++        for key, value in items:
++            if key in obj:
++                raise ValueError('duplicate JSON key')
++            obj[key] = value
++        return obj
++    return json.loads(raw, object_pairs_hook=pairs, parse_constant=lambda value: (_ for _ in ()).throw(ValueError('non-finite JSON')))
++
++
++def _write(path, value):
++    path.write_text(json.dumps(value, ensure_ascii=False, indent=2, allow_nan=False)+'\n', encoding='utf-8')
++
++
++def write_review_pack(packet, destination):
++    audit = validate_packet(packet)
++    output = Path(destination)
++    output.mkdir(parents=True, exist_ok=False)
++    _write(output/'packet.json', packet)
++    _write(output/'review-forms.json', {'protocol': PROTOCOL, 'content_sha256': digest(content(packet)),
++           'decisions': {c['id']: dict(deepcopy(c['review']), reviewed_sha256=case_digest(packet, c)) for c in packet['cases']}})
++    _write(output/'inventory.json', {'audit': audit, 'source_content_sha256': digest(content(packet)),
++                                    'cases': [{'id': c['id'], 'category': c['category'], 'family': c['paper_family_id'],
++                                               'split': c['split'], 'expectation': c['expectation'],
++                                               'sources': [{k: v for k, v in s.items() if k != 'pages'} for s in c['sources']]}
++                                              for c in packet['cases']]})
++    sources = output/'sources'; sources.mkdir()
++    lines = ['# T07 检索材料审核包', '', '全部为已见合成开发材料；领域审核尚未完成。',
++             '字符偏移基于 packet.json 中的原页文本，不是 UTF-8 字节偏移。相关、完整覆盖与科学支持分开审核。',
++             'review-forms.json 仅预填内容哈希；审核人、带时区时间、备注和检查项均需实际审核后填写。',
++             '审核记录是归属声明，不认证身份或专业资质。正文/补充/更正应保持同一家庭；本包保守归为一个同源开发家庭。',
++             '来源副本供阅读；packet.json 为评分文本权威。修改材料或标签后必须重新生成哈希并重新审核。', '']
++    for c in packet['cases']:
++        lines += [f'## {c["id"]}', '', f'类别：{c["category"]}；预期：{c["expectation"]}；状态：{c["review"]["status"]}',
++                  f'内容 SHA256：`{case_digest(packet, c)}`', '查询（原文）：', '```json', json.dumps(c['query'], ensure_ascii=False), '```']
++        for s in c['sources']:
++            for p in s['pages']:
++                name = f'{c["id"]}--{s["id"]}--p{p["number"]}.txt'
++                (sources/name).write_text(p['text'], encoding='utf-8')
++                lines += [f'- {s["role"]} / {s["id"]} / 页 {p["number"]}：[原页文本](sources/{name})']
++        lines += ['', '标注备注与审核优先项：', '```json', json.dumps(c['annotation_note'], ensure_ascii=False), '```',
++                  '候选标注（请核对目标、条件/单位、缺失与矛盾；候选支持不是事实证明）：', '```json',
++                  json.dumps(c['anchors'], ensure_ascii=False, indent=2), '```', '']
++    (output/'REVIEW.md').write_text('\n'.join(lines), encoding='utf-8')
++    return audit
++
++
++def main(argv=None):
++    parser = argparse.ArgumentParser(description=__doc__)
++    sub = parser.add_subparsers(dest='action', required=True)
++    prepare = sub.add_parser('prepare')
++    prepare.add_argument('--legacy-cases', type=Path, default=Path(__file__).parents[1]/'inputs/retrieval-development/cases.json')
++    prepare.add_argument('--output', type=Path, required=True)
++    for name in ('check', 'evaluate'):
++        p = sub.add_parser(name)
++        p.add_argument('--packet', type=Path, required=True)
++        p.add_argument('--reviews', type=Path)
++        if name == 'evaluate':
++            p.add_argument('--mode', choices=['development', 'reviewed'], default='development')
++            p.add_argument('--methods', choices=retrieval.METHODS, nargs='+', default=list(retrieval.METHODS))
++            p.add_argument('--repeats', type=int, default=3)
++            p.add_argument('--output', type=Path, required=True)
++    args = parser.parse_args(argv)
++    try:
++        if args.action == 'prepare':
++            packet = build_packet(_read(args.legacy_cases))
++            audit = write_review_pack(packet, args.output)
++            print(json.dumps(audit, ensure_ascii=False))
++            return 0
++        packet = _read(args.packet)
++        validate_packet(packet)
++        if args.reviews:
++            packet = apply_reviews(packet, _read(args.reviews))
++        if args.action == 'check':
++            print(json.dumps(validate_packet(packet), ensure_ascii=False))
++            return 0
++        _run_config(packet, args.mode, args.methods, args.repeats)  # preflight before output/store
++        args.output.mkdir(parents=True, exist_ok=False)
++        result = evaluate(packet, ArtifactStore(args.output/'store'), mode=args.mode,
++                          methods=args.methods, repeats=args.repeats)
++        _write(args.output/'packet.json', packet)
++        _write(args.output/'results.json', result)
++        _write(args.output/'implementation.json', {'protocol': PROTOCOL,
++               'retrieval_sha256': hashlib.sha256(Path(retrieval.__file__).read_bytes()).hexdigest(),
++               'evaluation_sha256': hashlib.sha256(Path(__file__).read_bytes()).hexdigest()})
++        print(json.dumps({'status': result['status'], 'summary': result['summary']}, ensure_ascii=False))
++        return 1 if any(r['status'] == 'error' for r in result['rows']) else 0
++    except (ValueError, KeyError, TypeError, OSError) as exc:
++        print(json.dumps({'status': 'refused', 'error': str(exc)}, ensure_ascii=False))
++        return 2
++
++
++if __name__ == '__main__':
++    raise SystemExit(main())
+--- /dev/null
++++ b/tests/test_retrieval_review_acceptance.py
+@@ -0,0 +1,297 @@
++"""T07a review freshness, leakage, metric separation and no-label ranking."""
++from copy import deepcopy
++import importlib.util
++import json
++from pathlib import Path
++
++import pytest
++
++from biomodel_agent import retrieval
++from biomodel_agent.storage import ArtifactStore
++
++ROOT = Path(__file__).resolve().parents[1]
++SPEC = importlib.util.spec_from_file_location('retrieval_review_tool', ROOT/'benchmarks/development/retrieval_review.py')
++review = importlib.util.module_from_spec(SPEC)
++SPEC.loader.exec_module(review)
++
++
++def packet():
++    legacy = {'cases': [{'id': 'decay', 'category': 'parameter', 'query': 'parameter k',
++        'sources': [{'id': 'main', 'pages': [{'number': 1, 'text': 'Parameter k = 0.4. Buffer pH = 0.4.'}]}],
++        'anchors': [{'source_id': 'main', 'page': 1, 'start': 0, 'end': 18, 'quote': 'Parameter k = 0.4.'}],
++        'annotation_note': 'Synthetic control, not real domain review.'}]}
++    # Correct offsets must be frozen from the exact original text.
++    legacy['cases'][0]['anchors'][0]['end'] = len(legacy['cases'][0]['anchors'][0]['quote'])
++    return review.build_packet(legacy)
++
++
++def approved(p):
++    p = deepcopy(p)
++    for c in p['cases']:
++        c['review'].update(status='approved', reviewer='Synthetic reviewer B (test only)',
++                           reviewed_at='2026-10-19T10:00:00+00:00', notes='Synthetic test decision, not an actual domain approval.',
++                           checks={k: True for k in review.REVIEW_CHECKS})
++        c['review']['reviewed_sha256'] = review.case_digest(p, c)
++    return p
++
++
++def hit_output(case, refs, start, end):
++    text = case['sources'][0]['pages'][0]['text']
++    return {'query': case['query'], 'method': 'lexical_v1',
++            'results': [{'source_ref': refs['main'], 'page': 1, 'start': start, 'end': end, 'text': text[start:end]}],
++            'returned_chars': end-start, 'truncated': False}
++
++
++def test_existing_material_packet_has_no_invented_review_or_paper_count():
++    legacy = json.loads((ROOT/'benchmarks/inputs/retrieval-development/cases.json').read_text())
++    p = review.build_packet(legacy)
++    audit = review.validate_packet(p)
++    assert audit['cases'] == 18 and audit['required_spans'] == 21
++    assert audit['real_paper_count'] == 0 and audit['paper_families'] == 1
++    assert audit['review_status'] == {'pending': 18} and audit['semantic_support'] == 'unknown'
++    assert audit['reviewed_comparison_ready'] is False
++    for original, converted in zip(legacy['cases'], p['cases']):
++        assert converted['query'] == original['query']
++        assert [s['pages'] for s in converted['sources']] == [s['pages'] for s in original['sources']]
++
++
++def test_pending_gate_refuses_before_any_store_write_or_ranking(tmp_path, monkeypatch):
++    store = ArtifactStore(tmp_path/'store')
++    monkeypatch.setattr(store, 'put', lambda *a, **k: pytest.fail('pending review wrote source'))
++    monkeypatch.setattr(retrieval, 'search_sources', lambda *a, **k: pytest.fail('pending review reached ranker'))
++    with pytest.raises(ValueError, match='review gate'):
++        review.evaluate(packet(), store, mode='reviewed')
++
++
++@pytest.mark.parametrize('defect', ['value', 'query', 'category', 'author', 'budget', 'family', 'role'])
++def test_approved_review_expires_on_material_or_protocol_change(defect):
++    p = approved(packet()); c = p['cases'][0]
++    if defect == 'value':
++        c['sources'][0]['pages'][0]['text'] = c['sources'][0]['pages'][0]['text'].replace('0.4', '0.5')
++        c['sources'][0]['pages_sha256'] = review.digest(c['sources'][0]['pages'])
++        c['anchors'][0]['quote'] = c['anchors'][0]['quote'].replace('0.4', '0.5')
++    elif defect == 'budget':
++        p['budget']['limit'] = 2
++    elif defect == 'author':
++        p['annotation_author'] = 'another annotator'
++    elif defect == 'family':
++        c['paper_family_id'] = 'changed-family'
++    elif defect == 'role':
++        c['sources'][0]['role'] = 'supplement'
++    else:
++        c[defect] = 'changed'
++    with pytest.raises(ValueError, match='stale review'):
++        review.validate_packet(p)
++
++
++@pytest.mark.parametrize('defect', ['self_review', 'empty_notes', 'unchecked_scope', 'missing_time', 'naive_time'])
++def test_approved_flag_alone_is_insufficient(defect):
++    p = approved(packet()); r = p['cases'][0]['review']
++    if defect == 'self_review': r['reviewer'] = p['annotation_author']
++    if defect == 'empty_notes': r['notes'] = ''
++    if defect == 'unchecked_scope': r['checks']['target_scope'] = False
++    if defect == 'missing_time': r['reviewed_at'] = None
++    if defect == 'naive_time': r['reviewed_at'] = '2026-10-19T10:00:00'
++    with pytest.raises(ValueError): review.validate_packet(p)
++
++
++def test_frozen_review_forms_do_not_mutate_candidates_and_go_stale(tmp_path):
++    p = packet(); original = deepcopy(p)
++    review.write_review_pack(p, tmp_path/'pack')
++    form = json.loads((tmp_path/'pack/review-forms.json').read_text())
++    assert review.apply_reviews(p, form)['cases'][0]['review']['status'] == 'pending'
++    form['decisions']['decay'] = approved(p)['cases'][0]['review']
++    ready = review.apply_reviews(p, form)
++    assert review.gate(ready, 'reviewed')[0]['review_status'] == {'approved': 1}
++    assert p == original
++    p['cases'][0]['query'] = 'another query'
++    with pytest.raises(ValueError, match='stale'):
++        review.apply_reviews(p, form)
++
++
++@pytest.mark.parametrize('defect', ['same_family', 'duplicate_content', 'seen_promoted'])
++def test_group_and_exposure_checks_prevent_leakage(defect):
++    p = packet(); c = deepcopy(p['cases'][0]); c['id'] = 'copy'
++    c['split'] = 'comparison_candidate'
++    if defect == 'duplicate_content':
++        p['origin'] = 'paper_development'; p['exposure'] = 'not_established'; c['paper_family_id'] = 'other-paper'
++    elif defect == 'seen_promoted':
++        c['paper_family_id'] = 'other-paper'
++        c['sources'][0]['pages'][0]['text'] += ' new text'
++        c['sources'][0]['pages_sha256'] = review.digest(c['sources'][0]['pages'])
++    else:
++        p['origin'] = 'paper_development'
++        p['exposure'] = 'not_established'
++    p['cases'].append(c)
++    with pytest.raises(ValueError, match='family|duplicate material|seen development'):
++        review.validate_packet(p)
++
++
++@pytest.mark.parametrize('defect', ['boolean_page', 'wrong_quote', 'duplicate_span', 'foreign_source', 'wrong_hash'])
++def test_bad_annotations_fail_before_review(defect):
++    p = packet(); c = p['cases'][0]; a = c['anchors'][0]
++    if defect == 'boolean_page': a['page'] = True
++    if defect == 'wrong_quote': a['quote'] = 'invented'
++    if defect == 'duplicate_span': c['anchors'].append(dict(a, id='duplicate'))
++    if defect == 'foreign_source': a['source_id'] = 'not-authorized'
++    if defect == 'wrong_hash': c['sources'][0]['pages_sha256'] = '0'*64
++    with pytest.raises(ValueError): review.validate_packet(p)
++
++
++def test_relevance_overlap_and_complete_evidence_are_different():
++    p = packet(); c = p['cases'][0]; refs = {'main': 'source'}
++    # A clipped number is exact source text and relevant, yet not the whole declaration.
++    text = c['sources'][0]['pages'][0]['text']; start = text.index('0.4')
++    score = review.score_output(c, refs, hit_output(c, refs, start, start+3), p['budget'])
++    assert score['exact_offsets'] and score['irrelevant_hits'] == 0
++    assert score['covered_required_spans'] == 0 and score['semantic_support'] == 'unknown'
++    wrong = text.index('Buffer')
++    score = review.score_output(c, refs, hit_output(c, refs, wrong, len(text)), p['budget'])
++    assert score['covered_required_spans'] == 0 and score['hits_without_required_evidence_overlap'] == 1
++
++
++def test_full_conflict_requires_both_sides_and_explicit_missing_is_positive_evidence():
++    p = packet(); c = p['cases'][0]; refs = {'main': 'source'}
++    second = 'Parameter k = 0.7.'
++    text = c['sources'][0]['pages'][0]['text'] + '\n'+second
++    c['sources'][0]['pages'][0]['text'] = text
++    c['anchors'][0]['role'] = 'conflict_candidate'
++    c['anchors'].append({'id': 'other', 'source_id': 'main', 'page': 1, 'start': text.index(second),
++                         'end': len(text), 'quote': second, 'role': 'conflict_candidate'})
++    c['expectation'] = 'conflicting'
++    one = review.score_output(c, refs, hit_output(c, refs, 0, c['anchors'][0]['end']), p['budget'])
++    both = review.score_output(c, refs, hit_output(c, refs, 0, len(text)), p['budget'])
++    assert one['covered_required_spans'] == 1 and not one['conflict_complete'] and both['conflict_complete']
++    missing = {'id': 'm', 'category': 'missing', 'query': 'k', 'sources': [{'id': 'main', 'pages': [{'number': 1, 'text': 'k not reported.'}]}],
++               'anchors': [{'source_id': 'main', 'page': 1, 'start': 0, 'end': 15, 'quote': 'k not reported.'}], 'annotation_note': 'control'}
++    c = review.build_packet({'cases': [missing]})['cases'][0]
++    scores = review.score_output(c, refs, hit_output(c, refs, 0, 15), p['budget'])
++    assert scores['explicit_missing_retrieved'] and scores['covered_required_spans'] == 1
++
++
++@pytest.mark.parametrize('defect', ['foreign', 'boolean_offset', 'duplicate_hit', 'wrong_text', 'boolean_count'])
++def test_scorer_rejects_invalid_citations_and_counts(defect):
++    p = packet(); c = p['cases'][0]; refs = {'main': 'source'}
++    out = hit_output(c, refs, 0, c['anchors'][0]['end'])
++    if defect == 'foreign': out['results'][0]['source_ref'] = 'foreign'
++    if defect == 'boolean_offset': out['results'][0]['start'] = False
++    if defect == 'duplicate_hit':
++        out['results'].append(deepcopy(out['results'][0])); out['returned_chars'] *= 2
++    if defect == 'wrong_text': out['results'][0]['text'] = 'invented'
++    if defect == 'boolean_count': out['returned_chars'] = True
++    with pytest.raises(ValueError): review.score_output(c, refs, out, p['budget'])
++
++
++def test_failure_denominators_and_no_label_data_enter_retrieval(tmp_path, monkeypatch):
++    p = packet(); store = ArtifactStore(tmp_path/'store')
++    seen = []
++    def failing(store, refs, query, **kwargs):
++        seen.append((query, kwargs))
++        assert kwargs == {'method': 'lexical_v1', **p['budget']}
++        assert all(set(store.get(ref)['payload']) == {'pages', 'evaluation_document_id'} for ref in refs)
++        raise retrieval.RetrievalError('injected budget failure')
++    monkeypatch.setattr(retrieval, 'search_sources', failing)
++    result = review.evaluate(p, store, methods=['lexical_v1'])
++    scores = result['summary']['lexical_v1']
++    assert scores['failed_cases'] == 1 and scores['required_spans'] == 1 and scores['required_span_recall'] == 0
++    assert seen and result['semantic_support'] == 'unknown'
++
++
++def test_empty_cases_have_no_invented_perfect_precision(tmp_path):
++    p = packet(); c = p['cases'][0]
++    c.update(expectation='not_located', anchors=[], query='absent_token')
++    result = review.evaluate(p, ArtifactStore(tmp_path/'store'), repeats=1)
++    for score in result['summary'].values():
++        assert score['required_span_recall'] is None and score['irrelevant_hit_fraction'] is None
++
++
++def test_pack_and_cli_review_refusal_are_readable_and_leave_no_output(tmp_path, capsys):
++    path = tmp_path/'review'
++    review.write_review_pack(packet(), path)
++    assert (path/'REVIEW.md').exists() and list((path/'sources').glob('*.txt'))
++    output = tmp_path/'forbidden-comparison'
++    code = review.main(['evaluate', '--packet', str(path/'packet.json'), '--mode', 'reviewed', '--output', str(output)])
++    assert code == 2 and not output.exists()
++    assert json.loads(capsys.readouterr().out)['status'] == 'refused'
++
++
++def test_approved_test_fixture_can_compare_without_becoming_a_holdout(tmp_path):
++    result = review.evaluate(approved(packet()), ArtifactStore(tmp_path/'store'), mode='reviewed', repeats=2)
++    assert result['status'] == 'reviewed_development_comparison' and result['usage'] == 'development_only'
++    assert all(s['covered_required_spans'] == 1 for s in result['summary'].values())
++
++
++def test_synthetic_seen_status_cannot_be_laundered():
++    p = packet(); p['exposure'] = 'not_established'
++    with pytest.raises(ValueError, match='seen exposure'):
++        review.validate_packet(p)
++
++
++def test_all_excluded_is_not_a_perfect_empty_comparison():
++    p = approved(packet()); p['cases'][0]['review']['status'] = 'excluded'
++    with pytest.raises(ValueError, match='no included cases'):
++        review.gate(p, 'reviewed')
++
++
++@pytest.mark.parametrize('args', [['--repeats', '0'], ['--methods', 'lexical_v1', 'lexical_v1']])
++def test_invalid_run_configuration_refused_before_output_creation(tmp_path, args, capsys):
++    path = tmp_path/'pack'; review.write_review_pack(packet(), path)
++    output = tmp_path/'invalid'
++    assert review.main(['evaluate', '--packet', str(path/'packet.json'), '--output', str(output), *args]) == 2
++    assert not output.exists()
++    assert json.loads(capsys.readouterr().out)['status'] == 'refused'
++
++
++def test_invalid_citation_counts_as_error_without_dropping_evidence_denominator(tmp_path, monkeypatch):
++    p = packet()
++    def fake(store, refs, query, **kwargs):
++        return {'query': query, 'method': kwargs['method'], 'results': [
++            {'source_ref': 'foreign', 'page': 1, 'start': 0, 'end': 1, 'text': 'P'}], 'returned_chars': 1}
++    monkeypatch.setattr(retrieval, 'search_sources', fake)
++    result = review.evaluate(p, ArtifactStore(tmp_path/'store'), repeats=1)
++    for scores in result['summary'].values():
++        assert scores['invalid_citation_cases'] == 1 and scores['citation_valid_fraction'] == 0
++        assert scores['required_spans'] == 1 and scores['covered_required_spans'] == 0
++
++
++def test_identical_text_in_distinct_documents_does_not_collapse_source_identity(tmp_path):
++    p = packet(); c = p['cases'][0]
++    c['sources'].append(dict(deepcopy(c['sources'][0]), id='supplement', role='supplement'))
++    result = review.evaluate(p, ArtifactStore(tmp_path/'store'), methods=['lexical_v1'], repeats=1)
++    row = result['rows'][0]
++    assert row['status'] == 'ok'
++    assert len({h['source_ref'] for h in row['output']['results']}) == 2
++
++
++def test_partial_approved_review_still_requires_all_case_decisions(tmp_path):
++    p = approved(packet()); c = deepcopy(p['cases'][0]); c['id'] = 'pending'
++    c['review'] = packet()['cases'][0]['review']; p['cases'].append(c)
++    with pytest.raises(ValueError, match='review gate'):
++        review.evaluate(p, ArtifactStore(tmp_path/'store'), mode='reviewed')
++
++
++def test_input_json_rejects_duplicate_keys_and_nonfinite_numbers(tmp_path):
++    path = tmp_path/'bad.json'
++    for text in ['{"schema_version":1,"schema_version":1}', '{"schema_version":NaN}']:
++        path.write_text(text)
++        with pytest.raises(ValueError): review._read(path)
++
++
++def test_actual_review_document_displays_condition_scope_warning(tmp_path):
++    p = review.build_packet(json.loads((ROOT/'benchmarks/inputs/retrieval-development/cases.json').read_text()))
++    review.write_review_pack(p, tmp_path/'pack')
++    assert 'condition A/B statements may be compatible' in (tmp_path/'pack/REVIEW.md').read_text()
++
++
++def test_timing_median_averages_even_samples(tmp_path):
++    p = packet(); result = review.evaluate(p, ArtifactStore(tmp_path/'store'), methods=['lexical_v1'], repeats=1)
++    rows = result['rows']; rows[0]['retrieval_ms'] = [1., 9.]
++    assert review._summary(rows)['retrieval_ms_median'] == 5.
++
++
++def test_source_page_cannot_smuggle_annotations_in_extra_metadata():
++    p = packet(); source = p['cases'][0]['sources'][0]
++    source['pages'][0]['reviewer_answer'] = 'PRIVATE_ANNOTATION_MUST_NOT_ENTER_SOURCE_STORE'
++    source['pages_sha256'] = review.digest(source['pages'])
++    with pytest.raises(ValueError, match='page fields'):
++        review.validate_packet(p)
+--- /dev/null
++++ b/docs/retrieval-review.md
+@@ -0,0 +1,71 @@
++# T07a：检索材料与标注审核准备
++
++本轮按用户选择“先完成审核包，暂不加入新论文”推进 T07a。已交付审核工具、可读材料包和分层评分协议；**领域审核尚未完成，T07 整体未结项**。检索算法、默认方法、产品源码和既有测试保持不变，没有引入 embedding。
++
++## 审核材料
++
++从已见的 `benchmarks/inputs/retrieval-development/cases.json` 生成 [审核入口 REVIEW.md](../artifacts/audit-t07-retrieval-review-20261019/review-pack/REVIEW.md)、[冻结材料与标注](../artifacts/audit-t07-retrieval-review-20261019/review-pack/packet.json)、[材料清单](../artifacts/audit-t07-retrieval-review-20261019/review-pack/inventory.json)及[审核表](../artifacts/audit-t07-retrieval-review-20261019/review-pack/review-forms.json)。
++
++共 18 个合成开发案例、21 份文档投影、21 个必需候选片段，覆盖参数、初值、单位、公式、补充材料、条件限定、矛盾候选、显式缺失、无匹配和词汇差异。真实论文数量为 **0**，18 个案例全部为 pending；它们不能称为独立论文样本或未见留出集。
++
++旧材料共享开发模板，本包保守归入一个同源家庭。正文、补充、澄清和更正必须使用相同的家庭/划分；校验器检查跨划分的家庭冲突和标准化后完全相同的非空页。它依赖准确的人工分组元数据，未实现近重复检测、DOI/预印本实体消歧或自动证明材料独立性。已见合成材料不能通过改写 exposure 字段进入对照划分。
++
++每份来源保留原页字符串和哈希，每条标注带 source/page/start/end/quote、候选证据角色和回答可能性。偏移指 Python Unicode 字符，不是 UTF-8 字节。可读的逐页副本位于审核包的 sources/；`packet.json` 是评分文本权威。
++
++一个需要优先人工复核的旧标签是 `clarification_scope`：条件 A 和 B 的初值分别为 2 与 5 nmol，可能相容。旧开发分类为 conflict，本轮显式保留“矛盾候选待审”的提示，没有把它宣称为经核实的科学矛盾。其他候选标注同样需要核对目标、条件、单位和补充材料作用域。
++
++## 审核流程和有效范围
++
++审核表仅预填内容哈希，不会自动填写审核人、时间、备注或勾选检查项。实际审核人需逐案检查 source_span、target_scope、answerability 和 paper_grouping，填写带时区时间、备注，以及 approved / changes_requested / excluded 决定；排除也需要记录原因。
++
++正式对照要求所有案例均有 approved 或有理由的 excluded 决定，且至少保留一个 approved 案例。一个 approved 字段或部分审核不足以通过。审批记录需有与标注作者不同的归属姓名/标识及当前内容摘要；修改原文、引文、查询、角色、分组、作者或预算会使旧审核失效。
++
++这是完整性与失效检查，不是身份认证、领域资质认证或独立性证明。即便本开发包经人工审核，usage 仍为 development_only，semantic_support 仍为 unknown。
++
++本轮实际执行了 pending 包的审核门检查，结果为 [refused](../artifacts/audit-t07-retrieval-review-20261019/gate-refusal.log)，在写来源、调用检索或创建正式结果目录之前停止。测试中的“审核人 A/B”均为显式合成负/正控制，没有写入实际审核包。
++
++## 指标与输入隔离
++
++新协议分开报告：
++
++- 引用位置：返回字符串是否精确等于授权源页的 start/end 切片；外部来源、错位、重复结果和计数错误单独记失败。
++- 完整证据覆盖：必需候选片段是否被某一结果完整包含。只重叠同一个数值不能算完整声明。
++- 相关与干扰：与非干扰标注有交集的结果、没有必需证据交集的结果，以及未标注上下文比例。未标注不等于无科研价值。
++- 矛盾与缺口：分别检查两侧候选是否均被覆盖、明确“未报告”的陈述是否被检索。无匹配案例单列，不计作空分母下的完美准确率。
++- 上下文和耗时：片段字符、紧凑返回 JSON 字符、重复上下文比例及检索调用耗时。字符不是 token 或费用；计时不含解析、人工审核、来源导入、评分或 LLM，固定调用顺序与缓存噪声未受控。
++
++检索只接收来源页投影、查询、方法和预算。投影包含不编码标签的来源标识哈希，以区分正文与补充材料即使文本相同的情况；标注、答案类型、作者和审核备注不会进入排序输入。来源白名单和现有检索扫描/输出预算继续有效。
++
++检索错误与非法引用保留在分母中，不通过丢弃失败案例提高覆盖率。每种方法默认重复 3 次并检查结果一致；报告同时按类别、同源家庭和审核状态分组。科学语义支持始终另列 unknown。
++
++## 重跑与提交审核表
++
++```bash
++PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=src .venv/bin/python \
++  benchmarks/development/retrieval_review.py prepare --output /tmp/retrieval-review-pack
++
++PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=src .venv/bin/python \
++  benchmarks/development/retrieval_review.py check \
++  --packet /tmp/retrieval-review-pack/packet.json
++
++PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=src .venv/bin/python \
++  benchmarks/development/retrieval_review.py evaluate \
++  --packet /tmp/retrieval-review-pack/packet.json --mode development \
++  --output /tmp/retrieval-development-run
++```
++
++输出目录须不存在。实际人工审核完成后，可给 check/evaluate 传 `--reviews 已填写的审核表.json`；正式对照使用 `--mode reviewed`。程序先检查审核表对应的整体内容哈希，再检查逐案哈希和记录，不回写候选材料。输出保存生效材料、审核记录、完整检索结果、分层指标和评测/检索源码哈希。
++
++原 `evaluate_retrieval.py` 与旧材料保持原样，用于历史开发结果回算；新审核协议的门检查在 `retrieval_review.py` 中执行。
++
++## 实测与下一步
++
++原 18 例开发结果已重新计算。新协议仍得到 lexical_v1 完整覆盖 **10/21**、passage_v2 **19/21**；片段字符 **7151 / 2191**，返回 JSON 字符 **12266 / 8830**。这些与旧基线一致，本轮没有检索质量提升结论。
++
++新协议把完整满足的正例记为 6/17 与 15/17，另列 1 个无匹配负例；因此与旧报告含负例的 7/18、16/18 是不同口径。三组候选冲突的完整覆盖为 2/3 与 3/3，仍包含待审的条件作用域标签；“未报告”陈述覆盖为 0/1 与 1/1。长段边界与词汇不一致两个开发失败继续保留。
++
++实际结果见 [开发诊断](../artifacts/audit-t07-retrieval-review-20261019/development-comparison-final/results.json)，全部标为 pending_domain_review。归档了错误来源、错误偏移、裁剪声明、重复标注、单侧冲突、审核失效、分组泄漏、非法预算和错误分母等检查。另对源页额外字段夹带审核标注建立先失败后修复的负例，源页仅允许 number/text。
++
++最终定向 **115 项通过**，完整回归 **1075 项通过**，耗时 200.38 秒；新增 45 项检查。产品源码和原有测试保持不变，T06 产品实现指纹一致，原开发评测器及材料字节未修改。完整验证及源码差异见 [T07a 工程验收](../artifacts/audit-t07-retrieval-review-20261019/acceptance.json)。
++
++下一步 T07b 需要实际领域审核、处理 changes_requested，并在授权后准备逐论文分组的材料。审核完成前保持现有检索默认设置；是否加入 embedding 或重排应依据之后的实测。没有读取原独立评测集或 c13/c18 材料，没有外部模型调用、新论文下载或依赖安装。
+--- a/docs/optimization-backlog.md
++++ b/docs/optimization-backlog.md
+@@ -1,6 +1,6 @@
+ # 架构审计后的优化任务队列
+ 
+-更新：2026-10-19。默认由 Codex 安排任务、监督 DSH 实现并独立验收；DSH 超时后，T03b 经用户授权由 Codex 接手，T04/T05/T06 延续用户要求的 Codex 独立实现方式。一次推进一项，验收后更新本表，不以执行方回复“完成”代替验收。
++更新：2026-10-19。默认由 Codex 安排任务、监督 DSH 实现并独立验收；DSH 超时后，T03b 经用户授权由 Codex 接手，T04/T05/T06/T07a 延续用户要求的 Codex 独立实现方式。一次推进一项，验收后更新本表，不以执行方回复“完成”代替验收。
+ 
+ 审计原始证据已从临时目录归档到 [architecture-audit-20261019](../artifacts/architecture-audit-20261019/audit.md)。基线完整 Python 回归 715 项通过，同时存在下列已复现问题；测试数量不代表真实模型科研能力。
+ 
+@@ -13,7 +13,7 @@
+ | T04 | 旧 hypothesis / study-run / Agent 研究入口不同，预测不受统一期限控制 | **已验收**：[结果与限制](study-execution-deadline.md) | Codex独立实现；相同冻结计划/裁决、科学总期限、受限预测与v1兼容；首轮111、扩展31、完整926通过，T03b超时结果认领保留 |
+ | T05 | 引文中的数值可错绑目标，公式可不对应草稿 | **已验收**：[结果与限制](evidence-binding.md) | Codex独立实现；版本化目标/数值/表达式/原文位置记录、显式映射见证、实际SBML重检；基线16失败，扩展108通过，完整990通过；语义支持仍unknown |
+ | T06 | PDF 只有 pypdf 逐页文本，尚未接入成熟解析结果 | **已验收**：[结果与限制](pdf-parser-adapter.md) | 可选本地PyMuPDF薄适配、原PDF/版本/不可变产物/块坐标、辅助表格和失败诊断；40例专项通过，完整1030通过；OCR/公式识别仍not_run |
+-| T07 | 检索目前只有待独立审核的合成开发对照 | **下一项：材料与标注审核** | T05/T06已具备；按论文划分材料，审核参数/初值/单位/公式/补充材料与矛盾标签，评价覆盖、错引、干扰、上下文与耗时，实测决定embedding |
++| T07 | 检索目前只有待独立审核的合成开发对照 | **T07a工程准备已验收；T07b待领域审核，整体未结项**：[审核包与协议](retrieval-review.md) | 按用户选择暂不加新论文；18例/21文档/21候选段全部pending，分组/哈希/审核门和分层指标已实现，完整1075通过；实际审核后再做正式对照和embedding决策 |
+ | T08 | 缺同底层模型、近预算的真实 Agent 公平评价 | 待协议与领域审核 | T01 稳定后；分报完成、缺口、追问、无依据执行、过度阻断、恢复、调用/耗时/人工介入；已见材料仅作开发回归 |
+ | T09 | Memory 候选审核、Skill 科研流程、失效传播和规模性能 | 待真实任务证据 | T05/T08；候选不自动成为事实，技能有案例/失败条件，以消融检验收益，测量后优化索引 |
+ 
+@@ -35,7 +35,9 @@
+ 
+ T06已归档[执行计划](../artifacts/audit-t06-pdf-adapter-20261019/execution-plan.md)、[验收记录与补丁](../artifacts/audit-t06-pdf-adapter-20261019/acceptance.json)及[实际PDF演练](../artifacts/audit-t06-pdf-adapter-20261019/final-evidence/pdf-results.json)。接入项目内锁定版本PyMuPDF，保留默认pypdf；新增离线source-ingest及Agent入口选项、独立进程期限、页块引用定位和单独的未核验表格结果。原始PDF和失败保留，扫描/图片公式不自动转录；1030项完整回归通过，原有测试与基础依赖不变。源码指纹检查未放宽，未自行重建解析引擎。
+ 
+-下一项T07先准备可审阅的材料清单、逐论文划分规则和标注契约，区分检索命中、位置正确与证据支持；经领域审核后再形成比较集。覆盖参数、初值、单位、公式、补充材料及相互矛盾的声明，比较现有关键词/片段方法的覆盖、错引、干扰、上下文与耗时。已见材料仅作开发回归，不接触既有独立留出集；是否加入embedding取决于实测。
++T07a按用户“先完成审核包，暂不加入新论文”的选择，已交付[审核入口](../artifacts/audit-t07-retrieval-review-20261019/review-pack/REVIEW.md)、[审核表](../artifacts/audit-t07-retrieval-review-20261019/review-pack/review-forms.json)和[工程验收](../artifacts/audit-t07-retrieval-review-20261019/acceptance.json)。18个已见合成案例保守归为一个同源家庭，真实论文数0；全部pending，无实际领域审核通过。新增分组防泄漏检查、内容哈希/审核失效检查及完整覆盖、错引、干扰、缺口、冲突候选、字符开销和检索耗时等分层指标；定向115、完整1075项通过。原产品源码、原测试、检索方法/默认及旧材料保持不变，覆盖复算仍为10/21与19/21，没有质量提升结论。
++
++下一步T07b先由实际领域审核人逐案填写检查项、备注与决定，优先复核clarification_scope中条件A/B是否应算矛盾，处理changes_requested。审核记录完整且至少保留一项approved后，才能运行reviewed模式对照；未审核不能产生正式结果。本轮不加入新论文，后续真实论文材料需另行明确范围并按论文家庭分组；已见材料继续只作开发回归，原独立留出集隔离。是否加入embedding或重排取决于之后实测。
+ 
+ 任务不涉及 c13/c18 材料、独立评测材料、密钥或外部模型评价。此前四次 USTC 外发审批拒绝仍有效，不重试或改道。
+ 
+--- a/docs/seven-point-status.md
++++ b/docs/seven-point-status.md
+@@ -6,7 +6,7 @@
+ |---|---|---|
+ | 架构 | 单个逻辑 Agent、模块化单体、受控计算进程，LLM 不决定验证是否通过 | 多 Agent 仍是待验证选项。应先用相同底层模型、相近预算做质量/成本对照，再决定是否增加角色 |
+ | Memory | 项目/模型/来源范围的持久记忆，更正/撤回，任务快照与恢复；本轮新增有界工作上下文、原历史留存和实际发送审计 | 尚无自动生成并审核记忆候选的流程；大规模索引、跨副本撤回同步和真实长任务行为评测未完成 |
+-| RAG | 授权材料内的关键词检索、精确原文偏移、确定性排序与扫描/输出预算；新增可选片段排序、冻结方法与18例合成开发对照 | 开发标注待独立审核；尚无语义检索/重排、多模态公式或开放文献搜索，长陈述边界与词汇差异仍有限 |
++| RAG | 授权材料内的关键词/片段检索、精确原文偏移、确定性排序和预算；18例合成开发对照及T07a材料包、分组/哈希/审核门、分层评分已交付 | 18项标注全部待实际领域审核；没有新增论文或改动检索算法，长陈述边界与词汇差异仍有限；embedding/重排待审核后实测 |
+ | Tool Use | 材料读取/检索、可选本地PyMuPDF页块/表格解析与引用定位、记忆召回、技能读取、有界目标/数值/公式绑定、模拟，以及冻结的训练拟合/留出比较 | 解析与绑定不能证明语义支持；OCR/公式识别未运行，表格和复杂阅读顺序待审核；复杂语言/单位换算仍unknown，拟合仍限已验证的profile |
+ | 工作流 | 追问、归属回复、暂停/恢复、版本与预算冻结、一次研究执行、持久调用记录、受控故障恢复/结果认领及本地所有者；统一研究入口与科学总期限 | 任意崩溃点自动恢复、跨分支全局费用/执行限额、较复杂的研究修改与失效传播仍有限；科学工具总期限不包含此前LLM讨论或研究者等待 |
+ | Skill | 固定版本的 ODE 复现、澄清复核、受约束研究指引；目录随任务模式冻结，不改变权限或科学判据 | 仍为少量内置流程；可增加有独立科学案例验收的技能，不急于通用插件市场 |
+@@ -18,4 +18,6 @@
+ 
+ 此前四次 c13/c18 USTC 在线回归仍待明确的材料外发授权，未用新的工具改道重试。当前离线开发没有更新原冻结版模型成绩或把已见材料当作新留出集。
+ 
+-2026-10-19 架构复审发现验证失败聚合、证据目标绑定及异常恢复缺口，已保存[审计后的优化任务队列](optimization-backlog.md)。按单项目标推进；[T01 运行裁决](run-verdict.md)、[T02 输入契约](strict-numeric-contracts.md)、[T03a 调用记录](invocation-journal.md)、[T03b受控恢复](controlled-recovery.md)、[T04统一研究入口与科学总期限](study-execution-deadline.md)、[T05结构化证据目标绑定](evidence-binding.md)及[T06成熟本地PDF解析适配](pdf-parser-adapter.md)已验收。T03b在DSH超时后经用户授权改由Codex实施；T04/T05/T06延续用户要求的Codex独立实现。T06完整回归1030项通过，原有测试与基础依赖保留；合成PDF的页块/表格/扫描缺口、真实求解、导出和中断认领均留档，semantic_support仍unknown。下一项为T07材料与标注审核；仍不承诺任意中断自动恢复，这些结果不表示真实模型科研能力提升。
++2026-10-19 架构复审发现验证失败聚合、证据目标绑定及异常恢复缺口，已保存[审计后的优化任务队列](optimization-backlog.md)。按单项目标推进；[T01 运行裁决](run-verdict.md)、[T02 输入契约](strict-numeric-contracts.md)、[T03a 调用记录](invocation-journal.md)、[T03b受控恢复](controlled-recovery.md)、[T04统一研究入口与科学总期限](study-execution-deadline.md)、[T05结构化证据目标绑定](evidence-binding.md)及[T06成熟本地PDF解析适配](pdf-parser-adapter.md)已验收。T03b在DSH超时后经用户授权改由Codex实施，之后延续用户要求的Codex独立实现。
++
++[T07a材料审核准备](retrieval-review.md)已完成工程验收，当前完整回归1075项通过；产品源码、原测试和旧评测材料保持不变。按用户选择只整理现有18例合成材料，标注全部pending，没有新增真实论文；检索覆盖复算仍为10/21与19/21，semantic_support仍unknown。T07整体未结项，下一步为T07b实际领域审核与正式开发对照；仍不承诺任意中断自动恢复，这些结果不表示真实模型科研能力提升。

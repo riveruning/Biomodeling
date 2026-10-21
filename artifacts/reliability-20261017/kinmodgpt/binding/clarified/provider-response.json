@@ -1,0 +1,28 @@
+{
+  "id": "chatcmpl-dbc12618-1bef-432b-82a5-cde921347c4a",
+  "created": 1792202765,
+  "model": "qwen3.8-chat",
+  "object": "chat.completion",
+  "choices": [
+    {
+      "finish_reason": "stop",
+      "index": 0,
+      "message": {
+        "content": "- A + B -> C ; ka_A_B_C * A * B ; ka_A_B_C = 0.15\n- A = 1.5\n- B = 1.0\n- C = 0.0",
+        "role": "assistant",
+        "provider_specific_fields": {
+          "refusal": null
+        }
+      },
+      "provider_specific_fields": {}
+    }
+  ],
+  "usage": {
+    "completion_tokens": 51,
+    "prompt_tokens": 808,
+    "total_tokens": 859,
+    "prompt_tokens_details": {
+      "cached_tokens": 0
+    }
+  }
+}

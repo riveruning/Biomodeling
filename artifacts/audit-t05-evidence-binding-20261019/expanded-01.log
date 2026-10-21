@@ -1,0 +1,68 @@
+.......................................................F........         [100%]
+=================================== FAILURES ===================================
+____ test_unknown_binding_pauses_and_researcher_formula_restores_execution _____
+
+tmp_path = PosixPath('/tmp/biomodel-t05-expanded/test_unknown_binding_pauses_an0')
+
+    def test_unknown_binding_pauses_and_researcher_formula_restores_execution(tmp_path):
+        from test_agent_resume import Scripted as Flexible
+        store, source, proposal = setup_case(tmp_path, equation_quote='The response relaxes according to the displayed figure.')
+        parent = agent.run_agent(store, Scripted([{'action': 'submit_draft', 'args': proposal}]), [source], ExperimentSpec((0., 1.)))
+        assert store.get(parent)['payload']['state'] == 'awaiting_input' and not store.list('claim')
+        def clarified(messages):
+            info = json.loads(messages[-1]['content'])
+            fixed = deepcopy(proposal)
+            fixed['evidence'][2].update(source_ref=info['source_ref'], quote='Equation dx/dt = -k*x.')
+            return {'action': 'submit_draft', 'args': fixed}
+>       result = store.get(agent.resume_agent(store, Flexible([clarified, act('run'), act('finish')]), parent,
+                                             'Equation dx/dt = -k*x.', respondent='Researcher A'))['payload']
+
+tests/test_evidence_binding_acceptance.py:154: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+src/biomodel_agent/agent.py:222: in resume_agent
+    return _resume_agent_owned(store, provider, run_ref, reply, respondent=respondent)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+store = <biomodel_agent.storage.ArtifactStore object at 0x7625162ac260>
+provider = <test_agent_resume.Scripted object at 0x762516332300>
+run_ref = '61695bf2f630a9fc3446793f4aa0f42fbba3dae99d5f856d54c152693358d1eb'
+reply = 'Equation dx/dt = -k*x.', respondent = 'Researcher A'
+
+    def _resume_agent_owned(store: Any, provider: Any, run_ref: str, reply: str, *, respondent: str) -> str:
+        """Resume an awaiting-input run with an attributed, immutable researcher assertion.
+    
+        Budgets and scientific configuration are inherited. Reusing a parent explicitly
+        creates an alternative branch; it does not replace the parent's history.
+        Legacy checkpoints without a complete resume contract are refused.
+        """
+        if not isinstance(reply, str) or not reply.strip() or len(reply) > READ_LIMIT:
+            raise ValueError("reply must contain 1..8000 characters")
+        if not isinstance(respondent, str) or not respondent.strip() or len(respondent) > 200:
+            raise ValueError("respondent must contain 1..200 characters")
+        record = store.get(run_ref)
+        previous = record['payload']
+        if record['kind'] != 'agent_run' or previous.get('state') != 'awaiting_input':
+            raise ValueError("only an awaiting_input agent_run can be resumed")
+        if not previous.get('task_ref') or not previous.get('checkpoint_ref'):
+            raise ValueError("legacy run has no complete resume checkpoint; start a new task")
+        task_record = store.get(previous['task_ref'])
+        cp_record = store.get(previous['checkpoint_ref'])
+        task, cp = task_record['payload'], cp_record['payload']
+        if (task_record['kind'] != 'agent_task' or cp_record['kind'] != 'agent_checkpoint'
+                or task.get('resume_version') != RESUME_VERSION
+                or cp.get('resume_version') != RESUME_VERSION
+                or cp.get('task_ref') != previous['task_ref'] or cp.get('state') != 'awaiting_input'):
+            raise ValueError("incompatible resume checkpoint")
+        if any(cp.get(k) != previous.get(k) for k in
+               ('call_count', 'repair_count', 'retry_count', 'events', 'source_refs', 'model_ref', 'run_ref',
+                 'execution_ref', 'invocation_refs', 'recovery_refs')):
+            raise ValueError("run and checkpoint history do not match")
+        if task['provider'] != _provider_identity(provider):
+>           raise ValueError("resume requires the original provider endpoint, class, model and generation settings")
+E           ValueError: resume requires the original provider endpoint, class, model and generation settings
+
+src/biomodel_agent/agent.py:255: ValueError
+=========================== short test summary info ============================
+FAILED tests/test_evidence_binding_acceptance.py::test_unknown_binding_pauses_and_researcher_formula_restores_execution
+1 failed, 63 passed in 8.61s

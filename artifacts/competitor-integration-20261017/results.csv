@@ -1,0 +1,13 @@
+system,case,kind,status,numeric_status,max_scaled_error,calls,elapsed_seconds
+talk2biomodels,decay,agent,no_trajectory,,,8,51.084060152003076
+talk2biomodels,mapk,agent,no_trajectory,,,8,69.21913172000495
+talk2biomodels-contract-clarified,decay,assisted_agent_diagnostic,scored,pass,1.594829133200193e-07,2,8.545877827004006
+talk2biomodels-contract-clarified,mapk,assisted_agent_diagnostic,scored,pass,9.185017721335952e-07,2,11.493354069003544
+talk2biomodels-tool-control,decay,numerical_tool_control,scored,pass,1.5952075413383504e-07,,
+talk2biomodels-tool-control,mapk,numerical_tool_control,scored,pass,9.185016480728336e-07,,
+codex,decay,agent,scored,pass,1.0595968547022494e-11,,
+codex,mapk,agent,scored,pass,3.319521653111224e-09,,
+biomodel_core,decay,numerical_tool_control,scored,pass,2.3091155348931025e-07,,
+biomodel_core,mapk,numerical_tool_control,scored,pass,2.546581511353452e-06,,
+kinmodgpt_alternative_model,complete,official_conversion_pipeline_variant,scored,pass,2.6048934343947395e-05,1,2.8462968849999015
+kinmodgpt_alternative_model,assisted,official_conversion_pipeline_variant,missing_initial_diagnostic,not_applicable_without_source_initials,,1,3.376259819000552

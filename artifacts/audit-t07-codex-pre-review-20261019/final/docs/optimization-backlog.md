@@ -1,0 +1,46 @@
+# 架构审计后的优化任务队列
+
+更新：2026-10-19。默认由 Codex 安排任务、监督 DSH 实现并独立验收；DSH 超时后，T03b 经用户授权由 Codex 接手，T04/T05/T06/T07a 延续用户要求的 Codex 独立实现方式。一次推进一项，验收后更新本表，不以执行方回复“完成”代替验收。
+
+审计原始证据已从临时目录归档到 [architecture-audit-20261019](../artifacts/architecture-audit-20261019/audit.md)。基线完整 Python 回归 715 项通过，同时存在下列已复现问题；测试数量不代表真实模型科研能力。
+
+| ID | 问题 / 清晰目标 | 状态 | 依赖与验收 |
+|---|---|---|---|
+| T01 | 严格模式中明确数值失败被归为 not_verified，Agent 仍 completed；统一失败裁决 | **已验收**：[结果与限制](run-verdict.md) | 实际负值模拟、收敛/比较失败和旧记录检查已覆盖；定向45通过，完整748通过，原有测试保留 |
+| T02 | Python 构造器与 JSON 数值校验不一致 | **已验收**：[结果与限制](strict-numeric-contracts.md) | DSH两文件实现，独立审查无生产修正；定向189通过，完整811通过，保留异常结果诊断与合法历史读取 |
+| T03a | 工具调用与调用预算缺少一致的持久化边界 | **已验收**：[结果与限制](invocation-journal.md) | 版本化预留/返回/错误/中断、平坦引用及继承计数；定向233通过，完整849通过；尚无自动恢复 |
+| T03b | 受控中断恢复、结果认领、执行所有者与重试分类 | **已验收**：[结果与限制](controlled-recovery.md) | 只读诊断、冻结初态/源码版本、返回值认领、进程所有者与恢复收据；定向113通过，完整895通过；未知外部/部分计算结果及异常路径保守阻断 |
+| T04 | 旧 hypothesis / study-run / Agent 研究入口不同，预测不受统一期限控制 | **已验收**：[结果与限制](study-execution-deadline.md) | Codex独立实现；相同冻结计划/裁决、科学总期限、受限预测与v1兼容；首轮111、扩展31、完整926通过，T03b超时结果认领保留 |
+| T05 | 引文中的数值可错绑目标，公式可不对应草稿 | **已验收**：[结果与限制](evidence-binding.md) | Codex独立实现；版本化目标/数值/表达式/原文位置记录、显式映射见证、实际SBML重检；基线16失败，扩展108通过，完整990通过；语义支持仍unknown |
+| T06 | PDF 只有 pypdf 逐页文本，尚未接入成熟解析结果 | **已验收**：[结果与限制](pdf-parser-adapter.md) | 可选本地PyMuPDF薄适配、原PDF/版本/不可变产物/块坐标、辅助表格和失败诊断；40例专项通过，完整1030通过；OCR/公式识别仍not_run |
+| T07 | 检索目前只有待独立审核的合成开发对照 | **T07a工程准备已验收；T07b已做Codex预审，待独立领域审核，整体未结项**：[审核包与协议](retrieval-review.md) | 不加新论文；18例中17项建议保留、1项条件标签建议修订，另存候选包；人工决定仍全部pending，原包/代码不改；1075为此前完整回归 |
+| T08 | 缺同底层模型、近预算的真实 Agent 公平评价 | 待协议与领域审核 | T01 稳定后；分报完成、缺口、追问、无依据执行、过度阻断、恢复、调用/耗时/人工介入；已见材料仅作开发回归 |
+| T09 | Memory 候选审核、Skill 科研流程、失效传播和规模性能 | 待真实任务证据 | T05/T08；候选不自动成为事实，技能有案例/失败条件，以消融检验收益，测量后优化索引 |
+
+保留单 Agent、模块化单体、SBML 权威执行载荷、不可变产物及冻结研究协议。暂缓多 Agent、通用 PDE、开放机制搜索及没有规模测量支撑的基础设施迁移。
+
+每项步骤：保存基线和最小失败证据 → Codex 写有限文件范围任务卡 → 按用户当前授权的分工实现 → 审查源码差异与科学含义 → 定向与必要回归 → 保存实际结果和限制 → 更新任务状态。委派 DSH 时，任务卡与监督程序不向 DSH 开放修改。
+
+T01 已归档任务卡：[初次实现](../tasks/audit-t01-verdict.json)、[一次审查修订](../tasks/audit-t01-review-fix.json)。DSH 负责主体实现，Codex 独立验收并修正已定位边界；DSH 的时间预算终止和服务超时均保留，没有将其回复或终态视作验收。详情见上述结果记录。
+
+T02已归档[任务卡](../tasks/audit-t02-strict-inputs.json)，DSH正常交付两个生产文件；独立63例矩阵由37失败/26通过转为全部通过，最终完整811项通过。Codex没有修改本轮DSH生产代码，原有测试保留；详情见结果记录。
+
+T03a已归档[实现任务卡](../tasks/audit-t03a-invocations.json)与[一次有界修订](../tasks/audit-t03a-complete-integration.json)。DSH交付主体，连接异常及不完整编辑暂停均留档；Codex补齐已定位的异常类型/最终引用转发，并独立验证。子进程直接退出证据、平坦导出与预算继承已覆盖，不把持久记录称为自动恢复。
+
+T03b已归档[原DSH任务卡](../tasks/audit-t03b-recovery-core.json)、[执行与分工变更记录](../artifacts/audit-t03b-recovery-20261019/execution-plan.md)。DSH请求与最小READY探测均超时、零代码交付；用户明确授权本轮由Codex接手实现。原测试未修改，实际进程退出、模拟/拟合结果认领、恢复再次中断及只读预留补齐均留档。没有把受控恢复称为任意中断自动恢复，也不猜测旧记录的缺失初态。
+
+T04按用户要求由Codex独立实现，[执行计划](../artifacts/audit-t04-study-execution-20261019/execution-plan.md)与[实际产物](../artifacts/audit-t04-study-execution-20261019/scientific-results.json)已归档。旧hypothesis命令走共用冻结计划层；拟合、交叉检查与预测消耗同一科学总期限；计算失败不能成为有效负结论，真实负结果仍可完成。新v2计划显式冻结总预算，旧v1计划精确兼容并披露执行默认预算；超时结果恢复不重算。
+
+T05已归档[执行计划](../artifacts/audit-t05-evidence-binding-20261019/execution-plan.md)、[验收及源码差异](../artifacts/audit-t05-evidence-binding-20261019/acceptance.json)与[实际科学工具产物](../artifacts/audit-t05-evidence-binding-20261019/scientific-results.json)。新增64例开发回归，原有测试未修改；引文预检和绑定预检分开，已提供的必需证据在严格执行前从实际SBML和原文重新校验。错误返回目标与位置供修复，未知语法暂停；公式修复/澄清后实际求解、导出与T03b认领均已覆盖，不把matched提升为语义或生物学支持。
+
+T06已归档[执行计划](../artifacts/audit-t06-pdf-adapter-20261019/execution-plan.md)、[验收记录与补丁](../artifacts/audit-t06-pdf-adapter-20261019/acceptance.json)及[实际PDF演练](../artifacts/audit-t06-pdf-adapter-20261019/final-evidence/pdf-results.json)。接入项目内锁定版本PyMuPDF，保留默认pypdf；新增离线source-ingest及Agent入口选项、独立进程期限、页块引用定位和单独的未核验表格结果。原始PDF和失败保留，扫描/图片公式不自动转录；1030项完整回归通过，原有测试与基础依赖不变。源码指纹检查未放宽，未自行重建解析引擎。
+
+T07a按用户“先完成审核包，暂不加入新论文”的选择，已交付[审核入口](../artifacts/audit-t07-retrieval-review-20261019/review-pack/REVIEW.md)、[审核表](../artifacts/audit-t07-retrieval-review-20261019/review-pack/review-forms.json)和[工程验收](../artifacts/audit-t07-retrieval-review-20261019/acceptance.json)。18个已见合成案例保守归为一个同源家庭，真实论文数0；全部pending，无实际领域审核通过。新增分组防泄漏检查、内容哈希/审核失效检查及完整覆盖、错引、干扰、缺口、冲突候选、字符开销和检索耗时等分层指标；定向115、完整1075项通过。原产品源码、原测试、检索方法/默认及旧材料保持不变，覆盖复算仍为10/21与19/21，没有质量提升结论。
+
+T07b按用户要求完成[Codex逐案预审](../artifacts/audit-t07-codex-pre-review-20261019/REVIEW.md)：18例中17项建议保留候选，clarification_scope的条件A/B初值相容，建议从冲突改为带条件回答，已另存[修订候选](../artifacts/audit-t07-codex-pre-review-20261019/candidate-pack/REVIEW.md)。21段原文位置全匹配；开发覆盖仍10/21和19/21，冲突类别口径改为1/2和2/2，没有检索算法或能力提升。原包、代码、测试和旧成绩均未修改；本轮只校验数据及108次确定性检索调用，没有重跑完整回归。
+
+预审是Codex开发自查，与原标注不独立，没有代填人工审核通过；新旧18项正式决定仍全部pending。下一步可由独立领域审核人核对候选，填写逐案检查项、备注与决定；审核记录完整且至少保留一项approved后，才能运行reviewed模式对照。本轮不加入新论文，后续真实论文材料需另行明确范围并按论文家庭分组；已见材料继续只作开发回归，原独立留出集隔离。是否加入embedding或重排取决于之后实测。
+
+任务不涉及 c13/c18 材料、独立评测材料、密钥或外部模型评价。此前四次 USTC 外发审批拒绝仍有效，不重试或改道。
+
+后续会随每个任务收敛当前能力说明与版本协议；保留历史验收记录及原始失败，不回写为旧模型成绩提升。

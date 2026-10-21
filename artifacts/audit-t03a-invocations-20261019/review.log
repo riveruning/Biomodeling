@@ -1,0 +1,169 @@
+............................F.FF...F.F                                   [100%]
+=================================== FAILURES ===================================
+_ test_resume_and_alternative_branch_keep_distinct_executions_and_cumulative_calls _
+
+tmp_path = PosixPath('/tmp/biomodel-t03a-review/test_resume_and_alternative_br0')
+
+    def test_resume_and_alternative_branch_keep_distinct_executions_and_cumulative_calls(tmp_path):
+        store, source, _ = fixture(tmp_path)
+        first = run(store,source,Scripted([act('ask_researcher',question='Initial x?')]),max_calls=3)
+        parent = deepcopy(store.get(first))
+>       children = [agent.resume_agent(store,Scripted([act('ask_researcher',question='Confirm?')]),
+                    first,'Initial x = 1.',respondent='A') for _ in range(2)]
+
+tests/test_invocation_acceptance.py:192: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+store = <biomodel_agent.storage.ArtifactStore object at 0x79d061dd93a0>
+provider = <test_invocation_acceptance.Scripted object at 0x79d06208a210>
+run_ref = '9f2f001ca4d3e1cd94c66201253bb850952980da6a941bcea1ffba1009198202'
+reply = 'Initial x = 1.', respondent = 'A'
+
+    def resume_agent(store: Any, provider: Any, run_ref: str, reply: str, *, respondent: str) -> str:
+        """Resume an awaiting-input run with an attributed, immutable researcher assertion.
+    
+        Budgets and scientific configuration are inherited. Reusing a parent explicitly
+        creates an alternative branch; it does not replace the parent's history.
+        Legacy checkpoints without a complete resume contract are refused.
+        """
+        if not isinstance(reply, str) or not reply.strip() or len(reply) > READ_LIMIT:
+            raise ValueError("reply must contain 1..8000 characters")
+        if not isinstance(respondent, str) or not respondent.strip() or len(respondent) > 200:
+            raise ValueError("respondent must contain 1..200 characters")
+        record = store.get(run_ref)
+        previous = record['payload']
+        if record['kind'] != 'agent_run' or previous.get('state') != 'awaiting_input':
+            raise ValueError("only an awaiting_input agent_run can be resumed")
+        if not previous.get('task_ref') or not previous.get('checkpoint_ref'):
+            raise ValueError("legacy run has no complete resume checkpoint; start a new task")
+        task_record = store.get(previous['task_ref'])
+        cp_record = store.get(previous['checkpoint_ref'])
+        task, cp = task_record['payload'], cp_record['payload']
+        if (task_record['kind'] != 'agent_task' or cp_record['kind'] != 'agent_checkpoint'
+                or task.get('resume_version') != RESUME_VERSION
+                or cp.get('resume_version') != RESUME_VERSION
+                or cp.get('task_ref') != previous['task_ref'] or cp.get('state') != 'awaiting_input'):
+            raise ValueError("incompatible resume checkpoint")
+        if any(cp.get(k) != previous.get(k) for k in
+               ('call_count', 'repair_count', 'retry_count', 'events', 'source_refs', 'model_ref', 'run_ref',
+                 'execution_ref', 'invocation_refs')):
+>           raise ValueError("run and checkpoint history do not match")
+E           ValueError: run and checkpoint history do not match
+
+src/biomodel_agent/agent.py:237: ValueError
+______ test_normal_export_keeps_all_flat_journal_refs_and_no_credentials _______
+
+tmp_path = PosixPath('/tmp/biomodel-t03a-review/test_normal_export_keeps_all_f0')
+
+    def test_normal_export_keeps_all_flat_journal_refs_and_no_credentials(tmp_path):
+        store, source, proposal = fixture(tmp_path)
+        provider = Scripted([{'action':'submit_draft','args':proposal},act('run'),act('finish')])
+        root = run(store,source,provider)
+        result = store.get(root)['payload']
+        assert result['state'] == 'completed' and result['call_count'] == 3
+        refs = result['invocation_refs']
+>       assert len(refs) == len(records(store)) == 10
+E       AssertionError: assert 0 == 10
+E        +  where 0 = len([])
+E        +  and   10 = len([('30494dde7df3cd0c179b02111b5c55c56c63d9f14fa267246b0853f06de06300', {'kind': 'agent_invocation', 'payload': {'call_c...8435f7866945cd01d4', 'cfc7d300cf186fb71944e95884f288c8a511529ba6e73b73cf6b9e52b01759d3'], 'schema_version': '1'}), ...])
+E        +    where [('30494dde7df3cd0c179b02111b5c55c56c63d9f14fa267246b0853f06de06300', {'kind': 'agent_invocation', 'payload': {'call_c...8435f7866945cd01d4', 'cfc7d300cf186fb71944e95884f288c8a511529ba6e73b73cf6b9e52b01759d3'], 'schema_version': '1'}), ...] = records(<biomodel_agent.storage.ArtifactStore object at 0x79d061d93650>)
+
+tests/test_invocation_acceptance.py:223: AssertionError
+__________ test_long_task_remains_under_storage_reference_depth_limit __________
+
+tmp_path = PosixPath('/tmp/biomodel-t03a-review/test_long_task_remains_under_s0')
+
+    def test_long_task_remains_under_storage_reference_depth_limit(tmp_path):
+        store, source, _ = fixture(tmp_path)
+        query = act('search_sources',query='parameter k')
+        root = run(store,source,Scripted([query]*20+[act('ask_researcher',question='Continue?')]),max_calls=21)
+        result = store.get(root)['payload']
+>       assert result['call_count'] == 21 and len(result['invocation_refs']) == 82
+E       assert (21 == 21 and 0 == 82)
+E        +  where 0 = len([])
+
+tests/test_invocation_acceptance.py:238: AssertionError
+_ test_legacy_pause_without_journal_fields_can_start_a_new_recorded_execution __
+
+tmp_path = PosixPath('/tmp/biomodel-t03a-review/test_legacy_pause_without_jour0')
+
+    def test_legacy_pause_without_journal_fields_can_start_a_new_recorded_execution(tmp_path):
+        store,source,_=fixture(tmp_path)
+        parent=run(store,source,Scripted([act('ask_researcher',question='Initial x?')]))
+        previous=store.get(parent)
+        cp=store.get(previous['payload']['checkpoint_ref'])
+        for payload in (previous['payload'],cp['payload']):
+            payload.pop('execution_ref',None);payload.pop('invocation_refs',None)
+        cp_refs=[r for r in cp['refs'] if store.get(r)['kind'] not in ('agent_execution','agent_invocation')]
+        legacy_cp=store.put('agent_checkpoint',cp['payload'],refs=cp_refs)
+        previous['payload']['checkpoint_ref']=legacy_cp
+        previous['payload']['checkpoint_refs']=[legacy_cp]
+        run_refs=[r for r in previous['refs'] if store.get(r)['kind'] not in
+                  ('agent_execution','agent_invocation','agent_checkpoint')]
+        legacy=store.put('agent_run',previous['payload'],refs=[*run_refs,legacy_cp])
+        original=store.get(legacy)
+        result=store.get(agent.resume_agent(store,Scripted([act('ask_researcher',question='Confirm?')]),
+                    legacy,'Initial x = 1.',respondent='A'))['payload']
+>       assert result['call_count']==2 and result['execution_ref']
+E       assert (2 == 2 and None)
+
+tests/test_invocation_acceptance.py:317: AssertionError
+___________ test_consumed_scientific_budget_is_inherited_after_pause ___________
+
+tmp_path = PosixPath('/tmp/biomodel-t03a-review/test_consumed_scientific_budge0')
+
+    def test_consumed_scientific_budget_is_inherited_after_pause(tmp_path):
+        store,source,proposal=fixture(tmp_path)
+        parent=run(store,source,Scripted([{'action':'submit_draft','args':proposal},act('run'),
+                                          act('ask_researcher',question='Confirm result?')]))
+        assert len(store.list('run'))==1
+>       result=store.get(agent.resume_agent(store,Scripted([act('run')]),parent,
+                        'Initial x = 1.',respondent='A'))['payload']
+
+tests/test_invocation_acceptance.py:341: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+store = <biomodel_agent.storage.ArtifactStore object at 0x79d0d9d92450>
+provider = <test_invocation_acceptance.Scripted object at 0x79d061de6480>
+run_ref = 'a8f6bddf3da28fa97726408de6558f3ce2bcfd1fbc946c1ac9b9f44ebbcfba92'
+reply = 'Initial x = 1.', respondent = 'A'
+
+    def resume_agent(store: Any, provider: Any, run_ref: str, reply: str, *, respondent: str) -> str:
+        """Resume an awaiting-input run with an attributed, immutable researcher assertion.
+    
+        Budgets and scientific configuration are inherited. Reusing a parent explicitly
+        creates an alternative branch; it does not replace the parent's history.
+        Legacy checkpoints without a complete resume contract are refused.
+        """
+        if not isinstance(reply, str) or not reply.strip() or len(reply) > READ_LIMIT:
+            raise ValueError("reply must contain 1..8000 characters")
+        if not isinstance(respondent, str) or not respondent.strip() or len(respondent) > 200:
+            raise ValueError("respondent must contain 1..200 characters")
+        record = store.get(run_ref)
+        previous = record['payload']
+        if record['kind'] != 'agent_run' or previous.get('state') != 'awaiting_input':
+            raise ValueError("only an awaiting_input agent_run can be resumed")
+        if not previous.get('task_ref') or not previous.get('checkpoint_ref'):
+            raise ValueError("legacy run has no complete resume checkpoint; start a new task")
+        task_record = store.get(previous['task_ref'])
+        cp_record = store.get(previous['checkpoint_ref'])
+        task, cp = task_record['payload'], cp_record['payload']
+        if (task_record['kind'] != 'agent_task' or cp_record['kind'] != 'agent_checkpoint'
+                or task.get('resume_version') != RESUME_VERSION
+                or cp.get('resume_version') != RESUME_VERSION
+                or cp.get('task_ref') != previous['task_ref'] or cp.get('state') != 'awaiting_input'):
+            raise ValueError("incompatible resume checkpoint")
+        if any(cp.get(k) != previous.get(k) for k in
+               ('call_count', 'repair_count', 'retry_count', 'events', 'source_refs', 'model_ref', 'run_ref',
+                 'execution_ref', 'invocation_refs')):
+>           raise ValueError("run and checkpoint history do not match")
+E           ValueError: run and checkpoint history do not match
+
+src/biomodel_agent/agent.py:237: ValueError
+=========================== short test summary info ============================
+FAILED tests/test_invocation_acceptance.py::test_resume_and_alternative_branch_keep_distinct_executions_and_cumulative_calls
+FAILED tests/test_invocation_acceptance.py::test_normal_export_keeps_all_flat_journal_refs_and_no_credentials
+FAILED tests/test_invocation_acceptance.py::test_long_task_remains_under_storage_reference_depth_limit
+FAILED tests/test_invocation_acceptance.py::test_legacy_pause_without_journal_fields_can_start_a_new_recorded_execution
+FAILED tests/test_invocation_acceptance.py::test_consumed_scientific_budget_is_inherited_after_pause
+5 failed, 33 passed in 17.74s

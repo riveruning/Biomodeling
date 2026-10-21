@@ -1,0 +1,87 @@
+{
+  "schema_version": "1",
+  "retrieved_at": "2026-10-14T14:47:48.131263+00:00",
+  "models": [
+    {
+      "id": "BIOMD0000000010",
+      "path": "benchmarks/inputs/public/BIOMD0000000010.xml",
+      "url": "https://raw.githubusercontent.com/biomodels/BIOMD0000000010/master/BIOMD0000000010/BIOMD0000000010.xml",
+      "sha256": "f36baf246fc4f4548f23682d02d99c48bd8d3e2ab211901938cbc724e94c53b6",
+      "track": "structured_execution",
+      "role": "development",
+      "license": "CC0-1.0",
+      "limitations": [
+        "策展SBML参考；未声称自动从论文提取",
+        "不等同论文原图复现或机制真实验证"
+      ],
+      "license_source": {
+        "path": "benchmarks/inputs/public/LICENSE.BIOMD0000000010.txt",
+        "url": "https://raw.githubusercontent.com/biomodels/BIOMD0000000010/master/LICENSE.txt",
+        "sha256": "5537d4d10b76b81b6e8dfd8b644480a4b1efa332fbb0cdb61126c5be781ef7b4"
+      }
+    },
+    {
+      "id": "BIOMD0000000012",
+      "path": "benchmarks/inputs/public/BIOMD0000000012.xml",
+      "url": "https://raw.githubusercontent.com/biomodels/BIOMD0000000012/master/BIOMD0000000012/BIOMD0000000012.xml",
+      "sha256": "0fb6eb542c51de086feb614550994536faf07fb07b134641887e8c377b128987",
+      "track": "structured_execution",
+      "role": "development",
+      "license": "CC0-1.0",
+      "limitations": [
+        "策展SBML参考；未声称自动从论文提取",
+        "不等同论文原图复现或机制真实验证"
+      ],
+      "license_source": {
+        "path": "benchmarks/inputs/public/LICENSE.txt",
+        "url": "https://raw.githubusercontent.com/biomodels/BIOMD0000000012/master/LICENSE.txt",
+        "sha256": "5537d4d10b76b81b6e8dfd8b644480a4b1efa332fbb0cdb61126c5be781ef7b4"
+      }
+    },
+    {
+      "id": "BIOMD0000000027",
+      "path": "benchmarks/inputs/public/BIOMD0000000027.xml",
+      "url": "https://raw.githubusercontent.com/biomodels/BIOMD0000000027/master/BIOMD0000000027/BIOMD0000000027.xml",
+      "sha256": "d7d2f64ab86149e991f113746fde8743dcd0afc2e18a5f218cfedc53c2ecc365",
+      "track": "structured_execution",
+      "role": "development",
+      "license": "CC0-1.0",
+      "limitations": [
+        "策展SBML参考；未声称自动从论文提取",
+        "不等同论文原图复现或机制真实验证",
+        "开发阶段已检查，不作为盲测"
+      ],
+      "license_source": {
+        "path": "benchmarks/inputs/public/LICENSE.BIOMD0000000027.txt",
+        "url": "https://raw.githubusercontent.com/biomodels/BIOMD0000000027/master/LICENSE.txt",
+        "sha256": "5537d4d10b76b81b6e8dfd8b644480a4b1efa332fbb0cdb61126c5be781ef7b4"
+      },
+      "original_proposed_role": "held_out_candidate"
+    },
+    {
+      "id": "BIOMD0000000507",
+      "path": "benchmarks/inputs/public/BIOMD0000000507.xml",
+      "url": "https://raw.githubusercontent.com/biomodels/BIOMD0000000507/master/BIOMD0000000507/BIOMD0000000507.xml",
+      "sha256": "e168a81876a7b5f91aa6f16f4d0d3837e18bf792ff992b265607e8929d504acb",
+      "track": "structured_execution",
+      "role": "development",
+      "license": "CC0-1.0",
+      "limitations": [
+        "策展SBML参考；未声称自动从论文提取",
+        "不等同论文原图复现或机制真实验证"
+      ],
+      "execution_variant": {
+        "path": "benchmarks/inputs/public/BIOMD0000000507.render-fixed.xml",
+        "sha256": "fe5241315e3b49c4aba29d2f6cc102bbced67f8d7c082ecaa6cc4c0e3d544034",
+        "transformation": "Added render:required=false to original SBML root: required by the optional visualization package; no kinetic expression/parameter/state changed. Original retained.",
+        "scientific_mode": "corrected_serialization_variant",
+        "original_validation": "SBML_SEV_ERROR 1320101: missing render:required attribute"
+      },
+      "license_source": {
+        "path": "benchmarks/inputs/public/LICENSE.BIOMD0000000507.txt",
+        "url": "https://raw.githubusercontent.com/biomodels/BIOMD0000000507/master/LICENSE.txt",
+        "sha256": "5537d4d10b76b81b6e8dfd8b644480a4b1efa332fbb0cdb61126c5be781ef7b4"
+      }
+    }
+  ]
+}

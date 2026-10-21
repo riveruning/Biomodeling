@@ -1,0 +1,17 @@
+{
+  "status": "awaiting_input",
+  "calls": 2,
+  "tokens": 2308,
+  "questions": [
+    "The source states 'Parameter K is not reported' but the ODE dS/dt = -V*S/(K+S) requires K. What value (and unit) should be used for K?"
+  ],
+  "problems": [],
+  "model_ref": null,
+  "run_ref": null,
+  "agent_ref": "8d9b7733a7b5aaf7f812da017995312088bf7bace43babc5edadab286dce135d",
+  "product_modules_sha256": "3223ecf97ad97509bffb78ca21f44c9c525a139ca5c56bdcb4d13b1870ef0ccc",
+  "system": "biomodel",
+  "case": "saturation",
+  "phase": "initial",
+  "elapsed_seconds": 20.13954677700167
+}

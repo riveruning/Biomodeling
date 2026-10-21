@@ -1,0 +1,28 @@
+{
+  "id": "chatcmpl-5ffe4561-12c8-4ca1-9071-643e9923a89f",
+  "created": 1792252708,
+  "model": "qwen3.8-chat",
+  "object": "chat.completion",
+  "choices": [
+    {
+      "finish_reason": "stop",
+      "index": 0,
+      "message": {
+        "content": "{\"action\": \"submit_draft\", \"args\": {\"draft\": {\"id\": \"es_complex_model\", \"time_unit\": \"min\", \"compartment\": {\"id\": \"c1\", \"size\": 1, \"unit\": \"dimensionless\"}, \"states\": [{\"id\": \"E\", \"initial\": 5.0, \"unit\": \"a.u.\", \"quantity_kind\": \"concentration\", \"nonnegative\": true}, {\"id\": \"S\", \"initial\": 2.0, \"unit\": \"a.u.\", \"quantity_kind\": \"concentration\", \"nonnegative\": true}, {\"id\": \"Es\", \"initial\": 0.5, \"unit\": \"a.u.\", \"quantity_kind\": \"concentration\", \"nonnegative\": true}], \"parameters\": [{\"id\": \"k1\", \"value\": 0.75, \"unit\": \"per minute per a.u.\", \"origin\": \"source\"}, {\"id\": \"k2\", \"value\": 0.2, \"unit\": \"per minute\", \"origin\": \"source\"}], \"reactions\": [{\"id\": \"r1\", \"reactants\": {\"E\": 1, \"S\": 1}, \"products\": {\"Es\": 1}, \"rate\": \"k1*E*S\"}, {\"id\": \"r2\", \"reactants\": {\"Es\": 1}, \"products\": {\"E\": 1, \"S\": 1}, \"rate\": \"k2*Es\"}], \"rate_rules\": [], \"derived\": []}, \"evidence\": [{\"target\": \"E/initial\", \"source_ref\": \"29e4805f8aae36c591342725e5e0344d21ba9a19f57ed2a90e43452ace76003c\", \"page\": 1, \"quote\": \"E(0) = 5.0 a.u. and S(0) = 2.0 a.u. are stated\"}, {\"target\": \"S/initial\", \"source_ref\": \"29e4805f8aae36c591342725e5e0344d21ba9a19f57ed2a90e43452ace76003c\", \"page\": 1, \"quote\": \"E(0) = 5.0 a.u. and S(0) = 2.0 a.u. are stated\"}, {\"target\": \"Es/initial\", \"source_ref\": \"29e4805f8aae36c591342725e5e0344d21ba9a19f57ed2a90e43452ace76003c\", \"page\": 1, \"quote\": \"Initial Es = 0.5 a.u. (Es is the complex E*)\"}, {\"target\": \"k1/value\", \"source_ref\": \"29e4805f8aae36c591342725e5e0344d21ba9a19f57ed2a90e43452ace76003c\", \"page\": 1, \"quote\": \"k1 = 0.75 per minute per a.u.; k2 = 0.2 per minute\"}, {\"target\": \"k2/value\", \"source_ref\": \"29e4805f8aae36c591342725e5e0344d21ba9a19f57ed2a90e43452ace76003c\", \"page\": 1, \"quote\": \"k1 = 0.75 per minute per a.u.; k2 = 0.2 per minute\"}, {\"target\": \"reaction:r1/rate\", \"source_ref\": \"29e4805f8aae36c591342725e5e0344d21ba9a19f57ed2a90e43452ace76003c\", \"page\": 1, \"quote\": \"dEs/dt = k1*E*S - k2*Es\"}, {\"target\": \"reaction:r2/rate\", \"source_ref\": \"29e4805f8aae36c591342725e5e0344d21ba9a19f57ed2a90e43452ace76003c\", \"page\": 1, \"quote\": \"dE/dt = -k1*E*S + k2*Es\"}, {\"target\": \"time_unit\", \"source_ref\": \"29e4805f8aae36c591342725e5e0344d21ba9a19f57ed2a90e43452ace76003c\", \"page\": 1, \"quote\": \"sampled every 0.2 min from t = 0 to t = 8 min inclusive\"}, {\"target\": \"c1/size\", \"source_ref\": \"29e4805f8aae36c591342725e5e0344d21ba9a19f57ed2a90e43452ace76003c\", \"page\": 1, \"quote\": \"single well-mixed compartment of size 1 (dimensionless)\"}], \"mechanism\": \"Reversible mass-action binding E + S <-> Es with no catalytic product step.\"}, \"reason\": \"Source gives full ODE system, parameters, and researcher clarification for Es(0).\"}",
+        "role": "assistant",
+        "provider_specific_fields": {
+          "refusal": null
+        }
+      },
+      "provider_specific_fields": {}
+    }
+  ],
+  "usage": {
+    "completion_tokens": 1314,
+    "prompt_tokens": 1589,
+    "total_tokens": 2903,
+    "prompt_tokens_details": {
+      "cached_tokens": 0
+    }
+  }
+}

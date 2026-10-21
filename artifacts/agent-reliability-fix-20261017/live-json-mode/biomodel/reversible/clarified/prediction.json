@@ -1,0 +1,61 @@
+{
+  "state": "completed",
+  "facts": {
+    "kf/value": {
+      "value": 0.4,
+      "evidence": [
+        {
+          "source_id": "case",
+          "quote": "Parameter kf = 0.4."
+        }
+      ]
+    },
+    "kr/value": {
+      "value": 0.2,
+      "evidence": [
+        {
+          "source_id": "case",
+          "quote": "Parameter kr = 0.2."
+        }
+      ]
+    },
+    "A/initial": {
+      "value": 1.0,
+      "evidence": [
+        {
+          "source_id": "case",
+          "quote": "Initial A = 1.0."
+        }
+      ]
+    },
+    "B/initial": {
+      "value": 0.25,
+      "evidence": [
+        {
+          "source_id": "case",
+          "quote": "Initial B = 0.25."
+        }
+      ]
+    },
+    "rule:A/expression": {
+      "value": "-kf*A+kr*B",
+      "evidence": [
+        {
+          "source_id": "case",
+          "quote": "Equation dA/dt = -kf*A+kr*B."
+        }
+      ]
+    },
+    "rule:B/expression": {
+      "value": "kf*A-kr*B",
+      "evidence": [
+        {
+          "source_id": "case",
+          "quote": "Equation dB/dt = kf*A-kr*B."
+        }
+      ]
+    }
+  },
+  "proposal_status": "last_attempt_not_necessarily_accepted",
+  "duplicate_targets": []
+}

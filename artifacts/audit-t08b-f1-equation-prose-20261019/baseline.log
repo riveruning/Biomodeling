@@ -1,0 +1,388 @@
+FFFFFFFFF....F...........F.......................FFFFF...FF....          [100%]
+=================================== FAILURES ===================================
+_ test_only_explicit_intended_forms_match_with_whole_statement_offsets[The author confirms the intended equation is dX/dt = r*X*(1-X/K).] _
+
+sentence = 'The author confirms the intended equation is dX/dt = r*X*(1-X/K).'
+
+    @pytest.mark.parametrize('sentence', [
+        SENTENCE,
+        'The intended equation is dX/dt = '+FORMULA+'.',
+        'the AUTHOR confirms THE intended EQUATION is dX/dt = '+FORMULA+'.',
+        'The  author confirms   the intended equation is d X / dt = '+FORMULA+'.',
+    ])
+    def test_only_explicit_intended_forms_match_with_whole_statement_offsets(sentence):
+        text = '中文页眉。\n'+sentence+'\nUnrelated appendix.'
+        result = checked(text, sentence)
+>       assert result['status'] == 'matched'
+E       AssertionError: assert 'unknown' == 'matched'
+E         
+E         - matched
+E         + unknown
+
+tests/test_intended_equation_binding.py:35: AssertionError
+_ test_only_explicit_intended_forms_match_with_whole_statement_offsets[The intended equation is dX/dt = r*X*(1-X/K).] _
+
+sentence = 'The intended equation is dX/dt = r*X*(1-X/K).'
+
+    @pytest.mark.parametrize('sentence', [
+        SENTENCE,
+        'The intended equation is dX/dt = '+FORMULA+'.',
+        'the AUTHOR confirms THE intended EQUATION is dX/dt = '+FORMULA+'.',
+        'The  author confirms   the intended equation is d X / dt = '+FORMULA+'.',
+    ])
+    def test_only_explicit_intended_forms_match_with_whole_statement_offsets(sentence):
+        text = '中文页眉。\n'+sentence+'\nUnrelated appendix.'
+        result = checked(text, sentence)
+>       assert result['status'] == 'matched'
+E       AssertionError: assert 'unknown' == 'matched'
+E         
+E         - matched
+E         + unknown
+
+tests/test_intended_equation_binding.py:35: AssertionError
+_ test_only_explicit_intended_forms_match_with_whole_statement_offsets[the AUTHOR confirms THE intended EQUATION is dX/dt = r*X*(1-X/K).] _
+
+sentence = 'the AUTHOR confirms THE intended EQUATION is dX/dt = r*X*(1-X/K).'
+
+    @pytest.mark.parametrize('sentence', [
+        SENTENCE,
+        'The intended equation is dX/dt = '+FORMULA+'.',
+        'the AUTHOR confirms THE intended EQUATION is dX/dt = '+FORMULA+'.',
+        'The  author confirms   the intended equation is d X / dt = '+FORMULA+'.',
+    ])
+    def test_only_explicit_intended_forms_match_with_whole_statement_offsets(sentence):
+        text = '中文页眉。\n'+sentence+'\nUnrelated appendix.'
+        result = checked(text, sentence)
+>       assert result['status'] == 'matched'
+E       AssertionError: assert 'unknown' == 'matched'
+E         
+E         - matched
+E         + unknown
+
+tests/test_intended_equation_binding.py:35: AssertionError
+_ test_only_explicit_intended_forms_match_with_whole_statement_offsets[The  author confirms   the intended equation is d X / dt = r*X*(1-X/K).] _
+
+sentence = 'The  author confirms   the intended equation is d X / dt = r*X*(1-X/K).'
+
+    @pytest.mark.parametrize('sentence', [
+        SENTENCE,
+        'The intended equation is dX/dt = '+FORMULA+'.',
+        'the AUTHOR confirms THE intended EQUATION is dX/dt = '+FORMULA+'.',
+        'The  author confirms   the intended equation is d X / dt = '+FORMULA+'.',
+    ])
+    def test_only_explicit_intended_forms_match_with_whole_statement_offsets(sentence):
+        text = '中文页眉。\n'+sentence+'\nUnrelated appendix.'
+        result = checked(text, sentence)
+>       assert result['status'] == 'matched'
+E       AssertionError: assert 'unknown' == 'matched'
+E         
+E         - matched
+E         + unknown
+
+tests/test_intended_equation_binding.py:35: AssertionError
+___ test_original_logistic_clarification_can_bind_without_material_rewriting ___
+
+    def test_original_logistic_clarification_can_bind_without_material_rewriting():
+        text = (ROOT/'benchmarks/inputs/reliability/logistic/clarified/source.txt').read_text()
+        result = checked(text, SENTENCE)
+>       assert result['status'] == 'matched'
+E       AssertionError: assert 'unknown' == 'matched'
+E         
+E         - matched
+E         + unknown
+
+tests/test_intended_equation_binding.py:49: AssertionError
+_ test_cropping_positive_declaration_cannot_hide_confirmation_or_formula[dX/dt = r*X*(1-X/K)] _
+
+quote = 'dX/dt = r*X*(1-X/K)'
+
+    @pytest.mark.parametrize('quote', [
+        'dX/dt = '+FORMULA,
+        'the intended equation is dX/dt = '+FORMULA,
+        'author confirms the intended equation is dX/dt = '+FORMULA,
+        SENTENCE[:-3],
+    ])
+    def test_cropping_positive_declaration_cannot_hide_confirmation_or_formula(quote):
+        result = checked(SENTENCE, quote)
+>       assert result['status'] == 'mismatch'
+E       AssertionError: assert 'unknown' == 'mismatch'
+E         
+E         - mismatch
+E         + unknown
+
+tests/test_intended_equation_binding.py:63: AssertionError
+_ test_cropping_positive_declaration_cannot_hide_confirmation_or_formula[the intended equation is dX/dt = r*X*(1-X/K)] _
+
+quote = 'the intended equation is dX/dt = r*X*(1-X/K)'
+
+    @pytest.mark.parametrize('quote', [
+        'dX/dt = '+FORMULA,
+        'the intended equation is dX/dt = '+FORMULA,
+        'author confirms the intended equation is dX/dt = '+FORMULA,
+        SENTENCE[:-3],
+    ])
+    def test_cropping_positive_declaration_cannot_hide_confirmation_or_formula(quote):
+        result = checked(SENTENCE, quote)
+>       assert result['status'] == 'mismatch'
+E       AssertionError: assert 'unknown' == 'mismatch'
+E         
+E         - mismatch
+E         + unknown
+
+tests/test_intended_equation_binding.py:63: AssertionError
+_ test_cropping_positive_declaration_cannot_hide_confirmation_or_formula[author confirms the intended equation is dX/dt = r*X*(1-X/K)] _
+
+quote = 'author confirms the intended equation is dX/dt = r*X*(1-X/K)'
+
+    @pytest.mark.parametrize('quote', [
+        'dX/dt = '+FORMULA,
+        'the intended equation is dX/dt = '+FORMULA,
+        'author confirms the intended equation is dX/dt = '+FORMULA,
+        SENTENCE[:-3],
+    ])
+    def test_cropping_positive_declaration_cannot_hide_confirmation_or_formula(quote):
+        result = checked(SENTENCE, quote)
+>       assert result['status'] == 'mismatch'
+E       AssertionError: assert 'unknown' == 'mismatch'
+E         
+E         - mismatch
+E         + unknown
+
+tests/test_intended_equation_binding.py:63: AssertionError
+_ test_cropping_positive_declaration_cannot_hide_confirmation_or_formula[The author confirms the intended equation is dX/dt = r*X*(1-X/] _
+
+quote = 'The author confirms the intended equation is dX/dt = r*X*(1-X/'
+
+    @pytest.mark.parametrize('quote', [
+        'dX/dt = '+FORMULA,
+        'the intended equation is dX/dt = '+FORMULA,
+        'author confirms the intended equation is dX/dt = '+FORMULA,
+        SENTENCE[:-3],
+    ])
+    def test_cropping_positive_declaration_cannot_hide_confirmation_or_formula(quote):
+        result = checked(SENTENCE, quote)
+>       assert result['status'] == 'mismatch'
+E       AssertionError: assert 'unknown' == 'mismatch'
+E         
+E         - mismatch
+E         + unknown
+
+tests/test_intended_equation_binding.py:63: AssertionError
+_ test_uncertainty_negation_and_condition_prefixes_stay_unknown[False-It is not true that The author confirms the intended equation is dX/dt = r*X*(1-X/K).] _
+
+text = 'It is not true that The author confirms the intended equation is dX/dt = r*X*(1-X/K).'
+cropped = False
+
+    @pytest.mark.parametrize('text', [
+        'Maybe '+SENTENCE,
+        'Possibly '+SENTENCE,
+        'If condition A applies, '+SENTENCE,
+        'Only under condition A, '+SENTENCE,
+        'It is not true that '+SENTENCE,
+        'The author does not confirm the intended equation is dX/dt = '+FORMULA+'.',
+        'The author cannot confirm the intended equation is dX/dt = '+FORMULA+'.',
+        'The author tentatively confirms the intended equation is dX/dt = '+FORMULA+'.',
+        'The author previously confirmed the intended equation is dX/dt = '+FORMULA+'.',
+        'The intended equation may be dX/dt = '+FORMULA+'.',
+        'The intended equation is not dX/dt = '+FORMULA+'.',
+        'The intended equation is perhaps dX/dt = '+FORMULA+'.',
+    ])
+    @pytest.mark.parametrize('cropped', [False, True])
+    def test_uncertainty_negation_and_condition_prefixes_stay_unknown(text, cropped):
+        quote = 'dX/dt = '+FORMULA if cropped else text
+        result = checked(text, quote)
+>       assert result['status'] == 'unknown'
+E       AssertionError: assert 'mismatch' == 'unknown'
+E         
+E         - unknown
+E         + mismatch
+
+tests/test_intended_equation_binding.py:85: AssertionError
+_ test_uncertainty_negation_and_condition_prefixes_stay_unknown[True-It is not true that The author confirms the intended equation is dX/dt = r*X*(1-X/K).] _
+
+text = 'It is not true that The author confirms the intended equation is dX/dt = r*X*(1-X/K).'
+cropped = True
+
+    @pytest.mark.parametrize('text', [
+        'Maybe '+SENTENCE,
+        'Possibly '+SENTENCE,
+        'If condition A applies, '+SENTENCE,
+        'Only under condition A, '+SENTENCE,
+        'It is not true that '+SENTENCE,
+        'The author does not confirm the intended equation is dX/dt = '+FORMULA+'.',
+        'The author cannot confirm the intended equation is dX/dt = '+FORMULA+'.',
+        'The author tentatively confirms the intended equation is dX/dt = '+FORMULA+'.',
+        'The author previously confirmed the intended equation is dX/dt = '+FORMULA+'.',
+        'The intended equation may be dX/dt = '+FORMULA+'.',
+        'The intended equation is not dX/dt = '+FORMULA+'.',
+        'The intended equation is perhaps dX/dt = '+FORMULA+'.',
+    ])
+    @pytest.mark.parametrize('cropped', [False, True])
+    def test_uncertainty_negation_and_condition_prefixes_stay_unknown(text, cropped):
+        quote = 'dX/dt = '+FORMULA if cropped else text
+        result = checked(text, quote)
+>       assert result['status'] == 'unknown'
+E       AssertionError: assert 'mismatch' == 'unknown'
+E         
+E         - unknown
+E         + mismatch
+
+tests/test_intended_equation_binding.py:85: AssertionError
+_ test_existing_target_identity_and_expression_rules_remain[The intended equation is dY/dt = r*X*(1-X/K).-rule:X/expression-r*X*(1-X/K)-mismatch] _
+
+declaration = 'The intended equation is dY/dt = r*X*(1-X/K).'
+target = 'rule:X/expression', expected = 'r*X*(1-X/K)', status = 'mismatch'
+
+    @pytest.mark.parametrize('declaration,target,expected,status', [
+        ('The intended equation is dY/dt = '+FORMULA+'.', 'rule:X/expression', FORMULA, 'mismatch'),
+        (SENTENCE, 'reaction:X/rate', FORMULA, 'mismatch'),
+        (SENTENCE, 'derived:X/expression', FORMULA, 'mismatch'),
+        ('The author confirms the intended equation is dX/dt = -r*X*X.', 'rule:X/expression', '-r*X', 'mismatch'),
+        ('The intended equation is dX/dt = r*X.', 'rule:X/expression', '-r*X', 'mismatch'),
+        ('The intended equation is dX/dt = r*X*(1-X)/K.', 'rule:X/expression', FORMULA, 'unknown'),
+        ('The intended equation is dX/dt = '+FORMULA+'*X.', 'rule:X/expression', FORMULA, 'unknown'),
+    ])
+    def test_existing_target_identity_and_expression_rules_remain(declaration, target, expected, status):
+>       assert checked(declaration, target=target, expected=expected)['status'] == status
+E       AssertionError: assert 'unknown' == 'mismatch'
+E         
+E         - mismatch
+E         + unknown
+
+tests/test_intended_equation_binding.py:112: AssertionError
+_ test_existing_target_identity_and_expression_rules_remain[The author confirms the intended equation is dX/dt = r*X*(1-X/K).-reaction:X/rate-r*X*(1-X/K)-mismatch] _
+
+declaration = 'The author confirms the intended equation is dX/dt = r*X*(1-X/K).'
+target = 'reaction:X/rate', expected = 'r*X*(1-X/K)', status = 'mismatch'
+
+    @pytest.mark.parametrize('declaration,target,expected,status', [
+        ('The intended equation is dY/dt = '+FORMULA+'.', 'rule:X/expression', FORMULA, 'mismatch'),
+        (SENTENCE, 'reaction:X/rate', FORMULA, 'mismatch'),
+        (SENTENCE, 'derived:X/expression', FORMULA, 'mismatch'),
+        ('The author confirms the intended equation is dX/dt = -r*X*X.', 'rule:X/expression', '-r*X', 'mismatch'),
+        ('The intended equation is dX/dt = r*X.', 'rule:X/expression', '-r*X', 'mismatch'),
+        ('The intended equation is dX/dt = r*X*(1-X)/K.', 'rule:X/expression', FORMULA, 'unknown'),
+        ('The intended equation is dX/dt = '+FORMULA+'*X.', 'rule:X/expression', FORMULA, 'unknown'),
+    ])
+    def test_existing_target_identity_and_expression_rules_remain(declaration, target, expected, status):
+>       assert checked(declaration, target=target, expected=expected)['status'] == status
+E       AssertionError: assert 'unknown' == 'mismatch'
+E         
+E         - mismatch
+E         + unknown
+
+tests/test_intended_equation_binding.py:112: AssertionError
+_ test_existing_target_identity_and_expression_rules_remain[The author confirms the intended equation is dX/dt = r*X*(1-X/K).-derived:X/expression-r*X*(1-X/K)-mismatch] _
+
+declaration = 'The author confirms the intended equation is dX/dt = r*X*(1-X/K).'
+target = 'derived:X/expression', expected = 'r*X*(1-X/K)', status = 'mismatch'
+
+    @pytest.mark.parametrize('declaration,target,expected,status', [
+        ('The intended equation is dY/dt = '+FORMULA+'.', 'rule:X/expression', FORMULA, 'mismatch'),
+        (SENTENCE, 'reaction:X/rate', FORMULA, 'mismatch'),
+        (SENTENCE, 'derived:X/expression', FORMULA, 'mismatch'),
+        ('The author confirms the intended equation is dX/dt = -r*X*X.', 'rule:X/expression', '-r*X', 'mismatch'),
+        ('The intended equation is dX/dt = r*X.', 'rule:X/expression', '-r*X', 'mismatch'),
+        ('The intended equation is dX/dt = r*X*(1-X)/K.', 'rule:X/expression', FORMULA, 'unknown'),
+        ('The intended equation is dX/dt = '+FORMULA+'*X.', 'rule:X/expression', FORMULA, 'unknown'),
+    ])
+    def test_existing_target_identity_and_expression_rules_remain(declaration, target, expected, status):
+>       assert checked(declaration, target=target, expected=expected)['status'] == status
+E       AssertionError: assert 'unknown' == 'mismatch'
+E         
+E         - mismatch
+E         + unknown
+
+tests/test_intended_equation_binding.py:112: AssertionError
+_ test_existing_target_identity_and_expression_rules_remain[The author confirms the intended equation is dX/dt = -r*X*X.-rule:X/expression--r*X-mismatch] _
+
+declaration = 'The author confirms the intended equation is dX/dt = -r*X*X.'
+target = 'rule:X/expression', expected = '-r*X', status = 'mismatch'
+
+    @pytest.mark.parametrize('declaration,target,expected,status', [
+        ('The intended equation is dY/dt = '+FORMULA+'.', 'rule:X/expression', FORMULA, 'mismatch'),
+        (SENTENCE, 'reaction:X/rate', FORMULA, 'mismatch'),
+        (SENTENCE, 'derived:X/expression', FORMULA, 'mismatch'),
+        ('The author confirms the intended equation is dX/dt = -r*X*X.', 'rule:X/expression', '-r*X', 'mismatch'),
+        ('The intended equation is dX/dt = r*X.', 'rule:X/expression', '-r*X', 'mismatch'),
+        ('The intended equation is dX/dt = r*X*(1-X)/K.', 'rule:X/expression', FORMULA, 'unknown'),
+        ('The intended equation is dX/dt = '+FORMULA+'*X.', 'rule:X/expression', FORMULA, 'unknown'),
+    ])
+    def test_existing_target_identity_and_expression_rules_remain(declaration, target, expected, status):
+>       assert checked(declaration, target=target, expected=expected)['status'] == status
+E       AssertionError: assert 'unknown' == 'mismatch'
+E         
+E         - mismatch
+E         + unknown
+
+tests/test_intended_equation_binding.py:112: AssertionError
+_ test_existing_target_identity_and_expression_rules_remain[The intended equation is dX/dt = r*X.-rule:X/expression--r*X-mismatch] _
+
+declaration = 'The intended equation is dX/dt = r*X.'
+target = 'rule:X/expression', expected = '-r*X', status = 'mismatch'
+
+    @pytest.mark.parametrize('declaration,target,expected,status', [
+        ('The intended equation is dY/dt = '+FORMULA+'.', 'rule:X/expression', FORMULA, 'mismatch'),
+        (SENTENCE, 'reaction:X/rate', FORMULA, 'mismatch'),
+        (SENTENCE, 'derived:X/expression', FORMULA, 'mismatch'),
+        ('The author confirms the intended equation is dX/dt = -r*X*X.', 'rule:X/expression', '-r*X', 'mismatch'),
+        ('The intended equation is dX/dt = r*X.', 'rule:X/expression', '-r*X', 'mismatch'),
+        ('The intended equation is dX/dt = r*X*(1-X)/K.', 'rule:X/expression', FORMULA, 'unknown'),
+        ('The intended equation is dX/dt = '+FORMULA+'*X.', 'rule:X/expression', FORMULA, 'unknown'),
+    ])
+    def test_existing_target_identity_and_expression_rules_remain(declaration, target, expected, status):
+>       assert checked(declaration, target=target, expected=expected)['status'] == status
+E       AssertionError: assert 'unknown' == 'mismatch'
+E         
+E         - mismatch
+E         + unknown
+
+tests/test_intended_equation_binding.py:112: AssertionError
+___ test_explicit_mapping_still_requires_cited_witness_and_full_declaration ____
+
+    def test_explicit_mapping_still_requires_cited_witness_and_full_declaration():
+        text = 'Symbol Y maps to X; The author confirms the intended equation is dY/dt = r*Y*(1-Y/K).'
+        result = bindings.check(text, 'a'*64, 1, 0, len(text), 'rule:X/expression', FORMULA,
+                                {'X', 'r', 'K'}, {'Y': 'X'})
+>       assert result['status'] == 'matched' and len(result['mapping_evidence']) == 1
+E       AssertionError: assert ('unknown' == 'matched'
+E         
+E         - matched
+E         + unknown)
+
+tests/test_intended_equation_binding.py:124: AssertionError
+________ test_actual_submission_and_sbml_recheck_keep_source_unreviewed ________
+
+tmp_path = PosixPath('/tmp/t08b-f1-baseline/test_actual_submission_and_sbm0')
+
+    def test_actual_submission_and_sbml_recheck_keep_source_unreviewed(tmp_path):
+        sentence = 'The author confirms the intended equation is dx/dt = -k*x.'
+        store, source, proposal = setup_case(tmp_path, equation_quote=sentence)
+        result = agent_tools.submit_draft(store, proposal, [source])
+>       assert result['state'] == 'ready'
+E       AssertionError: assert 'awaiting_input' == 'ready'
+E         
+E         - ready
+E         + awaiting_input
+
+tests/test_intended_equation_binding.py:133: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_intended_equation_binding.py::test_only_explicit_intended_forms_match_with_whole_statement_offsets[The author confirms the intended equation is dX/dt = r*X*(1-X/K).]
+FAILED tests/test_intended_equation_binding.py::test_only_explicit_intended_forms_match_with_whole_statement_offsets[The intended equation is dX/dt = r*X*(1-X/K).]
+FAILED tests/test_intended_equation_binding.py::test_only_explicit_intended_forms_match_with_whole_statement_offsets[the AUTHOR confirms THE intended EQUATION is dX/dt = r*X*(1-X/K).]
+FAILED tests/test_intended_equation_binding.py::test_only_explicit_intended_forms_match_with_whole_statement_offsets[The  author confirms   the intended equation is d X / dt = r*X*(1-X/K).]
+FAILED tests/test_intended_equation_binding.py::test_original_logistic_clarification_can_bind_without_material_rewriting
+FAILED tests/test_intended_equation_binding.py::test_cropping_positive_declaration_cannot_hide_confirmation_or_formula[dX/dt = r*X*(1-X/K)]
+FAILED tests/test_intended_equation_binding.py::test_cropping_positive_declaration_cannot_hide_confirmation_or_formula[the intended equation is dX/dt = r*X*(1-X/K)]
+FAILED tests/test_intended_equation_binding.py::test_cropping_positive_declaration_cannot_hide_confirmation_or_formula[author confirms the intended equation is dX/dt = r*X*(1-X/K)]
+FAILED tests/test_intended_equation_binding.py::test_cropping_positive_declaration_cannot_hide_confirmation_or_formula[The author confirms the intended equation is dX/dt = r*X*(1-X/]
+FAILED tests/test_intended_equation_binding.py::test_uncertainty_negation_and_condition_prefixes_stay_unknown[False-It is not true that The author confirms the intended equation is dX/dt = r*X*(1-X/K).]
+FAILED tests/test_intended_equation_binding.py::test_uncertainty_negation_and_condition_prefixes_stay_unknown[True-It is not true that The author confirms the intended equation is dX/dt = r*X*(1-X/K).]
+FAILED tests/test_intended_equation_binding.py::test_existing_target_identity_and_expression_rules_remain[The intended equation is dY/dt = r*X*(1-X/K).-rule:X/expression-r*X*(1-X/K)-mismatch]
+FAILED tests/test_intended_equation_binding.py::test_existing_target_identity_and_expression_rules_remain[The author confirms the intended equation is dX/dt = r*X*(1-X/K).-reaction:X/rate-r*X*(1-X/K)-mismatch]
+FAILED tests/test_intended_equation_binding.py::test_existing_target_identity_and_expression_rules_remain[The author confirms the intended equation is dX/dt = r*X*(1-X/K).-derived:X/expression-r*X*(1-X/K)-mismatch]
+FAILED tests/test_intended_equation_binding.py::test_existing_target_identity_and_expression_rules_remain[The author confirms the intended equation is dX/dt = -r*X*X.-rule:X/expression--r*X-mismatch]
+FAILED tests/test_intended_equation_binding.py::test_existing_target_identity_and_expression_rules_remain[The intended equation is dX/dt = r*X.-rule:X/expression--r*X-mismatch]
+FAILED tests/test_intended_equation_binding.py::test_explicit_mapping_still_requires_cited_witness_and_full_declaration
+FAILED tests/test_intended_equation_binding.py::test_actual_submission_and_sbml_recheck_keep_source_unreviewed
+18 failed, 45 passed in 2.74s

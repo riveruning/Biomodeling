@@ -1,0 +1,19 @@
+{
+  "status": "failed",
+  "calls": 3,
+  "tokens": 3526,
+  "questions": [],
+  "problems": [
+    "state 'R' is nonnegative but driven by a rate rule; nonnegativity is not representable in the supported profile",
+    "state 'P' is nonnegative but driven by a rate rule; nonnegativity is not representable in the supported profile",
+    "2 structural problem(s) found"
+  ],
+  "model_ref": null,
+  "run_ref": null,
+  "agent_ref": "c3b7bd1c01f9625cba94e3a45816ce0e3222d1b238c926de80d3bdcf3b8ba0dd",
+  "product_modules_sha256": "446e6f3a01fc692ef8f8da085c81f86a41e75e2b41276be86eb1c5c103c8c47b",
+  "system": "biomodel",
+  "case": "feedback",
+  "phase": "clarified",
+  "elapsed_seconds": 28.918765761998657
+}

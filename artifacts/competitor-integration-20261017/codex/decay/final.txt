@@ -1,0 +1,3 @@
+Created and checked [simulate.py](/tmp/biomodel-competitor-sbml-codex/decay/simulate.py). It prints only the requested JSON.
+
+Retained P data in [time_course.json](/tmp/biomodel-competitor-sbml-codex/decay/time_course.json): 21 points from 0–10 seconds at 0.5-second intervals. Initial values and parameters remain unchanged.

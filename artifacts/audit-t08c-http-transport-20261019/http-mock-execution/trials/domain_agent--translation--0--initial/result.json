@@ -1,0 +1,78 @@
+{
+  "record": {
+    "trial_id": "domain_agent--translation--0--initial",
+    "manifest_sha256": "67590824f164fa01c9533f3b460ab0b229b248dcd7f4f2f584a61e8697677c27",
+    "evidence_kind": "scripted_control",
+    "model_config": {
+      "provider": "offline_control",
+      "model": "scripted-fixture",
+      "revision": "not-a-model",
+      "temperature": 0.0,
+      "top_p": 1.0,
+      "max_output_tokens": 1000,
+      "seed": 0
+    },
+    "toolchain_sha256": "abad7db107b62cb942b96ec88df701d47c8eb236275d0cf17216f37da6686252",
+    "status": "finished",
+    "continuation": "none",
+    "parent_trial_id": null,
+    "observation": {
+      "state": "awaiting_input",
+      "executed": false,
+      "claimed_complete": false,
+      "identified_gaps": [],
+      "question_targets": [],
+      "question_texts": [
+        "What is the initial P value?"
+      ]
+    },
+    "assessment": {
+      "authority": "unreviewed",
+      "reviewer": null,
+      "evidence_refs": [],
+      "numeric": "unknown",
+      "source_support": "unknown",
+      "behavior_labels_reviewed": false
+    },
+    "telemetry": {
+      "model_calls": 2,
+      "tool_calls": 1,
+      "max_request_chars": 6735,
+      "max_response_tokens": null,
+      "elapsed_seconds": 0.434049812000012,
+      "human_interventions": 0,
+      "human_seconds": 0.0,
+      "input_tokens": null,
+      "output_tokens": null
+    }
+  },
+  "session_ref": "72880049bceee5807685d7e010ae74d8067c7bfa88025a3b07c27d2e0e9d5919",
+  "store_root": "/home/riveruning/biologymodel_agent/artifacts/audit-t08c-http-transport-20261019/http-mock-execution/stores/domain_agent--translation--0",
+  "audit": {
+    "supervised": true,
+    "stop_reason": null,
+    "run_ref": null,
+    "native_agent_run_ref": "b4fe54f48a66d4b09495f9ec9fb32fb5429b2793dbab63a312a9b96f487f9dd7",
+    "request_refs": [
+      "5b177bdb9818ea31b69048c822852856a3437f6840f90d3bf22e2f3d961f418e",
+      "5a9eb9d7f9aedbf6509e43c9c0781af4f616bff8fe005eea98a2453232500c18"
+    ],
+    "response_refs": [
+      "6cd97cc331f7a10d3462b344411a1c5b76f65ff6c6bc3698dfba3bbd44788489",
+      "7dc7a31093eab462f26d1840079599cd444b8b433d85d1a595f0113767e9c04c"
+    ],
+    "transport_exchange_refs": [
+      "728618cf0ee66c30cbc6c26364d8d45a190aaf4b0c6df3748522b91781ec6405",
+      "ecf7002f0c6fb128f1694600f9f0423a983ce5977411874fcd3632b3d0222a04"
+    ],
+    "reservation_refs": [
+      "11726736ec3ca18a8e2c7b678f5bb47c3e1f5fa71783697c812e59f5d06617bd",
+      "31e661145e9201f49f8f6b498f137005d9ee3683bc1eb0cb808260b3e85493b3",
+      "5a3d99c35e293cccffa64665b2a7b7d0174abc495602437fa27da4bf2b20ffbe"
+    ],
+    "clarification_origin": null,
+    "runtime_adapter_sha256": "1184e44fe5386cff8cce5c05f644668263ab74b1550af8e2e587bc2cf5372aaf",
+    "scientific_support": "unknown",
+    "same_returned_model_verified": true
+  }
+}

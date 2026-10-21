@@ -1,0 +1,42 @@
+{
+  "date": "2026-10-17",
+  "decision": "completed_development_comparison_no_demonstrated_superiority",
+  "systems": 3,
+  "runs": 9,
+  "independent_papers": 1,
+  "attempts_per_condition": 1,
+  "tests": {
+    "tests": 221,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "generated_programs_reviewed": 6,
+  "generated_programs_changed_by_evaluator": 0,
+  "credential_values_written": false,
+  "product_source_changed": false,
+  "product_independent_replay_check": {
+    "status": "pass",
+    "max_scaled_error": 1.5798733997929305e-06,
+    "scale": 10.0,
+    "threshold": 0.001,
+    "reference": "independent_handwritten_DOP853"
+  },
+  "published_systems_locally_executed": false,
+  "limits": [
+    "native agent models differ; no causal architecture advantage claim",
+    "different tool permissions and resource budgets, not strict equal-budget comparison",
+    "one attempt per case, no success-rate or significance inference",
+    "references prepared by assistant, pending independent human review",
+    "code and output formats accepted independently of product schema",
+    "no product fixes after observing comparison outcomes"
+  ],
+  "evidence_hashes": {
+    "protocol.json": "c3a3e1e5fc894819788515c0ffd0ffd5b06773202a14539417528cfe42c459a7",
+    "results.json": "583b34f91692369640f406ab320f8b74d461e95c49eb3a619cedffe7c543cc51",
+    "results.csv": "8d77e75131fba1e518253f3d5c52fe4bf4d852e4a93cdbd80d4f23985b4e52f9",
+    "report.md": "a5b9fb5c69ba5d13fff895105103ab520dc04f5caceb2b5042d3d148e57b2535",
+    "reviewed-programs.json": "b6e0d52996ae481663331554f2f6b40b8239aed1309859124ecbb7ebba9becaa",
+    "pytest.xml": "06bda94c13b4defd358a621fcb9c94a66ee599e50375cdfbabd1820e7d7c6cdc"
+  }
+}

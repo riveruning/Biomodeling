@@ -1,0 +1,8 @@
+{"system": "codex", "case": "c01_multistep_decay", "phase": "incomplete", "status": "timed_out", "elapsed_seconds": 240.0056096219996, "model": "gpt-6.1-sol", "usage": {}, "action_events": 1}
+Traceback (most recent call last):
+  File "/home/riveruning/biologymodel_agent/benchmarks/development/run_holdout_pilot.py", line 113, in <module>
+    if __name__=='__main__':main()
+                            ^^^^^^
+  File "/home/riveruning/biologymodel_agent/benchmarks/development/run_holdout_pilot.py", line 108, in main
+    raise RuntimeError('native agent runtime failed; stop remaining baseline trials')
+RuntimeError: native agent runtime failed; stop remaining baseline trials

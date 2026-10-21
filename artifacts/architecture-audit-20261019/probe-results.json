@@ -1,0 +1,75 @@
+{
+  "negative_state_strict_mode": {
+    "agent_state": "completed",
+    "scientific_status": "not_verified",
+    "solver_status": "succeeded",
+    "x": [
+      1.0,
+      0.1999999999999993,
+      -0.6000000000000008
+    ],
+    "numeric_validation": {
+      "checks": [
+        {
+          "code": "finite",
+          "message": "all output values are finite",
+          "severity": "blocking",
+          "status": "pass"
+        },
+        {
+          "code": "nonnegative",
+          "message": "'x' reached -0.6000000000000008 < -1e-09",
+          "severity": "blocking",
+          "status": "fail"
+        },
+        {
+          "code": "conservation",
+          "message": "conservation/mass-balance checking is not implemented; not a pass",
+          "severity": "informational",
+          "status": "not_run"
+        },
+        {
+          "code": "convergence",
+          "message": "solver refinement (rtol/atol / 10): 2.220446049250313e-16 vs threshold 0.001",
+          "severity": "blocking",
+          "status": "pass"
+        }
+      ]
+    },
+    "agent_ref": "5061a20bf46ce45bfb785d8254ebf5b4b8e489008e879f48389d1e02c152490d"
+  },
+  "wrong_number_binding": {
+    "state": "ready",
+    "problems": [],
+    "source_review": {
+      "status": "no_explicit_conflict_detected",
+      "issues": [],
+      "resolutions": [],
+      "semantic_support": "unknown",
+      "limitations": [
+        "bounded explicit English declaration checks, not arbitrary-language or paper understanding",
+        "author corrections and researcher clarifications are assertions for analysis, not independent verification",
+        "no detected conflict does not establish semantic support"
+      ]
+    },
+    "proposed_k": 7.4
+  },
+  "wrong_formula_binding": {
+    "state": "ready",
+    "problems": [],
+    "source_expression": "-k",
+    "proposed_expression": "k*x"
+  },
+  "provider_crash": {
+    "attempted_calls": 1,
+    "persisted_tasks": 1,
+    "persisted_checkpoints": 0,
+    "persisted_agent_runs": 0
+  },
+  "post_run_crash": {
+    "attempted_calls": 2,
+    "persisted_scientific_runs": 1,
+    "persisted_checkpoints": 0,
+    "persisted_agent_runs": 0
+  }
+}

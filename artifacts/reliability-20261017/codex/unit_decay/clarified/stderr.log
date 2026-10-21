@@ -1,0 +1,12 @@
+Reading additional input from stdin...
+2026-10-17T02:12:04.912737Z  WARN codex_rollout::list: state db discrepancy during find_thread_path_by_id_str_in_subdir: falling_back
+2026-10-17T02:12:05.223569Z  WARN codex_rollout::list: state db discrepancy during find_thread_path_by_id_str_in_subdir: falling_back
+2026-10-17T02:12:05.540439Z  WARN codex_rollout::list: state db discrepancy during find_thread_path_by_id_str_in_subdir: falling_back
+2026-10-17T02:12:05.901945Z  WARN codex_rollout::list: state db discrepancy during find_thread_path_by_id_str_in_subdir: falling_back
+2026-10-17T02:12:06.224291Z  WARN codex_rollout::list: state db discrepancy during find_thread_path_by_id_str_in_subdir: falling_back
+2026-10-17T02:12:06.555192Z  WARN codex_rollout::list: state db discrepancy during find_thread_path_by_id_str_in_subdir: falling_back
+2026-10-17T02:12:06.851905Z  WARN codex_rollout::list: state db discrepancy during find_thread_path_by_id_str_in_subdir: falling_back
+2026-10-17T02:12:07.181001Z  WARN codex_rollout::list: state db discrepancy during find_thread_path_by_id_str_in_subdir: falling_back
+2026-10-17T02:12:07.505963Z  WARN codex_rollout::list: state db discrepancy during find_thread_path_by_id_str_in_subdir: falling_back
+2026-10-17T02:12:07.959566Z  WARN codex_core::shell_snapshot: Failed to delete shell snapshot at "/mnt/c/Users/Lenovo/.codex/shell_snapshots/01a147a0-da47-7d02-b821-f0d56fcbf300.1792203086441893828.sh": Os { code: 2, kind: NotFound, message: "No such file or directory" }
+2026-10-17T02:12:43.547235Z  WARN codex_core::shell_snapshot: Failed to delete shell snapshot at AbsolutePathBuf("/mnt/c/Users/Lenovo/.codex/shell_snapshots/01a147a1-6f4c-77d0-bb32-485d699685e5.1792203124582969973.sh"): Os { code: 2, kind: NotFound, message: "No such file or directory" }

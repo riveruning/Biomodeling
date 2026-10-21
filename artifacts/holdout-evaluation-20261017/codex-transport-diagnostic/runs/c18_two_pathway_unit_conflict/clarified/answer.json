@@ -1,0 +1,19 @@
+{
+  "status": "ready",
+  "parameters": [
+    {"id": "kf", "value": 0.18, "unit": "min^-1"},
+    {"id": "kg", "value": 0.12, "unit": "min^-1"}
+  ],
+  "states": [
+    {"id": "M", "initial": 5.0}
+  ],
+  "equations": [
+    {"state": "M", "expression": "-(kf + kg)*M"}
+  ],
+  "questions": [],
+  "limitations": [
+    "The authoritative researcher clarification in source.txt resolves the conflicting kf unit annotation: kf = 0.18 per minute = 10.8 per hour = 0.003 per second. The minute timetable uses the per-minute values.",
+    "M is a concentration in arbitrary units (a.u.). The exact solution M(t) = 5.0*exp(-(kf + kg)*t) applies to the stated constant-rate model.",
+    "The simulation was not executed during this run, as requested."
+  ]
+}

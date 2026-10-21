@@ -1,0 +1,31 @@
+{
+  "evidence_kind": "scripted_control",
+  "assessment_authorities": {
+    "unreviewed": 30
+  },
+  "observed_states": {
+    "completed": 18,
+    "awaiting_input": 12
+  },
+  "correct_completion_by_workflow": {
+    "fixed_workflow": {
+      "numerator": 0,
+      "denominator": 6,
+      "unknown": 0,
+      "rate": 0.0
+    },
+    "generic_tool_agent": {
+      "numerator": 0,
+      "denominator": 6,
+      "unknown": 0,
+      "rate": 0.0
+    },
+    "domain_agent": {
+      "numerator": 0,
+      "denominator": 6,
+      "unknown": 0,
+      "rate": 0.0
+    }
+  },
+  "interpretation": "All 30 records are unreviewed. Each arm reports 0/6 correct completion with unknown=0. This is conservative no-credit reporting, but does not expose pending completion adjudication; do not interpret as measured 0% model capability."
+}

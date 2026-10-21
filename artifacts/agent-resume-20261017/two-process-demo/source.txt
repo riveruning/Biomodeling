@@ -1,0 +1,3 @@
+Initial x is not reported.
+Parameter k = 0.4.
+Equation dx/dt = -k*x.

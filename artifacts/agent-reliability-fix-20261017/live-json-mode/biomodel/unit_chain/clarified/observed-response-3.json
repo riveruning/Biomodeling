@@ -1,0 +1,28 @@
+{
+  "id": "chatcmpl-1a8413fd-1914-4917-b5b4-b27cb600d0a8",
+  "created": 1792239379,
+  "model": "qwen3.8-chat",
+  "object": "chat.completion",
+  "choices": [
+    {
+      "finish_reason": "stop",
+      "index": 0,
+      "message": {
+        "content": "{\"action\": \"run\", \"args\": {}, \"reason\": \"Draft validated; run the ODE over the experiment time points.\"}",
+        "role": "assistant",
+        "provider_specific_fields": {
+          "refusal": null
+        }
+      },
+      "provider_specific_fields": {}
+    }
+  ],
+  "usage": {
+    "completion_tokens": 29,
+    "prompt_tokens": 2701,
+    "total_tokens": 2730,
+    "prompt_tokens_details": {
+      "cached_tokens": 0
+    }
+  }
+}

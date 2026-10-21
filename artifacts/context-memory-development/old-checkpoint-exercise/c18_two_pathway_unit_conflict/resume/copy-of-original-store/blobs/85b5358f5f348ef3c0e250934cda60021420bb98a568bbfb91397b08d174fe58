@@ -1,0 +1,7 @@
+# Pre-written researcher clarification (frozen before any run)
+# case: c18_two_pathway_unit_conflict
+# blocking target: kf/unit
+# This text is appended verbatim to source.txt to form the clarified phase.
+# It was written without observing any system's output.
+
+The legend's 'per hour' annotation for kf is a typographical error. All three figures describe one physical rate: kf = 0.18 per minute = 10.8 per hour = 0.003 per second. kg = 0.12 per minute as printed. Use the per-minute values directly with the minute timetable; total rate kf + kg = 0.30 per minute.

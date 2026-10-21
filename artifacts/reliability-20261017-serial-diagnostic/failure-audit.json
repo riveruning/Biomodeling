@@ -1,0 +1,251 @@
+{
+  "observations": [
+    {
+      "system": "biomodel",
+      "case": "decay",
+      "phase": "initial",
+      "cause": "invalid_action_json"
+    },
+    {
+      "system": "biomodel",
+      "case": "turnover",
+      "phase": "initial",
+      "cause": "invalid_action_json"
+    },
+    {
+      "system": "biomodel",
+      "case": "reversible",
+      "phase": "initial",
+      "cause": "specific_gap_identified"
+    },
+    {
+      "system": "biomodel",
+      "case": "reversible",
+      "phase": "clarified",
+      "cause": "invalid_action_json"
+    },
+    {
+      "system": "biomodel",
+      "case": "translation",
+      "phase": "initial",
+      "cause": "invalid_action_json"
+    },
+    {
+      "system": "biomodel",
+      "case": "translation",
+      "phase": "clarified",
+      "cause": "successful_execution"
+    },
+    {
+      "system": "biomodel",
+      "case": "binding",
+      "phase": "initial",
+      "cause": "invalid_action_json"
+    },
+    {
+      "system": "biomodel",
+      "case": "binding",
+      "phase": "clarified",
+      "cause": "invalid_action_json"
+    },
+    {
+      "system": "biomodel",
+      "case": "saturation",
+      "phase": "initial",
+      "cause": "invalid_action_json"
+    },
+    {
+      "system": "biomodel",
+      "case": "saturation",
+      "phase": "clarified",
+      "cause": "invalid_action_json"
+    },
+    {
+      "system": "biomodel",
+      "case": "logistic",
+      "phase": "initial",
+      "cause": "specific_gap_identified"
+    },
+    {
+      "system": "biomodel",
+      "case": "logistic",
+      "phase": "clarified",
+      "cause": "invalid_action_json"
+    },
+    {
+      "system": "biomodel",
+      "case": "feedback",
+      "phase": "initial",
+      "cause": "specific_gap_identified"
+    },
+    {
+      "system": "biomodel",
+      "case": "feedback",
+      "phase": "clarified",
+      "cause": "invalid_action_json"
+    },
+    {
+      "system": "biomodel",
+      "case": "unit_decay",
+      "phase": "initial",
+      "cause": "invalid_action_json"
+    },
+    {
+      "system": "biomodel",
+      "case": "unit_decay",
+      "phase": "clarified",
+      "cause": "invalid_action_json"
+    },
+    {
+      "system": "biomodel",
+      "case": "unit_chain",
+      "phase": "initial",
+      "cause": "unjustified_model_or_completion"
+    },
+    {
+      "system": "biomodel",
+      "case": "unit_chain",
+      "phase": "clarified",
+      "cause": "invalid_action_json"
+    },
+    {
+      "system": "kinmodgpt",
+      "case": "decay",
+      "phase": "initial",
+      "cause": "successful_execution"
+    },
+    {
+      "system": "kinmodgpt",
+      "case": "turnover",
+      "phase": "initial",
+      "cause": "successful_execution"
+    },
+    {
+      "system": "kinmodgpt",
+      "case": "reversible",
+      "phase": "initial",
+      "cause": "unjustified_model_or_completion"
+    },
+    {
+      "system": "kinmodgpt",
+      "case": "reversible",
+      "phase": "clarified",
+      "cause": "antimony_conversion_failure"
+    },
+    {
+      "system": "kinmodgpt",
+      "case": "translation",
+      "phase": "initial",
+      "cause": "unjustified_model_or_completion"
+    },
+    {
+      "system": "kinmodgpt",
+      "case": "translation",
+      "phase": "clarified",
+      "cause": "successful_execution"
+    },
+    {
+      "system": "kinmodgpt",
+      "case": "binding",
+      "phase": "initial",
+      "cause": "unjustified_model_or_completion"
+    },
+    {
+      "system": "kinmodgpt",
+      "case": "binding",
+      "phase": "clarified",
+      "cause": "successful_execution"
+    },
+    {
+      "system": "kinmodgpt",
+      "case": "saturation",
+      "phase": "initial",
+      "cause": "unjustified_model_or_completion"
+    },
+    {
+      "system": "kinmodgpt",
+      "case": "saturation",
+      "phase": "clarified",
+      "cause": "numerically_wrong"
+    },
+    {
+      "system": "kinmodgpt",
+      "case": "logistic",
+      "phase": "initial",
+      "cause": "unjustified_model_or_completion"
+    },
+    {
+      "system": "kinmodgpt",
+      "case": "logistic",
+      "phase": "clarified",
+      "cause": "successful_execution"
+    },
+    {
+      "system": "kinmodgpt",
+      "case": "feedback",
+      "phase": "initial",
+      "cause": "unjustified_model_or_completion"
+    },
+    {
+      "system": "kinmodgpt",
+      "case": "feedback",
+      "phase": "clarified",
+      "cause": "successful_execution"
+    },
+    {
+      "system": "kinmodgpt",
+      "case": "unit_decay",
+      "phase": "initial",
+      "cause": "unjustified_model_or_completion"
+    },
+    {
+      "system": "kinmodgpt",
+      "case": "unit_decay",
+      "phase": "clarified",
+      "cause": "numerically_wrong"
+    },
+    {
+      "system": "kinmodgpt",
+      "case": "unit_chain",
+      "phase": "initial",
+      "cause": "unjustified_model_or_completion"
+    },
+    {
+      "system": "kinmodgpt",
+      "case": "unit_chain",
+      "phase": "clarified",
+      "cause": "numerically_wrong"
+    }
+  ],
+  "summary": {
+    "biomodel": {
+      "causes": {
+        "invalid_action_json": 13,
+        "specific_gap_identified": 3,
+        "successful_execution": 1,
+        "unjustified_model_or_completion": 1
+      },
+      "available_trials": 18,
+      "planned_trials": 18,
+      "available_blocked_cases": 8,
+      "gap_detection_among_available": 3,
+      "unsupported_completion_among_available": 1,
+      "native_usage_totals": null
+    },
+    "kinmodgpt": {
+      "causes": {
+        "successful_execution": 6,
+        "unjustified_model_or_completion": 8,
+        "antimony_conversion_failure": 1,
+        "numerically_wrong": 3
+      },
+      "available_trials": 18,
+      "planned_trials": 18,
+      "available_blocked_cases": 8,
+      "gap_detection_among_available": 0,
+      "unsupported_completion_among_available": 8,
+      "native_usage_totals": null
+    }
+  },
+  "availability_note": "Availability-filtered denominators are descriptive; original fixed-denominator results remain intact. Invalid model JSON is an operational agent failure, not an external outage."
+}

@@ -1,0 +1,10 @@
+{
+  "date": "2026-10-17",
+  "status": "blocked_by_automatic_approval_review",
+  "action": "read existing DSH credentials and use USTC key for two bounded real-paper Agent evaluations",
+  "reason": "User authorized evaluation but the reviewer did not accept authorization for reading this credential source.",
+  "external_calls_executed": false,
+  "credential_values_written_or_printed": false,
+  "safe_work_completed": "offline scorer calibration, source snapshots, exploratory numerical comparison, regression tests",
+  "next_step": "explicit user authorization for this credential source, or user-configured dedicated BIOMODEL_API_KEY environment variable"
+}

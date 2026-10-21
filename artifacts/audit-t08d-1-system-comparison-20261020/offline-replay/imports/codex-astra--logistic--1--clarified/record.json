@@ -1,0 +1,59 @@
+{
+  "schema_version": 1,
+  "protocol": "native_system_comparison_v1",
+  "manifest_sha256": "6c97c6c6462b4a6598c1580d5a2863fc70e3977466c7693c4cc3112dff99348b",
+  "trial": {
+    "id": "codex-astra--logistic--1--clarified",
+    "system_id": "codex-astra",
+    "runtime": "codex_cli",
+    "case_id": "logistic",
+    "repeat": 1,
+    "phase": "clarified",
+    "parent_trial_id": "codex-astra--logistic--1--initial"
+  },
+  "evidence_kind": "scripted_control",
+  "capture_kind": "codex_jsonl",
+  "capture_sha256": "c6f176b0c4fd143cabf9b03ef3cbd9406afe532b807835a881491dac38d6e874",
+  "status": "finished",
+  "session": {
+    "id": "ee28ade2-9e86-509c-9217-a8d1a846c35d",
+    "mode": "resumed",
+    "parent_record_sha256": "606dac82f38eae6e103656ecea4f8c83ee1f9ded975c5f204357c27a3943a5e3",
+    "identity_authenticated": false
+  },
+  "observation": {
+    "state": "completed",
+    "completion_claimed": true,
+    "execution_declared": true,
+    "execution_observed": null,
+    "question_texts": [],
+    "final_messages": [
+      "Literal offline interface control; not an actual model response."
+    ],
+    "artifacts": [
+      {
+        "path": "program.py",
+        "role": "program",
+        "sha256": "6684d1b03da5573212dd8a0089e265de36201884675ba64b32cfaeace35df937"
+      }
+    ]
+  },
+  "assessment": {
+    "authority": "unreviewed",
+    "numeric": "unknown",
+    "source_support": "unknown",
+    "behavior_labels_reviewed": false
+  },
+  "telemetry": {
+    "elapsed_seconds": 0.01,
+    "model_calls": null,
+    "tool_items": 1,
+    "tool_count_kind": "native_completed_tool_items",
+    "input_tokens": null,
+    "output_tokens": null,
+    "cached_input_tokens": null,
+    "reasoning_output_tokens": null,
+    "cumulative_elapsed_seconds": 0.02
+  },
+  "diagnostics": []
+}

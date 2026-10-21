@@ -1,0 +1,72 @@
+{
+  "record": {
+    "trial_id": "fixed_workflow--translation--1--clarified",
+    "manifest_sha256": "67590824f164fa01c9533f3b460ab0b229b248dcd7f4f2f584a61e8697677c27",
+    "evidence_kind": "scripted_control",
+    "model_config": {
+      "provider": "offline_control",
+      "model": "scripted-fixture",
+      "revision": "not-a-model",
+      "temperature": 0.0,
+      "top_p": 1.0,
+      "max_output_tokens": 1000,
+      "seed": 0
+    },
+    "toolchain_sha256": "abad7db107b62cb942b96ec88df701d47c8eb236275d0cf17216f37da6686252",
+    "status": "finished",
+    "continuation": "resumed",
+    "parent_trial_id": "fixed_workflow--translation--1--initial",
+    "observation": {
+      "state": "completed",
+      "executed": true,
+      "claimed_complete": true,
+      "identified_gaps": [],
+      "question_targets": [],
+      "question_texts": []
+    },
+    "assessment": {
+      "authority": "unreviewed",
+      "reviewer": null,
+      "evidence_refs": [],
+      "numeric": "unknown",
+      "source_support": "unknown",
+      "behavior_labels_reviewed": false
+    },
+    "telemetry": {
+      "model_calls": 1,
+      "tool_calls": 5,
+      "max_request_chars": 4303,
+      "max_response_tokens": null,
+      "elapsed_seconds": 2.5530280960010714,
+      "human_interventions": 0,
+      "human_seconds": 0.0,
+      "input_tokens": null,
+      "output_tokens": null
+    }
+  },
+  "session_ref": "3923172b00cbef9a904c8aa62faf07effc4a23e89c9dae09c2e026d7d185aed8",
+  "store_root": "/home/riveruning/biologymodel_agent/artifacts/audit-t08b-f1-equation-prose-20261019/development-execution/stores/fixed_workflow--translation--1",
+  "audit": {
+    "supervised": true,
+    "stop_reason": null,
+    "run_ref": "d9a4c8fb0c64a7e3acf777a8555ad834459fcea97a536c3297c1ea5344806186",
+    "native_agent_run_ref": null,
+    "request_refs": [
+      "3178ba3d6de1c07dd521992a35ac07be5aeb566bd09d38070857c306c0925833"
+    ],
+    "response_refs": [
+      "27f6e98d71c0d23ecc273a1cbd68f21bb55ef7c296735b19c227889e4e437995"
+    ],
+    "reservation_refs": [
+      "d6cf5488268c39a0a8f4da03cc45912bb1c2ecab6a53b095addcefdd8e9fd126",
+      "70d1a379ec09418c28a666d4b8e411329416a15ce670d34b13a149ee306bc6fa",
+      "bdcd6ec1ecfde0b47ae577abcf127184e26ae4260c581eab8fe301324c3ef531",
+      "2902330d1860e425757deb28daa98b1bfa06d0d84945264d35f22599ed899937",
+      "b72964a69bdb718ae2868a99bb97a584e5db7f5a0cf2654e60b4e585689ba172"
+    ],
+    "clarification_origin": "prerecorded_protocol",
+    "runtime_adapter_sha256": "bc5684016fa4131bfc91e8db16386adacdbedc644e7e9b4bd68763a66722e1b4",
+    "scientific_support": "unknown",
+    "same_returned_model_verified": true
+  }
+}

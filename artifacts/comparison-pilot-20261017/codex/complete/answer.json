@@ -1,0 +1,86 @@
+{
+  "status": "ready",
+  "parameters": [
+    {
+      "id": "k1",
+      "value": 1.0,
+      "quote": "e021: k1 = 1.0; k3 = 1.0; k5 = 1.0."
+    },
+    {
+      "id": "k2",
+      "value": 0.1,
+      "quote": "e022: k2 = 0.1; k4 = 0.1; k6 = 0.1."
+    },
+    {
+      "id": "k3",
+      "value": 1.0,
+      "quote": "e021: k1 = 1.0; k3 = 1.0; k5 = 1.0."
+    },
+    {
+      "id": "k4",
+      "value": 0.1,
+      "quote": "e022: k2 = 0.1; k4 = 0.1; k6 = 0.1."
+    },
+    {
+      "id": "k5",
+      "value": 1.0,
+      "quote": "e021: k1 = 1.0; k3 = 1.0; k5 = 1.0."
+    },
+    {
+      "id": "k6",
+      "value": 0.1,
+      "quote": "e022: k2 = 0.1; k4 = 0.1; k6 = 0.1."
+    },
+    {
+      "id": "Ki",
+      "value": 1.0,
+      "quote": "e023: Ki = 1.0."
+    },
+    {
+      "id": "n",
+      "value": 10,
+      "quote": "e024: n = 10."
+    }
+  ],
+  "states": [
+    {
+      "id": "X",
+      "initial": 0.1,
+      "quote": "Initial X = 0.1."
+    },
+    {
+      "id": "Y",
+      "initial": 0.2,
+      "quote": "Initial Y = 0.2."
+    },
+    {
+      "id": "Z",
+      "initial": 0.3,
+      "quote": "Initial Z = 0.3."
+    }
+  ],
+  "equations": [
+    {
+      "state": "X",
+      "expression": "k1*Ki**n/(Ki**n + Z**n) - k2*X",
+      "quote": "Equation (1), image e004:\ndX/dt = k1*Ki^n/(Ki^n + Z^n) - k2*X."
+    },
+    {
+      "state": "Y",
+      "expression": "k3*X - k4*Y",
+      "quote": "Equation (2), image e005:\ndY/dt = k3*X - k4*Y."
+    },
+    {
+      "state": "Z",
+      "expression": "k5*Y - k6*Z",
+      "quote": "Equation (3), image e006:\ndZ/dt = k5*Y - k6*Z."
+    }
+  ],
+  "questions": [],
+  "limitations": [
+    "The supplied source is an assistant visual transcription pending independent human review; image equations and parameter images were not independently inspected.",
+    "Initial values are analyst-specified exploration conditions. Original-paper initial conditions are not supplied, so this simulation does not establish exact reproduction of Figure 2B.",
+    "Time and other quantities use arbitrary units; the excerpt justifies no physical unit conversion."
+  ],
+  "initial_origin": "Analyst-specified exploration protocol in source.txt: X(0)=0.1, Y(0)=0.2, Z(0)=0.3; these are not original-paper initial conditions."
+}

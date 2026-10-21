@@ -1,0 +1,28 @@
+{
+  "id": "chatcmpl-4d6a3eae-0ea9-454a-bb1a-27442ef28b8e",
+  "created": 1792238943,
+  "model": "qwen3.8-chat",
+  "object": "chat.completion",
+  "choices": [
+    {
+      "finish_reason": "stop",
+      "index": 0,
+      "message": {
+        "content": "{\"action\": \"submit_draft\", \"args\": {\"draft\": {\"id\": \"synthetic_ode_model\", \"states\": [{\"id\": \"R\", \"initial\": 0.2, \"unit\": \"dimensionless\", \"quantity_kind\": \"variable\", \"nonnegative\": false}, {\"id\": \"P\", \"initial\": 0.1, \"unit\": \"dimensionless\", \"quantity_kind\": \"variable\", \"nonnegative\": false}], \"parameters\": [{\"id\": \"s\", \"value\": 1.0, \"unit\": \"unknown\", \"origin\": \"analyst-specified\"}, {\"id\": \"K\", \"value\": 1.0, \"unit\": \"unknown\", \"origin\": \"analyst-specified\"}, {\"id\": \"dr\", \"value\": 0.4, \"unit\": \"unknown\", \"origin\": \"analyst-specified\"}, {\"id\": \"kp\", \"value\": 0.7, \"unit\": \"unknown\", \"origin\": \"analyst-specified\"}, {\"id\": \"dp\", \"value\": 0.3, \"unit\": \"unknown\", \"origin\": \"analyst-specified\"}], \"compartment\": {\"id\": \"C\", \"size\": 1, \"unit\": \"dimensionless\"}, \"reactions\": [], \"rate_rules\": [{\"state\": \"R\", \"expression\": \"s/(1+(P/K)**2)-dr*R\"}, {\"state\": \"P\", \"expression\": \"kp*R-dp*P\"}], \"derived\": [], \"time_unit\": \"minutes\"}, \"evidence\": [{\"target\": \"R/initial\", \"source_ref\": \"455ac422f62b123f811f18b69fd99561ace7fd0b55e56a2d598fdcf04538758a\", \"page\": 1, \"quote\": \"Initial R = 0.2.\"}, {\"target\": \"P/initial\", \"source_ref\": \"455ac422f62b123f811f18b69fd99561ace7fd0b55e56a2d598fdcf04538758a\", \"page\": 1, \"quote\": \"Initial P = 0.1.\"}, {\"target\": \"s/value\", \"source_ref\": \"455ac422f62b123f811f18b69fd99561ace7fd0b55e56a2d598fdcf04538758a\", \"page\": 1, \"quote\": \"Parameter s = 1.0.\"}, {\"target\": \"K/value\", \"source_ref\": \"455ac422f62b123f811f18b69fd99561ace7fd0b55e56a2d598fdcf04538758a\", \"page\": 1, \"quote\": \"Parameter K = 1.0.\"}, {\"target\": \"dr/value\", \"source_ref\": \"455ac422f62b123f811f18b69fd99561ace7fd0b55e56a2d598fdcf04538758a\", \"page\": 1, \"quote\": \"Parameter dr = 0.4.\"}, {\"target\": \"kp/value\", \"source_ref\": \"455ac422f62b123f811f18b69fd99561ace7fd0b55e56a2d598fdcf04538758a\", \"page\": 1, \"quote\": \"Parameter kp = 0.7.\"}, {\"target\": \"dp/value\", \"source_ref\": \"455ac422f62b123f811f18b69fd99561ace7fd0b55e56a2d598fdcf04538758a\", \"page\": 1, \"quote\": \"Parameter dp = 0.3.\"}, {\"target\": \"rule:R/expression\", \"source_ref\": \"455ac422f62b123f811f18b69fd99561ace7fd0b55e56a2d598fdcf04538758a\", \"page\": 1, \"quote\": \"The author confirms dR/dt = s/(1+(P/K)**2)-dr*R. The exponent-one alternative is rejected.\"}, {\"target\": \"rule:P/expression\", \"source_ref\": \"455ac422f62b123f811f18b69fd99561ace7fd0b55e56a2d598fdcf04538758a\", \"page\": 1, \"quote\": \"Equation dP/dt = kp*R-dp*P.\"}, {\"target\": \"time_unit\", \"source_ref\": \"455ac422f62b123f811f18b69fd99561ace7fd0b55e56a2d598fdcf04538758a\", \"page\": 1, \"quote\": \"Time t is in minutes.\"}, {\"target\": \"C/size\", \"source_ref\": \"455ac422f62b123f811f18b69fd99561ace7fd0b55e56a2d598fdcf04538758a\", \"page\": 1, \"quote\": \"The fixed compartment has size 1 dimensionless.\"}], \"mechanism\": \"Two-state ODE: R produced by saturating function of P (Hill exponent 2) and degraded linearly; P produced from R and degraded linearly.\"}, \"reason\": \"Source gives explicit ODEs, parameters, initials, and author clarification resolving the alternative. Submit draft.\"}",
+        "role": "assistant",
+        "provider_specific_fields": {
+          "refusal": null
+        }
+      },
+      "provider_specific_fields": {}
+    }
+  ],
+  "usage": {
+    "completion_tokens": 1409,
+    "prompt_tokens": 1332,
+    "total_tokens": 2741,
+    "prompt_tokens_details": {
+      "cached_tokens": 0
+    }
+  }
+}

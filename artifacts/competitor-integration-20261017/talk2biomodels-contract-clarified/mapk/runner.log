@@ -1,0 +1,12 @@
+INFO:aiagents4pharma.talk2biomodels.agents.t2b_agent:Load Hydra configuration for Talk2BioModels agent.
+INFO:aiagents4pharma.talk2biomodels.agents.t2b_agent:state_modifier: You are Talk2BioModels agent. If the user asks for the uploaded model, then pass the use_uploaded_model argument as True. If the user asks for simulation or param_scan or steady state, suggest a value for the `experiment_name` argument.
+If the user asks question related to the uploaded document/pdf/article/document, use the tool `query_article` to answer the question. Please note that the `experiment_name` argument may be unrelated to the question asked.
+
+INFO:aiagents4pharma.talk2biomodels.agents.t2b_agent:Compiled the graph with thread_id integration-mapk and llm_model callbacks=[<__main__.run.<locals>.Audit object at 0x70409bbdbaa0>] client=<openai.resources.chat.completions.completions.Completions object at 0x70408e180320> async_client=<openai.resources.chat.completions.completions.AsyncCompletions object at 0x70408e1c7c50> root_client=<openai.OpenAI object at 0x70408ea20e00> root_async_client=<openai.AsyncOpenAI object at 0x70408e1c79e0> model_name='qwen3.8-chat' temperature=0.0 model_kwargs={} openai_api_key=SecretStr('**********') openai_api_base='https://api.llm.ustc.edu.cn/v1' request_timeout=90.0 max_retries=0 max_tokens=4000 http_client=<httpx.Client object at 0x70408eabc4d0>
+INFO:aiagents4pharma.talk2biomodels.agents.t2b_agent:Calling t2b_agent node with thread_id integration-mapk
+INFO:httpx:HTTP Request: POST https://api.llm.ustc.edu.cn/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:aiagents4pharma.talk2biomodels.tools.simulate_model:Calling simulate_model tool biomodel_id=None use_uploaded_sbml_file=True, ArgumentData(experiment_name='uploaded_model_0_1800_120intervals', time_data=TimeData(duration=1800.0, interval=120), species_to_be_analyzed_before_experiment=None, reocurring_data=None)
+INFO:aiagents4pharma.talk2biomodels.tools.simulate_model:Following species/parameters updated in the model {}
+INFO:aiagents4pharma.talk2biomodels.tools.simulate_model:Simulation results ready with shape (121, 9)
+INFO:httpx:HTTP Request: POST https://api.llm.ustc.edu.cn/v1/chat/completions "HTTP/1.1 200 OK"
+{"system": "Talk2Biomodels", "case": "mapk", "status": "executed", "error_type": null, "error": null, "calls": 2, "elapsed_seconds": 11.493354069003544}

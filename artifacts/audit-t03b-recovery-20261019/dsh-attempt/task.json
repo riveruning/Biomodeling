@@ -1,0 +1,35 @@
+{
+  "schema_version": "1",
+  "id": "audit-t03b-recovery-core",
+  "objective": "实现只读恢复诊断、进程所有者锁与已返回调用的受控重放核心，不接入Agent入口。",
+  "context": "T03a完整849项通过。用户明确继续T03b并沿用Codex验收/DSH代码分工。recovery.py是Codex准备的空文件，不算交付。契约固定接口；Agent集成将单独派发。仅开发源码，不含论文评测材料。",
+  "read_files": [
+    "artifacts/audit-t03b-recovery-20261019/implementation-contract-core.md",
+    "src/biomodel_agent/storage.py",
+    "src/biomodel_agent/domain/serialization.py",
+    "src/biomodel_agent/domain/contracts.py"
+  ],
+  "write_files": [
+    "src/biomodel_agent/recovery.py",
+    "src/biomodel_agent/invocations.py"
+  ],
+  "expected_files": [
+    "src/biomodel_agent/recovery.py",
+    "src/biomodel_agent/invocations.py"
+  ],
+  "instructions": "先读implementation-contract-core与invocations/storage，按固定接口实现。所有代码在两个允许文件中，保留T03a语义。只用明确文件read/write/edit，不用shell/目录扫描/网络/子Agent，不改测试、任务卡或监督程序。先交付核心模块，再概述接口和限制；验收与Agent接线由Codex安排。",
+  "acceptance": [
+    "诊断只读并校验序号、配对、冻结版本及预算",
+    "已返回产物重放不重复计算/付费，未知结果阻断",
+    "flock进程互斥且崩溃释放，不删锁文件",
+    "T03a旧API和持久化边界保持"
+  ],
+  "verification_commands": [],
+  "budget": {
+    "first_activity_ms": 120000,
+    "idle_ms": 180000,
+    "first_write_ms": 240000,
+    "write_idle_ms": 240000,
+    "total_ms": 600000
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "run_hash_verified": true,
+  "input_hash_verified": true,
+  "fixture_exact_matches": {
+    "experiment": true,
+    "solver": true,
+    "simulation": true
+  }
+}

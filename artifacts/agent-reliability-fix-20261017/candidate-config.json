@@ -1,0 +1,14 @@
+{
+  "purpose": "candidate fixed before independent holdout access",
+  "code_modules_sha256": "6576b32fccfcdeb47f6de998db003859c0ba3f9c9da831e42eb3155fbbe54775",
+  "model": "qwen3.8-chat",
+  "base_url": "https://api.llm.ustc.edu.cn/v1",
+  "api_key_env": "BIOMODEL_API_KEY",
+  "json_mode": true,
+  "max_calls": 8,
+  "max_repairs": 2,
+  "max_retries": 2,
+  "max_tokens": 4000,
+  "request_timeout_s": 90,
+  "holdout_accessed": false
+}

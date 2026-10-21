@@ -1,0 +1,8 @@
+{
+  "task_id": "T08b-F1",
+  "owner": "Codex alone",
+  "objective": "Recognize two bounded intended-equation declaration forms without losing original offsets, contextual guards or independent semantic status.",
+  "write_scope": ["src/biomodel_agent/bindings.py", "tests/test_intended_equation_binding.py", "docs/evidence-binding.md", "docs/workflow-adapters.md", "docs/optimization-backlog.md", "docs/seven-point-status.md", "tasks/audit-t08b-f1-equation-prose.json", "artifacts/audit-t08b-f1-equation-prose-20261019"],
+  "constraints": ["No original test, benchmark input, decision script, scorer or workflow adapter changes", "No DSH, subagents, online models, credentials, new papers or independent evalset access", "No rejected USTC c13/c18 transmission retries", "Original failures and manifests remain immutable", "Binding match is not semantic or human approval", "Implementation fingerprint and recovery checks remain strict"],
+  "acceptance": ["Failure reproduced before product edit", "Full declaration offsets and cropped-quote refusal", "Uncertainty, negation, conditional, wrong target and formula negative controls", "Actual submit and SBML source revalidation", "New manifest differs only in implementation fingerprint and original scripts are identical", "Actual 30-phase scripted replay with original-task resume and actual scientific tools", "Appropriate focused/full regression, raw results, patch and final hashes"]
+}

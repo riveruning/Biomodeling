@@ -1,0 +1,338 @@
+--- a/src/biomodel_agent/bindings.py
++++ b/src/biomodel_agent/bindings.py
+@@ -181,6 +181,15 @@
+ 
+ 
+ def _declaration(raw):
++    # Two complete declarative forms, not a search for an embedded equation.
++    # Keep the confirmation prefix inside the declaration span so a cropped
++    # quote cannot discard it. Qualifiers remain outside this grammar or in
++    # the RHS, where the restricted expression parser refuses them.
++    intended = re.fullmatch(
++        rf'(?i:(?:The\s+author\s+confirms\s+)?The\s+intended\s+equation\s+is)'
++        rf'\s+d\s*({IDENT})\s*/\s*dt\s*=\s*(.+)', raw)
++    if intended:
++        return {'kind': 'rule', 'symbol': intended[1], 'rhs': intended[2].strip(), 'skip': 0}
+     # These labels are context only; arbitrary prose/uncertainty is not stripped.
+     label = re.match(r'(?i)(?:(?:Earlier|Confirmed) table:\s*|Author clarification:\s*|The author confirms\s+)', raw)
+     skip = label.end() if label else 0
+--- a/tests/test_intended_equation_binding.py
++++ b/tests/test_intended_equation_binding.py
+@@ -0,0 +1,171 @@
++"""F1 declaration controls; all seen synthetic data, not scientific review."""
++from dataclasses import replace
++import math
++from pathlib import Path
++
++import pytest
++
++from biomodel_agent import agent_tools, application, bindings, evidence, modeling
++from biomodel_agent.domain.contracts import ExperimentSpec, FrozenMap, ModelDraft
++from biomodel_agent.domain.serialization import from_dict
++from test_evidence_binding_acceptance import setup_case
++
++
++FORMULA = 'r*X*(1-X/K)'
++SENTENCE = 'The author confirms the intended equation is dX/dt = '+FORMULA+'.'
++ROOT = Path(__file__).resolve().parents[1]
++
++
++def checked(text, quote=None, *, target='rule:X/expression', expected=FORMULA):
++    quote = text if quote is None else quote
++    start = text.index(quote)
++    return bindings.check(text, 'a'*64, 1, start, start+len(quote), target,
++                          expected, {'X', 'Y', 'r', 'K', 'time'})
++
++
++@pytest.mark.parametrize('sentence', [
++    SENTENCE,
++    'The intended equation is dX/dt = '+FORMULA+'.',
++    'the AUTHOR confirms THE intended EQUATION is dX/dt = '+FORMULA+'.',
++    'The  author confirms   the intended equation is d X / dt = '+FORMULA+'.',
++])
++def test_only_explicit_intended_forms_match_with_whole_statement_offsets(sentence):
++    text = '中文页眉。\n'+sentence+'\nUnrelated appendix.'
++    result = checked(text, sentence)
++    assert result['status'] == 'matched'
++    assert result['semantic_support'] == 'unknown' and result['version'] == 1
++    declaration, = result['declarations']
++    start = text.index(sentence)
++    assert declaration['start'] == start
++    assert declaration['end'] == start+len(sentence)-1
++    assert text[declaration['start']:declaration['end']] == sentence[:-1]
++    assert result['source']['start'] == start
++    assert result['source']['end'] == start+len(sentence)
++
++
++def test_original_logistic_clarification_can_bind_without_material_rewriting():
++    text = (ROOT/'benchmarks/inputs/reliability/logistic/clarified/source.txt').read_text()
++    result = checked(text, SENTENCE)
++    assert result['status'] == 'matched'
++    declaration, = result['declarations']
++    assert text[declaration['start']:declaration['end']] == SENTENCE[:-1]
++    assert result['semantic_support'] == 'unknown'
++
++
++@pytest.mark.parametrize('quote', [
++    'dX/dt = '+FORMULA,
++    'the intended equation is dX/dt = '+FORMULA,
++    'author confirms the intended equation is dX/dt = '+FORMULA,
++    SENTENCE[:-3],
++])
++def test_cropping_positive_declaration_cannot_hide_confirmation_or_formula(quote):
++    result = checked(SENTENCE, quote)
++    assert result['status'] == 'mismatch'
++    assert 'truncates' in result['reason']
++
++
++@pytest.mark.parametrize('text', [
++    'Maybe '+SENTENCE,
++    'Possibly '+SENTENCE,
++    'If condition A applies, '+SENTENCE,
++    'Only under condition A, '+SENTENCE,
++    'It is not true that '+SENTENCE,
++    'The author does not confirm the intended equation is dX/dt = '+FORMULA+'.',
++    'The author cannot confirm the intended equation is dX/dt = '+FORMULA+'.',
++    'The author tentatively confirms the intended equation is dX/dt = '+FORMULA+'.',
++    'The author previously confirmed the intended equation is dX/dt = '+FORMULA+'.',
++    'The intended equation may be dX/dt = '+FORMULA+'.',
++    'The intended equation is not dX/dt = '+FORMULA+'.',
++    'The intended equation is perhaps dX/dt = '+FORMULA+'.',
++])
++@pytest.mark.parametrize('cropped', [False, True])
++def test_uncertainty_negation_and_condition_prefixes_cannot_match(text, cropped):
++    quote = 'dX/dt = '+FORMULA if cropped else text
++    result = checked(text, quote)
++    # The existing bare-value grammar may classify "It is ..." as another
++    # target (mismatch); either conservative refusal must remain a refusal.
++    assert result['status'] in ('unknown', 'mismatch')
++    assert result['semantic_support'] == 'unknown'
++
++
++@pytest.mark.parametrize('suffix', [
++    ' if condition A applies', ' unless condition B applies', ' only under condition A',
++    ', but this remains unconfirmed', ', not a confirmed result', ' or dX/dt = r*X',
++    ' (unconfirmed)', '?',
++])
++@pytest.mark.parametrize('cropped', [False, True])
++def test_same_clause_suffixes_cannot_be_removed_by_short_quote(suffix, cropped):
++    text = SENTENCE[:-1]+suffix+'.'
++    result = checked(text, SENTENCE[:-1] if cropped else text)
++    assert result['status'] != 'matched'
++    assert result['semantic_support'] == 'unknown'
++
++
++@pytest.mark.parametrize('declaration,target,expected,status', [
++    ('The intended equation is dY/dt = '+FORMULA+'.', 'rule:X/expression', FORMULA, 'mismatch'),
++    (SENTENCE, 'reaction:X/rate', FORMULA, 'mismatch'),
++    (SENTENCE, 'derived:X/expression', FORMULA, 'mismatch'),
++    ('The author confirms the intended equation is dX/dt = -r*X*X.', 'rule:X/expression', '-r*X', 'mismatch'),
++    ('The intended equation is dX/dt = r*X.', 'rule:X/expression', '-r*X', 'mismatch'),
++    ('The intended equation is dX/dt = r*X*(1-X)/K.', 'rule:X/expression', FORMULA, 'unknown'),
++    ('The intended equation is dX/dt = '+FORMULA+'*X.', 'rule:X/expression', FORMULA, 'unknown'),
++])
++def test_existing_target_identity_and_expression_rules_remain(declaration, target, expected, status):
++    assert checked(declaration, target=target, expected=expected)['status'] == status
++
++
++def test_bounded_context_cannot_invent_a_statement_boundary():
++    text = 'uncertain '*40+SENTENCE
++    assert checked(text, SENTENCE)['status'] == 'unknown'
++
++
++def test_explicit_mapping_still_requires_cited_witness_and_full_declaration():
++    text = 'Symbol Y maps to X; The author confirms the intended equation is dY/dt = r*Y*(1-Y/K).'
++    result = bindings.check(text, 'a'*64, 1, 0, len(text), 'rule:X/expression', FORMULA,
++                            {'X', 'r', 'K'}, {'Y': 'X'})
++    assert result['status'] == 'matched' and len(result['mapping_evidence']) == 1
++    declaration, = result['declarations']
++    assert text[declaration['start']:declaration['end']].startswith('The author confirms')
++
++
++def test_actual_submission_and_sbml_recheck_keep_source_unreviewed(tmp_path):
++    sentence = 'The author confirms the intended equation is dx/dt = -k*x.'
++    store, source, proposal = setup_case(tmp_path, equation_quote=sentence)
++    result = agent_tools.submit_draft(store, proposal, [source])
++    assert result['state'] == 'ready'
++    claim = store.get(result['artifact'].element_map['rule:x/expression'][0])['payload']
++    assert claim['quote'] == sentence and claim['review_status'] == 'unverified'
++    assert claim['binding']['declarations'][0]['start'] == claim['start']
++    run = store.get(application.run_reproduction(store, result['artifact'],
++                    ExperimentSpec((0., 1.)), strict=True))['payload']
++    assert run['source_validation']['binding_status'] == 'matched'
++    assert run['source_validation']['semantic_support'] == 'unknown'
++    assert run['scientific_status'] == 'not_verified'
++    assert run['simulation']['values']['x'][-1] == pytest.approx(math.exp(-.4), abs=1e-6)
++
++
++@pytest.mark.parametrize('sentence', [
++    'Maybe The author confirms the intended equation is dx/dt = -k*x.',
++    'The author does not confirm the intended equation is dx/dt = -k*x.',
++    'The author confirms the intended equation is dx/dt = -k*x only under condition A.',
++])
++def test_qualified_proposals_pause_without_partial_claims(tmp_path, sentence):
++    store, source, proposal = setup_case(tmp_path, equation_quote=sentence)
++    result = agent_tools.submit_draft(store, proposal, [source])
++    assert result['state'] == 'awaiting_input'
++    assert not store.list('claim') and not store.list('model')
++
++
++def test_manual_claim_cannot_bypass_new_prose_context_at_strict_execution(tmp_path):
++    sentence = 'The author confirms the intended equation is dx/dt = -k*x only under condition A.'
++    store, source, proposal = setup_case(tmp_path, equation_quote=sentence)
++    text = store.get(source)['payload']['pages'][0]['text']
++    links = {}
++    for item in proposal['evidence']:
++        quote = 'dx/dt = -k*x' if item['target'].startswith('rule:') else item['quote']
++        start = text.index(quote)
++        links[item['target']] = (evidence.add_claim(store, source, 1, start, start+len(quote), item['target']),)
++    draft = replace(from_dict(ModelDraft, proposal['draft']), element_map=FrozenMap(links))
++    with pytest.raises(ValueError, match='binding'):
++        application.run_reproduction(store, modeling.build_model(draft), ExperimentSpec((0., 1.)), strict=True)
++    assert not store.list('run') and not store.list('simulation_input')
+--- a/docs/evidence-binding.md
++++ b/docs/evidence-binding.md
+@@ -7,6 +7,10 @@
+ 参数、初值、ODE 右侧、反应速率和派生赋值分别建立绑定。例如 `Parameter k = 0.4` 只能支持 `k/value`，`Initial k = 0.4` 不支持参数值；`Equation dx/dt = -k*x*x` 不支持 `rule:x/expression = -k*x`。
+ 
+ 首版识别直接声明，包括 `Initial x = 1`、`x initial 1`、`x(0) = 1`、`Parameter k = 0.4`、`k value 0.4`、`dx/dt = -k*x`、`Derived y = 2*x` 和具名反应速率。反应绑定只检查速率目标和表达式，不验证化学计量或生物学解释。
++
++T08b-F1 增加两种固定 ODE 声明：`The intended equation is dx/dt = -k*x` 和 `The author confirms the intended equation is dx/dt = -k*x`。声明关键词大小写及词间空格可变，符号仍区分大小写。只从完整分句起点匹配，不搜索藏在任意散文中的公式；整个确认前缀包含在声明偏移内，引用裸公式或去掉作者确认前缀会被视为截短声明。
++
++这两种句式仍使用原有左侧目标和受限表达式检查。前置的 Maybe、否定、条件等不被剥离，右侧的条件、不确定文字也不能作为公式通过。未支持的文本保留 unknown，已有错误目标等规则可能返回 mismatch；都不能成为匹配。跨句否定/作用域和语义真伪仍需审核，固定句式不是一般自然语言理解。
+ 
+ 数字按原始十进制字面量精确比较；公式复用受限 AST 解析器，以有界多项式规范化证明简单等价，例如 `-x*k` 与 `-k*x`、`k*(x+1)` 与 `k*x+k`。不会用数值采样证明公式等价。相同的受支持函数语法可以匹配；无法证明的一般恒等式保留 unknown。
+ 
+@@ -21,6 +25,8 @@
+ ## 记录和执行边界
+ 
+ 新增 claim 内嵌 `binding.version = 1`，保存目标、规范化拟议值/表达式、解析出的声明类型/符号/右侧、原文偏移、映射见证、状态和原因。原始 source/page/start/end 与 quote 保留。绑定状态与 `review_status` 独立，工具不自动升级人工审核状态。
++
++F1 沿用相同的记录结构和 version 1，并不让旧声明自动获批。执行时仍从原文与实际 SBML 重新计算；产品实现指纹随语法代码变化，旧冻结清单和不兼容恢复快照继续拒绝。比较运行必须另存新清单，不能修改旧指纹绕过检查。
+ 
+ | 结果 | Agent 行为 |
+ |---|---|
+@@ -49,3 +55,5 @@
+ [实际科学工具证据](../artifacts/audit-t05-evidence-binding-20261019/scientific-results.json)包含公式修复后求解、未知公式澄清后恢复、手工错绑拦截、导出一致性和中断后的结果认领。决策由脚本提供，ODE 使用实际本地工具计算；不计作新的真实模型能力成绩，也不称为独立留出集。未调用外部模型、读取独立评测材料、安装依赖或重试 c13/c18 外发。
+ 
+ 后续 T06 依赖此位置契约接入成熟 PDF 解析结果。应先冻结解析输出格式和失败案例，再做薄适配、版本/页块到原文位置的映射和回归，避免自行重建一套 PDF 引擎。
++
++后续 T08b-F1 已以同一位置契约补齐上述两种 intended-equation 句式：新增 63 项开发检查，完整 **1235 项通过**，旧测试、材料及脚本不变。原样 30 阶段重跑中的六个澄清阻断消失，实际严格运行及加严积分各 18 次；这是共同工具修复的工程证据，判断仍 unreviewed。[验收、原始失败和补丁](../artifacts/audit-t08b-f1-equation-prose-20261019/acceptance.json)已保存。
+--- a/docs/workflow-adapters.md
++++ b/docs/workflow-adapters.md
+@@ -2,7 +2,7 @@
+ 
+ 本轮完成可执行的固定流程、通用工具 Agent、领域 Agent 适配，以及共用的请求记录、工具预算、进程监督、原任务恢复和 T08a 结果归一。领域组直接调用产品 `agent.run_agent` / `agent.resume_agent`；没有用另一套脚本替代产品 Agent。
+ 
+-适配器位于 `benchmarks/development/workflow_adapters.py`，统一驱动位于 `benchmarks/development/run_agent_comparison.py`。产品源码、旧测试、T08a 协议与历史成绩均保持不变。仍采用单个逻辑 Agent 和确定性科学工具，没有引入产品多 Agent。
++适配器位于 `benchmarks/development/workflow_adapters.py`，统一驱动位于 `benchmarks/development/run_agent_comparison.py`。T08b 交付时产品源码、旧测试、T08a 协议与历史成绩均保持不变；后续 F1 只修改共同绑定语法，见下文。仍采用单个逻辑 Agent 和确定性科学工具，没有引入产品多 Agent。
+ 
+ ## 三组相同与不同的部分
+ 
+@@ -40,7 +40,7 @@
+ 
+ Python transport 与适配器属于受信任的执行代码。当前输入投影防止正常调用把参考标签传给模型，不是阻止恶意 Python 回调读取任意本地文件的操作系统沙箱。
+ 
+-## 实际离线演练及限制
++## T08b 原始离线演练及限制
+ 
+ 复用 T08a 的完整 decay、缺初值 translation、公式歧义 logistic，三组各两次重复，共 30 条阶段记录。模型决策来自明确标注的字面脚本，所有构建、SBML、求解和产品验证实际执行；**脚本决策不是模型能力证据**。
+ 
+@@ -53,18 +53,30 @@
+ 
+ 首轮新增 20 项通过。扩大科学一致性检查后，复现并修复了基线组漏传非负约束、领域组误读完成事件两处问题；中间实现错误与修复日志保留。最终定向 97 项通过（新增适配检查 50 项，加原 T08a 47 项），完整 **1172 项通过**（278.90 秒），源码差异见[工程验收](../artifacts/audit-t08b-workflow-adapters-20261019/acceptance.json)。
+ 
++## T08b-F1：完整声明语法与原样重跑
++
++共同绑定工具增加 `The intended equation is ...` 和 `The author confirms the intended equation is ...` 两种固定 ODE 声明，保留完整确认前缀的位置。截短引用、否定、不确定、条件限定、错误目标与不同公式仍不能匹配；语义支持保持 unknown，科学状态保持 not_verified。[支持边界](evidence-binding.md)与实际 SBML 重检规则均保留。
++
++新增 63 项开发检查，修改前修正后的基线为 16 失败、47 通过。首份基线另有两项过严的状态预期：旧语法可将 “It is ...” 保守拒绝为 mismatch；在产品修改前改为接受 unknown/mismatch 两种拒绝。两份原始记录保留。首轮定向 223 通过、1 项原有的 0.6 秒领域组超时控制失败：期限在科学预留前耗尽；完整 meter、结果与存储已另存。随后原三组超时检查 3 项通过，完整原样回归 **1235 项通过**（约 302 秒），没有修改旧测试或超时门槛。
++
++新建冻结清单仅改变 toolchain_sha256，材料、实验、字面脚本、模型设置和预算与 T08b 原件一致。旧清单在提供方调用和创建输出前拒绝执行，恢复版本检查未放宽。原 T08a/T08b 产物和失败记录全部保留。
++
++原样重跑的 30 阶段使用 66 次脚本 transport 响应，线上模型调用 0；18 个阶段完成严格模拟，另有 18 次收敛加严积分。原六个 logistic 澄清阶段全部继续执行，12 个初始缺口阶段仍追问。产品领域 Agent 确实恢复原生父任务，其他组继续其原会话。decay、translation、logistic 各 6 次实际轨迹，跨三组/重复最大差异均为 0；原先完成的 12 次时间网格、数值、后端、单位与运行状态一致，运行耗时另作遥测。
++
++解析解误差按原设置报告，没有新设全局误差通过门槛；旧的临时 2e-6 失败保留。所有评价仍 unreviewed，没有独立领域决定或正确完成率提升结论。详见 [F1 工程验收](../artifacts/audit-t08b-f1-equation-prose-20261019/acceptance.json)及[实际数值诊断](../artifacts/audit-t08b-f1-equation-prose-20261019/scientific-results.json)。
++
+ ## 重跑
+ 
+ ```bash
+ PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=src .venv/bin/python \
+   benchmarks/development/run_agent_comparison.py \
+-  --manifest artifacts/audit-t08b-workflow-adapters-20261019/control-inputs/manifest.json \
+-  --scripts artifacts/audit-t08b-workflow-adapters-20261019/control-inputs/scripts.json \
++  --manifest artifacts/audit-t08b-f1-equation-prose-20261019/control-inputs/manifest.json \
++  --scripts artifacts/audit-t08b-f1-equation-prose-20261019/control-inputs/scripts.json \
+   --output /tmp/agent-comparison-new-run
+ ```
+ 
+-输出目录须不存在。脚本输入必须恰好覆盖计划条目，字面动作里的 `$main`、`$reply`、`$main_length` 只从实际请求可见的来源元数据解析；没有内置从参考答案生成响应的逻辑。准备脚本是单独标注的开发控制作者代码，不是产品 Agent。
++输出目录须不存在。上例使用 F1 新指纹清单；旧 T08b 清单仍是历史记录，当前实现会拒绝。未来再修改产品后也须冻结新的清单并保留旧版本。脚本输入必须恰好覆盖计划条目，字面动作里的 `$main`、`$reply`、`$main_length` 只从实际请求可见的来源元数据解析；没有内置从参考答案生成响应的逻辑。准备脚本是单独标注的开发控制作者代码，不是产品 Agent。
+ 
+ 驱动逐阶段保存 records 和 receipts。意外前置条件错误会保留已有产物并停止，原计划中未执行项仍可用 T08a 工具按固定分母汇总，不自动删掉失败或重跑。CLI 成功退出只表示驱动结束，应检查操作状态、技术状态、预算未知和未审核字段。
+ 
+-T08 整体仍缺实际同模型对照、独立审核任务及模块消融。接下来先登记和单独修复共同绑定句式边界，再在适用授权范围内接入同一线上 transport，冻结材料、模型和预算后开展真实模型开发对照。T07 的独立审核/真实论文证据仍待补；本轮没有新增论文、读取独立评测集、访问 c13/c18 或重试被拒绝的 USTC 外发。
++T08 整体仍缺实际同模型对照、独立审核任务及模块消融。下一项 T08c 先完成共同真实模型 transport 的离线接入与故障控制；冻结提供方、模型版本、设置、预算及允许外发的具体材料范围后，再在适用授权内运行真实模型开发对照。T07 的独立审核/真实论文证据仍待补；本轮没有新增论文、读取独立评测集、访问 c13/c18 或重试被拒绝的 USTC 外发。
+--- a/docs/optimization-backlog.md
++++ b/docs/optimization-backlog.md
+@@ -1,6 +1,6 @@
+ # 架构审计后的优化任务队列
+ 
+-更新：2026-10-19。默认由 Codex 安排任务、监督 DSH 实现并独立验收；DSH 超时后，T03b 经用户授权由 Codex 接手，之后 T04 至 T08b 延续用户要求的 Codex 独立实现方式。一次推进一项，验收后更新本表，不以执行方回复“完成”代替验收。
++更新：2026-10-19。默认由 Codex 安排任务、监督 DSH 实现并独立验收；DSH 超时后，T03b 经用户授权由 Codex 接手，之后 T04 至 T08b-F1 延续用户要求的 Codex 独立实现方式。一次推进一项，验收后更新本表，不以执行方回复“完成”代替验收。
+ 
+ 审计原始证据已从临时目录归档到 [architecture-audit-20261019](../artifacts/architecture-audit-20261019/audit.md)。基线完整 Python 回归 715 项通过，同时存在下列已复现问题；测试数量不代表真实模型科研能力。
+ 
+@@ -14,8 +14,9 @@
+ | T05 | 引文中的数值可错绑目标，公式可不对应草稿 | **已验收**：[结果与限制](evidence-binding.md) | Codex独立实现；版本化目标/数值/表达式/原文位置记录、显式映射见证、实际SBML重检；基线16失败，扩展108通过，完整990通过；语义支持仍unknown |
+ | T06 | PDF 只有 pypdf 逐页文本，尚未接入成熟解析结果 | **已验收**：[结果与限制](pdf-parser-adapter.md) | 可选本地PyMuPDF薄适配、原PDF/版本/不可变产物/块坐标、辅助表格和失败诊断；40例专项通过，完整1030通过；OCR/公式识别仍not_run |
+ | T07 | 检索目前只有待独立审核的合成开发对照 | **T07a工程准备已验收；T07b已做Codex预审，待独立领域审核，整体未结项**：[审核包与协议](retrieval-review.md) | 不加新论文；18例中17项建议保留、1项条件标签建议修订，另存候选包；人工决定仍全部pending，原包/代码不改；1075为此前完整回归 |
+-| T08 | 缺同底层模型、近预算的真实 Agent 公平评价 | **T08a已验收；T08b执行适配已验收；真实模型对照仍待做，整体未结项**：[执行与限制](workflow-adapters.md) | 三种实际工作流、共同后端/请求/预算、总期限和原任务恢复；30阶段演练含12次实际模拟和6处共同语法阻断，脚本响应不算模型表现 |
+-| T08b-F1 | 共同绑定工具不支持 “the intended equation is …” 澄清句式 | **待有限语法改进**：[实际六条记录](../artifacts/audit-t08b-workflow-adapters-20261019/scientific-results.json) | 先建完整句/位置及不确定、否定、条件作用域负控制，再扩展支持子集；保留未知边界，不改材料伪造检索或完成提升 |
++| T08 | 缺同底层模型、近预算的真实 Agent 公平评价 | **T08a/T08b及F1工程已验收；真实模型对照仍待做，整体未结项**：[执行与限制](workflow-adapters.md) | 三种实际工作流、共同后端/请求/预算、总期限和原任务恢复；F1原样30阶段含18次实际模拟，脚本响应不算模型表现 |
++| T08b-F1 | 共同绑定工具不支持 “the intended equation is …” 澄清句式 | **已验收**：[实际结果与补丁](../artifacts/audit-t08b-f1-equation-prose-20261019/acceptance.json) | 完整固定句式/原文位置及截短、否定、不确定、条件限定负控制；63项新增检查，完整1235通过；六处澄清解阻，原材料/脚本/成绩保留，语义仍unknown |
++| T08c | 缺共同真实模型transport及可审核的线上执行准备 | **下一项：先离线实现** | 三组共用请求契约；冻结提供方/模型版本/设置/预算/允许外发材料范围；验证超时、服务错误、usage未知和不自动重试，再在适用授权内实际运行 |
+ | T09 | Memory 候选审核、Skill 科研流程、失效传播和规模性能 | 待真实任务证据 | T05/T08；候选不自动成为事实，技能有案例/失败条件，以消融检验收益，测量后优化索引 |
+ 
+ 保留单 Agent、模块化单体、SBML 权威执行载荷、不可变产物及冻结研究协议。暂缓多 Agent、通用 PDE、开放机制搜索及没有规模测量支撑的基础设施迁移。
+@@ -48,7 +49,11 @@
+ 
+ 实际30阶段离线演练使用58次脚本transport响应，线上模型调用0；12次实际严格模拟及12次收敛加严积分，跨三组/重复轨迹一致。12个初始缺口阶段追问，6个logistic澄清阶段因共同绑定句式不支持继续等待；没有改写源文或放宽产品门槛。T08a判断均为unreviewed，技术完成不提升为模型正确率。解析误差和临时2e-6绝对检查失败如实保留，不事后更换精度门槛；详见数值诊断。
+ 
+-下一步先单独处理T08b-F1，再接入共同线上transport，在适用授权内冻结材料、底层模型、预算后开展真实模型开发对照。独立领域审核、未见科学任务、真实同模型对照及Memory/RAG/Skill消融仍待完成。本轮没有扩展论文范围、读取独立评测集或重试USTC被拒绝的材料外发。
++T08b-F1已按[任务卡](../tasks/audit-t08b-f1-equation-prose.json)和[执行计划](../artifacts/audit-t08b-f1-equation-prose-20261019/execution-plan.md)完成。仅扩展两种完整声明，确认前缀在原文偏移内，引用截短和限定不被剥离；提交草稿与实际SBML严格重检共用规则。修正测试预期后的修改前基线16失败/47通过，完整1235通过；定向首轮0.6秒超时控制失败及原始产物保留，单独复核3通过，原有测试和期限不改。产品指纹变化后另建清单，仅toolchain_sha256不同，旧清单调用前拒绝，恢复规则不放宽。
++
++原样30阶段重跑有66次脚本响应、18次实际严格运行及18次加严积分；六个澄清阶段解阻，12个初始缺口仍追问，原12次已完成的数值输出不变。三组各重复的轨迹一致，所有assessment仍unreviewed。旧1089份T08a/T08b产物逐文件哈希校验保留；解析误差如实记录，不改变精度门槛。[验收与数值诊断](../artifacts/audit-t08b-f1-equation-prose-20261019/acceptance.json)不作为模型能力成绩。
++
++下一步T08c先离线接入共同线上transport与故障控制，再在适用授权内冻结具体材料、底层模型、设置和预算后开展真实模型开发对照。独立领域审核、未见科学任务、真实同模型对照及Memory/RAG/Skill消融仍待完成。本轮没有扩展论文范围、读取独立评测集或重试USTC被拒绝的材料外发。
+ 
+ 任务不涉及 c13/c18 材料、独立评测材料、密钥或外部模型评价。此前四次 USTC 外发审批拒绝仍有效，不重试或改道。
+ 
+--- a/docs/seven-point-status.md
++++ b/docs/seven-point-status.md
+@@ -10,7 +10,7 @@
+ | Tool Use | 材料读取/检索、可选本地PyMuPDF页块/表格解析与引用定位、记忆召回、技能读取、有界目标/数值/公式绑定、模拟，以及冻结的训练拟合/留出比较 | 解析与绑定不能证明语义支持；OCR/公式识别未运行，表格和复杂阅读顺序待审核；复杂语言/单位换算仍unknown，拟合仍限已验证的profile |
+ | 工作流 | 追问、归属回复、暂停/恢复、版本与预算冻结、一次研究执行、持久调用记录、受控故障恢复/结果认领及本地所有者；统一研究入口与科学总期限 | 任意崩溃点自动恢复、跨分支全局费用/执行限额、较复杂的研究修改与失效传播仍有限；科学工具总期限不包含此前LLM讨论或研究者等待 |
+ | Skill | 固定版本的 ODE 复现、澄清复核、受约束研究指引；目录随任务模式冻结，不改变权限或科学判据 | 仍为少量内置流程；可增加有独立科学案例验收的技能，不急于通用插件市场 |
+-| Evaluation | 完整数值/故障回归、解析解、恢复演练；T08a共同清单/固定分母评分；T08b三种执行适配、共同工具和预算、进程期限、实际产品Agent原任务恢复 | 当前仅脚本响应驱动真实工具；共同绑定句式限制已登记，专家审核的未见任务、同模型在线对照、真实模块消融仍待完成 |
++| Evaluation | 完整数值/故障回归、解析解、恢复演练；T08a共同清单/固定分母评分；T08b三种执行适配、共同工具和预算、进程期限、实际产品Agent原任务恢复；F1完整声明句式及原样重跑 | 当前仅脚本响应驱动真实工具；下一项T08c共同真实模型transport先离线接入，专家审核的未见任务、同模型在线对照、真实模块消融仍待完成 |
+ 
+ 本轮选择补 Memory 的工作上下文与 Evaluation，因为之前只有持久化与续跑，而每次请求仍可能携带不断增长的全部历史。详见 [上下文预算](context-budget.md)；前两轮能力见 [记忆与检索](memory-and-retrieval.md) 和 [受约束研究工具](agent-study-tool.md)。
+ 
+@@ -27,3 +27,5 @@
+ T07的独立审核与真实论文对照继续待补，按用户后续任务安排推进[T08a离线评价协议](agent-evaluation-protocol.md)。复用已见的完整/缺初值/公式歧义三种合成任务，冻结三工作流共同模型配置、预算、材料哈希、科学工具指纹与30条计划；缺跑、服务失败和非法记录保留分母，未知usage不填零，fresh重建不算原任务恢复。三套控制都是显式预设记录，真实模型、科学工具调用及人工审核决定均为0；T08仍缺真实适配器和实际对照。本轮产品源码及原测试不变，验收结果见[记录](../artifacts/audit-t08a-evaluation-protocol-20261019/acceptance.json)。
+ 
+ 随后[T08b工作流适配](workflow-adapters.md)接入实际产品Agent和两种共用后端的基线编排，完成30阶段脚本决策演练：58次脚本transport响应、12次实际严格模拟及12次加严积分、线上模型调用0，轨迹跨三组一致。6个澄清阶段因共同绑定语法继续等待，已登记T08b-F1；原文、规则和未知状态保留。判断均未独立审核，不构成模型成功率或优势结论。产品源码、原测试和T08a源码未改，完整验收见[记录](../artifacts/audit-t08b-workflow-adapters-20261019/acceptance.json)。
++
++后续T08b-F1补齐两种完整intended-equation声明句式，保留确认前缀偏移和原有限定/公式检查；新增63项开发检查，完整1235项通过。仅新建指纹清单，材料、脚本、预算不变，旧清单/不兼容恢复继续拒绝。原样30阶段重跑使用66次脚本响应、18次严格模拟及18次加严积分；六处澄清解阻，12个初始缺口仍追问，原12次完成的数值输出不变，三组/重复轨迹一致。原测试、旧成绩和失败记录保留，assessment未审核、semantic_support仍unknown；见[F1验收](../artifacts/audit-t08b-f1-equation-prose-20261019/acceptance.json)。T07/T08整体缺口未因此关闭，下一项为T08c共同transport的离线准备。
+--- a/tasks/audit-t08b-f1-equation-prose.json
++++ b/tasks/audit-t08b-f1-equation-prose.json
+@@ -0,0 +1,8 @@
++{
++  "task_id": "T08b-F1",
++  "owner": "Codex alone",
++  "objective": "Recognize two bounded intended-equation declaration forms without losing original offsets, contextual guards or independent semantic status.",
++  "write_scope": ["src/biomodel_agent/bindings.py", "tests/test_intended_equation_binding.py", "docs/evidence-binding.md", "docs/workflow-adapters.md", "docs/optimization-backlog.md", "docs/seven-point-status.md", "tasks/audit-t08b-f1-equation-prose.json", "artifacts/audit-t08b-f1-equation-prose-20261019"],
++  "constraints": ["No original test, benchmark input, decision script, scorer or workflow adapter changes", "No DSH, subagents, online models, credentials, new papers or independent evalset access", "No rejected USTC c13/c18 transmission retries", "Original failures and manifests remain immutable", "Binding match is not semantic or human approval", "Implementation fingerprint and recovery checks remain strict"],
++  "acceptance": ["Failure reproduced before product edit", "Full declaration offsets and cropped-quote refusal", "Uncertainty, negation, conditional, wrong target and formula negative controls", "Actual submit and SBML source revalidation", "New manifest differs only in implementation fingerprint and original scripts are identical", "Actual 30-phase scripted replay with original-task resume and actual scientific tools", "Appropriate focused/full regression, raw results, patch and final hashes"]
++}

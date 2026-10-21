@@ -1,0 +1,16 @@
+{
+  "status": "delivered",
+  "exit_code": 0,
+  "system": "codex",
+  "case": "c05_seq_activation_missing_initial",
+  "phase": "clarified",
+  "elapsed_seconds": 38.523971097994945,
+  "model": "gpt-6.1-sol",
+  "usage": {
+    "input_tokens": 77838,
+    "cached_input_tokens": 67456,
+    "cache_write_input_tokens": 0,
+    "output_tokens": 1203,
+    "reasoning_output_tokens": 41
+  }
+}

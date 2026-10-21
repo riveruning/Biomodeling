@@ -1,0 +1,28 @@
+{
+  "id": "chatcmpl-65e8d178-c7cf-4832-8923-267bf94acba0",
+  "created": 1792239106,
+  "model": "qwen3.8-chat",
+  "object": "chat.completion",
+  "choices": [
+    {
+      "finish_reason": "stop",
+      "index": 0,
+      "message": {
+        "content": "{\"action\": \"run\", \"args\": {}, \"reason\": \"Draft validated; run the model over the experiment time points.\"}",
+        "role": "assistant",
+        "provider_specific_fields": {
+          "refusal": null
+        }
+      },
+      "provider_specific_fields": {}
+    }
+  ],
+  "usage": {
+    "completion_tokens": 28,
+    "prompt_tokens": 2594,
+    "total_tokens": 2622,
+    "prompt_tokens_details": {
+      "cached_tokens": 0
+    }
+  }
+}

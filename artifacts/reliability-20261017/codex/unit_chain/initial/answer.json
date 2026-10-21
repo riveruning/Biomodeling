@@ -1,0 +1,22 @@
+{
+  "status": "needs_input",
+  "parameters": [
+    {"id": "k1", "value": 0.2, "unit": "s^-1 in parameter table; min^-1 in equation legend (unresolved conflict)"},
+    {"id": "k2", "value": 0.15, "unit": "min^-1 (implied by dV/dt with dimensionless states and t in minutes)"}
+  ],
+  "states": [
+    {"id": "U", "initial": 1.0},
+    {"id": "V", "initial": 0.1}
+  ],
+  "equations": [
+    {"state": "U", "expression": "-k1*U"},
+    {"state": "V", "expression": "k1*U-k2*V"}
+  ],
+  "questions": [
+    "Is k1 = 0.2 per second (equivalent to 12 per minute), or k1 = 0.2 per minute? The parameter table and equally authoritative equation legend conflict."
+  ],
+  "limitations": [
+    "Simulation is blocked until the conflicting units of k1 are resolved; neither interpretation has been selected.",
+    "The source does not explicitly label the units of k2; min^-1 follows from the supplied equations, dimensionless states, and time in minutes."
+  ]
+}

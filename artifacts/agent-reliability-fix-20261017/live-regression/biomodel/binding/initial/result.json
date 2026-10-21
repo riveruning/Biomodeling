@@ -1,0 +1,19 @@
+{
+  "status": "awaiting_input",
+  "calls": 3,
+  "tokens": 5802,
+  "questions": [
+    "Please resolve: ka/value: please clarify missing source value"
+  ],
+  "problems": [
+    "ka/value: please clarify missing source value"
+  ],
+  "model_ref": null,
+  "run_ref": null,
+  "agent_ref": "25160c89f04c2cc2121809c42e00fa05ac478ae50f918161e8786fa072bc0b0e",
+  "product_modules_sha256": "3223ecf97ad97509bffb78ca21f44c9c525a139ca5c56bdcb4d13b1870ef0ccc",
+  "system": "biomodel",
+  "case": "binding",
+  "phase": "initial",
+  "elapsed_seconds": 70.53076937600053
+}

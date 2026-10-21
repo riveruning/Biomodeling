@@ -1,0 +1,36 @@
+{
+  "schema_version": "1",
+  "id": "v01-01-syntax",
+  "objective": "修复已实测失败的领域契约，交付可运行代码。",
+  "context": "Codex运行13测试7失败6通过。无需执行任何命令；只read/write/edit这3文件，禁止shell。没有必要继续规划。",
+  "read_files": [],
+  "write_files": [
+    "src/biomodel_agent/domain/contracts.py"
+  ],
+  "expected_files": [
+    "src/biomodel_agent/domain/contracts.py"
+  ],
+  "instructions": "只精准修复contracts.py __hash__语法：return hash(tuple(sorted(((k, self._normalize(v)) for k, v in self._pairs), key=lambda p: p[0]))) 。生成器有多个参数时需要括号。不要改其它逻辑/其它文件，不执行测试，文字回复完成。",
+  "acceptance": [
+    "dataclass快照不可受外部修改",
+    "序列化拒绝未知字段",
+    "None和unknown保持明确",
+    "测试由Codex执行"
+  ],
+  "verification_commands": [
+    [
+      ".venv/bin/python",
+      "-m",
+      "pytest",
+      "tests/test_contracts.py",
+      "-q"
+    ]
+  ],
+  "budget": {
+    "first_activity_ms": 120000,
+    "idle_ms": 180000,
+    "first_write_ms": 300000,
+    "write_idle_ms": 300000,
+    "total_ms": 600000
+  }
+}

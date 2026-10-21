@@ -1,0 +1,28 @@
+{
+  "id": "chatcmpl-fe128137-2abe-4bb3-b857-777f89e283c8",
+  "created": 1792203212,
+  "model": "qwen3.8-chat",
+  "object": "chat.completion",
+  "choices": [
+    {
+      "finish_reason": "stop",
+      "index": 0,
+      "message": {
+        "content": "{\"action\": \"submit_draft\", \"args\": {\"draft\": {\"id\": \"synthetic_ode\", \"states\": [{\"id\": \"A\", \"initial\": 2.0, \"unit\": \"dimensionless\", \"quantity_kind\": \"variable\", \"nonnegative\": true}], \"parameters\": [{\"id\": \"k\", \"value\": 0.4, \"unit\": \"1/min\", \"origin\": \"source\"}], \"compartment\": {\"id\": \"C\", \"size\": 1, \"unit\": \"dimensionless\"}, \"reactions\": [], \"rate_rules\": [{\"state\": \"A\", \"expression\": \"-k*A\"}], \"derived\": [], \"time_unit\": \"minutes\"}, \"evidence\": [{\"target\": \"A/initial\", \"source_ref\": \"67668fbf6be1f7923521170a4373f3abee16091d28a76da28be1d682076d3db5\", \"page\": 1, \"quote\": \"Initial A = 2.0.\"}, {\"target\": \"k/value\", \"source_ref\": \"67668fbf6be1f7923521170a4373f3abee16091d28a76da28be1d682076d3db5\", \"page\": 1, \"quote\": \"Parameter k = 0.4.\"}, {\"target\": \"rule:A/expression\", \"source_ref\": \"67668fbf6be1f7923521170a4373f3abee16091d28a76da28be1d682076d3db5\", \"page\": 1, \"quote\": \"Equation dA/dt = -k*A.\"}, {\"target\": \"time_unit\", \"source_ref\": \"67668fbf6be1f7923521170a4373f3abee16091d28a76da28be1d682076d3db5\", \"page\": 1, \"quote\": \"Time t is in minutes.\"}, {\"target\": \"C/size\", \"source_ref\": \"67668fbf6be1f7923521170a4373f3abee16091d28a76da28be1d682076d3db5\", \"page\": 1, \"quote\": \"The fixed compartment has size 1 dimensionless.\"}], \"mechanism\": \"first_order_decay\"}, \"reason\": \"Simple ODE model fully specified in source.\"}}",
+        "role": "assistant",
+        "provider_specific_fields": {
+          "refusal": null
+        }
+      },
+      "provider_specific_fields": {}
+    }
+  ],
+  "usage": {
+    "completion_tokens": 622,
+    "prompt_tokens": 1094,
+    "total_tokens": 1716,
+    "prompt_tokens_details": {
+      "cached_tokens": 0
+    }
+  }
+}

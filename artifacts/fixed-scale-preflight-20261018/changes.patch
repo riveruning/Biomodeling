@@ -1,0 +1,242 @@
+--- before/src/biomodel_agent/validation.py
++++ after/src/biomodel_agent/validation.py
+@@ -48,6 +48,19 @@
+         if not _is_finite(value) or float(value) <= 0.0:
+             raise ValueError(f"scales[{key!r}] must be a positive finite number, got {value!r}")
+         resolved[key] = float(value)
++    return resolved
++
++
++def validate_scales(scales: object, columns: object = ()) -> dict[str, float] | None:
++    """Validate caller-declared fixed scales without coercing invalid JSON types."""
++    if scales is None:
++        return None
++    if not isinstance(scales, dict):
++        raise TypeError("scales must be a mapping or None")
++    if any(not isinstance(key, str) or not key for key in scales):
++        raise ValueError("scales column names must be nonempty strings")
++    resolved = _scales(scales, scales)
++    _scales(resolved, columns)
+     return resolved
+ 
+ 
+--- before/src/biomodel_agent/application.py
++++ after/src/biomodel_agent/application.py
+@@ -327,10 +327,6 @@
+         raise TypeError(f"solver must be a SolverConfig, got {type(solver).__name__}")
+     if reference is not None and not isinstance(reference, SimulationResult):
+         raise TypeError(f"reference must be a SimulationResult or None, got {type(reference).__name__}")
+-    if scales is not None:
+-        if not isinstance(scales, dict):
+-            raise TypeError(f"scales must be a mapping or None, got {type(scales).__name__}")
+-        scales = {str(k): float(v) for k, v in scales.items()}
+     if isinstance(threshold, bool) or not isinstance(threshold, (int, float)) or not math.isfinite(threshold) or threshold <= 0:
+         raise ValueError(f"threshold must be a positive number, got {threshold!r}")
+ 
+@@ -340,6 +336,7 @@
+     if reference is not None:
+         validation.validate_reference(reference)
+         time_units.comparison_time_unit(experiment.time_unit, reference.time_unit)
++    scales = validation.validate_scales(scales, reference.values if reference is not None else ())
+     source_preflight = _source_validation(store, artifact)
+     if strict and source_preflight['source_review']['issues']:
+         raise ValueError('Unresolved source conflicts: ' + '; '.join(
+--- before/src/biomodel_agent/agent.py
++++ after/src/biomodel_agent/agent.py
+@@ -6,7 +6,7 @@
+ import time
+ from typing import Any
+ 
+-from . import agent_tools, application, time_units
++from . import agent_tools, application, time_units, validation
+ from .domain.contracts import (
+     ExperimentSpec, FrozenMap, ModelArtifact, ObservationSpec, SolverConfig,
+     SimulationResult,
+@@ -119,9 +119,9 @@
+     if not all(isinstance(r, str) and REF_RE.fullmatch(r) for r in source_refs):
+         raise ValueError("invalid or unavailable source refs")
+     if reference is not None:
+-        from .validation import validate_reference
+-        validate_reference(reference)
++        validation.validate_reference(reference)
+         time_units.comparison_time_unit(experiment.time_unit, reference.time_unit)
++    scales = validation.validate_scales(scales, reference.values if reference is not None else ())
+     try:
+         for ref in source_refs:
+             if store.get(ref)["kind"] != "source":
+@@ -196,9 +196,9 @@
+     solver = from_dict(SolverConfig, task['solver'])
+     reference = from_dict(SimulationResult, task['reference']) if task['reference'] is not None else None
+     if reference is not None:
+-        from .validation import validate_reference
+-        validate_reference(reference)
++        validation.validate_reference(reference)
+         time_units.comparison_time_unit(experiment.time_unit, reference.time_unit)
++    validation.validate_scales(task['scales'], reference.values if reference is not None else ())
+     # Preserve bytes and identity exactly. This assertion is not a verified paper correction.
+     blob_ref = store.put_blob(reply.encode('utf-8'))
+     clarification_ref = store.put('researcher_clarification', {
+--- before/tests/test_fixed_scale_preflight.py
++++ after/tests/test_fixed_scale_preflight.py
+@@ -0,0 +1,133 @@
++"""The execution boundary must not convert invalid fixed scales into valid ones."""
++from copy import deepcopy
++import json
++import math
++
++import pytest
++
++from biomodel_agent import agent, application, evidence, modeling, simulation, validation
++from biomodel_agent.domain.contracts import ExperimentSpec, ModelDraft, State, Parameter, RateRule, SimulationResult
++from biomodel_agent.storage import ArtifactStore
++
++
++BAD_SCALES = [True, '1', 0., -1., float('nan'), float('inf')]
++
++
++def model():
++    return modeling.build_model(ModelDraft('decay', (State('x', 1.),), (Parameter('k', .4),),
++                                          rate_rules=(RateRule('x', '-k*x'),)))
++
++
++def reference():
++    return SimulationResult('succeeded', (0., 1.), {'x': (1., math.exp(-.4))})
++
++
++class Scripted:
++    last_usage = {}
++    def __init__(self): self.calls = []
++    def respond(self, messages):
++        self.calls.append(deepcopy(messages))
++        return {'action': 'ask_researcher', 'args': {'question': 'Clarify mechanism.'}}
++
++
++@pytest.mark.parametrize('value', BAD_SCALES)
++def test_application_rejects_bad_scale_before_store_cache_solver(tmp_path, monkeypatch, value):
++    store = ArtifactStore(tmp_path / 'store'); before = store.list()
++    monkeypatch.setattr(store, 'list', lambda *a: pytest.fail('cache reached'))
++    monkeypatch.setattr(simulation, 'simulate', lambda *a, **kw: pytest.fail('solver reached'))
++    with pytest.raises(ValueError, match='scale'):
++        application.run_reproduction(store, model(), ExperimentSpec((0., 1.)),
++                                     reference=reference(), scales={'x': value})
++    monkeypatch.undo()
++    assert store.list() == before
++
++
++@pytest.mark.parametrize('value', BAD_SCALES)
++def test_agent_rejects_bad_scale_before_model_call_or_task_write(tmp_path, value):
++    store = ArtifactStore(tmp_path / 'store'); before = store.list(); provider = Scripted()
++    with pytest.raises(ValueError, match='scale'):
++        agent.run_agent(store, provider, [], ExperimentSpec((0., 1.)),
++                        reference=reference(), scales={'x': value})
++    assert not provider.calls and store.list() == before
++
++
++@pytest.mark.parametrize('scales', [{}, {'y': 1.}])
++def test_missing_reference_column_scale_rejected_early(tmp_path, scales):
++    store = ArtifactStore(tmp_path / 'store'); before = store.list(); provider = Scripted()
++    with pytest.raises(ValueError, match='missing a fixed scale'):
++        application.run_reproduction(store, model(), ExperimentSpec((0., 1.)),
++                                     reference=reference(), scales=scales)
++    with pytest.raises(ValueError, match='missing a fixed scale'):
++        agent.run_agent(store, provider, [], ExperimentSpec((0., 1.)),
++                        reference=reference(), scales=scales)
++    assert not provider.calls and store.list() == before
++
++
++@pytest.mark.parametrize('scales', [{'': 1.}, {3: 1.}, [], '1'])
++def test_malformed_scale_mapping_rejected(scales):
++    with pytest.raises((ValueError, TypeError), match='scales'):
++        validation.validate_scales(scales)
++
++
++def test_valid_scales_are_copied_not_changed_or_filled():
++    scales = {'x': 2, 'unused': .5}; before = deepcopy(scales)
++    fixed = validation.validate_scales(scales, ['x'])
++    assert scales == before and fixed == {'x': 2., 'unused': .5} and fixed is not scales
++    assert validation.validate_scales(None, ['x']) is None
++
++
++def test_bad_scale_without_reference_is_still_rejected(tmp_path):
++    with pytest.raises(ValueError, match='scale'):
++        application.run_reproduction(ArtifactStore(tmp_path), model(), ExperimentSpec((0., 1.)), scales={'x': True})
++
++
++def test_analytical_reference_correct_scale_cache_replay_and_frozen_task(tmp_path):
++    store = ArtifactStore(tmp_path / 'store'); exp = ExperimentSpec((0., 1.))
++    first = application.run_reproduction(store, model(), exp, reference=reference(), scales={'x': 2})
++    run = store.get(first)['payload']
++    assert run['comparison']['status'] == 'pass'
++    assert run['comparison']['max_scaled_error'] < 1e-5
++    assert run['comparison']['scales'] == {'x': 2.}
++    cached = store.get(application.run_reproduction(store, model(), exp, reference=reference(), scales={'x': 2}))['payload']
++    assert cached['cached_from'] == first
++    replay = store.get(application.replay_run(store, first))['payload']
++    assert replay['comparison']['status'] == 'pass' and replay['comparison']['scales'] == {'x': 2.}
++    path = tmp_path / 'source.txt'; path.write_text('Synthetic source.')
++    source = evidence.ingest_source(store, path); provider = Scripted()
++    paused = store.get(agent.run_agent(store, provider, [source], exp, reference=reference(), scales={'x': 2}))['payload']
++    task = store.get(paused['task_ref'])['payload']
++    assert task['scales'] == {'x': 2.} and type(task['scales']['x']) is float
++    assert 'scales' not in json.dumps(provider.calls)
++
++
++def test_legacy_boolean_scale_checkpoint_rejected_before_reply_write(tmp_path, monkeypatch):
++    store = ArtifactStore(tmp_path / 'store'); path = tmp_path / 'source.txt'; path.write_text('Synthetic source.')
++    source = evidence.ingest_source(store, path)
++    with monkeypatch.context() as legacy:
++        legacy.setattr(validation, 'validate_scales', lambda scales, *a: scales)
++        paused = agent.run_agent(store, Scripted(), [source], ExperimentSpec((0., 1.)),
++                                 reference=reference(), scales={'x': True})
++    before = store.list(); provider = Scripted()
++    with pytest.raises(ValueError, match='scale'):
++        agent.resume_agent(store, provider, paused, 'Researcher reply.', respondent='Researcher A')
++    assert not provider.calls and store.list() == before
++
++
++def test_cli_does_not_turn_boolean_scale_into_numeric_pass(tmp_path, capsys):
++    from biomodel_agent import cli
++    sbml = tmp_path / 'model.xml'; sbml.write_text(model().sbml)
++    exp = tmp_path / 'exp.json'; exp.write_text(json.dumps({'times': [0., 1.]}))
++    ref = tmp_path / 'reference.json'
++    ref.write_text(json.dumps({'times': [0., 1.], 'values': {'x': [1., math.exp(-.4)]}, 'scales': {'x': True}}))
++    result = cli.main(['run', str(sbml), '--experiment', str(exp), '--reference', str(ref), '--store', str(tmp_path / 'store')])
++    assert result == 1 and 'positive finite number' in capsys.readouterr().err
++    assert not ArtifactStore(tmp_path / 'store').list()
++
++
++def test_wrong_reference_still_fails_with_valid_fixed_scale(tmp_path):
++    store = ArtifactStore(tmp_path / 'store')
++    wrong = SimulationResult('succeeded', (0., 1.), {'x': (0., 0.)})
++    ref = application.run_reproduction(store, model(), ExperimentSpec((0., 1.)), reference=wrong, scales={'x': 2.})
++    run = store.get(ref)['payload']
++    assert run['comparison']['max_scaled_error'] == pytest.approx(.5)
++    assert run['comparison']['status'] == 'fail' and run['scientific_status'] == 'failed'
+--- before/docs/fixed-scale-preflight.md
++++ after/docs/fixed-scale-preflight.md
+@@ -0,0 +1,17 @@
++# 固定评分尺度预检（2026-10-18）
++
++## 真实复现
++
++运行入口原先对 scales 中每项直接 float(value)。虽然底层比较器明确拒绝布尔值，入口却把 JSON true 变成 1.0。使用 dx/dt=-0.4x、x(0)=1 的实际求解结果与解析解参考，scales={"x": true} 得到数值比较 pass 和 passed_structured_reference。修复前后证据位于 artifacts/fixed-scale-preflight-20261018/before.json 与 after.json。
++
++## 修改
++
++统一 validation.validate_scales 校验调用者提供的固定尺度：字典键须为非空字符串，每个值须为正且有限的数字，布尔值和数字字符串均拒绝。通过校验的整数和浮点数复制为浮点字典，不修改调用者输入。提供参考时还要求尺度覆盖全部参考列。None 仍表示未提供固定尺度，沿用不执行参考比较的原有行为，不自动补齐缺失尺度。
++
++直接运行和 Agent 启动在缓存查询、仿真、模型调用或任务写入前校验；恢复旧任务在研究者回复写入前校验。有效额外列尺度保留，非法额外尺度拒绝。任务和重放冻结通过校验的尺度，保持数值规则一致。底层误差公式与阈值没有修改。
++
++## 验证
++
++新增 24 项回归，覆盖非法类型、非正与非有限尺度、缺列、无参考输入、CLI 入口及旧检查点恢复。真实求解验证解析解匹配、错误参考失败、缓存和重放。完整回归 488 项；以 artifacts/fixed-scale-preflight-20261018/acceptance.json 与 installed-pytest.xml 为最终验收证据。另运行三个原检查点的脚本化离线演练；不把脚本操作当作模型自主能力。
++
++未调用外部模型，未修改原始评测或独立测试集。尺度的格式有效不等于来源被证实，也不证明其科学合理性；未测得新的 Agent 基准成功率。
+--- before/README.md
++++ after/README.md
+@@ -109,3 +109,5 @@
+ Codex、GPT-6 Sol、DSH 等属于开发工具层。它们可以协作实现本项目，但不因此成为产品运行时组件，也不规定产品内部采用多 Agent 架构。
+ 
+ 2026-10-18 参考输入：[参考结果输入验证](docs/reference-input-validation.md)。修复评分配置导致失败参考被误读为成功的问题；在执行和任务恢复前验证参考可用性，完整回归 464 项。
++
++2026-10-18 评分尺度：[固定评分尺度预检](docs/fixed-scale-preflight.md)。拒绝布尔值等非法尺度，执行与恢复前检查参考列覆盖；解析解、缓存与重放回归保留，完整测试 488 项。

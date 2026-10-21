@@ -1,0 +1,6 @@
+{
+  "reviewer": "agent_operator_code_inspection",
+  "program_count": 18,
+  "scope": "execution safety and local data access; not independent human scientific review",
+  "unchanged_programs": true
+}

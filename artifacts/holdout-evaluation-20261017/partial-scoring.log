@@ -1,0 +1,78 @@
+{
+  "biomodel": {
+    "complete_success": {
+      "count": 1,
+      "denominator": 1
+    },
+    "gap_identification": {
+      "count": 3,
+      "denominator": 4
+    },
+    "targeted_clarification": {
+      "count": 3,
+      "denominator": 4
+    },
+    "unsupported_executable_delivery": {
+      "count": 0,
+      "denominator": 4
+    },
+    "fresh_clarified_success": {
+      "count": 2,
+      "denominator": 4
+    },
+    "sufficient_success": {
+      "count": 3,
+      "denominator": 5
+    },
+    "false_blocking_sufficient": {
+      "count": 0,
+      "denominator": 5
+    },
+    "same_task_resume_all": {
+      "count": 2,
+      "denominator": 4
+    },
+    "same_task_resume_conditional": {
+      "count": 2,
+      "denominator": 3
+    },
+    "fresh_trials_observed": 6,
+    "elapsed_seconds_fresh": 272.3444300990086,
+    "elapsed_seconds_resumes": 195.9019485969984
+  },
+  "codex": {
+    "complete_success": {
+      "count": 0,
+      "denominator": 1
+    },
+    "gap_identification": {
+      "count": 4,
+      "denominator": 4
+    },
+    "targeted_clarification": {
+      "count": 4,
+      "denominator": 4
+    },
+    "unsupported_executable_delivery": {
+      "count": 0,
+      "denominator": 4
+    },
+    "fresh_clarified_success": {
+      "count": 4,
+      "denominator": 4
+    },
+    "sufficient_success": {
+      "count": 4,
+      "denominator": 5
+    },
+    "false_blocking_sufficient": {
+      "count": 1,
+      "denominator": 5
+    },
+    "same_task_resume_all": null,
+    "same_task_resume_conditional": null,
+    "fresh_trials_observed": 9,
+    "elapsed_seconds_fresh": 315.7605534279937,
+    "elapsed_seconds_resumes": 0
+  }
+}

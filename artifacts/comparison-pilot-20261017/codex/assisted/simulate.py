@@ -1,0 +1,9 @@
+import json
+
+
+def main():
+    print(json.dumps({'status': 'needs_input', 'reason': 'X(0), Y(0), and Z(0) are missing from source.txt and experiment.json. Supply original-paper initial conditions for a Figure 2B replay, or explicitly analyst-specified initial conditions for exploration, before computing the requested times from 0 to 120.'}))
+
+
+if __name__ == "__main__":
+    main()

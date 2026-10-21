@@ -1,0 +1,91 @@
+{
+  "status": "needs_input",
+  "parameters": [
+    {
+      "id": "k1",
+      "value": 1.0,
+      "quote": "e021: k1 = 1.0; k3 = 1.0; k5 = 1.0."
+    },
+    {
+      "id": "k3",
+      "value": 1.0,
+      "quote": "e021: k1 = 1.0; k3 = 1.0; k5 = 1.0."
+    },
+    {
+      "id": "k5",
+      "value": 1.0,
+      "quote": "e021: k1 = 1.0; k3 = 1.0; k5 = 1.0."
+    },
+    {
+      "id": "k2",
+      "value": 0.1,
+      "quote": "e022: k2 = 0.1; k4 = 0.1; k6 = 0.1."
+    },
+    {
+      "id": "k4",
+      "value": 0.1,
+      "quote": "e022: k2 = 0.1; k4 = 0.1; k6 = 0.1."
+    },
+    {
+      "id": "k6",
+      "value": 0.1,
+      "quote": "e022: k2 = 0.1; k4 = 0.1; k6 = 0.1."
+    },
+    {
+      "id": "Ki",
+      "value": 1.0,
+      "quote": "e023: Ki = 1.0."
+    },
+    {
+      "id": "n",
+      "value": 10.0,
+      "quote": "e024: n = 10."
+    }
+  ],
+  "states": [
+    {
+      "id": "X",
+      "initial": null,
+      "quote": "Initial X, Y, Z values are not specified in the selected section and caption."
+    },
+    {
+      "id": "Y",
+      "initial": null,
+      "quote": "Initial X, Y, Z values are not specified in the selected section and caption."
+    },
+    {
+      "id": "Z",
+      "initial": null,
+      "quote": "Initial X, Y, Z values are not specified in the selected section and caption."
+    }
+  ],
+  "equations": [
+    {
+      "state": "X",
+      "expression": "k1*(Ki**n)/(Ki**n + Z**n) - k2*X",
+      "quote": "dX/dt = k1*Ki^n/(Ki^n + Z^n) - k2*X."
+    },
+    {
+      "state": "Y",
+      "expression": "k3*X - k4*Y",
+      "quote": "dY/dt = k3*X - k4*Y."
+    },
+    {
+      "state": "Z",
+      "expression": "k5*Y - k6*Z",
+      "quote": "dZ/dt = k5*Y - k6*Z."
+    }
+  ],
+  "questions": [
+    "What are the initial values of X, Y, Z at t=0 for the requested simulation?",
+    "Are the experiment.json times arbitrary-unit times consistent with the source's arbitrary-unit description?",
+    "Should the Hill exponent n = 10 be treated as exactly 10 or as an approximate transcribed integer?"
+  ],
+  "limitations": [
+    "The supplied source.txt does not specify initial values for X, Y, or Z.",
+    "TASK.md requires initial values to be left null when missing and forbids inferring them from prior knowledge, parameter values, or the graph.",
+    "The experiment times span 0 to 120 a.u., while the source caption only mentions an oscillation period of about 40 a.u.; this excerpt does not justify unit conversion.",
+    "The parameters are transcribed decimal equivalents of printed Figure 2B images, so transcription or rounding differences from the original paper are possible."
+  ],
+  "initial_origin": "missing from source; no initial values are specified in the selected section and caption, so all three initial values remain null pending researcher input"
+}

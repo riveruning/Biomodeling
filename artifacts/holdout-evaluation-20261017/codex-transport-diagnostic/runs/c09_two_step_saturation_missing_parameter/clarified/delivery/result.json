@@ -1,0 +1,16 @@
+{
+  "status": "delivered",
+  "exit_code": 0,
+  "system": "codex",
+  "case": "c09_two_step_saturation_missing_parameter",
+  "phase": "clarified",
+  "elapsed_seconds": 36.371398966002744,
+  "model": "gpt-6.1-sol",
+  "usage": {
+    "input_tokens": 62720,
+    "cached_input_tokens": 55040,
+    "cache_write_input_tokens": 0,
+    "output_tokens": 1197,
+    "reasoning_output_tokens": 29
+  }
+}

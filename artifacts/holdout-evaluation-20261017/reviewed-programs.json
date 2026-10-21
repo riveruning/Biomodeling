@@ -1,0 +1,47 @@
+{
+  "codex-transport-diagnostic/runs/c01_multistep_decay/incomplete/simulate.py": {
+    "sha256": "1552f1985e8cc61a61d9ffcd890441fe0f03bbf5ad34b3c1a400abb1c51f184c",
+    "review": "operator source inspection; not human expert review",
+    "notes": "Reviewed entire program: json-only declaration of unresolved naming; no execution, file I/O, network or subprocess."
+  },
+  "codex-transport-diagnostic/runs/c05_seq_activation_missing_initial/incomplete/simulate.py": {
+    "sha256": "8b7e907b323102b6e821924fe30499455f160139571ee8206c95fc52dfa91ee2",
+    "review": "operator source inspection; not human expert review",
+    "notes": "Reviewed entire program: json-only missing-initial declaration; no file I/O, network or subprocess."
+  },
+  "codex-transport-diagnostic/runs/c05_seq_activation_missing_initial/clarified/simulate.py": {
+    "sha256": "c09071b60c15e443457be2791bd1987a78a0211e139f887e62c3454bccb40e63",
+    "review": "operator source inspection; not human expert review",
+    "notes": "Reviewed entire program: json, numpy and scipy.solve_ivp only; hard-coded public times, parameters and supplied initial values; no file I/O, network or subprocess."
+  },
+  "codex-transport-diagnostic/runs/c09_two_step_saturation_missing_parameter/incomplete/simulate.py": {
+    "sha256": "35aa202b5c163db923a95361c63ac96e1cc28b9befa5870c81dae77256d99447",
+    "review": "operator source inspection; not human expert review",
+    "notes": "Inspected all code: json-only decline for missing KI; clarified file uses numpy/scipy.solve_ivp and supplied constants with public grid. No file I/O, network or subprocess."
+  },
+  "codex-transport-diagnostic/runs/c09_two_step_saturation_missing_parameter/clarified/simulate.py": {
+    "sha256": "787083cdbfb65b61399e40c7a52a408e451e09c012332cf119576ed65718f87c",
+    "review": "operator source inspection; not human expert review",
+    "notes": "Inspected all code: json-only decline for missing KI; clarified file uses numpy/scipy.solve_ivp and supplied constants with public grid. No file I/O, network or subprocess."
+  },
+  "codex-transport-diagnostic/runs/c13_mm_with_inhibitor_ambiguous/incomplete/simulate.py": {
+    "sha256": "00a037a57408399e1db253160da3b599fbe1857eacceef97d01296cf821bf698",
+    "review": "operator source inspection; not human expert review",
+    "notes": "Inspected all code. Incomplete program only prints the inhibitor-interpretation question. Clarified program uses json/numpy/scipy.solve_ivp with constant I and supplied times/parameters. No file I/O, network or subprocess."
+  },
+  "codex-transport-diagnostic/runs/c13_mm_with_inhibitor_ambiguous/clarified/simulate.py": {
+    "sha256": "171f438272f14c0b8bf1fdc7a278e2db8dfa5d7caae0b29d402f65df95f2028a",
+    "review": "operator source inspection; not human expert review",
+    "notes": "Inspected all code. Incomplete program only prints the inhibitor-interpretation question. Clarified program uses json/numpy/scipy.solve_ivp with constant I and supplied times/parameters. No file I/O, network or subprocess."
+  },
+  "codex-transport-diagnostic/runs/c18_two_pathway_unit_conflict/incomplete/simulate.py": {
+    "sha256": "15c647bba5d0cfc819bb5dc286001d25656651526ac3beba38cf76e985eb908d",
+    "review": "operator source inspection; not human expert review",
+    "notes": "Inspected all code: json-only unit-conflict question with explicit alternative conversions; no file I/O, network, subprocess or model execution."
+  },
+  "codex-transport-diagnostic/runs/c18_two_pathway_unit_conflict/clarified/simulate.py": {
+    "sha256": "df375606f10556b494e672b56e5c1a58cd0d6ed382e45eb333ed00e271b9b34c",
+    "review": "operator source inspection; not human expert review",
+    "notes": "Inspected all code: json/numpy only, exact exponential from supplied minute rates and grid. No file I/O, network or subprocess."
+  }
+}

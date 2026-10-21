@@ -1,0 +1,20 @@
+{
+  "status": "needs_input",
+  "parameters": [
+    {"id": "V", "value": 0.9, "unit": "min^-1"},
+    {"id": "K", "value": null, "unit": "dimensionless"}
+  ],
+  "states": [
+    {"id": "S", "initial": 2.0}
+  ],
+  "equations": [
+    {"state": "S", "expression": "-V*S/(K+S)"}
+  ],
+  "questions": [
+    "What is the numerical value of the dimensionless parameter K in dS/dt = -V*S/(K+S)?"
+  ],
+  "limitations": [
+    "K is not reported in source.txt; its value cannot be inferred or assumed, so the trajectory at experiment.json times cannot be determined.",
+    "Parameter units follow dimensionally from dimensionless S and time in minutes: K is dimensionless and V has units min^-1."
+  ]
+}

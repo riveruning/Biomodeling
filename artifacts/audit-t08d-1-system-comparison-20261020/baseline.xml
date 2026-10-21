@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="2" failures="0" skipped="0" tests="2" time="0.055" timestamp="2026-10-20T08:42:29.506377+08:00" hostname="LAPTOP-2QUP5P60"><testcase classname="tests.test_system_comparison" name="test_plan_has_actual_systems_not_workflow_aliases" time="0.001"><error message="failed on setup with &quot;FileNotFoundError: [Errno 2] No such file or directory: '/home/riveruning/biologymodel_agent/benchmarks/development/system_comparison.py'&quot;">@pytest.fixture
+    def system():
+        spec = importlib.util.spec_from_file_location('system_comparison_test',
+            ROOT/'benchmarks/development/system_comparison.py')
+        module = importlib.util.module_from_spec(spec)
+&gt;       spec.loader.exec_module(module)
+
+tests/test_system_comparison.py:17: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+&lt;frozen importlib._bootstrap_external&gt;:991: in exec_module
+    ???
+&lt;frozen importlib._bootstrap_external&gt;:1128: in get_code
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;_frozen_importlib_external.SourceFileLoader object at 0x7a609830f470&gt;
+path = '/home/riveruning/biologymodel_agent/benchmarks/development/system_comparison.py'
+
+&gt;   ???
+E   FileNotFoundError: [Errno 2] No such file or directory: '/home/riveruning/biologymodel_agent/benchmarks/development/system_comparison.py'
+
+&lt;frozen importlib._bootstrap_external&gt;:1186: FileNotFoundError</error></testcase><testcase classname="tests.test_system_comparison" name="test_current_phase_bundle_contains_no_private_or_future_material" time="0.001"><error message="failed on setup with &quot;FileNotFoundError: [Errno 2] No such file or directory: '/home/riveruning/biologymodel_agent/benchmarks/development/system_comparison.py'&quot;">@pytest.fixture
+    def system():
+        spec = importlib.util.spec_from_file_location('system_comparison_test',
+            ROOT/'benchmarks/development/system_comparison.py')
+        module = importlib.util.module_from_spec(spec)
+&gt;       spec.loader.exec_module(module)
+
+tests/test_system_comparison.py:17: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+&lt;frozen importlib._bootstrap_external&gt;:991: in exec_module
+    ???
+&lt;frozen importlib._bootstrap_external&gt;:1128: in get_code
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;_frozen_importlib_external.SourceFileLoader object at 0x7a6098330350&gt;
+path = '/home/riveruning/biologymodel_agent/benchmarks/development/system_comparison.py'
+
+&gt;   ???
+E   FileNotFoundError: [Errno 2] No such file or directory: '/home/riveruning/biologymodel_agent/benchmarks/development/system_comparison.py'
+
+&lt;frozen importlib._bootstrap_external&gt;:1186: FileNotFoundError</error></testcase></testsuite></testsuites>

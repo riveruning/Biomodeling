@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="17" time="1.428" timestamp="2026-10-19T11:18:09.918707+08:00" hostname="LAPTOP-2QUP5P60"><testcase classname="tests.test_invocation_journal" name="test_reservation_is_visible_before_callback_and_has_stable_operation_id" time="0.102" /><testcase classname="tests.test_invocation_journal" name="test_errors_and_interruptions_never_release_attempt_budget_or_record_raw_exception" time="0.185"><failure message="KeyError: 'error_type'">tmp_path = PosixPath('/tmp/biomodel-t03a-journal-first/test_errors_and_interruptions_0')
+
+    def test_errors_and_interruptions_never_release_attempt_budget_or_record_raw_exception(tmp_path):
+        store=ArtifactStore(tmp_path)
+        ledger=journal(store)
+        secret='hidden-provider-credential'
+        def fail():
+            raise RuntimeError(secret)
+        with pytest.raises(RuntimeError,match=secret):
+            ledger.invoke('respond',fail)
+        assert ledger.calls==1 and rows(store)[-1]['payload']['phase']=='error'
+        assert secret not in json.dumps(rows(store))
+        def interrupt():
+            raise KeyboardInterrupt()
+        with pytest.raises(KeyboardInterrupt):
+            ledger.invoke('respond',interrupt)
+        assert ledger.calls==2 and rows(store)[-1]['payload']['phase']=='interrupted'
+&gt;       assert rows(store)[-1]['payload']['details']['error_type']=='KeyboardInterrupt'
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       KeyError: 'error_type'
+
+tests/test_invocation_journal.py:54: KeyError</failure></testcase><testcase classname="tests.test_invocation_journal" name="test_compute_budget_is_reserved_once_before_callback_and_never_reset_after_failure" time="0.091" /><testcase classname="tests.test_invocation_journal" name="test_inherited_budget_fields_are_strict[kwargs0]" time="0.051" /><testcase classname="tests.test_invocation_journal" name="test_inherited_budget_fields_are_strict[kwargs1]" time="0.047" /><testcase classname="tests.test_invocation_journal" name="test_inherited_budget_fields_are_strict[kwargs2]" time="0.049" /><testcase classname="tests.test_invocation_journal" name="test_inherited_budget_fields_are_strict[kwargs3]" time="0.047" /><testcase classname="tests.test_invocation_journal" name="test_inherited_budget_fields_are_strict[kwargs4]" time="0.051" /><testcase classname="tests.test_invocation_journal" name="test_inherited_budget_fields_are_strict[kwargs5]" time="0.047" /><testcase classname="tests.test_invocation_journal" name="test_unknown_operation_cannot_execute_or_create_record" time="0.060" /><testcase classname="tests.test_invocation_journal" name="test_failed_terminal_write_keeps_only_reservation_and_no_duplicate_callback" time="0.201" /><testcase classname="tests.test_invocation_journal" name="test_tool_result_references_are_explicit_and_exportable" time="0.115" /><testcase classname="tests.test_invocation_journal" name="test_failed_reservation_does_not_advance_local_counter" time="0.069" /><testcase classname="tests.test_invocation_journal" name="test_frozen_call_limit_is_strict[True]" time="0.050" /><testcase classname="tests.test_invocation_journal" name="test_frozen_call_limit_is_strict[0]" time="0.050" /><testcase classname="tests.test_invocation_journal" name="test_frozen_call_limit_is_strict[51]" time="0.056" /><testcase classname="tests.test_invocation_journal" name="test_frozen_call_limit_is_strict[2]" time="0.057" /></testsuite></testsuites>

@@ -1,0 +1,28 @@
+{
+  "id": "chatcmpl-e2dbe437-a68a-4227-a87d-2883f66802e8",
+  "created": 1792253154,
+  "model": "qwen3.8-chat",
+  "object": "chat.completion",
+  "choices": [
+    {
+      "finish_reason": "stop",
+      "index": 0,
+      "message": {
+        "content": "{\"action\": \"submit_draft\", \"args\": {\"draft\": {\"id\": \"metabolite_clearance\", \"time_unit\": \"minute\", \"compartment\": {\"id\": \"C\", \"size\": 1, \"unit\": \"dimensionless\"}, \"states\": [{\"id\": \"M\", \"initial\": 5.0, \"unit\": \"a.u.\", \"quantity_kind\": \"concentration\", \"nonnegative\": false}], \"parameters\": [{\"id\": \"kf\", \"value\": 0.18, \"unit\": \"per minute\", \"origin\": \"analyst-specified\"}, {\"id\": \"kg\", \"value\": 0.12, \"unit\": \"per minute\", \"origin\": \"analyst-specified\"}], \"reactions\": [], \"rate_rules\": [{\"state\": \"M\", \"expression\": \"-(kf + kg)*M\"}], \"derived\": [{\"id\": \"v_f\", \"expression\": \"kf*M\", \"unit\": \"a.u./minute\"}, {\"id\": \"v_g\", \"expression\": \"kg*M\", \"unit\": \"a.u./minute\"}]}, \"evidence\": [{\"target\": \"M/initial\", \"source_ref\": \"0b4e9c2bdc0bb4696dfa3b52d891a0f037068c925ad7a2dc7ce85017d3ba19b3\", \"page\": 1, \"quote\": \"M(0) = 5.0 a.u.\"}, {\"target\": \"kf/value\", \"source_ref\": \"0b4e9c2bdc0bb4696dfa3b52d891a0f037068c925ad7a2dc7ce85017d3ba19b3\", \"page\": 1, \"quote\": \"kf = 0.18 per minute\"}, {\"target\": \"kg/value\", \"source_ref\": \"0b4e9c2bdc0bb4696dfa3b52d891a0f037068c925ad7a2dc7ce85017d3ba19b3\", \"page\": 1, \"quote\": \"kg = 0.12 per minute\"}, {\"target\": \"rule:M/expression\", \"source_ref\": \"0b4e9c2bdc0bb4696dfa3b52d891a0f037068c925ad7a2dc7ce85017d3ba19b3\", \"page\": 1, \"quote\": \"dM/dt = -(kf + kg)*M\"}, {\"target\": \"derived:v_f/expression\", \"source_ref\": \"0b4e9c2bdc0bb4696dfa3b52d891a0f037068c925ad7a2dc7ce85017d3ba19b3\", \"page\": 1, \"quote\": \"v_f = kf*M\"}, {\"target\": \"derived:v_g/expression\", \"source_ref\": \"0b4e9c2bdc0bb4696dfa3b52d891a0f037068c925ad7a2dc7ce85017d3ba19b3\", \"page\": 1, \"quote\": \"v_g = kg*M\"}, {\"target\": \"time_unit\", \"source_ref\": \"0b4e9c2bdc0bb4696dfa3b52d891a0f037068c925ad7a2dc7ce85017d3ba19b3\", \"page\": 1, \"quote\": \"sampled every 0.25 min from t = 0 to t = 8 min\"}], \"mechanism\": \"Single metabolite M cleared by two parallel irreversible first-order routes (fast kf, slow kg); total rate kf+kg.\"}, \"reason\": \"Source gives ODE, initial, parameters, and researcher clarification resolving the kf unit conflict to per-minute.\"}",
+        "role": "assistant",
+        "provider_specific_fields": {
+          "refusal": null
+        }
+      },
+      "provider_specific_fields": {}
+    }
+  ],
+  "usage": {
+    "completion_tokens": 937,
+    "prompt_tokens": 1649,
+    "total_tokens": 2586,
+    "prompt_tokens_details": {
+      "cached_tokens": 0
+    }
+  }
+}

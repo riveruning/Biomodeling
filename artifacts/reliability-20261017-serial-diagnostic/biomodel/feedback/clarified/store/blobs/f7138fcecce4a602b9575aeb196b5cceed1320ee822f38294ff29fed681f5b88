@@ -1,0 +1,14 @@
+Synthetic, analyst-specified biochemical ODE model; not a published paper.
+Time t is in minutes. States are dimensionless abstract activities. The fixed compartment has size 1 dimensionless.
+Initial R = 0.2.
+Initial P = 0.1.
+Parameter s = 1.0.
+Parameter K = 1.0.
+Parameter dr = 0.4.
+Parameter kp = 0.7.
+Parameter dp = 0.3.
+The source contains two equally authoritative alternatives: dR/dt = s/(1+(P/K)**2)-dr*R OR dR/dt = s/(1+(P/K))-dr*R. It does not specify which was used.
+Equation dP/dt = kp*R-dp*P.
+
+Author clarification (supersedes the unresolved statement above):
+The author confirms dR/dt = s/(1+(P/K)**2)-dr*R. The exponent-one alternative is rejected.

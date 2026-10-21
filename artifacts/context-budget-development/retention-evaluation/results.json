@@ -1,0 +1,257 @@
+{
+  "type": "offline_context_retention_ablation",
+  "autonomous_model_performance_measured": false,
+  "new_model_calls": 0,
+  "token_or_billing_savings_measured": false,
+  "fixtures_sha256": "013bdeaf3dab6ce6ed86787dd157f96c33edb84beb851331e80dd311fc4496e6",
+  "results": [
+    {
+      "name": "short_task",
+      "full_history": {
+        "chars": 364,
+        "required_retained": 3,
+        "required_total": 3,
+        "all_required_retained": true,
+        "no_rewritten_messages": true,
+        "original_task_prefix": true,
+        "within_budget": true,
+        "pass": true
+      },
+      "bounded": {
+        "status": "sent",
+        "chars": 364,
+        "required_retained": 3,
+        "required_total": 3,
+        "all_required_retained": true,
+        "no_rewritten_messages": true,
+        "original_task_prefix": true,
+        "within_budget": true,
+        "pass": true,
+        "audit": {
+          "method": "bounded_context_v1",
+          "compacted": false,
+          "original_chars": 364,
+          "sent_chars": 364,
+          "max_chars": 16000,
+          "omitted_messages": 0,
+          "retained_indices": [
+            0,
+            1,
+            2
+          ]
+        },
+        "character_reduction_fraction": 0.0
+      },
+      "expected_behavior_pass": true,
+      "history_unchanged": true
+    },
+    {
+      "name": "long_source_history",
+      "full_history": {
+        "chars": 140243,
+        "required_retained": 4,
+        "required_total": 4,
+        "all_required_retained": true,
+        "no_rewritten_messages": true,
+        "original_task_prefix": true,
+        "within_budget": false,
+        "pass": false
+      },
+      "bounded": {
+        "status": "sent",
+        "chars": 10624,
+        "required_retained": 4,
+        "required_total": 4,
+        "all_required_retained": true,
+        "no_rewritten_messages": true,
+        "original_task_prefix": true,
+        "within_budget": true,
+        "pass": true,
+        "audit": {
+          "method": "bounded_context_v1",
+          "compacted": true,
+          "original_chars": 140243,
+          "sent_chars": 10624,
+          "max_chars": 16000,
+          "omitted_messages": 17,
+          "retained_indices": [
+            0,
+            1,
+            2,
+            4,
+            6,
+            8,
+            10,
+            12,
+            14,
+            16,
+            18,
+            20,
+            22,
+            24,
+            26,
+            28,
+            30,
+            32,
+            34,
+            36,
+            37,
+            38,
+            39
+          ]
+        },
+        "character_reduction_fraction": 0.9242457734075854
+      },
+      "expected_behavior_pass": true,
+      "history_unchanged": true
+    },
+    {
+      "name": "partial_and_corrected_facts",
+      "full_history": {
+        "chars": 140751,
+        "required_retained": 6,
+        "required_total": 6,
+        "all_required_retained": true,
+        "no_rewritten_messages": true,
+        "original_task_prefix": true,
+        "within_budget": false,
+        "pass": false
+      },
+      "bounded": {
+        "status": "sent",
+        "chars": 11132,
+        "required_retained": 6,
+        "required_total": 6,
+        "all_required_retained": true,
+        "no_rewritten_messages": true,
+        "original_task_prefix": true,
+        "within_budget": true,
+        "pass": true,
+        "audit": {
+          "method": "bounded_context_v1",
+          "compacted": true,
+          "original_chars": 140751,
+          "sent_chars": 11132,
+          "max_chars": 16000,
+          "omitted_messages": 17,
+          "retained_indices": [
+            0,
+            1,
+            2,
+            3,
+            5,
+            7,
+            9,
+            11,
+            13,
+            15,
+            17,
+            19,
+            21,
+            22,
+            24,
+            26,
+            28,
+            30,
+            32,
+            34,
+            36,
+            38,
+            39,
+            40,
+            41
+          ]
+        },
+        "character_reduction_fraction": 0.9209099757728186
+      },
+      "expected_behavior_pass": true,
+      "history_unchanged": true
+    },
+    {
+      "name": "evaluated_study_with_retry_error",
+      "full_history": {
+        "chars": 140276,
+        "required_retained": 5,
+        "required_total": 5,
+        "all_required_retained": true,
+        "no_rewritten_messages": true,
+        "original_task_prefix": true,
+        "within_budget": false,
+        "pass": false
+      },
+      "bounded": {
+        "status": "sent",
+        "chars": 10657,
+        "required_retained": 5,
+        "required_total": 5,
+        "all_required_retained": true,
+        "no_rewritten_messages": true,
+        "original_task_prefix": true,
+        "within_budget": true,
+        "pass": true,
+        "audit": {
+          "method": "bounded_context_v1",
+          "compacted": true,
+          "original_chars": 140276,
+          "sent_chars": 10657,
+          "max_chars": 16000,
+          "omitted_messages": 17,
+          "retained_indices": [
+            0,
+            1,
+            2,
+            4,
+            6,
+            8,
+            10,
+            12,
+            14,
+            16,
+            18,
+            20,
+            22,
+            23,
+            24,
+            26,
+            28,
+            30,
+            32,
+            34,
+            36,
+            38,
+            39
+          ]
+        },
+        "character_reduction_fraction": 0.9240283441215889
+      },
+      "expected_behavior_pass": true,
+      "history_unchanged": true
+    },
+    {
+      "name": "essential_overflow",
+      "full_history": {
+        "chars": 9329,
+        "required_retained": 3,
+        "required_total": 3,
+        "all_required_retained": true,
+        "no_rewritten_messages": true,
+        "original_task_prefix": true,
+        "within_budget": false,
+        "pass": false
+      },
+      "bounded": {
+        "status": "blocked",
+        "required_chars": 9657,
+        "max_chars": 8000,
+        "sent_chars": 0
+      },
+      "expected_behavior_pass": true,
+      "history_unchanged": true
+    }
+  ],
+  "negative_controls": {
+    "dropped_correction_rejected": true,
+    "rewritten_fact_rejected": true
+  },
+  "all_checks_pass": true
+}

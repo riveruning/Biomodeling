@@ -1,0 +1,552 @@
+--- before/src/biomodel_agent/agent_tools.py
++++ after/src/biomodel_agent/agent_tools.py
+@@ -8,10 +8,31 @@
+ from .source_review import review_sources
+ 
+ NUMBER = re.compile(r'(?<![\w.])[+-]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][+-]?\d+)?(?!\w|\.\d)')
++MAX_CITATION_CANDIDATES = 5
++
++
++def _quote_locations(page, quote):
++    """Bounded overlapping matches; diagnostics never choose a citation."""
++    starts = []
++    cursor = 0
++    while len(starts) <= MAX_CITATION_CANDIDATES:
++        start = page.find(quote, cursor)
++        if start < 0:
++            break
++        starts.append(start)
++        cursor = start + 1
++    exact = len(starts) <= MAX_CITATION_CANDIDATES
++    candidates = []
++    for start in starts[:MAX_CITATION_CANDIDATES]:
++        left, right = max(0, start-80), min(len(page), start+160)
++        candidates.append({'start': start, 'end': start+len(quote),
++                           'context_start': left, 'context_end': right,
++                           'context': page[left:right]})
++    return len(starts), exact, candidates
+ 
+ 
+ def submit_draft(store,args,source_refs,mode='reproduction',allowed_mechanisms=()):
+-    result = dict(state='invalid',artifact=None,model_ref=None,draft_ref=None,hypothesis_ref=None,checks=[],problems=[],source_review=None,source_review_ref=None)
++    result = dict(state='invalid',artifact=None,model_ref=None,draft_ref=None,hypothesis_ref=None,checks=[],problems=[],source_review=None,source_review_ref=None,citation_diagnostics=[])
+     try:
+         if mode not in {'reproduction','hypothesis'}:
+             raise ValueError('unknown research mode')
+@@ -41,6 +62,7 @@
+         items = args.get('evidence',[])
+         if not isinstance(items,list):
+             raise ValueError('evidence must be a list')
++        normalized = []
+         for item in items:
+             if not isinstance(item,dict) or set(item)-{'target','source_ref','page','start','end','quote','claim_type'}:
+                 raise ValueError('unknown citation arguments')
+@@ -49,14 +71,29 @@
+             if item['target'] not in set(required)|optional:
+                 raise ValueError(f'Unknown citation target {item["target"]!r}; allowed targets: {sorted(set(required)|optional)}')
+             item = dict(item)
++            if type(item['page']) is not int:
++                raise ValueError('citation offsets must be integers')
+             if 'quote' in item:
+                 if 'start' in item or 'end' in item or not isinstance(item['quote'],str) or not item['quote']:
+                     raise ValueError('provide either a literal quote or explicit offsets')
++                if len(item['quote']) > 8000:
++                    raise ValueError('citation must be nonempty and at most 8000 characters')
+                 source = store.get(item['source_ref'])['payload']
+                 page = next((p['text'] for p in source['pages'] if p['number']==item['page']),None)
+-                if page is None or page.count(item['quote']) != 1:
+-                    raise ValueError('quote must occur exactly once on the source page; use more context')
+-                item['start'] = page.index(item['quote'])
++                if page is None:
++                    raise ValueError('citation page not found in the authorized source')
++                count, exact, candidates = _quote_locations(page, item['quote'])
++                if count != 1:
++                    result['problems'].append(item['target']+': quote must occur exactly once on the source page; use more context or explicit offsets')
++                    result['citation_diagnostics'].append({
++                        'target': item['target'], 'source_ref': item['source_ref'],
++                        'page': item['page'],
++                        'kind': 'quote_not_found' if not count else 'quote_not_unique',
++                        'occurrence_count': count, 'count_is_exact': exact,
++                        'candidates': candidates,
++                        'instruction': 'Choose the source occurrence that supports this target, then submit a new draft with explicit start/end or a unique literal quote. No claim was created for this proposal.'})
++                    continue
++                item['start'] = candidates[0]['start']
+                 item['end'] = item['start']+len(item['quote'])
+             for key in ('page','start','end'):
+                 if type(item[key]) is not int:
+@@ -64,8 +101,17 @@
+             if not 0 < item['end']-item['start'] <= 8000:
+                 raise ValueError('citation must be nonempty and at most 8000 characters')
+             source_payload = store.get(item['source_ref'])['payload']
++            page = next((p['text'] for p in source_payload['pages'] if p['number']==item['page']),None)
++            if page is None or not 0 <= item['start'] < item['end'] <= len(page):
++                raise ValueError('citation offsets outside the authorized source page')
+             claim_type = ('human_convention' if source_payload.get('clarification_ref')
+                           else item.get('claim_type','paper_assumption'))
++            if claim_type not in evidence.CLAIM_TYPES:
++                raise ValueError(f'invalid claim_type {claim_type!r}; allowed: {list(evidence.CLAIM_TYPES)}')
++            normalized.append((item, claim_type))
++        if result['problems']:
++            return result
++        for item,claim_type in normalized:
+             ref = evidence.add_claim(store,item['source_ref'],item['page'],item['start'],item['end'],item['target'],claim_type)
+             links.setdefault(item['target'],[]).append(ref)
+             quotes.setdefault(item['target'],[]).append(store.get(ref)['payload']['quote'])
+--- before/src/biomodel_agent/agent.py
++++ after/src/biomodel_agent/agent.py
+@@ -368,6 +368,7 @@
+             draft_ref = result.get("draft_ref") or draft_ref
+             events.append({"type": "tool_result", "call": calls, "tool": action,
+                            "state": result["state"], "problems": list(result["problems"]),
++                           "citation_diagnostics": result.get("citation_diagnostics", []),
+                            "checks": result["checks"], "source_review": result.get("source_review"), "artifact_refs":[result.get(k) for k in ("draft_ref","model_ref","hypothesis_ref","source_review_ref")]})
+             if result["state"] == "ready":
+                 artifact = result["artifact"]
+@@ -382,7 +383,8 @@
+             if result["state"] == "invalid":
+                 repairs += 1
+                 messages.append(_user(_json({"tool": action, "ok": False, "state": "invalid",
+-                                             "problems": list(result["problems"])})))
++                                             "problems": list(result["problems"]),
++                                             "citation_diagnostics": result.get("citation_diagnostics", [])})))
+                 if repairs > max_repairs:
+                     state = "incomplete"
+                     break
+--- before/tests/test_citation_diagnostics.py
++++ after/tests/test_citation_diagnostics.py
+@@ -0,0 +1,168 @@
++"""Ambiguous evidence is diagnosable, never selected or silently repaired."""
++from copy import deepcopy
++import json
++import math
++
++import pytest
++
++from biomodel_agent import agent, agent_tools, evidence
++from biomodel_agent.domain.contracts import ExperimentSpec, ModelDraft, Parameter, RateRule, State
++from biomodel_agent.domain.serialization import to_dict
++from biomodel_agent.storage import ArtifactStore
++
++
++TEXT = ('Earlier table: Initial x = 1. Parameter k = 0.4.\n'
++        'Confirmed table: Initial x = 1. Parameter k = 0.4.\n'
++        'Equation dx/dt = -k*x.\n')
++
++
++def fixture(tmp_path, text=TEXT):
++    store = ArtifactStore(tmp_path / 'store')
++    path = tmp_path / 'source.txt'
++    path.write_text(text)
++    source = evidence.ingest_source(store, path)
++    draft = ModelDraft('decay', (State('x', 1.),), (Parameter('k', .4),),
++                       rate_rules=(RateRule('x', '-k*x'),))
++    data = {'draft': to_dict(draft), 'evidence': [
++        {'target': target, 'source_ref': source, 'page': 1, 'quote': quote}
++        for target, quote in [('x/initial', 'Initial x = 1.'), ('k/value', 'Parameter k = 0.4.'),
++                              ('rule:x/expression', 'Equation dx/dt = -k*x.')]]}
++    return store, source, data
++
++
++class Scripted:
++    last_usage = {}
++
++    def __init__(self, actions):
++        self.actions, self.calls = iter(actions), []
++
++    def respond(self, messages):
++        self.calls.append(deepcopy(messages))
++        action = next(self.actions)
++        return action(messages) if callable(action) else action
++
++
++def act(action, args=None):
++    return {'action': action, 'args': args or {}}
++
++
++def test_all_ambiguous_quotes_reported_without_partial_claim_creation(tmp_path):
++    store, source, data = fixture(tmp_path)
++    before = deepcopy(data)
++    result = agent_tools.submit_draft(store, data, [source])
++    assert result['state'] == 'invalid'
++    assert data == before
++    assert not store.list('claim') and not store.list('model') and not store.list('run')
++    assert len(result['problems']) == 2
++    diagnostics = result['citation_diagnostics']
++    assert [d['target'] for d in diagnostics] == ['x/initial', 'k/value']
++    for diagnostic in diagnostics:
++        quote = next(c['quote'] for c in data['evidence'] if c['target'] == diagnostic['target'])
++        assert diagnostic['source_ref'] == source and diagnostic['page'] == 1
++        assert diagnostic['occurrence_count'] == 2 and diagnostic['count_is_exact']
++        for candidate in diagnostic['candidates']:
++            assert TEXT[candidate['start']:candidate['end']] == quote
++            assert TEXT[candidate['context_start']:candidate['context_end']] == candidate['context']
++            assert len(candidate['context']) <= 240
++
++
++def test_unknown_quote_has_no_invented_candidate(tmp_path):
++    store, source, data = fixture(tmp_path)
++    data['evidence'][0]['quote'] = 'Initial x = 100.'
++    result = agent_tools.submit_draft(store, data, [source])
++    diagnostic = result['citation_diagnostics'][0]
++    assert diagnostic['kind'] == 'quote_not_found' and diagnostic['occurrence_count'] == 0
++    assert diagnostic['count_is_exact'] and diagnostic['candidates'] == []
++    assert result['state'] == 'invalid' and not store.list('claim')
++
++
++def test_overlapping_occurrences_are_ambiguous_too(tmp_path):
++    store, source, data = fixture(tmp_path, TEXT + 'aaaa\n')
++    data['evidence'] = [{'target': 'rule:x/expression', 'source_ref': source, 'page': 1, 'quote': 'aaa'}]
++    result = agent_tools.submit_draft(store, data, [source])
++    diagnostic = result['citation_diagnostics'][0]
++    starts = [c['start'] for c in diagnostic['candidates']]
++    assert diagnostic['occurrence_count'] == 2 and starts[1] == starts[0] + 1
++    assert not store.list('claim') and not store.list('model')
++
++
++def test_large_repeated_text_has_bounded_context_and_a_lower_bound_count(tmp_path):
++    store, source, data = fixture(tmp_path, TEXT + ('marker ' * 100000))
++    data['evidence'] = [{'target': 'rule:x/expression', 'source_ref': source, 'page': 1, 'quote': 'marker'}]
++    diagnostic = agent_tools.submit_draft(store, data, [source])['citation_diagnostics'][0]
++    assert not diagnostic['count_is_exact'] and diagnostic['occurrence_count'] == 6
++    assert len(diagnostic['candidates']) == 5
++    assert all(len(c['context']) <= 240 for c in diagnostic['candidates'])
++
++
++@pytest.mark.parametrize('page', [True, '1', 0, 3])
++def test_invalid_pages_never_create_claims_or_candidates(tmp_path, page):
++    store, source, data = fixture(tmp_path)
++    data['evidence'][0]['page'] = page
++    result = agent_tools.submit_draft(store, data, [source])
++    assert result['state'] == 'invalid' and result['problems']
++    assert not store.list('claim') and not result['citation_diagnostics']
++
++
++def test_unauthorized_source_is_not_read_for_context(tmp_path):
++    store, source, data = fixture(tmp_path)
++    secret = tmp_path / 'outside.txt'; secret.write_text('PRIVATE-CONTEXT marker marker')
++    outside = evidence.ingest_source(store, secret)
++    data['evidence'][0].update(source_ref=outside, quote='marker')
++    result = agent_tools.submit_draft(store, data, [source])
++    assert result['state'] == 'invalid' and not result['citation_diagnostics']
++    assert 'PRIVATE-CONTEXT' not in json.dumps(result)
++    assert not store.list('claim')
++
++
++@pytest.mark.parametrize('defect', ['negative_start', 'past_end', 'invalid_type'])
++def test_late_malformed_citation_does_not_leave_partial_claims(tmp_path, defect):
++    store, source, data = fixture(tmp_path)
++    # Make the early citations valid, so only the final entry is defective.
++    for citation in data['evidence'][:2]:
++        citation['quote'] = 'Confirmed table: Initial x = 1. Parameter k = 0.4.'
++    final = data['evidence'][-1]
++    if defect == 'invalid_type':
++        final['claim_type'] = 'model_verified'
++    else:
++        final.pop('quote')
++        final.update(start=-1 if defect == 'negative_start' else 0, end=len(TEXT)+1)
++    result = agent_tools.submit_draft(store, data, [source])
++    assert result['state'] == 'invalid' and result['problems']
++    assert not store.list('claim') and not store.list('model')
++
++
++def test_one_budgeted_repair_can_disambiguate_multiple_targets_and_run_real_solver(tmp_path):
++    store, source, data = fixture(tmp_path)
++
++    def choose_confirmed_occurrences(messages):
++        feedback = json.loads(messages[-1]['content'])
++        assert feedback['state'] == 'invalid'
++        assert not store.list('claim')
++        repaired = deepcopy(data)
++        for diagnostic in feedback['citation_diagnostics']:
++            citation = next(c for c in repaired['evidence'] if c['target'] == diagnostic['target'])
++            # This is a scripted test actor's choice, not an automatic tool repair.
++            chosen = diagnostic['candidates'][-1]
++            citation.pop('quote')
++            citation.update(start=chosen['start'], end=chosen['end'])
++        return act('submit_draft', repaired)
++
++    provider = Scripted([act('submit_draft', data), choose_confirmed_occurrences, act('run'), act('finish')])
++    result = store.get(agent.run_agent(store, provider, [source], ExperimentSpec((0., 1.))))['payload']
++    assert result['state'] == 'completed' and result['call_count'] == 4 and result['repair_count'] == 1
++    first = next(e for e in result['events'] if e.get('tool') == 'submit_draft')
++    assert len(first['citation_diagnostics']) == 2
++    sim = store.get(result['run_ref'])['payload']
++    assert sim['simulation']['values']['x'][-1] == pytest.approx(math.exp(-.4), rel=1e-6)
++    assert sim['scientific_status'] == 'not_verified'
++
++
++def test_ignoring_diagnostics_stops_at_the_original_repair_budget(tmp_path):
++    store, source, data = fixture(tmp_path)
++    provider = Scripted([act('submit_draft', data)] * 3)
++    result = store.get(agent.run_agent(store, provider, [source], ExperimentSpec((0., 1.)),
++                                      max_repairs=1))['payload']
++    assert result['state'] == 'incomplete' and result['call_count'] == 2
++    assert result['repair_count'] == 2
++    assert not store.list('claim') and not store.list('model') and not store.list('run')
+--- before/README.md
++++ after/README.md
+@@ -19,6 +19,8 @@
+ 2026-10-18 开发修复：[来源赋值识别与引用自修](docs/source-and-citation-recovery.md)。修复复合表达式尾项的虚假赋值、识别追加的研究者澄清标题，并把可自修引用错误交还模型。原始回答离线重放与完整回归分别留档，不更新冻结版评测成绩。
+ 
+ 2026-10-18 后续修复：[数值声明边界与验证状态](docs/literal-assignment-validation.md)。避免把分数、算式或残缺数值截为参数字面量；完整回归 350 项通过。真实模型验证因网络限制及外发授权审批而未完成，未产生新的性能结论。
++
++2026-10-18 引用诊断：[多处引文诊断与离线恢复演练](docs/citation-diagnostics.md)。一次反馈多处重复/缺失引文，给出有限候选位置；引用预检失败不创建部分 claim。完整回归 364 项通过，另用明确标注的脚本修订演练旧任务恢复，不计为新的模型成绩。
+ 
+ ## 阅读顺序
+ 
+--- before/docs/citation-diagnostics.md
++++ after/docs/citation-diagnostics.md
+@@ -0,0 +1,49 @@
++# 多处引文诊断与离线恢复演练
++
++2026-10-18（北京时间）。本轮继续离线开发，未调用外部模型服务。基于已见诊断材料改进工具反馈，不更新冻结版模型成绩。
++
++## 工具行为
++
++之前的 c18 补全草稿有两处引文分别出现 2 次、3 次。工具遇到第一处便返回泛化报错，模型修正后才能看到下一处问题；这会消耗固定的草稿修订预算。
++
++现在 `submit_draft` 在格式有效的引用列表中先预检，再创建 claim。同一草稿中的多处重复或找不到的引文一起返回 `citation_diagnostics`。每项包含：
++
++- `target`、授权的 `source_ref` 与页码，以及 `quote_not_unique` / `quote_not_found` 类型；
++- `occurrence_count` 和 `count_is_exact`；
++- 最多 5 个候选字符范围，每个附带不超过 240 字符的原页上下文与范围。
++
++扫描只寻找前 6 次匹配。出现第 6 次时，数量表示至少 6 次，`count_is_exact=false`，不会把下界说成精确总数。重叠子串也计入重复，例如 `aaaa` 中的 `aaa` 有两个候选。候选位置不会自动成为证据：模型仍须选择出处，重新提交唯一引文或显式 start/end，并通过原有数值、来源及范围校验。
++
++Agent 把诊断写入工具事件、检查点及预算内修订反馈。模型不修正时，仍按原修订预算停止，没有通过修改答案或增加调用来制造完成。格式、页码、越界范围、claim 类型或引文预检失败时，不会留下半份 proposal 的 claim；来源审查记录仍按原设计保留。其他后续科学检查不承诺数据库事务回滚。
++
++## 验证
++
++新增 14 项针对性测试，覆盖多目标同时诊断、缺失引文、重叠子串、重复大文本的有界反馈、非法页码、范围、类型、授权来源范围，以及一次脚本选择修订后执行真实 ODE 和忽略反馈耗尽预算。针对性组合 **64 项通过**；完整 Python 回归从 350 项增至 **364 项通过**。
++
++另从原冻结版初始暂停点导出不可变依赖闭包，读取原始模型动作前缀，用当前代码做三项离线流程演练。前缀字节与哈希保持不变；之后的修订、运行和结束动作由明确标注的脚本演员提供，没有向模型发送任何请求，也没有用参考答案决定修订。
++
++| 已见阶段 | 脚本演练状态 | 累计动作调用 / 原上限 | 草稿修订 / 原上限 | 所需轨迹最大缩放误差 |
++|---|---|---:|---:|---:|
++| c13 原任务恢复 | completed | 6 / 8 | 1 / 2 | 3.25e-6 以下 |
++| c18 补全新会话 | completed | 6 / 8 | 2 / 2 | 4.77e-7 以下 |
++| c18 原任务恢复 | completed | 7 / 8 | 2 / 2 | 4.77e-7 以下 |
++
++这不是三次新的模型成功。脚本明确选择诊断中的候选范围、按工具反馈重新引用补充材料、修正 compartment 目标名，或把速率规则状态表示改为验证器要求的 variable。这些动作及全部反馈均保存，不能当作产品已自主完成的推理。
++
++首次演练脚本没有处理 c18 的状态表示错误，在第二项停止；未完成产物保留。扩展脚本演员来处理这条明确的结构校验反馈后，另存整组三项 v2 演练。两次之间产品代码未变，没有覆盖首次产物。
++
++参考轨迹仅在演员结束后由外部比较读取。比较检查原采样网格、所需物种及有限数值，阈值为 1e-3；这三项没有额外输出列。两份原暂停记录保持不变，恢复继承原先已消耗的 2 次调用和完整历史；科学状态均为 not_verified。这验证旧检查点与新诊断反馈的流程兼容性，不能证明真实模型能在同一预算内自行修正。
++
++## 记录与重跑
++
++源码前后快照、文件哈希、测试日志/XML、首次与 v2 演练及脚本动作在 `artifacts/citation-diagnostics-20261018/`。开发脚本 `benchmarks/development/exercise_citation_repair.py` 必须直接作为脚本运行，以保留原检查点适配器类名；它实现离线演员，没有认证或 HTTP 方法：
++
++```bash
++PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=src .venv/bin/python \
++  benchmarks/development/exercise_citation_repair.py \
++  --output /tmp/my-offline-citation-exercise
++```
++
++输出目录必须不存在。该程序依赖已经保存的原始测试记录，属于已见材料开发检查。
++
++真实 USTC 模型验证仍等待此前请求的明确外发授权；本轮没有绕过自动审批拒绝。下一步可以继续改进离线证据与恢复流程；获得授权后，需冻结最新源码并另行实测模型修订行为。
+--- before/benchmarks/development/exercise_citation_repair.py
++++ after/benchmarks/development/exercise_citation_repair.py
+@@ -0,0 +1,201 @@
++"""Offline scripted repair of already exposed evaluation traces.
++
++The initial responses and old pause points are unchanged. A deterministic test
++actor then chooses offsets from tool diagnostics, rebinds requested clarification
++citations, fixes a compartment target spelling, or applies the rate-rule state
++representation explicitly requested by the validator. This measures workflow and
++solver compatibility, not new model reasoning, inference performance or costs.
++No credentials, HTTP requests or gold answers enter the actor.
++"""
++from copy import deepcopy
++import hashlib
++import json
++from pathlib import Path
++import shutil
++import argparse
++
++import numpy as np
++
++from biomodel_agent import agent, application, bundles, evidence
++from biomodel_agent.domain.contracts import ExperimentSpec
++from biomodel_agent.storage import ArtifactStore
++
++
++def dump(path, value):
++    path.parent.mkdir(parents=True, exist_ok=True)
++    path.write_text(json.dumps(value, indent=2, ensure_ascii=False, allow_nan=False))
++
++
++def sha(path):
++    return hashlib.sha256(path.read_bytes()).hexdigest()
++
++
++class ObservedPacedProvider:
++    # Preserve the original checkpoint's adapter identity and settings while
++    # replacing its implementation with an explicitly labelled offline actor.
++    base_url = 'https://api.llm.ustc.edu.cn/v1'
++    model = 'qwen3.8-chat'
++    json_mode = True
++    timeout_s = 90.
++    max_tokens = 4000
++    last_usage = {}
++
++    def __init__(self, prefix):
++        self.prefix = iter(prefix)
++        self.latest = None
++        self.reply_ref = None
++        self.reply_text = None
++        self.scripted_actions = []
++
++    def respond(self, messages):
++        last = json.loads(messages[-1]['content'])
++        if last.get('tool') == 'researcher_reply':
++            self.reply_ref, self.reply_text = last['source_ref'], last['text']
++        try:
++            response = deepcopy(next(self.prefix))
++            if response['action'] == 'submit_draft':
++                self.latest = deepcopy(response['args'])
++            return response
++        except StopIteration:
++            pass
++        if last.get('tool') == 'submit_draft' and last.get('state') == 'invalid':
++            proposal = deepcopy(self.latest)
++            for diagnostic in last.get('citation_diagnostics', []):
++                if not diagnostic['candidates']:
++                    raise RuntimeError('script has no candidate; do not invent a quote')
++                citation = next(c for c in proposal['evidence'] if c['target'] == diagnostic['target'])
++                chosen = diagnostic['candidates'][-1]
++                citation.pop('quote', None)
++                citation.update(start=chosen['start'], end=chosen['end'])
++            for problem in last.get('problems', []):
++                marker = ': cite the researcher clarification'
++                if marker in problem:
++                    target = problem.split(marker, 1)[0]
++                    if not self.reply_ref:
++                        raise RuntimeError('no supplied clarification available')
++                    for citation in proposal['evidence']:
++                        if citation['target'] == target:
++                            citation.pop('start', None)
++                            citation.pop('end', None)
++                            citation.update(source_ref=self.reply_ref, page=1, quote=self.reply_text)
++                elif 'Unknown citation target' in problem:
++                    for citation in proposal['evidence']:
++                        if citation['target'].startswith('compartment/'):
++                            field = citation['target'].split('/', 1)[1]
++                            citation['target'] = proposal['draft']['compartment']['id'] + '/' + field
++                elif "rate rules require quantity_kind 'variable'" in problem:
++                    governed = {r['state'] for r in proposal['draft']['rate_rules']}
++                    for state in proposal['draft']['states']:
++                        if state['id'] in governed:
++                            state['quantity_kind'] = 'variable'
++            if proposal == self.latest:
++                # A harness limitation must not prevent recording the remaining
++                # independent cases, or turn into a fictional model success.
++                response = {'action': 'finish', 'args': {}}
++                self.scripted_actions.append(deepcopy(response))
++                return response
++            self.latest = deepcopy(proposal)
++            response = {'action': 'submit_draft', 'args': proposal}
++        elif last.get('tool') == 'submit_draft' and last.get('ok'):
++            response = {'action': 'run', 'args': {}}
++        elif last.get('tool') == 'run' and last.get('ok'):
++            response = {'action': 'finish', 'args': {}}
++        else:
++            raise RuntimeError('unsupported actor state; no inference fallback')
++        self.scripted_actions.append(deepcopy(response))
++        return response
++
++
++def main():
++    parser = argparse.ArgumentParser()
++    parser.add_argument('--project', type=Path, default=Path('/home/riveruning/biologymodel_agent'))
++    parser.add_argument('--dataset', type=Path, default=Path('/home/riveruning/biomodel_agent_evalset'))
++    parser.add_argument('--output', type=Path, required=True)
++    args = parser.parse_args()
++    args.output.mkdir(parents=True, exist_ok=False)
++    original_root = args.project / 'artifacts/holdout-evaluation-20261017/runs/biomodel'
++    rows = []
++    jobs = [('c13_mm_with_inhibitor_ambiguous', 'resume'),
++            ('c18_two_pathway_unit_conflict', 'clarified'),
++            ('c18_two_pathway_unit_conflict', 'resume')]
++    dump(args.output / 'protocol.json', {
++        'kind': 'offline_scripted_workflow_exercise', 'jobs': jobs,
++        'new_model_requests': 0, 'independent_holdout': False,
++        'actor': 'unchanged original response prefix followed by explicit scripted repairs',
++        'candidate': application.environment_fingerprint(),
++        'budget': 'same original total calls 8, repairs 2, retries 2; resume counts cumulative',
++        'model_capability_measured': False})
++    for case, phase in jobs:
++        original = original_root / case / ('incomplete' if phase == 'resume' else phase)
++        work = args.output / case / phase
++        work.mkdir(parents=True)
++        prefix, hashes = [], {}
++        for path in sorted((original / phase).glob('response-*.json')):
++            response = json.loads(path.read_text())
++            action = json.loads(response['choices'][0]['message']['content'])
++            prefix.append(action)
++            hashes[str(path)] = sha(path)
++            if action['action'] == 'submit_draft':
++                break
++        provider = ObservedPacedProvider(prefix)
++        parent_calls = 0
++        if phase == 'resume':
++            # Do not open the original index: it is immutable evaluation data.
++            scratch = work / 'copy-of-original-store'
++            shutil.copytree(original / 'store', scratch)
++            parent_result = json.loads((original / 'incomplete/result.json').read_text())
++            bundles.export_bundle(ArtifactStore(scratch), parent_result['agent_ref'], work / 'store')
++            store = ArtifactStore(work / 'store')
++            parent_before = store.get(parent_result['agent_ref'])
++            parent_calls = parent_result['calls']
++            reply = (args.dataset / 'clarifications' / (case + '.clarification.txt')).read_text()
++            ref = agent.resume_agent(store, provider, parent_result['agent_ref'], reply,
++                                     respondent='Pre-written held-out researcher reply')
++            assert store.get(parent_result['agent_ref']) == parent_before
++        else:
++            store = ArtifactStore(work / 'store')
++            source = evidence.ingest_source(store, original / 'source.txt')
++            experiment = json.loads((original / 'experiment.json').read_text())
++            ref = agent.run_agent(store, provider, [source], ExperimentSpec(tuple(experiment['times'])))
++        result = store.get(ref)['payload']
++        dump(work / 'agent.json', result)
++        dump(work / 'scripted-actions.json', provider.scripted_actions)
++        row = {'case': case, 'phase': phase, 'status': result['state'],
++               'calls_cumulative': result['call_count'], 'calls_incremental': result['call_count'] - parent_calls,
++               'repair_count': result['repair_count'], 'original_response_sha256': hashes,
++               'scripted_actions': len(provider.scripted_actions), 'new_model_requests': 0,
++               'numeric': {'status': 'not_run'}, 'parent_unchanged': phase == 'resume'}
++        if result['run_ref']:
++            run = store.get(result['run_ref'])['payload']
++            dump(work / 'run.json', run)
++            # References are read here, after the actor has finished. They are
++            # never passed to the actor, checkpoint or model message history.
++            reference_path = args.dataset / 'references' / (case + '.reference.json')
++            reference = json.loads(reference_path.read_text())
++            actual = run['simulation']
++            assert actual['status'] == 'succeeded'
++            required = set(reference['values'])
++            assert required <= set(actual['values'])
++            grid, expected_grid = np.asarray(actual['times']), np.asarray(reference['times'])
++            assert grid.shape == expected_grid.shape and np.isfinite(grid).all()
++            assert np.allclose(grid, expected_grid, rtol=0, atol=1e-12)
++            row['additional_outputs'] = sorted(set(actual['values']) - required)
++            row['output_contract_exact'] = not row['additional_outputs']
++            errors = {}
++            for name, values in reference['values'].items():
++                got, expected = np.asarray(actual['values'][name]), np.asarray(values)
++                assert got.shape == expected.shape and np.isfinite(got).all()
++                errors[name] = float(np.max(np.abs(got-expected))/max(1., float(np.max(np.abs(expected)))))
++            row['numeric'] = {'status': 'pass' if max(errors.values()) <= .001 else 'fail',
++                              'max_scaled_error': max(errors.values()), 'per_species': errors,
++                              'reference_sha256': sha(reference_path)}
++            row['scientific_status'] = run['scientific_status']
++        dump(work / 'result.json', row)
++        rows.append(row)
++        print(json.dumps(row), flush=True)
++    dump(args.output / 'results.json', {'kind': 'offline_scripted_workflow_exercise', 'rows': rows,
++                                      'model_capability_measured': False, 'new_model_requests': 0})
++
++
++if __name__ == '__main__':
++    main()

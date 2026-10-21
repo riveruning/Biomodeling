@@ -1,0 +1,158 @@
+--- before/src/biomodel_agent/validation.py
++++ after/src/biomodel_agent/validation.py
+@@ -219,11 +219,20 @@
+     for key in sorted(a):
+         for i, (x, y) in enumerate(zip(a[key], b[key])):
+             error = abs(x - y) / fixed[key]
++            if not math.isfinite(error):
++                # The unscaled subtraction can overflow even when its ratio is
++                # representable. Decimal is used only on this exceptional path.
++                from decimal import Decimal, localcontext
++                with localcontext() as context:
++                    context.prec = 1100
++                    error = float(abs(Decimal.from_float(x) - Decimal.from_float(y)) /
++                                  Decimal.from_float(fixed[key]))
+             if error > worst:
+                 worst, where = error, f"{key}[{i}]"
+     return {
+         **clock,
+-        "max_scaled_error": worst,
++        "max_scaled_error": worst if math.isfinite(worst) else None,
++        **({"error_overflow": True} if not math.isfinite(worst) else {}),
+         "status": "pass" if worst <= threshold else "fail",
+         "threshold": threshold,
+         "scales": fixed,
+@@ -235,7 +244,8 @@
+ def convergence_check(coarse: object, fine: object, scales: object, threshold: float = 1e-3) -> Check:
+     """Check that refining the solver moves the series by less than ``threshold``."""
+     outcome = compare_series(fine, coarse, scales, threshold)
+-    detail = (f"max scaled error {outcome['max_scaled_error']!r} vs threshold {outcome['threshold']!r}"
++    error_detail = "overflow (larger than any finite float)" if outcome.get('error_overflow') else repr(outcome['max_scaled_error'])
++    detail = (f"max scaled error {error_detail} vs threshold {outcome['threshold']!r}"
+               f" at {outcome['worst']!r}")
+     return Check(
+         code="convergence",
+--- before/src/biomodel_agent/application.py
++++ after/src/biomodel_agent/application.py
+@@ -421,6 +421,8 @@
+                               "max_scaled_error": outcome["max_scaled_error"],
+                               "threshold": outcome["threshold"], "scales": outcome["scales"],
+                               "worst": outcome["worst"], "columns": outcome["columns"]}
++                if outcome.get('error_overflow'):
++                    comparison['error_overflow'] = True
+             except Exception as exc:
+                 comparison = {"status": "not_run",
+                               "reason": f"comparison failed: {type(exc).__name__}: {exc}"}
+--- before/src/biomodel_agent/reporting.py
++++ after/src/biomodel_agent/reporting.py
+@@ -43,7 +43,7 @@
+         lines.extend(_model_summary(frozen['artifact']))
+         comp = p['comparison']
+         lines.extend(['## Frozen comparison','',f'Status: **{comp["status"]}**'])
+-        for key in ('max_scaled_error','threshold','scales','time_unit','time_unit_status','reason'):
++        for key in ('max_scaled_error','error_overflow','threshold','scales','time_unit','time_unit_status','reason'):
+             if key in comp:
+                 lines.append(f'- {key}: `{json.dumps(comp[key],ensure_ascii=False)}`')
+         for field in ('static_validation','numeric_validation'):
+--- before/tests/test_scaled_error_overflow.py
++++ after/tests/test_scaled_error_overflow.py
+@@ -0,0 +1,73 @@
++"""Finite trajectory inputs may overflow the intermediate absolute difference."""
++from fractions import Fraction
++import json
++import sys
++
++import pytest
++
++from biomodel_agent import application, cli, modeling, reporting, simulation, validation
++from biomodel_agent.domain.contracts import ExperimentSpec, ModelDraft, Parameter, RateRule, SimulationResult, State
++from biomodel_agent.storage import ArtifactStore
++
++
++def series(value): return {'times': [0.], 'values': {'x': [value]}}
++
++
++@pytest.mark.parametrize('x,y,scale', [(1e308, -1e308, 1e308), (-1e308, 1e308, 1e308),
++                                      (1.7e308, -1.7e308, 2.), (1.7e308, -1.7e308, 1.7e308)])
++def test_representable_ratio_uses_exact_rational_oracle(x, y, scale):
++    expected = float(abs(Fraction(x) - Fraction(y)) / Fraction(scale))
++    result = validation.compare_series(series(x), series(y), {'x': scale}, sys.float_info.max)
++    assert result['max_scaled_error'] == expected
++    assert result['status'] == 'pass' and not result.get('error_overflow')
++    json.dumps(result, allow_nan=False)
++
++
++@pytest.mark.parametrize('threshold,status', [(1.9, 'fail'), (2., 'pass'), (2.1, 'pass')])
++def test_overflow_recovery_obeys_original_inclusive_threshold(threshold, status):
++    result = validation.compare_series(series(1e308), series(-1e308), {'x': 1e308}, threshold)
++    assert result['max_scaled_error'] == 2. and result['status'] == status
++
++
++@pytest.mark.parametrize('scale', [1., 1e-308, 5e-324])
++def test_true_unrepresentable_error_fails_and_remains_json_safe(scale):
++    result = validation.compare_series(series(1e308), series(-1e308), {'x': scale}, sys.float_info.max)
++    assert result['status'] == 'fail' and result['error_overflow'] is True
++    assert result['max_scaled_error'] is None and result['worst'] == 'x[0]'
++    json.dumps(result, allow_nan=False)
++
++
++def test_ratio_overflow_without_subtraction_overflow_is_safe():
++    result = validation.compare_series(series(1.), series(0.), {'x': 5e-324})
++    assert result['status'] == 'fail' and result['error_overflow']
++    json.dumps(result, allow_nan=False)
++
++
++def test_convergence_reports_overflow_without_passing():
++    check = validation.convergence_check(series(1e308), series(-1e308), {'x': 1.})
++    assert check.status == 'fail' and 'overflow' in check.message
++
++
++@pytest.mark.parametrize('scale,threshold,expected', [(1., .001, 'fail'), (1e308, 3., 'pass')])
++def test_stubbed_solver_run_cache_and_replay_preserve_error_evidence(tmp_path, monkeypatch, scale, threshold, expected):
++    # This exercises the storage boundary with deterministic supplied results;
++    # it does not claim that this stub generated a physical solver trajectory.
++    actual = SimulationResult('succeeded', (0., 1.), {'x': (1e308, 1e308)})
++    reference = SimulationResult('succeeded', (0., 1.), {'x': (-1e308, -1e308)})
++    monkeypatch.setattr(simulation, 'simulate', lambda *a, **kw: actual)
++    artifact = modeling.build_model(ModelDraft('decay', (State('x', 1.),), (Parameter('k', .4),),
++                                              rate_rules=(RateRule('x', '-k*x'),)))
++    store = ArtifactStore(tmp_path / 'store'); exp = ExperimentSpec((0., 1.))
++    first = application.run_reproduction(store, artifact, exp, reference=reference, scales={'x': scale}, threshold=threshold)
++    cached = application.run_reproduction(store, artifact, exp, reference=reference, scales={'x': scale}, threshold=threshold)
++    replay = application.replay_run(store, first)
++    for ref in [first, cached, replay]:
++        run = store.get(ref)['payload']; comparison = run['comparison']
++        assert comparison['status'] == expected
++        assert bool(comparison.get('error_overflow')) == (expected == 'fail')
++        assert run['scientific_status'] == ('failed' if expected == 'fail' else 'passed_structured_reference')
++        json.dumps(run, allow_nan=False)
++        if expected == 'fail':
++            assert 'error_overflow' in reporting.render_report(store, ref)
++        assert cli._print_run_result(ref, store, strict=False) == (1 if expected == 'fail' else 0)
++    assert store.get(cached)['payload']['cached_from'] == first
+--- before/docs/scaled-error-overflow.md
++++ after/docs/scaled-error-overflow.md
+@@ -0,0 +1,15 @@
++# 缩放误差的中间溢出（2026-10-18）
++
++## 复现与修复
++
++两条有限轨迹分别为 1e308 和 -1e308，固定尺度 1e308。数学上的缩放误差为 2，但原实现先计算差值而溢出为 Infinity，导致阈值为 3 时错误判失败，且比较结果无法按严格 JSON 保存。尺度为 1 时，真实误差确实超出浮点范围，同样无法序列化。
++
++正常范围仍走原有浮点路径。仅在中间误差非有限时，使用标准库 Decimal 对原始二进制浮点值作高精度差值和除法，再转回浮点。可表示的误差继续使用原有 <= 阈值比较。真正超出浮点表示范围时，结果明确 fail，max_scaled_error=null、error_overflow=true，并保留出错列/样本；任何有限阈值都不会使该结果通过。不把误差截断为最大浮点数，不把 null 当作零。
++
++应用记录、缓存、重放与可读报告保留溢出标记。收敛检查显示明确的溢出失败。修复前后可重复输入与输出位于 artifacts/scaled-error-overflow-20261018/before.json 与 after.json。
++
++## 验证
++
++新增 14 项测试，以 Python Fraction 的精确有理数计算作为可表示误差的独立核对；覆盖正负方向、恢复后的阈值边界、仅除法溢出、真正超界、收敛失败，以及记录/缓存/重放/CLI/报告的 JSON 安全性。应用边界测试使用明确标注的确定性求解器替身，不冒充真实物理模拟。其余项目真实求解回归保留。
++
++完整测试 540 项，以 artifacts/scaled-error-overflow-20261018/acceptance.json 与 installed-pytest.xml 为最终证据；另有三个原检查点的脚本化离线兼容演练。未调用外部模型，未修改独立测试集或原始评测结论。
+--- before/README.md
++++ after/README.md
+@@ -113,3 +113,5 @@
+ 2026-10-18 评分尺度：[固定评分尺度预检](docs/fixed-scale-preflight.md)。拒绝布尔值等非法尺度，执行与恢复前检查参考列覆盖；解析解、缓存与重放回归保留，完整测试 488 项。
+ 
+ 2026-10-18 轨迹输入：[数值轨迹输入完整性](docs/numeric-input-integrity.md)。比较拒绝隐式类型转换与非法时间网格；非有限输出产生阻断报告。完整回归 526 项。
++
++2026-10-18 误差溢出：[缩放误差的中间溢出](docs/scaled-error-overflow.md)。恢复仍可表示的极大数缩放误差；真正超界时明确失败并保留可保存的标记。完整测试 540 项。

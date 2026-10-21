@@ -1,0 +1,234 @@
+{
+  "kind": "offline_scripted_real_fit_and_timeout_not_model_capability",
+  "implementation_sha256": "4774ac081c7407e60fb116a8ec448bea74c96cfc17d726e3e6774faae3d18b1f",
+  "cases": [
+    {
+      "case": "valid_positive",
+      "plan_ref": "7416ee6b8149781fa287f10d89fafb4b47b26ba19502a8ea1a1f92f75c95fe88",
+      "entries": {
+        "hypothesis": {
+          "ref": "d3ac464fecde30ba22ed843be70defa4324b50bbe8f9e06ce51b853728bdad67",
+          "status": "completed",
+          "comparison": {
+            "adequacy_weighted_rmse": 3,
+            "note": "Specified known independent Gaussian noise; no significance test or proof of mechanism",
+            "ranking": "best_compatible_candidate",
+            "separation_threshold": 0.05,
+            "winner": "cand_baseline"
+          },
+          "parameters": {
+            "d": 1.0000000002718115,
+            "k": 2.0000000002287557
+          },
+          "training_weighted_rmse": 3.89284990070358e-08,
+          "heldout_weighted_rmse": 3.89284990070358e-08,
+          "heldout_scaled_rmse": 3.89284990070358e-10,
+          "phase_status": {
+            "build": "succeeded",
+            "crosscheck": "succeeded",
+            "fit": "succeeded",
+            "holdout": "succeeded",
+            "suggestion": "succeeded",
+            "training_score": "succeeded"
+          },
+          "elapsed_s": 3.401956869995047,
+          "total_timeout_s": 30.0
+        },
+        "study-run": {
+          "ref": "ab055b01a98bcd5d9a1712efa8b9e2afb7875f904bdd63580f3a88ff90cb8238",
+          "status": "completed",
+          "comparison": {
+            "adequacy_weighted_rmse": 3,
+            "note": "Specified known independent Gaussian noise; no significance test or proof of mechanism",
+            "ranking": "best_compatible_candidate",
+            "separation_threshold": 0.05,
+            "winner": "cand_baseline"
+          },
+          "parameters": {
+            "d": 1.0000000002718115,
+            "k": 2.0000000002287557
+          },
+          "training_weighted_rmse": 3.89284990070358e-08,
+          "heldout_weighted_rmse": 3.89284990070358e-08,
+          "heldout_scaled_rmse": 3.89284990070358e-10,
+          "phase_status": {
+            "build": "succeeded",
+            "crosscheck": "succeeded",
+            "fit": "succeeded",
+            "holdout": "succeeded",
+            "suggestion": "succeeded",
+            "training_score": "succeeded"
+          },
+          "elapsed_s": 3.0664716370010865,
+          "total_timeout_s": 30.0
+        },
+        "agent": {
+          "ref": "f5838bc09c2a34f19dc79e7f266f162fd5ce2a78e8479ed35f431768f897118f",
+          "status": "completed",
+          "comparison": {
+            "adequacy_weighted_rmse": 3,
+            "note": "Specified known independent Gaussian noise; no significance test or proof of mechanism",
+            "ranking": "best_compatible_candidate",
+            "separation_threshold": 0.05,
+            "winner": "cand_baseline"
+          },
+          "parameters": {
+            "d": 1.0000000002718115,
+            "k": 2.0000000002287557
+          },
+          "training_weighted_rmse": 3.89284990070358e-08,
+          "heldout_weighted_rmse": 3.89284990070358e-08,
+          "heldout_scaled_rmse": 3.89284990070358e-10,
+          "phase_status": {
+            "build": "succeeded",
+            "crosscheck": "succeeded",
+            "fit": "succeeded",
+            "holdout": "succeeded",
+            "suggestion": "succeeded",
+            "training_score": "succeeded"
+          },
+          "elapsed_s": 3.3126634180007386,
+          "total_timeout_s": 30.0
+        }
+      },
+      "agent_ref": "7add553b24e3fb2147568e2ca8fd2a7c4e813fcd48bd0d55173665e6be475b9d",
+      "scientific_status": "not_verified",
+      "agent_calls": 2,
+      "export_contains_plan": true
+    },
+    {
+      "case": "valid_negative",
+      "plan_ref": "3bdcd8ab71e15f69e485071cd1e00efb99acda3cf837f48bc7e47ae5eef89654",
+      "entries": {
+        "hypothesis": {
+          "ref": "b4d47cd67eef1e0033df582ff1cf9febee51b2f9a447c70888401d7928277424",
+          "status": "completed",
+          "comparison": {
+            "adequacy_weighted_rmse": 3,
+            "note": "Specified known independent Gaussian noise; no significance test or proof of mechanism",
+            "ranking": "none_adequate",
+            "separation_threshold": 0.05,
+            "winner": null
+          },
+          "parameters": {
+            "d": 1.0000000002718115,
+            "k": 2.0000000002287557
+          },
+          "training_weighted_rmse": 3.89284990070358e-08,
+          "heldout_weighted_rmse": 9785.374304567331,
+          "heldout_scaled_rmse": 97.85374304567331,
+          "phase_status": {
+            "build": "succeeded",
+            "crosscheck": "succeeded",
+            "fit": "succeeded",
+            "holdout": "succeeded",
+            "suggestion": "succeeded",
+            "training_score": "succeeded"
+          },
+          "elapsed_s": 3.0459177320008166,
+          "total_timeout_s": 30.0
+        },
+        "study-run": {
+          "ref": "fac8ca41684762f0239e90b8056817a856f01d9773dc5a54afa252c8ae945d3c",
+          "status": "completed",
+          "comparison": {
+            "adequacy_weighted_rmse": 3,
+            "note": "Specified known independent Gaussian noise; no significance test or proof of mechanism",
+            "ranking": "none_adequate",
+            "separation_threshold": 0.05,
+            "winner": null
+          },
+          "parameters": {
+            "d": 1.0000000002718115,
+            "k": 2.0000000002287557
+          },
+          "training_weighted_rmse": 3.89284990070358e-08,
+          "heldout_weighted_rmse": 9785.374304567331,
+          "heldout_scaled_rmse": 97.85374304567331,
+          "phase_status": {
+            "build": "succeeded",
+            "crosscheck": "succeeded",
+            "fit": "succeeded",
+            "holdout": "succeeded",
+            "suggestion": "succeeded",
+            "training_score": "succeeded"
+          },
+          "elapsed_s": 2.8981885930043063,
+          "total_timeout_s": 30.0
+        },
+        "agent": {
+          "ref": "b4ef68a6a8e0eabf6f10b00cb0aa9dd2a9989c8e781aec59f1c0b93ee89dac20",
+          "status": "completed",
+          "comparison": {
+            "adequacy_weighted_rmse": 3,
+            "note": "Specified known independent Gaussian noise; no significance test or proof of mechanism",
+            "ranking": "none_adequate",
+            "separation_threshold": 0.05,
+            "winner": null
+          },
+          "parameters": {
+            "d": 1.0000000002718115,
+            "k": 2.0000000002287557
+          },
+          "training_weighted_rmse": 3.89284990070358e-08,
+          "heldout_weighted_rmse": 9785.374304567331,
+          "heldout_scaled_rmse": 97.85374304567331,
+          "phase_status": {
+            "build": "succeeded",
+            "crosscheck": "succeeded",
+            "fit": "succeeded",
+            "holdout": "succeeded",
+            "suggestion": "succeeded",
+            "training_score": "succeeded"
+          },
+          "elapsed_s": 2.671367843999178,
+          "total_timeout_s": 30.0
+        }
+      },
+      "agent_ref": "dd9db3293de1582a58320c9c9909306cefcef21a780c11690f345159a95b11c2",
+      "scientific_status": "not_verified",
+      "agent_calls": 2,
+      "export_contains_plan": true
+    },
+    {
+      "case": "actual_timeout_recovery",
+      "total_timeout_s": 0.01,
+      "observed_agent_wall_s": 0.266557909999392,
+      "execution_ref": "3682c828bd48fa3c1c828e593a9b2ce5294310d2f271f33e0a9805ec4f9b3178",
+      "result_ref": "ea15356942aeb12629c32d58144ae3a27254df984c60ccc92d7ab1924386ce9a",
+      "state": "incomplete",
+      "study_status": "timed_out",
+      "same_result_ref": true,
+      "fit_artifacts_before": 0,
+      "fit_artifacts_after": 0,
+      "active_numerical_children": 0,
+      "calls_after": 2,
+      "deadline": {
+        "cleanup_note": "Numerical workers are bounded; process reaping and durable result I/O may add cleanup overhead.",
+        "elapsed_s": 0.049691384003381245,
+        "exhausted": true,
+        "origin": "operator_frozen_protocol",
+        "phases": [
+          {
+            "allotted_s": 0.0,
+            "candidate": "cand_baseline",
+            "elapsed_s": 1.5928999346215278e-05,
+            "error_type": "TimeoutError",
+            "phase": "build",
+            "status": "timed_out"
+          },
+          {
+            "allotted_s": 0.0,
+            "candidate": null,
+            "elapsed_s": 1.6963000234682113e-05,
+            "error_type": "TimeoutError",
+            "phase": "comparison",
+            "status": "timed_out"
+          }
+        ],
+        "total_timeout_s": 0.01,
+        "version": 1
+      }
+    }
+  ]
+}

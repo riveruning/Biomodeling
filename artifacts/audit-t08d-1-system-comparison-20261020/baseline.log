@@ -1,0 +1,54 @@
+EE                                                                       [100%]
+==================================== ERRORS ====================================
+_____ ERROR at setup of test_plan_has_actual_systems_not_workflow_aliases ______
+
+    @pytest.fixture
+    def system():
+        spec = importlib.util.spec_from_file_location('system_comparison_test',
+            ROOT/'benchmarks/development/system_comparison.py')
+        module = importlib.util.module_from_spec(spec)
+>       spec.loader.exec_module(module)
+
+tests/test_system_comparison.py:17: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+<frozen importlib._bootstrap_external>:991: in exec_module
+    ???
+<frozen importlib._bootstrap_external>:1128: in get_code
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <_frozen_importlib_external.SourceFileLoader object at 0x7a609830f470>
+path = '/home/riveruning/biologymodel_agent/benchmarks/development/system_comparison.py'
+
+>   ???
+E   FileNotFoundError: [Errno 2] No such file or directory: '/home/riveruning/biologymodel_agent/benchmarks/development/system_comparison.py'
+
+<frozen importlib._bootstrap_external>:1186: FileNotFoundError
+_ ERROR at setup of test_current_phase_bundle_contains_no_private_or_future_material _
+
+    @pytest.fixture
+    def system():
+        spec = importlib.util.spec_from_file_location('system_comparison_test',
+            ROOT/'benchmarks/development/system_comparison.py')
+        module = importlib.util.module_from_spec(spec)
+>       spec.loader.exec_module(module)
+
+tests/test_system_comparison.py:17: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+<frozen importlib._bootstrap_external>:991: in exec_module
+    ???
+<frozen importlib._bootstrap_external>:1128: in get_code
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <_frozen_importlib_external.SourceFileLoader object at 0x7a6098330350>
+path = '/home/riveruning/biologymodel_agent/benchmarks/development/system_comparison.py'
+
+>   ???
+E   FileNotFoundError: [Errno 2] No such file or directory: '/home/riveruning/biologymodel_agent/benchmarks/development/system_comparison.py'
+
+<frozen importlib._bootstrap_external>:1186: FileNotFoundError
+=========================== short test summary info ============================
+ERROR tests/test_system_comparison.py::test_plan_has_actual_systems_not_workflow_aliases
+ERROR tests/test_system_comparison.py::test_current_phase_bundle_contains_no_private_or_future_material
+2 errors in 0.05s

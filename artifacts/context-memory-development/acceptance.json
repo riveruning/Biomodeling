@@ -1,0 +1,107 @@
+{
+  "status": "accepted",
+  "created_at": "2026-10-18T15:36:45.058629+00:00",
+  "scope": "project-scoped advisory memory, authorized lexical source retrieval, versioned read-only skills and agent/CLI integration",
+  "baseline_tests": 540,
+  "new_regressions": 73,
+  "installed_tests": {
+    "tests": 613,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "test_command": "PYTHONDONTWRITEBYTECODE=1 .venv/bin/python -m pytest -q -p no:cacheprovider --basetemp=/tmp/context-full-final --junitxml=artifacts/context-memory-development/pytest.xml",
+  "test_exit_code": 0,
+  "files": [
+    {
+      "path": "src/biomodel_agent/memory.py",
+      "before_sha256": null,
+      "after_sha256": "cc7a84128b33aed5e9584fee6ecb3d32901c3dde7308a5f9a0ddfeae79536010"
+    },
+    {
+      "path": "src/biomodel_agent/retrieval.py",
+      "before_sha256": null,
+      "after_sha256": "b0fab5aed414afd9722a24b2e209b5f92912e96b6246c4527b7b4be0de383fd1"
+    },
+    {
+      "path": "src/biomodel_agent/skills.py",
+      "before_sha256": null,
+      "after_sha256": "cb096521596b083f4a9baf0fefd3aca9e444efcf889980b31f482ffad2af3413"
+    },
+    {
+      "path": "src/biomodel_agent/agent.py",
+      "before_sha256": "25f8baf347a1f59017b0e2de7c53df82059a7515a1675545937cefcad0ac1351",
+      "after_sha256": "93d45df5dbaed7028381b6245c29e1bd11c60a90dbca592af340edd0ab08f4ac"
+    },
+    {
+      "path": "src/biomodel_agent/llm.py",
+      "before_sha256": "bdeae49bf8045859ec661158186675d1ccf380c19e2bd090947bb925c77a7452",
+      "after_sha256": "c630b8b2f07c229d8d541a0df8ac3fff8556e0798f92eb83209a7b1f053c77b8"
+    },
+    {
+      "path": "src/biomodel_agent/cli.py",
+      "before_sha256": "e8d214590013e4ea6528b465d7755a8d95413f5dd500dc7fe15014d3b810cb9b",
+      "after_sha256": "136830633c57423e7ea7fbfbaa623a3f3a098630e39585e09ff525a9b517d0cf"
+    },
+    {
+      "path": "tests/test_research_memory.py",
+      "before_sha256": null,
+      "after_sha256": "da7acbcfbd3210e835034891a1296919637f73d6221dd9f459ac530dbe95178e"
+    },
+    {
+      "path": "tests/test_source_retrieval.py",
+      "before_sha256": null,
+      "after_sha256": "f59a9c34143648ded3cba78b6431e0f1fc8e64da2e30e420b5efff436dd42f33"
+    },
+    {
+      "path": "docs/memory-and-retrieval.md",
+      "before_sha256": null,
+      "after_sha256": "4c7b9c7955f3f2852d0daa631306fc389a67882dd4cbfb0c5317992531fd9608"
+    },
+    {
+      "path": "README.md",
+      "before_sha256": "ee90ada95823f4b15689fd2cc001497c55ab7197d65e035603a15307955079c0",
+      "after_sha256": "e9f36e7ff1213d642b66ee4ae5dbf709a8260d04b7ddc32930af6b4de83bdf68"
+    },
+    {
+      "path": "tasks/context-retrieval-v1.json",
+      "before_sha256": null,
+      "after_sha256": "cbc356c989798d91c588564cfb0cb073d30dd56c4063ca5bf60d74da00b23acf"
+    },
+    {
+      "path": "artifacts/context-memory-development/retrieval-contract.md",
+      "before_sha256": null,
+      "after_sha256": "1d758a38c52e69717a065a7b251fd006666d1b458e8e8d931cb12a4ebba23047"
+    }
+  ],
+  "dsh_delivery": ".workflow/runs/context-retrieval-v1-1792336905012-cd1ef591",
+  "dsh_acceptance": "accepted after Codex corrections; original delivery preserved in dsh-delivery/",
+  "dsh_corrections": [
+    "test syntax and package imports",
+    "word tokens retain numeric identifiers",
+    "original-text Unicode matching",
+    "ranking test aligned to declared source-order tie break",
+    "short-budget snippets retain a complete match"
+  ],
+  "old_checkpoint_scripted_compatibility": {
+    "completed": 3,
+    "new_model_requests": 0,
+    "scientific_status": "not_verified",
+    "max_scaled_errors": [
+      3.242895631657324e-06,
+      4.766109864107193e-07,
+      4.766109864107193e-07
+    ]
+  },
+  "product_model_calls": 0,
+  "independent_evaluation_modified": false,
+  "model_performance_improvement_measured": false,
+  "limitations": [
+    "operator-authored memory only; no automatic consolidation or embeddings",
+    "keyword retrieval only, not semantic or open-web retrieval",
+    "project/model/source filtering is not multi-tenant identity authentication",
+    "exported bundles cannot observe later retractions outside their own store",
+    "scripted action tests do not measure autonomous model reasoning"
+  ],
+  "dependencies_added": []
+}

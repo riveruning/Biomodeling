@@ -1,0 +1,1 @@
+{"kind":"agent_execution","payload":{"base_call_count":0,"base_run_count":0,"id":"e5ddda0b-9c81-4e1b-8438-5f410069e6fd","max_calls":8,"max_runs":1,"parent_run_ref":null,"task_ref":"5f8fad7b97668bd3846ee300307661030ab387c248243b74785781d641efc6d6","version":1},"refs":["5f8fad7b97668bd3846ee300307661030ab387c248243b74785781d641efc6d6"],"schema_version":"1"}

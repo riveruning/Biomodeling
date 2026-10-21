@@ -1,0 +1,21 @@
+{
+  "schema_version": "1",
+  "id": "v01-02-package-fix",
+  "objective": "修复libSBML默认注册的可视化plugin误判为模型required语义。",
+  "context": "root实测无package namespace的普通L2/L3 doc也默认注册layout/render且getPackageRequired=True。44model tests40passed4failed：其中3是这些幽灵plugin错误阻止有效模型；另一处测试amount.unit实际unknown却期待mole错误。",
+  "read_files": [],
+  "write_files": [
+    "src/biomodel_agent/modeling.py",
+    "tests/test_modeling.py"
+  ],
+  "expected_files": [
+    "src/biomodel_agent/modeling.py",
+    "tests/test_modeling.py"
+  ],
+  "instructions": "精准修复_package_problems：只有XML SBML根真正声明了的package namespace才检查required，不根据默认getNumPlugins判断模型实际用了package。使用doc.getNamespaces().getURI(i)集合，plugin.getURI()必须在集合中（ignorecoreURI，自带可视化plugin namespace不会出现在无packageXML文档中）；实际声明L3数学package不论required是否False一律unsupported，layout/render真正nonrequired允许，required声明True阻止；L2 builtinlayout/render不使用L3 requiredflag（L2无此语义），允许图形annotations。原toggle XML确实声明render namespace却缺render:required，parse错误仍拒绝；corrected renderfalse通过。不忽略parse/consistency真实error。\n修复tests/test_modeling test_volume_amount_concentration_encoding，amount fixtureunit=unknown，所以cannotassertmole，改要么构造test专用Stateunit=mole并assertmole（优先），不改通用fixtureunknown测试，以volume2独立单case浓度mole_per_liter compartmentlitre转substanceunitsmole。添加无packageXML但libSBML默认plugins存在的regression确保有效模型正常。不要重写800行core，只局部edit2文件。禁任何命令，最后文字完成。",
+  "acceptance": [
+    "不存在的API删除",
+    "不改其它逻辑"
+  ],
+  "verification_commands": []
+}

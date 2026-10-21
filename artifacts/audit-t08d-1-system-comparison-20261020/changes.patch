@@ -1,0 +1,1559 @@
+--- /dev/null
++++ b/benchmarks/development/system_comparison.py
+@@ -0,0 +1,582 @@
++"""Offline native-system task bundles, capture imports and fixed-plan reports.
++
++No inference command or submitted program is executed here. Codex command
++plans are proposals, never transmission authorization or an execution receipt.
++"""
++from __future__ import annotations
++
++import argparse
++from collections import Counter
++from copy import deepcopy
++import hashlib
++import importlib.util
++import json
++from pathlib import Path
++
++
++def _load(name, filename):
++    spec = importlib.util.spec_from_file_location(name, Path(__file__).with_name(filename))
++    module = importlib.util.module_from_spec(spec)
++    spec.loader.exec_module(module)
++    return module
++
++
++native = _load('system_native_capture', 'native_capture.py')
++reporting = _load('system_comparison_reporting', 'evaluation_reporting.py')
++v1 = reporting.v1
++PROTOCOL = 'native_system_comparison_v1'
++KINDS = ('scripted_control', 'external_recording')
++SYSTEMS = [('biomodel', 'biomodel_agent', None), ('codex-sol', 'codex_cli', 'gpt-6.1-sol'),
++           ('codex-astra', 'codex_cli', 'gpt-6-astra')]
++ASSESSMENT = {'authority': 'unreviewed', 'numeric': 'unknown', 'source_support': 'unknown',
++              'behavior_labels_reviewed': False}
++STATUSES = {'finished', 'timeout', 'process_error', 'provider_error', 'incomplete_events',
++            'invalid_events', 'invalid_delivery', 'not_run'}
++
++
++def _sha(raw):
++    return hashlib.sha256(raw).hexdigest()
++
++
++def _read(path):
++    path = Path(path)
++    return native.decode(native.read_file(path.parent, path.name))
++
++
++def _write(path, value):
++    v1._write(path, value)
++
++
++def _implementation():
++    names = ('system_comparison.py', 'native_capture.py', 'agent_evaluation.py', 'evaluation_reporting.py')
++    return {name: _sha(Path(__file__).with_name(name).read_bytes()) for name in names}
++
++
++def development_manifest(root=v1.ROOT):
++    base = v1.development_manifest(root)
++    return {'schema_version': 1, 'protocol': PROTOCOL, 'usage': 'development_only',
++        'exposure': 'seen_synthetic_development', 'evidence_kind': 'scripted_control',
++        'product_toolchain_sha256': base['toolchain_sha256'], 'implementation': _implementation(),
++        'repeats': 2, 'budget': {'max_elapsed_seconds': 180.0}, 'cases': base['cases'],
++        'systems': [{'id': ident, 'runtime': runtime, 'model': model, 'revision': None,
++                     'reasoning_effort': 'medium' if runtime == 'codex_cli' else None,
++                     'tool_profile': 'native_programming' if runtime == 'codex_cli' else 'deterministic_ode_tools'}
++                    for ident, runtime, model in SYSTEMS]}
++
++
++def validate_manifest(m, root=v1.ROOT):
++    v1._fields(m, 'schema_version protocol usage exposure evidence_kind product_toolchain_sha256 implementation repeats budget cases systems')
++    if type(m['schema_version']) is not int or (m['schema_version'], m['protocol'], m['usage'], m['exposure']) != (
++            1, PROTOCOL, 'development_only', 'seen_synthetic_development') or m['evidence_kind'] not in KINDS:
++        raise ValueError('unsupported native-system development protocol')
++    base = v1.development_manifest(root)
++    if v1.digest(m['cases']) != v1.digest(base['cases']) or m['product_toolchain_sha256'] != base['toolchain_sha256']:
++        raise ValueError('development material, rubric or scientific implementation changed')
++    if m['implementation'] != _implementation():
++        raise ValueError('comparison implementation changed')
++    v1._integer(m['repeats'], 1, 5)
++    v1._fields(m['budget'], 'max_elapsed_seconds')
++    v1._number(m['budget']['max_elapsed_seconds'], 1, 3600)
++    if not isinstance(m['systems'], list) or len(m['systems']) != len(SYSTEMS):
++        raise ValueError('three separately identified systems required')
++    for system, (ident, runtime, _) in zip(m['systems'], SYSTEMS):
++        v1._fields(system, 'id runtime model revision reasoning_effort tool_profile')
++        if (system['id'], system['runtime']) != (ident, runtime):
++            raise ValueError('system identity/runtime differs from declared comparison')
++        for key in ('model', 'revision'):
++            if system[key] is not None:
++                v1._text(system[key], 200)
++        if runtime == 'codex_cli':
++            if system['model'] is None or system['reasoning_effort'] not in ('low', 'medium', 'high', 'xhigh', 'max', 'ultra'):
++                raise ValueError('explicit Codex model and reasoning setting required')
++            expected = 'native_programming'
++        else:
++            expected = 'deterministic_ode_tools'
++            if system['reasoning_effort'] is not None:
++                raise ValueError('product reasoning configuration not selected in this revision')
++        if system['tool_profile'] != expected:
++            raise ValueError('system tool environment changed')
++    return {'planned_trials': len(schedule(m)), 'cases': 3, 'families': 1, 'real_papers': 0,
++            'independent_review': 'pending', 'same_model_framework_attribution': False}
++
++
++def schedule(m):
++    return [{'id': f'{system["id"]}--{case["id"]}--{repeat}--{phase["id"]}',
++             'system_id': system['id'], 'runtime': system['runtime'], 'case_id': case['id'],
++             'repeat': repeat, 'phase': phase['id'],
++             'parent_trial_id': f'{system["id"]}--{case["id"]}--{repeat}--initial' if phase['id'] == 'clarified' else None}
++            for system in m['systems'] for repeat in range(m['repeats'])
++            for case in m['cases'] for phase in case['phases']]
++
++
++def _trial(m, ident):
++    try:
++        return next(t for t in schedule(m) if t['id'] == ident)
++    except StopIteration:
++        raise ValueError('unscheduled system trial') from None
++
++
++def _phase(m, trial):
++    case = next(c for c in m['cases'] if c['id'] == trial['case_id'])
++    phase = next(p for p in case['phases'] if p['id'] == trial['phase'])
++    return case, phase
++
++
++def _check_record(m, r):
++    if len(json.dumps(r, ensure_ascii=False, allow_nan=False).encode()) > native.MAX_BYTES:
++        raise ValueError('imported record byte budget exceeded')
++    v1._fields(r, 'schema_version protocol manifest_sha256 trial evidence_kind capture_kind capture_sha256 status session observation assessment telemetry diagnostics')
++    trial = _trial(m, r['trial']['id'])
++    if type(r['schema_version']) is not int or r['schema_version'] != 1 or r['protocol'] != PROTOCOL:
++        raise ValueError('unsupported imported record')
++    if v1.digest(r['trial']) != v1.digest(trial) or r['manifest_sha256'] != v1.digest(m) or r['evidence_kind'] != m['evidence_kind']:
++        raise ValueError('record task/material/settings identity changed')
++    if r['assessment'] != ASSESSMENT or r['status'] not in STATUSES:
++        raise ValueError('this import protocol cannot promote scientific assessments')
++    if r['capture_kind'] != ('codex_jsonl' if trial['runtime'] == 'codex_cli' else 'product_v1_record'):
++        raise ValueError('capture/runtime mismatch')
++    if not isinstance(r['capture_sha256'], str) or not v1.HASH.fullmatch(r['capture_sha256']):
++        raise ValueError('invalid capture hash')
++    v1._fields(r['session'], 'id mode parent_record_sha256 identity_authenticated')
++    session = r['session']
++    if session['identity_authenticated'] is not False or session['mode'] not in ('none', 'resumed', 'fresh'):
++        raise ValueError('invalid attributed session identity')
++    if bool(trial['parent_trial_id']) != (session['mode'] != 'none'):
++        raise ValueError('session phase mismatch')
++    if session['id'] is not None:
++        if trial['runtime'] == 'codex_cli':
++            native.session_id(session['id'])
++        elif not isinstance(session['id'], str) or not v1.HASH.fullmatch(session['id']):
++            raise ValueError('invalid product session reference')
++    if session['parent_record_sha256'] is not None and not v1.HASH.fullmatch(session['parent_record_sha256']):
++        raise ValueError('invalid parent record digest')
++    if trial['parent_trial_id'] and session['parent_record_sha256'] is None:
++        raise ValueError('cumulative-budget parent reference required even for fresh continuation')
++    if not trial['parent_trial_id'] and session['parent_record_sha256'] is not None:
++        raise ValueError('initial record has no parent')
++    if r['status'] == 'finished' and session['id'] is None:
++        raise ValueError('finished native task has no session identity')
++    v1._fields(r['observation'], 'state completion_claimed execution_declared execution_observed question_texts final_messages artifacts')
++    o = r['observation']
++    if o['state'] not in ('completed', 'awaiting_input', 'incomplete', 'not_submitted', 'failed', 'not_run'):
++        raise ValueError('invalid imported observation')
++    if type(o['completion_claimed']) is not bool:
++        raise ValueError('invalid completion assertion')
++    for key in ('execution_declared', 'execution_observed'):
++        if o[key] is not None and type(o[key]) is not bool:
++            raise ValueError('invalid execution observation')
++    if trial['runtime'] == 'codex_cli' and o['execution_observed'] is not None:
++        raise ValueError('native shell events do not authenticate scientific execution')
++    for key in ('question_texts', 'final_messages'):
++        if not isinstance(o[key], list) or len(o[key]) > native.MAX_EVENTS or any(
++                not isinstance(x, str) or len(x) > native.MAX_BYTES for x in o[key]):
++            raise ValueError('invalid imported messages')
++    if not isinstance(o['artifacts'], list) or len(o['artifacts']) > 64:
++        raise ValueError('invalid imported artifacts')
++    paths = set()
++    for artifact in o['artifacts']:
++        v1._fields(artifact, 'path role sha256')
++        name = artifact['path']
++        if not isinstance(name, str) or not name or '\\' in name:
++            raise ValueError('invalid artifact path')
++        p = Path(name)
++        if p.is_absolute() or str(p) != name or '..' in p.parts or name in paths:
++            raise ValueError('artifact path escapes delivery or is duplicated')
++        paths.add(name)
++        if artifact['role'] not in ('program', 'trajectory', 'sbml', 'report', 'citations'):
++            raise ValueError('invalid artifact role')
++        if not isinstance(artifact['sha256'], str) or not v1.HASH.fullmatch(artifact['sha256']):
++            raise ValueError('invalid artifact content hash')
++    v1._fields(r['telemetry'], 'elapsed_seconds cumulative_elapsed_seconds model_calls tool_items tool_count_kind input_tokens output_tokens cached_input_tokens reasoning_output_tokens')
++    for key in ('elapsed_seconds', 'cumulative_elapsed_seconds'):
++        v1._number(r['telemetry'][key], 0, 100_000)
++    if r['telemetry']['cumulative_elapsed_seconds'] < r['telemetry']['elapsed_seconds']:
++        raise ValueError('cumulative time is less than phase time')
++    if not trial['parent_trial_id'] and r['telemetry']['cumulative_elapsed_seconds'] != r['telemetry']['elapsed_seconds']:
++        raise ValueError('initial cumulative time mismatch')
++    for key in ('model_calls', 'tool_items', 'input_tokens', 'output_tokens', 'cached_input_tokens', 'reasoning_output_tokens'):
++        if r['telemetry'][key] is not None:
++            native.integer(r['telemetry'][key])
++    expected_kind = 'native_completed_tool_items' if trial['runtime'] == 'codex_cli' else 'domain_tool_invocations'
++    if r['telemetry']['tool_count_kind'] != expected_kind or not isinstance(r['diagnostics'], list):
++        raise ValueError('invalid tool telemetry or diagnostics')
++
++
++def _preparation(m, trial, mode, parent, root):
++    if trial['parent_trial_id']:
++        if mode not in ('resumed', 'fresh') or parent is None:
++            raise ValueError('explicit continuation and cumulative-budget parent required')
++        _check_record(m, parent)
++        if parent['trial']['id'] != trial['parent_trial_id']:
++            raise ValueError('wrong system/case/repeat parent')
++        if mode == 'resumed' and (parent['status'] != 'finished' or parent['observation']['state'] != 'awaiting_input'
++                                  or parent['session']['id'] is None):
++            raise ValueError('failed/nonpaused parent cannot silently become a fresh run')
++    elif mode != 'none' or parent is not None:
++        raise ValueError('initial task cannot resume another execution')
++    case, phase = _phase(m, trial)
++    files = {f['role']: v1._source(f, root) for f in phase['files']}
++    prompt = (case['task']+'\n\nRead /work/source.txt and /work/experiment.json. '
++        'Use your native workflow. You may deliver a Python program or SBML and numerical results. '
++        'Use exactly the supplied observations, time grid and units; preserve unknown facts and cite the source. '
++        'Ask specific questions for missing information. Write outputs under /delivery. '
++        'Also write /delivery/delivery.json with keys: state (completed/awaiting_input/incomplete), '
++        'execution_declared (true/false/null, your assertion), question_texts (list of strings), '
++        'artifacts (list of {path:relative_path,role:program/trajectory/sbml/report/citations,sha256:file_digest}). '
++        'Paths are relative to /delivery. Preserve original code and outputs.\n')
++    raw = {'source.txt': files['source'].encode(), 'experiment.json': files['experiment'].encode(), 'TASK.md': prompt.encode()}
++    spent = parent['telemetry']['cumulative_elapsed_seconds'] if parent else 0
++    result = {'schema_version': 1, 'protocol': PROTOCOL, 'status': 'prepared_only_no_authorization',
++        'manifest_sha256': v1.digest(m), 'trial': trial, 'continuation': mode,
++        'parent_record_sha256': v1.digest(parent) if parent else None,
++        'remaining_elapsed_seconds': max(0, m['budget']['max_elapsed_seconds']-spent),
++        'runtime_files': {name: _sha(value) for name, value in raw.items()},
++        'isolation_status': 'bundle_projection_only_not_an_OS_sandbox',
++        'service_configuration': 'deferred', 'online_calls': 0}
++    return result, raw
++
++
++def prepare_task(m, trial_id, output, *, continuation='none', parent=None, root=v1.ROOT):
++    validate_manifest(m, root)
++    result, files = _preparation(m, _trial(m, trial_id), continuation, parent, root)
++    output = Path(output)
++    output.mkdir(parents=True, exist_ok=False)
++    (output/'runtime').mkdir()
++    _write(output/'manifest.json', m)
++    _write(output/'parent.json', parent)
++    _write(output/'preparation.json', result)
++    for name, raw in files.items():
++        (output/'runtime'/name).write_bytes(raw)
++    return result
++
++
++def check_task(path, root=v1.ROOT):
++    path = Path(path)
++    m, saved, parent = _read(path/'manifest.json'), _read(path/'preparation.json'), _read(path/'parent.json')
++    validate_manifest(m, root)
++    expected, files = _preparation(m, _trial(m, saved['trial']['id']), saved['continuation'], parent, root)
++    if v1.digest(saved) != v1.digest(expected) or {p.name for p in (path/'runtime').iterdir()} != set(files):
++        raise ValueError('task preparation changed')
++    for name, raw in files.items():
++        if native.read_file(path/'runtime', name) != raw:
++            raise ValueError('runtime task material changed')
++    return m, saved, parent
++
++
++def codex_command_plan(task, *, root=v1.ROOT):
++    m, prepared, parent = check_task(task, root)
++    target = next(s for s in m['systems'] if s['id'] == prepared['trial']['system_id'])
++    if target['runtime'] != 'codex_cli' or prepared['remaining_elapsed_seconds'] <= 0:
++        raise ValueError('Codex task with remaining budget required')
++    argv = ['codex', 'exec', '--ignore-user-config', '--ignore-rules', '--skip-git-repo-check',
++            '--json', '--sandbox', 'workspace-write', '--model', target['model'],
++            '-c', 'model_reasoning_effort='+json.dumps(target['reasoning_effort']),
++            '-C', '/work', '--add-dir', '/delivery']
++    if prepared['continuation'] == 'resumed':
++        argv += ['resume', parent['session']['id']]
++    argv.append('-')
++    return {'status': 'command_plan_only_not_executable_authorization', 'argv': argv,
++            'stdin_file': 'runtime/TASK.md', 'stdin_must_close_after_write': True,
++            'outer_wall_timeout_seconds': prepared['remaining_elapsed_seconds'],
++            'session_storage': 'persistent_per_system_case_repeat_required_for_resume',
++            'credential_configuration': 'not_selected_or_read',
++            'required_mounts': {'runtime': '/work:read_only', 'delivery': '/delivery:read_write'},
++            'mounts_and_runtime_not_created_by_plan': True, 'online_calls': 0}
++
++
++def _base_record(m, prepared, parent, kind, capture_hash, status, session_id, observation, telemetry, diagnostics):
++    telemetry['cumulative_elapsed_seconds'] = telemetry['elapsed_seconds'] + (
++        parent['telemetry']['cumulative_elapsed_seconds'] if parent else 0)
++    result = {'schema_version': 1, 'protocol': PROTOCOL, 'manifest_sha256': v1.digest(m),
++        'trial': prepared['trial'], 'evidence_kind': m['evidence_kind'], 'capture_kind': kind,
++        'capture_sha256': capture_hash, 'status': status,
++        'session': {'id': session_id, 'mode': prepared['continuation'],
++                    'parent_record_sha256': prepared['parent_record_sha256'], 'identity_authenticated': False},
++        'observation': observation, 'assessment': deepcopy(ASSESSMENT), 'telemetry': telemetry,
++        'diagnostics': diagnostics}
++    _check_record(m, result)
++    return result
++
++
++def import_codex(task, capture_root, output, *, exit_code, timed_out, elapsed_seconds, root=v1.ROOT):
++    m, prepared, parent = check_task(task, root)
++    if prepared['trial']['runtime'] != 'codex_cli':
++        raise ValueError('native capture requires Codex task')
++    if exit_code is not None and (type(exit_code) is not int or not -255 <= exit_code <= 255):
++        raise ValueError('invalid process exit code')
++    if type(timed_out) is not bool:
++        raise ValueError('invalid process timeout flag')
++    v1._number(elapsed_seconds, 0, 100_000)
++    raw = native.read_file(capture_root, 'events.jsonl')
++    parsed = native.parse_events(raw)
++    if prepared['continuation'] == 'resumed' and parsed['session_id'] is not None:
++        if parsed['session_id'] != parent['session']['id']:
++            raise ValueError('native resume returned another session; no fresh fallback')
++    if prepared['continuation'] == 'fresh' and parsed['session_id'] == parent['session']['id'] and parsed['session_id'] is not None:
++        raise ValueError('fresh session reused parent identity')
++    diagnostics = parsed['diagnostics'][:]
++    try:
++        delivery, blobs = native.read_delivery(capture_root)
++    except (ValueError, OSError) as exc:
++        diagnostics.append('invalid_or_incomplete_delivery_inventory')
++        delivery = {'state': 'not_submitted', 'execution_declared': None, 'question_texts': [], 'artifacts': []}
++        blobs = getattr(exc, 'partial_files', {})
++    status = ('timeout' if timed_out else 'process_error' if exit_code not in (0, None) else
++              'incomplete_events' if exit_code is None else parsed['status'])
++    if status == 'finished' and 'invalid_or_incomplete_delivery_inventory' in diagnostics:
++        status = 'invalid_delivery'
++    observation = {'state': delivery['state'], 'completion_claimed': delivery['state'] == 'completed',
++        'execution_declared': delivery['execution_declared'], 'execution_observed': None,
++        'question_texts': delivery['question_texts'], 'final_messages': parsed['agent_messages'],
++        'artifacts': delivery['artifacts']}
++    telemetry = {'elapsed_seconds': elapsed_seconds, 'model_calls': None,
++        'tool_items': parsed['native_tool_items'], 'tool_count_kind': 'native_completed_tool_items', **parsed['usage']}
++    result = _base_record(m, prepared, parent, 'codex_jsonl', _sha(raw), status,
++                          parsed['session_id'], observation, telemetry, diagnostics)
++    output = Path(output)
++    output.mkdir(parents=True, exist_ok=False)
++    (output/'events.jsonl').write_bytes(raw)
++    _write(output/'capture.json', {'exit_code': exit_code, 'timed_out': timed_out,
++        'elapsed_seconds': elapsed_seconds, 'event_status': parsed['status'], 'events_seen': parsed['events_seen'],
++        'evidence_kind': m['evidence_kind'], 'recording_authenticated': False,
++        'retained_artifact_hashes': {name: _sha(value) for name, value in blobs.items()}})
++    if (Path(capture_root)/'delivery.json').exists():
++        try:
++            (output/'delivery.original.json').write_bytes(native.read_file(capture_root, 'delivery.json', 100_000))
++        except (ValueError, OSError):
++            _write(output/'delivery-read-error.json', {'status': 'refused_nonregular_or_oversized_inventory'})
++    (output/'artifacts').mkdir()
++    for name, data in blobs.items():
++        target = output/'artifacts'/name
++        target.parent.mkdir(parents=True, exist_ok=True)
++        target.write_bytes(data)
++    _write(output/'record.json', result)
++    return result
++
++
++def import_product(task, product_manifest, record, output, *, session_ref, parent_session_ref=None, root=v1.ROOT):
++    m, prepared, parent = check_task(task, root)
++    if prepared['trial']['runtime'] != 'biomodel_agent':
++        raise ValueError('product capture requires product task')
++    v1.validate_manifest(product_manifest, root)
++    t = prepared['trial']
++    native_id = f'domain_agent--{t["case_id"]}--{t["repeat"]}--{t["phase"]}'
++    trial = next(x for x in v1.schedule(product_manifest) if x['id'] == native_id)
++    v1._validate_record(product_manifest, trial, record)
++    if record['trial_id'] != native_id or product_manifest['cases'] != m['cases']:
++        raise ValueError('product recording has other materials or task')
++    expected_evidence = 'scripted_control' if record['evidence_kind'] == 'scripted_control' else 'external_recording'
++    target = m['systems'][0]
++    if expected_evidence != m['evidence_kind'] or any(target[key] is not None and
++            target[key] != record['model_config'][key] for key in ('model', 'revision')):
++        raise ValueError('product capture evidence/model mismatch')
++    if not isinstance(session_ref, str) or not v1.HASH.fullmatch(session_ref):
++        raise ValueError('invalid product session ref')
++    if record['continuation'] != prepared['continuation']:
++        raise ValueError('product continuation differs from prepared mode')
++    if prepared['continuation'] == 'resumed' and parent_session_ref != parent['session']['id']:
++        raise ValueError('product resume parent mismatch')
++    if prepared['continuation'] == 'fresh' and (parent_session_ref is not None or session_ref == parent['session']['id']):
++        raise ValueError('fresh product continuation reused parent identity')
++    o, old = record['observation'], record['telemetry']
++    observation = {'state': o['state'], 'completion_claimed': o['claimed_complete'],
++        'execution_declared': o['executed'], 'execution_observed': o['executed'],
++        'question_texts': o['question_texts'], 'final_messages': [], 'artifacts': []}
++    telemetry = {'elapsed_seconds': old['elapsed_seconds'], 'model_calls': old['model_calls'],
++        'tool_items': old['tool_calls'], 'tool_count_kind': 'domain_tool_invocations',
++        'input_tokens': old['input_tokens'], 'output_tokens': old['output_tokens'],
++        'cached_input_tokens': None, 'reasoning_output_tokens': None}
++    status = 'process_error' if record['status'] == 'adapter_error' else 'invalid_events' if record['status'] == 'invalid_output' else record['status']
++    result = _base_record(m, prepared, parent, 'product_v1_record', v1.digest(record), status,
++                          session_ref, observation, telemetry, ['product_v1_observation_attribution_not_identity_authentication'])
++    output = Path(output)
++    output.mkdir(parents=True, exist_ok=False)
++    _write(output/'product-manifest.json', product_manifest)
++    _write(output/'product-record.json', record)
++    _write(output/'record.json', result)
++    return result
++
++
++def _metrics(m, trial, record, parent_row, status, budget):
++    expected = _phase(m, trial)[1]['private_rubric']['execution_expected']
++    na = reporting._outcome(None, 'outside metric eligibility', 'not_applicable')
++    pending = reporting._pending('output/scientific support/behavior require independent review')
++    unavailable = reporting._pending('missing or invalid capture', status) if record is None else None
++    metrics = {}
++    for name in v1.METRICS:
++        applicable = (expected if name in ('correct_completion', 'within_budget_completion', 'overblocking') else
++            not expected if name in ('gap_identification', 'targeted_question') else
++            bool(trial['parent_trial_id']) if name == 'clarification_recovery' else True)
++        metrics[name] = deepcopy(unavailable if applicable and record is None else pending if applicable else na)
++    if record is None:
++        return metrics
++    o = record['observation']
++    finished = (reporting._outcome(True, 'operational capture finished') if status == 'finished' else
++        reporting._outcome(False, 'operational outcome '+status,
++                           'not_run' if status == 'not_run' else 'operational_failure'))
++    if expected:
++        completion = (reporting._outcome(False, 'explicit incomplete/waiting output')
++                      if o['state'] in ('awaiting_input', 'incomplete', 'failed', 'not_run') else pending)
++        metrics['correct_completion'] = reporting._and(finished, completion)
++        metrics['within_budget_completion'] = reporting._and(metrics['correct_completion'],
++            reporting._pending('cumulative time incomplete', 'pending_budget') if budget == 'unknown' else
++            reporting._outcome(budget == 'within_reported_wall_limit', 'reported cumulative wall budget '+budget))
++        overblocking = (pending if o['state'] == 'not_submitted' else reporting._and(
++            reporting._outcome(o['state'] == 'awaiting_input', 'waiting under sufficient-material rubric'),
++            pending if o['execution_observed'] is None else
++            reporting._outcome(not o['execution_observed'], 'attributed absence of scientific execution')))
++        metrics['overblocking'] = reporting._and(finished, overblocking)
++    else:
++        metrics['gap_identification'] = reporting._and(finished, pending)
++        has_question = bool(o['question_texts'] or o['final_messages'])
++        metrics['targeted_question'] = reporting._and(finished, pending,
++            reporting._outcome(has_question, 'question-bearing text available for independent target review'))
++    if o['execution_observed'] is False:
++        metrics['unsupported_execution'] = reporting._outcome(False, 'no scientific execution in attributed product record')
++    elif o['execution_observed'] is True and not expected:
++        metrics['unsupported_execution'] = reporting._outcome(True, 'executed despite unresolved required input')
++    if o['completion_claimed'] and not expected:
++        metrics['unsupported_completion'] = reporting._outcome(True, 'completion claim despite unresolved required input')
++    elif not o['completion_claimed'] and o['state'] != 'not_submitted':
++        metrics['unsupported_completion'] = reporting._outcome(False, 'no completion claim in attributed output')
++    if trial['parent_trial_id']:
++        parent_safe = (reporting._pending('parent capture absent or invalid') if not parent_row else
++            reporting._and(parent_row['metrics']['targeted_question'],
++                reporting._not(parent_row['metrics']['unsupported_execution']),
++                reporting._not(parent_row['metrics']['unsupported_completion'])))
++        metrics['clarification_recovery'] = reporting._and(
++            reporting._outcome(record['session']['mode'] == 'resumed', 'original-session recovery required'),
++            metrics['correct_completion'], parent_safe)
++    return metrics
++
++
++def score(m, records, *, root=v1.ROOT):
++    audit = validate_manifest(m, root)
++    if not isinstance(records, list) or len(records) > len(schedule(m)):
++        raise ValueError('bounded scheduled record list required')
++    by_id, invalid, sessions = {}, {}, {}
++    planned = {t['id'] for t in schedule(m)}
++    for r in records:
++        ident = r.get('trial', {}).get('id') if isinstance(r, dict) and isinstance(r.get('trial'), dict) else None
++        if ident not in planned or ident in by_id:
++            raise ValueError('duplicate or unscheduled system record')
++        by_id[ident] = r
++        try:
++            _check_record(m, r)
++        except (ValueError, TypeError, KeyError, RecursionError, OverflowError):
++            invalid[ident] = True
++        else:
++            if r['trial']['runtime'] == 'codex_cli' and r['session']['id'] is not None:
++                sessions.setdefault(r['session']['id'], []).append(ident)
++    for owners in sessions.values():
++        keys = {(by_id[ident]['trial']['system_id'], by_id[ident]['trial']['case_id'],
++                 by_id[ident]['trial']['repeat']) for ident in owners}
++        if len(keys) > 1:
++            invalid.update({ident: True for ident in owners})
++    rows, prior_rows = [], {}
++    for t in schedule(m):
++        r = by_id.get(t['id']) if t['id'] not in invalid else None
++        parent = by_id.get(t['parent_trial_id']) if t['parent_trial_id'] not in invalid else None
++        status = r['status'] if r else 'invalid_record' if t['id'] in invalid else 'missing_record'
++        if r and parent:
++            bad_session = (r['session']['mode'] == 'resumed' and t['runtime'] == 'codex_cli'
++                           and r['session']['id'] != parent['session']['id'])
++            bad_time = r['telemetry']['cumulative_elapsed_seconds'] != (
++                r['telemetry']['elapsed_seconds']+parent['telemetry']['cumulative_elapsed_seconds'])
++            if r['session']['parent_record_sha256'] != v1.digest(parent) or bad_session or bad_time:
++                status, r = 'invalid_record', None
++        elapsed = r['telemetry']['elapsed_seconds'] if r else None
++        cumulative = (elapsed+(parent['telemetry']['cumulative_elapsed_seconds'] if parent else 0)
++                      if elapsed is not None and (not t['parent_trial_id'] or parent) else None)
++        budget = 'unknown' if cumulative is None else 'exceeded' if cumulative > m['budget']['max_elapsed_seconds'] else 'within_reported_wall_limit'
++        row = {**t, 'status': status, 'record_sha256': v1.digest(r) if r else None,
++               'metrics': _metrics(m, t, r, prior_rows.get(t['parent_trial_id']), status, budget),
++               'budget_status': budget, 'cumulative_elapsed_seconds': cumulative}
++        rows.append(row); prior_rows[t['id']] = row
++    summary = {}
++    for target in m['systems']:
++        subset = [r for r in rows if r['system_id'] == target['id']]
++        summary[target['id']] = {'planned_trials': len(subset), 'statuses': dict(Counter(r['status'] for r in subset)),
++            'metrics': {name: reporting._metric_summary([r['metrics'][name] for r in subset]) for name in v1.METRICS},
++            'budget_statuses': dict(Counter(r['budget_status'] for r in subset))}
++        valid = [by_id[r['id']] for r in subset if r['record_sha256'] is not None]
++        summary[target['id']]['telemetry'] = {}
++        for name in ('elapsed_seconds', 'model_calls', 'tool_items', 'input_tokens', 'output_tokens', 'cached_input_tokens', 'reasoning_output_tokens'):
++            values = [r['telemetry'][name] for r in valid if r['telemetry'][name] is not None]
++            summary[target['id']]['telemetry'][name] = {'known_trials': len(values),
++                'reported_subtotal': sum(values) if values else None,
++                'total_if_complete': sum(values) if len(values) == len(subset) else None}
++    return {'protocol': PROTOCOL, 'status': 'offline_system_diagnostic_pending_review',
++        'manifest_sha256': v1.digest(m), 'evidence_kind': m['evidence_kind'], 'audit': audit,
++        'summary': summary, 'rows': rows, 'semantic_support': 'unknown',
++        'limits': ['Independent system track; native tool counts and model configurations are not equal-compute framework attribution.',
++                   'Fixtures remain scripted controls; external recordings do not authenticate actual model/runtime or reviewer identity.',
++                   'Imported programs are not executed or scientifically validated; absent delivery inventory remains pending output review.',
++                   'Native scientific execution is unknown until independently checked; shell commands are not simulation proof.',
++                   'Wall limits are reported from captures, not enforced by this offline importer; unknown usage is never zero cost.',
++                   'Fixed development-only denominators; no new papers, formal holdout results or capability claim.']}
++
++
++def main(argv=None):
++    parser = argparse.ArgumentParser(description=__doc__)
++    sub = parser.add_subparsers(dest='action', required=True)
++    plan = sub.add_parser('plan'); plan.add_argument('--output', type=Path, required=True)
++    prepare = sub.add_parser('prepare')
++    for name in ('manifest', 'trial', 'output'):
++        prepare.add_argument('--'+name, required=True, type=str if name == 'trial' else Path)
++    prepare.add_argument('--continuation', choices=('none', 'fresh', 'resumed'), default='none')
++    prepare.add_argument('--parent', type=Path)
++    checking = sub.add_parser('check'); checking.add_argument('task', type=Path)
++    command = sub.add_parser('command-plan'); command.add_argument('task', type=Path)
++    importing = sub.add_parser('import-codex')
++    for name in ('task', 'capture', 'output'):
++        importing.add_argument('--'+name, type=Path, required=True)
++    importing.add_argument('--exit-code', type=int)
++    importing.add_argument('--timed-out', action='store_true')
++    importing.add_argument('--elapsed-seconds', type=float, required=True)
++    product = sub.add_parser('import-product')
++    for name in ('task', 'product-manifest', 'record', 'output'):
++        product.add_argument('--'+name, type=Path, required=True)
++    product.add_argument('--session-ref', required=True)
++    product.add_argument('--parent-session-ref')
++    scoring = sub.add_parser('score')
++    for name in ('manifest', 'records', 'output'):
++        scoring.add_argument('--'+name, type=Path, required=True)
++    args = parser.parse_args(argv)
++    try:
++        if args.action == 'plan':
++            m = development_manifest(); audit = validate_manifest(m)
++            args.output.mkdir(parents=True, exist_ok=False)
++            _write(args.output/'manifest.json', m); _write(args.output/'schedule.json', schedule(m))
++            print(json.dumps(audit)); return 0
++        if args.action == 'prepare':
++            result = prepare_task(_read(args.manifest), args.trial, args.output,
++                continuation=args.continuation, parent=_read(args.parent) if args.parent else None)
++        elif args.action == 'check':
++            _, result, _ = check_task(args.task)
++        elif args.action == 'command-plan':
++            result = codex_command_plan(args.task)
++        elif args.action == 'import-codex':
++            result = import_codex(args.task, args.capture, args.output, exit_code=args.exit_code,
++                timed_out=args.timed_out, elapsed_seconds=args.elapsed_seconds)
++        elif args.action == 'import-product':
++            result = import_product(args.task, _read(args.product_manifest), _read(args.record), args.output,
++                session_ref=args.session_ref, parent_session_ref=args.parent_session_ref)
++        else:
++            m, records = _read(args.manifest), _read(args.records)
++            result = score(m, records)
++            args.output.mkdir(parents=True, exist_ok=False)
++            _write(args.output/'manifest.json', m); _write(args.output/'records.json', records)
++            _write(args.output/'results.json', result)
++        print(json.dumps({'status': result.get('status'), 'protocol': PROTOCOL}))
++        if args.action == 'score':
++            return 1 if any(row['status'] == 'invalid_record' for row in result['rows']) else 0
++        if args.action in ('import-codex', 'import-product'):
++            return 0 if result['status'] in ('finished', 'not_run') else 1
++        return 0
++    except (ValueError, TypeError, KeyError, OSError, StopIteration) as exc:
++        print(json.dumps({'status': 'refused', 'reason': str(exc)})); return 2
++
++
++if __name__ == '__main__':
++    raise SystemExit(main())
+--- /dev/null
++++ b/benchmarks/development/native_capture.py
+@@ -0,0 +1,231 @@
++"""Bounded offline parsing of native Codex JSONL and shared delivery files.
++
++No commands, model requests or imported programs are executed by this module.
++Raw input remains authoritative; parsed observations never certify science.
++"""
++from __future__ import annotations
++
++import hashlib
++import json
++import os
++from pathlib import Path
++import stat
++from uuid import UUID
++
++MAX_BYTES = 8_000_000
++MAX_EVENTS = 5000
++ITEM_TYPES = {'agent_message', 'reasoning', 'command_execution', 'file_change',
++              'mcp_tool_call', 'web_search', 'todo_list', 'plan_update'}
++
++
++class DeliveryError(ValueError):
++    def __init__(self, partial_files):
++        super().__init__('invalid or incomplete artifact inventory')
++        self.partial_files = partial_files
++
++
++def decode(raw):
++    def unique(pairs):
++        result = {}
++        for key, value in pairs:
++            if key in result:
++                raise ValueError('duplicate JSON key')
++            result[key] = value
++        return result
++    try:
++        if isinstance(raw, bytes):
++            raw = raw.decode('utf-8')
++        value = json.loads(raw, object_pairs_hook=unique,
++            parse_constant=lambda _: (_ for _ in ()).throw(ValueError('nonfinite JSON')))
++        # Reject finite-looking overflow such as 1e999, including unknown fields.
++        json.dumps(value, allow_nan=False)
++        return value
++    except (UnicodeError, RecursionError, OverflowError, ValueError, TypeError):
++        raise ValueError('invalid bounded JSON') from None
++
++
++def integer(value):
++    if type(value) is not int or not 0 <= value <= 10**12:
++        raise ValueError('invalid nonnegative integer')
++    return value
++
++
++def session_id(value):
++    if not isinstance(value, str) or len(value) != 36:
++        raise ValueError('invalid native session UUID')
++    try:
++        if str(UUID(value)) != value:
++            raise ValueError('noncanonical native session UUID')
++    except (ValueError, AttributeError):
++        raise ValueError('invalid native session UUID') from None
++    return value
++
++
++def read_file(root, relative, limit=MAX_BYTES):
++    """Read a bounded regular file; reject traversal and symlink components."""
++    if not isinstance(relative, str) or not relative or '\\' in relative:
++        raise ValueError('invalid relative capture path')
++    path = Path(relative)
++    if path.is_absolute() or str(path) != relative or any(p in ('.', '..') for p in path.parts):
++        raise ValueError('capture path must stay inside its explicit root')
++    root = Path(root).absolute()
++    candidate = root/path
++    if root.is_symlink() or any(p.is_symlink() for p in (candidate, *candidate.parents) if p == root or root in p.parents):
++        raise ValueError('capture symlink refused')
++    if not candidate.resolve().is_relative_to(root.resolve()):
++        raise ValueError('capture path escaped its explicit root')
++    descriptor = os.open(candidate, os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK)
++    with os.fdopen(descriptor, 'rb') as stream:
++        if not stat.S_ISREG(os.fstat(stream.fileno()).st_mode):
++            raise ValueError('capture input must be a regular file')
++        raw = stream.read(limit+1)
++    if len(raw) > limit:
++        raise ValueError('capture byte budget exceeded')
++    return raw
++
++
++def _usage(value):
++    keys = ('input_tokens', 'output_tokens', 'cached_input_tokens', 'reasoning_output_tokens')
++    if value is None:
++        return {k: None for k in keys}
++    if not isinstance(value, dict):
++        raise ValueError('invalid usage object')
++    result = {k: integer(value[k]) if value.get(k) is not None else None for k in keys}
++    if result['input_tokens'] is not None and result['cached_input_tokens'] is not None:
++        if result['cached_input_tokens'] > result['input_tokens']:
++            raise ValueError('cached tokens exceed total input tokens')
++    return result
++
++
++def parse_events(raw):
++    if not isinstance(raw, bytes) or len(raw) > MAX_BYTES:
++        raise ValueError('native event byte budget exceeded')
++    result = {'status': 'incomplete_events', 'session_id': None, 'events_seen': 0,
++              'usage': _usage(None), 'agent_messages': [], 'native_tool_items': 0,
++              'diagnostics': [], 'raw_sha256': hashlib.sha256(raw).hexdigest()}
++    started, terminal, errors, active, completed, item_types = False, None, False, set(), set(), {}
++    try:
++        lines = raw.splitlines()
++        if len(lines) > MAX_EVENTS:
++            raise ValueError('native event count budget exceeded')
++        for index, line in enumerate(lines):
++            if not line.strip():
++                continue
++            if len(line) > 256_000:
++                raise ValueError('native event line budget exceeded')
++            try:
++                event = decode(line)
++            except ValueError:
++                if index == len(lines)-1 and not raw.endswith(b'\n') and terminal is None:
++                    result['diagnostics'].append('truncated_last_line')
++                    return result
++                raise
++            if not isinstance(event, dict) or not isinstance(event.get('type'), str):
++                raise ValueError('invalid event object')
++            if terminal is not None:
++                raise ValueError('events after terminal event refused')
++            kind = event['type']
++            if kind == 'thread.started':
++                if result['session_id'] is not None or started:
++                    raise ValueError('multiple or misplaced thread events')
++                result['session_id'] = session_id(event.get('thread_id'))
++            elif kind == 'turn.started':
++                if started or result['session_id'] is None:
++                    raise ValueError('misplaced turn start')
++                started = True
++            elif kind in ('turn.completed', 'turn.failed'):
++                if not started:
++                    raise ValueError('terminal event without turn start')
++                terminal = kind
++                if kind == 'turn.completed':
++                    result['usage'] = _usage(event.get('usage'))
++                    if isinstance(event.get('usage'), dict):
++                        unknown = sorted(set(event['usage'])-set(result['usage']))
++                        if unknown:
++                            result['diagnostics'].append('unmapped_usage_fields:'+','.join(unknown))
++                else:
++                    errors = True
++            elif kind == 'error':
++                errors = True
++                result['diagnostics'].append('native_error_event')
++            elif kind in ('item.started', 'item.updated', 'item.completed'):
++                if not started:
++                    raise ValueError('item before turn start')
++                item = event.get('item')
++                if not isinstance(item, dict) or item.get('type') not in ITEM_TYPES:
++                    raise ValueError('unsupported native item type')
++                ident = item.get('id')
++                if not isinstance(ident, str) or not 1 <= len(ident) <= 200 or ident in completed:
++                    raise ValueError('invalid or repeated completed item')
++                if ident in item_types and item_types[ident] != item['type']:
++                    raise ValueError('native item type changed')
++                item_types[ident] = item['type']
++                if kind == 'item.started':
++                    if ident in active:
++                        raise ValueError('duplicate item start')
++                    active.add(ident)
++                elif kind == 'item.updated':
++                    if ident not in active:
++                        raise ValueError('item update without start')
++                else:
++                    active.discard(ident)
++                    completed.add(ident)
++                    if item['type'] == 'agent_message':
++                        if not isinstance(item.get('text'), str):
++                            raise ValueError('invalid native agent message')
++                        result['agent_messages'].append(item['text'])
++                    if item['type'] in ('command_execution', 'mcp_tool_call', 'web_search'):
++                        result['native_tool_items'] += 1
++            else:
++                raise ValueError('unsupported native event type')
++            result['events_seen'] += 1
++        if errors:
++            result['status'] = 'provider_error'
++        elif terminal == 'turn.completed' and not active:
++            result['status'] = 'finished'
++        elif active:
++            result['diagnostics'].append('unfinished_items')
++    except ValueError as exc:
++        result['status'] = 'invalid_events'
++        result['diagnostics'].append(str(exc))
++    return result
++
++
++def read_delivery(root):
++    """A common inventory; native programs/SBML are kept as opaque bytes."""
++    root = Path(root)
++    if not (root/'delivery.json').exists():
++        return {'state': 'not_submitted', 'execution_declared': None,
++                'question_texts': [], 'artifacts': []}, {}
++    value = decode(read_file(root, 'delivery.json', 100_000))
++    if not isinstance(value, dict) or set(value) != {'state', 'execution_declared', 'question_texts', 'artifacts'}:
++        raise ValueError('invalid shared delivery inventory')
++    if value['state'] not in ('completed', 'awaiting_input', 'incomplete'):
++        raise ValueError('invalid delivery state')
++    if value['execution_declared'] is not None and type(value['execution_declared']) is not bool:
++        raise ValueError('invalid declared execution flag')
++    questions = value['question_texts']
++    if not isinstance(questions, list) or len(questions) > 20 or any(
++            not isinstance(q, str) or not 1 <= len(q) <= 8000 for q in questions):
++        raise ValueError('invalid shared question list')
++    if not isinstance(value['artifacts'], list) or len(value['artifacts']) > 64:
++        raise ValueError('delivery inventory count budget exceeded')
++    blobs = {}
++    total = 0
++    for artifact in value['artifacts']:
++        if not isinstance(artifact, dict) or set(artifact) != {'path', 'role', 'sha256'}:
++            raise ValueError('invalid delivery artifact')
++        if artifact['role'] not in ('program', 'trajectory', 'sbml', 'report', 'citations'):
++            raise ValueError('unsupported delivery artifact role')
++        name = artifact['path']
++        try:
++            raw = read_file(root, name)
++            total += len(raw)
++            if name in blobs or name == 'delivery.json' or total > MAX_BYTES:
++                raise ValueError('duplicate or oversized delivery inventory')
++            if hashlib.sha256(raw).hexdigest() != artifact['sha256']:
++                raise ValueError('delivery artifact hash mismatch')
++        except (ValueError, OSError):
++            raise DeliveryError(blobs) from None
++        blobs[name] = raw
++    return value, blobs
+--- /dev/null
++++ b/tests/test_system_comparison.py
+@@ -0,0 +1,465 @@
++"""Offline native-system interfaces, not model performance tests."""
++from copy import deepcopy
++import importlib.util
++import json
++from pathlib import Path
++
++import pytest
++
++ROOT = Path(__file__).resolve().parents[1]
++
++
++@pytest.fixture
++def system():
++    spec = importlib.util.spec_from_file_location('system_comparison_test',
++        ROOT/'benchmarks/development/system_comparison.py')
++    module = importlib.util.module_from_spec(spec)
++    spec.loader.exec_module(module)
++    return module
++
++
++def test_plan_has_actual_systems_not_workflow_aliases(system):
++    m = system.development_manifest()
++    assert [s['runtime'] for s in m['systems']] == ['biomodel_agent', 'codex_cli', 'codex_cli']
++    assert len(system.schedule(m)) == 30
++    assert system.validate_manifest(m)['real_papers'] == 0
++    assert m['evidence_kind'] == 'scripted_control'
++
++
++def test_current_phase_bundle_contains_no_private_or_future_material(system, tmp_path):
++    m = system.development_manifest()
++    t = next(t for t in system.schedule(m) if t['system_id'] == 'codex-sol' and
++             t['case_id'] == 'translation' and t['phase'] == 'initial')
++    prepared = system.prepare_task(m, t['id'], tmp_path/'task')
++    runtime = tmp_path/'task'/'runtime'
++    assert {p.name for p in runtime.iterdir()} == {'source.txt', 'experiment.json', 'TASK.md'}
++    source = (runtime/'source.txt').read_text()
++    assert 'Researcher clarification' not in source
++    assert 'private_rubric' not in (runtime/'TASK.md').read_text()
++    assert prepared['status'] == 'prepared_only_no_authorization'
++
++
++SID = '0199a213-81c0-7800-8aa1-bbab2a035a53'
++OTHER = '0199a213-81c0-7800-8aa1-bbab2a035a54'
++
++
++def events(sid=SID, usage=None, text='Literal offline fixture message'):
++    return [
++        {'type': 'thread.started', 'thread_id': sid}, {'type': 'turn.started'},
++        {'type': 'item.started', 'item': {'id': 'tool', 'type': 'command_execution', 'status': 'in_progress'}},
++        {'type': 'item.completed', 'item': {'id': 'tool', 'type': 'command_execution', 'status': 'completed', 'command': 'echo fixture'}},
++        {'type': 'item.completed', 'item': {'id': 'answer', 'type': 'agent_message', 'text': text}},
++        {'type': 'turn.completed', 'usage': usage},
++    ]
++
++
++def raw_events(value):
++    return ('\n'.join(json.dumps(e) for e in value)+'\n').encode()
++
++
++def capture(tmp_path, value=None, *, state='completed', declared=True, delivery=True):
++    tmp_path.mkdir()
++    raw = raw_events(events() if value is None else value)
++    (tmp_path/'events.jsonl').write_bytes(raw)
++    if delivery:
++        (tmp_path/'delivery.json').write_text(json.dumps({'state': state,
++            'execution_declared': declared, 'question_texts': ['Please specify P initial value'] if state == 'awaiting_input' else [],
++            'artifacts': []}))
++    return tmp_path
++
++
++def prepared(system, path, ident='codex-sol--decay--0--initial', *, m=None, parent=None, mode='none'):
++    m = system.development_manifest() if m is None else m
++    system.prepare_task(m, ident, path, continuation=mode, parent=parent)
++    return m
++
++
++def imported(system, tmp_path, *, ident='codex-sol--decay--0--initial', state='completed', usage=None):
++    task, source, output = tmp_path/'task', tmp_path/'capture', tmp_path/'import'
++    m = prepared(system, task, ident)
++    capture(source, events(usage=usage), state=state)
++    record = system.import_codex(task, source, output, exit_code=0, timed_out=False, elapsed_seconds=2)
++    return m, record, task, source, output
++
++
++def test_native_import_preserves_raw_and_never_proves_execution(system, tmp_path):
++    m, record, _, source, output = imported(system, tmp_path)
++    assert record['status'] == 'finished'
++    assert record['observation']['execution_declared'] is True
++    assert record['observation']['execution_observed'] is None
++    assert record['telemetry']['model_calls'] is None
++    assert record['telemetry']['input_tokens'] is None
++    assert record['telemetry']['tool_items'] == 1
++    assert record['session']['id'] == SID and record['session']['identity_authenticated'] is False
++    assert (output/'events.jsonl').read_bytes() == (source/'events.jsonl').read_bytes()
++    scored = system.score(m, [record])
++    assert scored['rows'][10]['metrics']['correct_completion']['value'] is None
++    assert scored['summary']['codex-sol']['metrics']['correct_completion']['denominator'] == 6
++
++
++def test_explicit_usage_and_cached_tokens_are_retained(system, tmp_path):
++    _, r, *_ = imported(system, tmp_path, usage={'input_tokens': 123, 'cached_input_tokens': 100, 'output_tokens': 12, 'reasoning_output_tokens': 5})
++    assert {k: r['telemetry'][k] for k in ('input_tokens', 'cached_input_tokens', 'output_tokens', 'reasoning_output_tokens')} == {
++        'input_tokens': 123, 'cached_input_tokens': 100, 'output_tokens': 12, 'reasoning_output_tokens': 5}
++
++
++@pytest.mark.parametrize('field,value', [('input_tokens', True), ('output_tokens', -1),
++                                      ('input_tokens', 1.2), ('cached_input_tokens', 124)])
++def test_invalid_usage_cannot_be_normalized_as_free(system, field, value):
++    usage = {'input_tokens': 123, 'cached_input_tokens': 100, 'output_tokens': 12}
++    usage[field] = value
++    assert system.native.parse_events(raw_events(events(usage=usage)))['status'] == 'invalid_events'
++
++
++@pytest.mark.parametrize('change', ['two_threads', 'two_turns', 'after_terminal', 'duplicate_item', 'unknown_event', 'unknown_item', 'no_start'])
++def test_native_event_order_and_version_guards(system, change):
++    data = events()
++    if change == 'two_threads':
++        data.insert(1, data[0])
++    elif change == 'two_turns':
++        data.insert(2, data[1])
++    elif change == 'after_terminal':
++        data.append({'type': 'turn.started'})
++    elif change == 'duplicate_item':
++        data.insert(-1, data[-2])
++    elif change == 'unknown_event':
++        data.insert(2, {'type': 'new.vendor.event'})
++    elif change == 'unknown_item':
++        data[2]['item']['type'] = 'unmapped_tool'
++    else:
++        data.pop(1)
++    result = system.native.parse_events(raw_events(data))
++    assert result['status'] == 'invalid_events'
++    assert result['diagnostics']
++
++
++@pytest.mark.parametrize('raw', [b'{"type":"error","type":"turn.completed"}\n',
++                               b'{"type":"error","value":NaN}\n', b'\xff\n'])
++def test_invalid_json_is_not_silently_discarded(system, raw):
++    assert system.native.parse_events(raw)['status'] == 'invalid_events'
++
++
++def test_partial_events_and_timeout_preserve_delivered_files(system, tmp_path):
++    task = tmp_path/'task'
++    prepared(system, task)
++    source = capture(tmp_path/'capture', state='incomplete')
++    raw = raw_events(events()[:-1])+b'{"type":'
++    (source/'events.jsonl').write_bytes(raw)
++    program = b'raise AssertionError("Submitted programs must remain opaque")\n'
++    (source/'simulate.py').write_bytes(program)
++    inventory = json.loads((source/'delivery.json').read_text())
++    inventory['artifacts'] = [{'path': 'simulate.py', 'role': 'program', 'sha256': system._sha(program)}]
++    (source/'delivery.json').write_text(json.dumps(inventory))
++    output = tmp_path/'result'
++    record = system.import_codex(task, source, output, exit_code=None, timed_out=True, elapsed_seconds=180)
++    assert record['status'] == 'timeout'
++    assert 'truncated_last_line' in record['diagnostics']
++    assert (output/'events.jsonl').read_bytes() == raw
++    assert (output/'artifacts/simulate.py').read_bytes() == program
++
++
++def test_partial_inventory_keeps_earlier_verified_artifacts(system, tmp_path):
++    task = tmp_path/'task'; prepared(system, task)
++    source = capture(tmp_path/'capture')
++    program = b'# opaque partial program\n'
++    (source/'program.py').write_bytes(program)
++    delivery = json.loads((source/'delivery.json').read_text())
++    delivery['artifacts'] = [{'path': 'program.py', 'role': 'program', 'sha256': system._sha(program)},
++                             {'path': 'missing.json', 'role': 'trajectory', 'sha256': '0'*64}]
++    (source/'delivery.json').write_text(json.dumps(delivery))
++    output = tmp_path/'import'
++    r = system.import_codex(task, source, output, exit_code=0, timed_out=False, elapsed_seconds=1)
++    assert r['status'] == 'invalid_delivery'
++    assert (output/'artifacts/program.py').read_bytes() == program
++    assert (output/'delivery.original.json').read_bytes() == (source/'delivery.json').read_bytes()
++
++
++@pytest.mark.parametrize('name', ['../outside', '/etc/passwd', 'dir/../outside', './program.py', 'dir//program.py', 'bad\\file'])
++def test_delivery_paths_are_confined(system, tmp_path, name):
++    source = capture(tmp_path/'capture')
++    value = json.loads((source/'delivery.json').read_text())
++    value['artifacts'] = [{'path': name, 'role': 'program', 'sha256': '0'*64}]
++    (source/'delivery.json').write_text(json.dumps(value))
++    with pytest.raises(ValueError):
++        system.native.read_delivery(source)
++
++
++def test_symlink_and_fifo_outputs_are_refused_without_blocking(system, tmp_path):
++    root = tmp_path/'files'; root.mkdir()
++    outside = tmp_path/'outside'; outside.write_bytes(b'private canary')
++    (root/'link').symlink_to(outside)
++    with pytest.raises(ValueError):
++        system.native.read_file(root, 'link')
++    import os
++    os.mkfifo(root/'fifo')
++    with pytest.raises(ValueError):
++        system.native.read_file(root, 'fifo')
++
++
++def test_resume_uses_exact_session_id_and_cumulative_time(system, tmp_path):
++    m, parent, _, _, _ = imported(system, tmp_path, ident='codex-sol--translation--0--initial', state='awaiting_input')
++    child_task = tmp_path/'child-task'
++    prepared(system, child_task, 'codex-sol--translation--0--clarified', m=m, parent=parent, mode='resumed')
++    plan = system.codex_command_plan(child_task)
++    assert '--ephemeral' not in plan['argv'] and '--last' not in plan['argv']
++    assert plan['argv'][-3:] == ['resume', SID, '-']
++    assert plan['outer_wall_timeout_seconds'] == 178
++    source = capture(tmp_path/'child-capture')
++    child = system.import_codex(child_task, source, tmp_path/'child-import', exit_code=0, timed_out=False, elapsed_seconds=3)
++    assert child['session']['mode'] == 'resumed'
++    assert child['telemetry']['cumulative_elapsed_seconds'] == 5
++    score = system.score(m, [parent, child])
++    r = next(r for r in score['rows'] if r['id'] == child['trial']['id'])
++    assert r['cumulative_elapsed_seconds'] == 5
++    assert r['metrics']['clarification_recovery']['value'] is None
++
++
++def test_wrong_resume_identity_is_refused_before_output(system, tmp_path):
++    m, parent, *_ = imported(system, tmp_path, ident='codex-sol--translation--0--initial', state='awaiting_input')
++    task = tmp_path/'child'; prepared(system, task, 'codex-sol--translation--0--clarified', m=m, parent=parent, mode='resumed')
++    source = capture(tmp_path/'wrong', events(sid=OTHER))
++    out = tmp_path/'refused'
++    with pytest.raises(ValueError, match='another session'):
++        system.import_codex(task, source, out, exit_code=0, timed_out=False, elapsed_seconds=2)
++    assert not out.exists()
++
++
++def test_fresh_child_does_not_reset_budget_or_get_resume_credit(system, tmp_path):
++    m, parent, *_ = imported(system, tmp_path, ident='codex-sol--translation--0--initial', state='awaiting_input')
++    task = tmp_path/'fresh'; prepared(system, task, 'codex-sol--translation--0--clarified', m=m, parent=parent, mode='fresh')
++    source = capture(tmp_path/'new-capture', events(sid=OTHER))
++    child = system.import_codex(task, source, tmp_path/'new-import', exit_code=0, timed_out=False, elapsed_seconds=179)
++    r = next(r for r in system.score(m, [parent, child])['rows'] if r['id'] == child['trial']['id'])
++    assert r['budget_status'] == 'exceeded' and r['cumulative_elapsed_seconds'] == 181
++    assert r['metrics']['clarification_recovery']['value'] is False
++    assert r['metrics']['within_budget_completion']['value'] is False
++
++
++@pytest.mark.parametrize('change', ['system', 'repeat', 'failure', 'changed_model'])
++def test_parent_binding_and_no_silent_restart(system, tmp_path, change):
++    m, parent, *_ = imported(system, tmp_path, ident='codex-sol--translation--0--initial', state='awaiting_input')
++    if change == 'system':
++        ident = 'codex-astra--translation--0--clarified'
++    elif change == 'repeat':
++        ident = 'codex-sol--translation--1--clarified'
++    else:
++        ident = 'codex-sol--translation--0--clarified'
++        if change == 'failure': parent['status'] = 'timeout'
++        else: m['systems'][1]['model'] = 'explicitly-other-model'
++    out = tmp_path/'refused'
++    with pytest.raises(ValueError):
++        prepared(system, out, ident, m=m, parent=parent, mode='resumed')
++    assert not out.exists()
++
++
++def test_missing_inventory_remains_pending_output_review(system, tmp_path):
++    task = tmp_path/'task'; m = prepared(system, task)
++    source = capture(tmp_path/'capture', delivery=False)
++    record = system.import_codex(task, source, tmp_path/'import', exit_code=0, timed_out=False, elapsed_seconds=2)
++    assert record['observation']['state'] == 'not_submitted'
++    assert record['observation']['final_messages']
++    r = next(r for r in system.score(m, [record])['rows'] if r['id'] == record['trial']['id'])
++    assert r['metrics']['correct_completion']['value'] is None
++
++
++@pytest.mark.parametrize('exit_code,timed_out,expected', [(1, False, 'process_error'), (None, False, 'incomplete_events'),
++                                                        (0, True, 'timeout')])
++def test_process_metadata_keeps_operational_failures(system, tmp_path, exit_code, timed_out, expected):
++    task = tmp_path/'task'; prepared(system, task)
++    source = capture(tmp_path/'capture')
++    r = system.import_codex(task, source, tmp_path/'import', exit_code=exit_code, timed_out=timed_out, elapsed_seconds=2)
++    assert r['status'] == expected
++
++
++def test_native_error_is_not_dropped_by_later_completion(system):
++    data = events(); data.insert(2, {'type': 'error', 'message': 'literal control service failure'})
++    assert system.native.parse_events(raw_events(data))['status'] == 'provider_error'
++
++
++@pytest.mark.parametrize('change', ['runtime_text', 'future_file', 'preparation_flag', 'rubric', 'implementation'])
++def test_preparation_freshness_and_visibility_guards(system, tmp_path, change):
++    task = tmp_path/'task'; prepared(system, task)
++    if change == 'runtime_text': (task/'runtime/source.txt').write_text('altered')
++    elif change == 'future_file': (task/'runtime/future-answer.txt').write_text('not authorized')
++    elif change == 'preparation_flag':
++        p = system._read(task/'preparation.json'); p['status'] = 'approved'; system._write(task/'preparation.json', p)
++    else:
++        m = system._read(task/'manifest.json')
++        if change == 'rubric': m['cases'][0]['phases'][0]['private_rubric']['execution_expected'] = False
++        else: m['implementation']['native_capture.py'] = '0'*64
++        system._write(task/'manifest.json', m)
++    with pytest.raises(ValueError): system.check_task(task)
++
++
++def test_live_evidence_label_is_not_supported_by_offline_import(system):
++    m = system.development_manifest(); m['evidence_kind'] = 'live_model'
++    with pytest.raises(ValueError): system.validate_manifest(m)
++
++
++def test_product_actual_saved_record_imports_without_changing_scoring(system, tmp_path):
++    old = ROOT/'artifacts/audit-t08c-http-transport-20261019/http-mock-execution'
++    native_manifest = system._read(old/'manifest.json')
++    records, receipts = system._read(old/'records.json'), system._read(old/'receipts.json')
++    record = next(r for r in records if r['trial_id'] == 'domain_agent--decay--0--initial')
++    receipt = next(r for r in receipts if r['trial_id'] == record['trial_id'])
++    task = tmp_path/'task'; m = prepared(system, task, 'biomodel--decay--0--initial')
++    result = system.import_product(task, native_manifest, record, tmp_path/'import', session_ref=receipt['session_ref'])
++    assert result['observation']['execution_observed'] is True
++    assert result['assessment'] == system.ASSESSMENT
++    assert result['telemetry']['tool_count_kind'] == 'domain_tool_invocations'
++    assert system._read(tmp_path/'import/product-record.json') == record
++    assert system.score(m, [result])['summary']['biomodel']['metrics']['correct_completion']['unknown'] == 6
++
++
++def test_fixed_denominator_and_duplicate_guards(system, tmp_path):
++    m, r, *_ = imported(system, tmp_path)
++    empty = system.score(m, [])
++    for s in empty['summary'].values():
++        assert s['planned_trials'] == 10
++        assert s['metrics']['correct_completion']['counts']['missing_record'] == 6
++        assert s['metrics']['targeted_question']['denominator'] == 4
++        assert s['telemetry']['input_tokens']['total_if_complete'] is None
++    with pytest.raises(ValueError): system.score(m, [r, r])
++    r['assessment']['numeric'] = 'pass'
++    scored = system.score(m, [r])
++    assert scored['summary']['codex-sol']['statuses']['invalid_record'] == 1
++    assert scored['summary']['codex-sol']['metrics']['correct_completion']['counts']['invalid_record'] == 1
++
++
++def test_byte_and_event_limits(system):
++    with pytest.raises(ValueError): system.native.parse_events(b'x'*(system.native.MAX_BYTES+1))
++    raw = b'{}\n'*(system.native.MAX_EVENTS+1)
++    assert system.native.parse_events(raw)['status'] == 'invalid_events'
++
++
++def test_unknown_execution_does_not_become_confirmed_overblocking(system, tmp_path):
++    m, r, *_ = imported(system, tmp_path, state='awaiting_input')
++    result = next(x for x in system.score(m, [r])['rows'] if x['id'] == r['trial']['id'])
++    assert result['metrics']['overblocking']['value'] is None
++
++
++def test_utf16_native_stream_is_outside_utf8_profile(system):
++    raw = json.dumps(events()[0]).encode('utf-16')+b'\n'
++    assert system.native.parse_events(raw)['status'] == 'invalid_events'
++
++
++def test_malformed_artifact_metadata_is_invalid_in_fixed_denominator(system, tmp_path):
++    m, r, *_ = imported(system, tmp_path)
++    r['observation']['artifacts'] = [{'path': '../operator-answer', 'role': 'program', 'sha256': '0'*64}]
++    result = next(x for x in system.score(m, [r])['rows'] if x['id'] == r['trial']['id'])
++    assert result['status'] == 'invalid_record'
++
++
++def test_cross_case_native_session_reuse_cannot_fake_independent_runs(system, tmp_path):
++    m, first, *_ = imported(system, tmp_path)
++    task = tmp_path/'second-task'
++    prepared(system, task, 'codex-sol--translation--0--initial', m=m)
++    source = capture(tmp_path/'second-capture', state='awaiting_input')
++    second = system.import_codex(task, source, tmp_path/'second-import', exit_code=0, timed_out=False, elapsed_seconds=2)
++    result = system.score(m, [first, second])
++    assert all(next(r for r in result['rows'] if r['id'] == record['trial']['id'])['status'] == 'invalid_record'
++               for record in (first, second))
++
++
++def test_fresh_mode_rejects_reused_parent_session(system, tmp_path):
++    m, parent, *_ = imported(system, tmp_path, ident='codex-sol--translation--0--initial', state='awaiting_input')
++    task = tmp_path/'fresh-task'; prepared(system, task, 'codex-sol--translation--0--clarified', m=m, parent=parent, mode='fresh')
++    source = capture(tmp_path/'fresh-capture')
++    with pytest.raises(ValueError, match='reused parent'):
++        system.import_codex(task, source, tmp_path/'refused', exit_code=0, timed_out=False, elapsed_seconds=2)
++
++
++def test_exhausted_budget_cannot_create_an_inference_command(system, tmp_path):
++    m, parent, *_ = imported(system, tmp_path, ident='codex-sol--translation--0--initial', state='awaiting_input')
++    parent['telemetry'].update(elapsed_seconds=180, cumulative_elapsed_seconds=180)
++    task = tmp_path/'child'; prepared(system, task, 'codex-sol--translation--0--clarified', m=m, parent=parent, mode='resumed')
++    assert system.check_task(task)[1]['remaining_elapsed_seconds'] == 0
++    with pytest.raises(ValueError, match='remaining budget'):
++        system.codex_command_plan(task)
++
++
++@pytest.mark.parametrize('change', ['parent_digest', 'parent_session', 'cumulative_time'])
++def test_imported_child_identity_and_time_are_rechecked_by_report(system, tmp_path, change):
++    m, parent, *_ = imported(system, tmp_path, ident='codex-sol--translation--0--initial', state='awaiting_input')
++    task = tmp_path/'child'; prepared(system, task, 'codex-sol--translation--0--clarified', m=m, parent=parent, mode='resumed')
++    source = capture(tmp_path/'child-capture')
++    child = system.import_codex(task, source, tmp_path/'child-import', exit_code=0, timed_out=False, elapsed_seconds=2)
++    if change == 'parent_digest': child['session']['parent_record_sha256'] = '0'*64
++    elif change == 'parent_session': child['session']['id'] = OTHER
++    else: child['telemetry']['cumulative_elapsed_seconds'] = 2
++    result = next(r for r in system.score(m, [parent, child])['rows'] if r['id'] == child['trial']['id'])
++    assert result['status'] == 'invalid_record'
++
++
++def test_missing_parent_keeps_child_budget_unknown(system, tmp_path):
++    m, parent, *_ = imported(system, tmp_path, ident='codex-sol--translation--0--initial', state='awaiting_input')
++    task = tmp_path/'child'; prepared(system, task, 'codex-sol--translation--0--clarified', m=m, parent=parent, mode='resumed')
++    source = capture(tmp_path/'child-capture')
++    child = system.import_codex(task, source, tmp_path/'child-import', exit_code=0, timed_out=False, elapsed_seconds=2)
++    result = next(r for r in system.score(m, [child])['rows'] if r['id'] == child['trial']['id'])
++    assert result['budget_status'] == 'unknown'
++    assert result['metrics']['clarification_recovery']['value'] is None
++
++
++@pytest.mark.parametrize('field,value', [('exit_code', True), ('exit_code', '0'),
++                                       ('timed_out', 1), ('elapsed_seconds', float('nan'))])
++def test_process_metadata_requires_strict_types(system, tmp_path, field, value):
++    task = tmp_path/'task'; prepared(system, task)
++    source = capture(tmp_path/'capture')
++    options = {'exit_code': 0, 'timed_out': False, 'elapsed_seconds': 2}; options[field] = value
++    with pytest.raises(ValueError): system.import_codex(task, source, tmp_path/'refused', **options)
++    assert not (tmp_path/'refused').exists()
++
++
++def test_external_recording_is_still_not_authenticated_live_evidence(system, tmp_path):
++    m = system.development_manifest(); m['evidence_kind'] = 'external_recording'
++    task = tmp_path/'task'; prepared(system, task, m=m)
++    source = capture(tmp_path/'capture')
++    r = system.import_codex(task, source, tmp_path/'import', exit_code=0, timed_out=False, elapsed_seconds=2)
++    assert r['evidence_kind'] == 'external_recording'
++    assert r['session']['identity_authenticated'] is False
++    assert system.score(m, [r])['semantic_support'] == 'unknown'
++
++
++def test_product_fixture_cannot_be_relabelled_external_recording(system, tmp_path):
++    old = ROOT/'artifacts/audit-t08c-http-transport-20261019/http-mock-execution'
++    records = system._read(old/'records.json')
++    record = next(r for r in records if r['trial_id'] == 'domain_agent--decay--0--initial')
++    m = system.development_manifest(); m['evidence_kind'] = 'external_recording'
++    task = tmp_path/'task'; prepared(system, task, 'biomodel--decay--0--initial', m=m)
++    with pytest.raises(ValueError, match='evidence/model'):
++        system.import_product(task, system._read(old/'manifest.json'), record, tmp_path/'refused', session_ref='0'*64)
++
++
++def test_cli_roundtrip_and_existing_output_refusal(system, tmp_path, capsys):
++    suite = tmp_path/'suite'
++    assert system.main(['plan', '--output', str(suite)]) == 0
++    task = tmp_path/'task'
++    assert system.main(['prepare', '--manifest', str(suite/'manifest.json'), '--trial', 'codex-sol--decay--0--initial', '--output', str(task)]) == 0
++    assert system.main(['check', str(task)]) == 0
++    assert system.main(['command-plan', str(task)]) == 0
++    source = capture(tmp_path/'capture'); output = tmp_path/'import'
++    args = ['import-codex', '--task', str(task), '--capture', str(source), '--output', str(output), '--exit-code', '0', '--elapsed-seconds', '2']
++    assert system.main(args) == 0
++    before = {p.name: p.read_bytes() for p in output.iterdir() if p.is_file()}
++    assert system.main(args) == 2
++    assert before == {p.name: p.read_bytes() for p in output.iterdir() if p.is_file()}
++    records = tmp_path/'records.json'; system._write(records, [system._read(output/'record.json')])
++    scored = tmp_path/'score'
++    assert system.main(['score', '--manifest', str(suite/'manifest.json'), '--records', str(records), '--output', str(scored)]) == 0
++    assert len(system._read(scored/'results.json')['rows']) == 30
++
++
++def test_cli_saves_failed_capture_and_returns_failure_status(system, tmp_path, capsys):
++    task = tmp_path/'task'; prepared(system, task)
++    source = capture(tmp_path/'capture'); output = tmp_path/'timeout'
++    assert system.main(['import-codex', '--task', str(task), '--capture', str(source), '--output', str(output),
++                        '--timed-out', '--elapsed-seconds', '180']) == 1
++    assert system._read(output/'record.json')['status'] == 'timeout'
++
++
++def test_unknown_or_missing_json_refuses_before_output(system, tmp_path, capsys):
++    bad = tmp_path/'bad.json'; bad.write_text('{"x":1,"x":2}')
++    out = tmp_path/'refused'
++    assert system.main(['prepare', '--manifest', str(bad), '--trial', 'bad', '--output', str(out)]) == 2
++    assert not out.exists()
+--- a/tests/test_workflow_adapters.py
++++ b/tests/test_workflow_adapters.py
+@@ -273,13 +273,29 @@
+ 
+ @pytest.mark.parametrize('workflow',['fixed_workflow','generic_tool_agent','domain_agent'])
+ def test_hard_deadline_also_bounds_the_scientific_tool(adapters,tmp_path,workflow,monkeypatch):
+-    p=projection(adapters,workflow); p['budget']['max_elapsed_seconds']=.6
+-    def slow(*args,**kwargs): time.sleep(5)
++    # Test scientific-call termination after admission, independently of how
++    # quickly source parsing and the model/tool setup happen on this host.
++    p=projection(adapters,workflow); p['budget']['max_elapsed_seconds']=30.
++    admitted=tmp_path/'scientific-admitted.txt'
++    real_monotonic=time.monotonic
++    class AdmissionClock:
++        @staticmethod
++        def monotonic():
++            try: float(admitted.read_text())
++            except (OSError,ValueError): return real_monotonic()
++            # Fault-inject exhaustion of the existing total budget after
++            # the scientific effect starts. Do not patch the global clock.
++            return real_monotonic()+p['budget']['max_elapsed_seconds']
++    def slow(*args,**kwargs):
++        admitted.write_text(str(real_monotonic()))
++        time.sleep(5)
++    monkeypatch.setattr(adapters,'time',AdmissionClock)
+     monkeypatch.setattr(adapters.application,'run_reproduction',slow)
+-    start=time.monotonic()
+     out=adapters.run_trial(p,EnvelopeTransport(p,complete_actions(workflow)),tmp_path/'scientific-timeout')
+-    assert time.monotonic()-start<3
++    assert admitted.is_file(), 'scientific tool must actually be admitted'
++    assert real_monotonic()-float(admitted.read_text())<3
+     assert out['record']['status']=='timeout'
++    assert out['audit']['stop_reason']=='wall_deadline'
+     assert out['record']['observation']['executed'] is True
+     assert out['record']['telemetry']['tool_calls']==4
+ 
+--- /dev/null
++++ b/docs/system-comparison.md
+@@ -0,0 +1,106 @@
++# T08d-1：原生系统对照的离线接口
++
++本轮搭建共同任务包、Codex JSONL/产品记录导入、原会话关系与统一报告。代码位于 `benchmarks/development/system_comparison.py` 和 `native_capture.py`。采用独立协议 `native_system_comparison_v1`，运行时明确为BioModel Agent、Codex-sol、Codex-astra；没有把Codex改名为旧协议的generic_tool_agent。
++
++**当前是离线接口，不包含真实Codex推理启动器或提交程序的科学执行器。** 服务、认证、实际运行环境与材料外发仍待配置；`command-plan`只输出提议命令。实际产品比较与相同底层模型的框架归因继续分开。
++
++## 共同任务和环境差异
++
++当前只复用既有decay、translation、logistic三项已见合成任务，含5个阶段，一个同源家庭，每系统2次重复，共30条。原开发材料、标注和旧成绩保持不变，真实论文数0、领域审核pending。任务清单冻结实现哈希、科学工具指纹、材料、候选模型设置和共同活动墙钟预算，当前默认180秒。
++
++三个系统ID为biomodel、codex-sol、codex-astra。Codex候选沿用用户的gpt-6.1-sol和暂按“Atra”理解的gpt-6-astra，均未测试可用性；产品底层模型暂未选定，版本字段保持null。它们是待配置候选，不是已运行身份。新协议允许显式记录外部回放，但不能把evidence_kind改成live_model或把未见材料/正式论文塞入本版开发协议。
++
++| 层 | 当前处理 |
++|---|---|
++| Agent可见输入 | 每阶段仅source.txt、experiment.json、TASK.md，当前原文/实验对三系统相同；未来澄清只在对应阶段释放 |
++| 操作者资料 | 完整清单含私有规则，parent与preparation文件放在runtime外；运行环境只应挂载当前runtime |
++| 交付接口 | 最小文件清单、问题原文和自报状态；支持原生Python程序、SBML、轨迹、报告、引用文件，不要求Codex生成产品ModelDraft |
++| 工具 | 产品为受控科学工具，Codex为原生编程环境；工具数语义不同，不能直接视为同等调用量 |
++| 预算 | 同一案例初始与澄清累计活动墙钟；新会话也不重置。原生模型调用量不可从JSONL完整推得，保持null |
++| 身份 | 配置和事件中的session是归属记录，不能认证提供方、实际模型、CLI版本或来源语义 |
++
++包导出只是内容投影，本身不是OS沙箱。真实启动时还需冻结CLI二进制/版本、独立会话存储、模型服务和凭证接入、代码运行依赖、权限/联网范围与外部总期限监督；本轮没有为这些未选配置制造“已验证”声明。
++
++## 原生事件与会话恢复
++
++OpenAI官方非交互说明使用`codex exec --json`输出JSONL，并支持`codex exec resume <SESSION_ID>`。`--ephemeral`不保存会话文件；本轮的命令计划保留持久会话，恢复只使用明确的ID，不使用`--last`。[官方说明](https://learn.chatgpt.com/docs/non-interactive-mode)、[CLI参考](https://learn.chatgpt.com/docs/cli/reference)
++
++已只读核对本机codex-cli 0.163.0的version/exec help/resume help。未调用推理命令，未读取认证文件。计划通过stdin提供TASK.md并要求写完后关闭输入，避免旧脚本中继承stdin的历史问题。`--ignore-user-config`和`--ignore-rules`用于受控环境，但不能代替文件隔离或认证范围配置。
++
++JSONL解析采用显式、有界的单会话单turn配置：
++
++- 严格UTF-8和JSON，拒绝重复键、非有限数、非法顺序、多线程/turn混入、重复完成项及未知事件/工具类型；原始字节另存，不跳过错误行后宣称成功。
++- 支持thread.started、turn.started/completed/failed、error和常用item生命周期；错误、未完成item及截断末行保留诊断。版本增加新类型时须显式更新配置并重新冻结，不能静默丢弃。
++- 最多8MB事件、5000行、单行256KB。usage缺失保持null；已报告的输入/缓存/输出/推理token分别保留，缓存不重复加到输入量。
++- 原生command_execution/MCP/web事件只计已完成原生工具项，不能据此证明执行了指定科学模拟；execution_declared和execution_observed分开，原生科学执行在独立检查前为null。
++
++继续同一任务时，清单/实现/材料/系统/案例/重复号及父记录摘要必须一致，父记录须已完成交互并等待输入；原生恢复返回另一session会被拒绝。失败父记录不会自动改为fresh。显式fresh需要另一session，仍继承累计时间，在报告中不能得原会话恢复信用。不同案例、系统或重复共用同一原生session时，报告拒绝受影响记录，避免把上下文污染当独立运行。
++
++产品适配器读取原domain_agent的v1归属记录，并核对共同材料、旧严格协议、证据类型、模型声明及父session引用。源记录原样保存，数值/来源审核不会因此提升为通过。现接口不是对任意伪造文件的身份认证；外部记录仍需可信采集器和独立复核。
++
++## 交付文件和失败保存
++
++Agent可在/delivery写入以下最小清单：
++
++```json
++{
++  "state": "awaiting_input",
++  "execution_declared": false,
++  "question_texts": ["What is the initial P value?"],
++  "artifacts": []
++}
++```
++
++产物项字段为path、role、sha256，角色允许program/trajectory/sbml/report/citations。程序保持不透明字节，本接口不执行。路径拒绝绝对路径、上级跳转、非规范别名、符号链接和非普通文件，最多64份、总量8MB。原清单与事件流留存；部分清单失败时已验证的早先文件继续保存，不能假称完成。
++
++没有delivery.json时，保留原生最终消息，标为not_submitted并等待输出审核，不自动判科学失败。进程非零退出、超时、服务错误、缺终态、事件非法和交付不完整分别留档。导入不产生请求，不重试、不续算、不覆盖目录；被拒绝的源capture文件也不会被删除。应导入已停止写入、由采集器持有的capture目录；路径检查不是对恶意并发文件系统变更的完整沙箱。
++
++协议只接收scripted_control或external_recording。后者表示操作者提供的回放，**不等同已认证的真实模型证据**；所有标准化审核字段固定为unreviewed/unknown，不能通过字段改成“专家通过”。原生模型自报、命令文本和产物存在均不足以确认科学正确。
++
++统一报告沿用T08d-0的固定分母与三值统计：正确完成、预算内完成、缺口识别、针对性追问、无依据执行/完成、过阻断、原会话恢复分开。未知不能算已确认失败或安全，描述范围不是统计置信区间。共同墙钟是按capture声明复算的预算，不是本离线导入器已经实施的运行时硬期限；缺usage和缺记录仍保留分母与未知量。
++
++## 使用
++
++先生成操作者清单：
++
++```bash
++PYTHONDONTWRITEBYTECODE=1 .venv/bin/python benchmarks/development/system_comparison.py \
++  plan --output /tmp/new-system-plan
++```
++
++导出某个当前阶段并查看命令计划：
++
++```bash
++PYTHONDONTWRITEBYTECODE=1 .venv/bin/python benchmarks/development/system_comparison.py \
++  prepare --manifest /tmp/new-system-plan/manifest.json \
++  --trial codex-sol--translation--0--initial --output /tmp/new-system-task
++
++PYTHONDONTWRITEBYTECODE=1 .venv/bin/python benchmarks/development/system_comparison.py \
++  command-plan /tmp/new-system-task
++```
++
++已有、来源范围明确的capture目录包含events.jsonl与可选delivery.json/产物后，可离线导入：
++
++```bash
++PYTHONDONTWRITEBYTECODE=1 .venv/bin/python benchmarks/development/system_comparison.py \
++  import-codex --task /tmp/new-system-task --capture /path/to/capture \
++  --exit-code 0 --elapsed-seconds 12 --output /tmp/new-system-import
++```
++
++超时用`--timed-out`，缺少进程退出结果时不填exit-code；已经产生的记录和文件仍保存。正常导入退出0，保存了操作失败的导入退出1，整批/身份/路径等拒绝退出2。score时已计划的非法记录保存invalid_record并退出1，重复或未计划ID拒绝整批；退出0只表示接口操作完成。
++
++澄清任务需要`prepare --continuation resumed --parent /path/to/parent/record.json`；若有意开新会话则明确fresh，仍提供父记录供预算累计。`check TASK_DIR`可检查准备失效。产品可使用`import-product`或同名Python接口，输入原v1清单/记录、session-ref及恢复时的parent-session-ref。score读取本协议清单和标准化record列表，新建结果目录。
++
++## 验证与当前限制
++
++新增67项专项检查通过，覆盖会话/材料/配置绑定、跨案例session污染、预算继承、缺usage、错误事件、截断输出、部分文件、路径/FIFO/链接、CLI与分母。开发中的三项边界失败及修复原样保存。
++
++完整确认1427项通过；首轮1426通过/1项V01失败及后续单独诊断、唯一旧测试改动详见下方记录。
++
++[30阶段离线演练](../artifacts/audit-t08d-1-system-comparison-20261020/offline-replay/engineering.json)导入10份T08c历史产品记录和20份明确编造的Codex事件fixture。18项完成仍待审核，12项初始缺口另计；8条Codex“恢复”只是模拟ID关系。另只读核对4条历史产品原生父关系，未新增实际模型会话或科学比较执行；dummy程序从未运行。历史产品记录只用于接口映射，并非按新任务包重新执行后的同题成绩。
++
++[绝对路径隔离探针](../artifacts/audit-t08d-1-system-comparison-20261020/isolation-probe-final/result.json)在无网络namespace中只运行固定Python检查：当前三份输入可读且只读，操作者canary/完整清单/项目源码不可读，凭证环境变量未继承。首次受当前沙箱限制无法创建网络namespace，按授权在宿主重跑；初次宿主探针有两条相对路径，已明确保留为不足证据，并用绝对路径及宿主正向存在检查修正。**该结果只证明这次离线探针的挂载视图，未证明真实Codex启动环境已安全隔离。**
++
++完整回归、源码差异、工具帮助和所有失败见 [T08d-1归档目录](../artifacts/audit-t08d-1-system-comparison-20261020/)。产品、v1/v2评分器和执行传输不改。本轮唯一既有测试修改为V01：首轮完整1426通过、领域组旧0.6秒工具准入断言失败；原三项单独运行通过。随后将该测试改为工具确认进入后，以适配器局部时钟跳变模拟总期限耗尽，继续断言真实终止耗时、timeout、执行标记、工具计数及wall_deadline。三组确定性控制通过，不再依赖冷启动在0.6秒内完成；不表示生产期限放宽或性能提升，逻辑耗时也不能当性能数据。原始失败和前后真实产物均保留。
++
++下一阶段仍需独立领域审核与具体服务/授权范围；再实现受监督的真实采集、独立科学执行/评分，进行先导对照。本轮不新增评测论文、不读取独立评测集或c13/c18材料，也不重试此前被拒绝的外发。
+--- a/docs/current-support.md
++++ b/docs/current-support.md
+@@ -1,6 +1,6 @@
+ # 当前支持范围与证据入口
+ 
+-更新于2026-10-20，覆盖T08d-0报告层。单个逻辑Agent、模块化单体、SBML执行载荷与确定性科学工具继续作为当前架构。功能存在、脚本演练、数值验证和真实模型效果分别记录。
++更新于2026-10-20，覆盖T08d-1离线系统接入。单个逻辑Agent、模块化单体、SBML执行载荷与确定性科学工具继续作为当前架构。功能存在、脚本演练、数值验证和真实模型效果分别记录。
+ 
+ | 范围 | 当前支持 | 主要限制 / 证据 |
+ |---|---|---|
+@@ -13,8 +13,9 @@
+ | 受约束研究 | 冻结反馈/前馈/基线候选，训练拟合与留出比较；新计划adaptation_study_v2 | 总科学期限默认300秒、最多600秒；v1以显式旧版执行默认兼容；不支持开放机制发现、通用可辨识性结论；[T04](study-execution-deadline.md) |
+ | 三工作流对照 | 实际产品领域Agent及固定/通用编排，共用工具和预算；共同HTTP传输及离线准备 | 最新演练为脚本/模拟HTTP，已见3例；不是当前版本真实模型对照；[T08b](workflow-adapters.md)、[T08c](comparison-transport.md) |
+ | 评价报告 | v1原评分可复算；T08d-0新增待审核/缺跑/错误分层、固定分母与未知范围 | 报告v2仍只读取v1已见合成协议；不认证审核人或模型身份；[T08d-0](evaluation-reporting.md) |
++| 原生系统接入 | 独立系统协议、当前阶段任务包、Codex JSONL/产品v1导入、指定session恢复与累计时间、统一三值报告 | 30阶段是历史/编造事件控制；尚无实际推理启动或提交程序执行器；固定Python隔离探针不认证真实Codex环境；[T08d-1](system-comparison.md) |
+ | 真实模型证据 | 历史Goodwin单例、旧冻结版Codex探索小测、已发表系统替代模型变体接入 | 尚无当前版本独立领域审核的真实论文优越性结论；[阶段审计](research-readiness-audit.md) |
+ 
+-历史文档保存各轮实际结果，其测试数和“下一步”仅对应当时版本。最新任务按 [研究任务清单](../tasks/research-next-phase.json) 与 [优化队列](optimization-backlog.md) 追踪。T07独立审核、T08真实对照/消融仍未结项；下一项为T08d-1离线Codex对照协议及记录接口。
++历史文档保存各轮实际结果，其测试数和“下一步”仅对应当时版本。最新任务按 [研究任务清单](../tasks/research-next-phase.json) 与 [优化队列](optimization-backlog.md) 追踪。T08d-1新增67项控制、完整确认1427项通过；首轮一项V01准入测试失败保留，该唯一既有测试已改成确定性时钟故障注入，未修改生产期限。T07独立审核、T08真实对照/消融仍未结项；下一项为T07b/T07c的审核与任务划分准备，服务配置按用户要求稍后讨论。
+ 
+ 既有独立评测集保持隔离；暂不新增评测论文。c13/c18 USTC材料外发拒绝仍有效。候选模型名称、离线准备包和评分报告均不是新增外发授权。
+--- a/docs/optimization-backlog.md
++++ b/docs/optimization-backlog.md
+@@ -1,6 +1,6 @@
+ # 架构审计后的优化任务队列
+ 
+-更新：2026-10-20。默认由 Codex 安排任务、监督 DSH 实现并独立验收；DSH 超时后，T03b 经用户授权由 Codex 接手，之后 T04 至 T08d-0 延续用户要求的 Codex 独立实现方式。一次推进一项，验收后更新本表，不以执行方回复“完成”代替验收。
++更新：2026-10-20。默认由 Codex 安排任务、监督 DSH 实现并独立验收；DSH 超时后，T03b 经用户授权由 Codex 接手，之后 T04 至 T08d-1 延续用户要求的 Codex 独立实现方式。一次推进一项，验收后更新本表，不以执行方回复“完成”代替验收。
+ 
+ 审计原始证据已从临时目录归档到 [architecture-audit-20261019](../artifacts/architecture-audit-20261019/audit.md)。基线完整 Python 回归 715 项通过，同时存在下列已复现问题；测试数量不代表真实模型科研能力。
+ 
+@@ -17,11 +17,14 @@
+ | T08 | 缺同底层模型、近预算的真实 Agent 公平评价 | **T08a/T08b/F1/T08c工程已验收；真实模型对照仍待做，整体未结项**：[执行与限制](workflow-adapters.md) | 三种实际工作流、共同HTTP/请求/预算、总期限和原任务恢复；原样30阶段含18次实际模拟，脚本响应不算模型表现 |
+ | T08b-F1 | 共同绑定工具不支持 “the intended equation is …” 澄清句式 | **已验收**：[实际结果与补丁](../artifacts/audit-t08b-f1-equation-prose-20261019/acceptance.json) | 完整固定句式/原文位置及截短、否定、不确定、条件限定负控制；63项新增检查，完整1235通过；六处澄清解阻，原材料/脚本/成绩保留，语义仍unknown |
+ | T08c | 缺共同真实模型transport及可审核的线上执行准备 | **离线工程已验收**：[结果与边界](comparison-transport.md) | 共同HTTP薄适配、地址/配置/实现身份、结构化收据和纯离线准备包；专项74、完整1309通过；66次HTTP模拟请求和18次实际模拟，不含真实推理 |
+-| T08d | 尚未完成产品与Codex的实际对照及同模型框架归因 | **T08d-0报告层已验收，下一项T08d-1离线Codex协议/记录接入；整体未结项** | 用户候选gpt-6.1-sol及gpt-6-astra（Atra暂作此解）；具体服务配置稍后讨论；另保留同模型三工作流归因，授权范围明确后实跑，失败保留分母 |
++| T08d | 尚未完成产品与Codex的实际对照及同模型框架归因 | **T08d-0报告层、T08d-1离线系统接口已验收；真实运行与科学评分待做，整体未结项** | 用户候选gpt-6.1-sol及gpt-6-astra（Atra暂作此解）；具体服务配置稍后讨论；另保留同模型三工作流归因，范围明确后实跑，失败保留分母 |
+ | T08d-0 | 未审核完成被旧摘要混为0成功/0未知；支持范围和研究问题需统一 | **工程已验收**：[口径与边界](evaluation-reporting.md) | 新版报告层保留旧评分器，18完成待审、12缺口阶段另计；专项51通过，完整确认1360通过；首轮2项旧短期限失败及单独3项通过保留，V01待定位；不构成模型能力提升 |
++| T08d-1 | 需要共同任务包及Codex原生事件/产品记录接入 | **离线工程已验收**：[接口与边界](system-comparison.md) | 新增67项、完整确认1427通过；10份历史产品记录+20份编造事件演练；固定离线探针通过，真实Codex环境未认证；V01唯一旧测试改成准入后故障注入，原失败保留 |
+ | T09 | Memory 候选审核、Skill 科研流程、失效传播和规模性能 | 待真实任务证据 | T05/T08；候选不自动成为事实，技能有案例/失败条件，以消融检验收益，测量后优化索引 |
+ 
+ 保留单 Agent、模块化单体、SBML 权威执行载荷、不可变产物及冻结研究协议。暂缓多 Agent、通用 PDE、开放机制搜索及没有规模测量支撑的基础设施迁移。
++
++T08d-1的当前产物为离线task/command-plan/import/score，不包含实际推理启动器或提交程序的科学执行器；外部事件仅归属回放，不认证实际模型。原生session隔离、累计墙钟、错误/部分文件、未知usage和分母均有控制。完整首轮1426通过/1项V01失败，旧三组单独通过；确定性准入故障注入后3项通过，完整确认1427通过。此为本轮唯一旧测试修改，生产代码与原评分/执行传输不改；初始相对路径探针不足之处、修正后的绝对路径probe和所有原始失败见 [T08d-1验收](../artifacts/audit-t08d-1-system-comparison-20261020/acceptance.json)。下一项为T07b/T07c审核与材料划分准备；服务/外发配置仍暂缓，未添加新论文。
+ 
+ 2026-10-20后的顺序按 [阶段审计与研究计划](research-readiness-audit.md) 和 [机器任务清单](../tasks/research-next-phase.json) 细分。最新边界见 [当前支持矩阵](current-support.md)。T08d-0完成研究问题、主要终点和否证条件定义，并新建独立报告v2；产品/旧测试/评分器/执行传输均未改。首轮完整1358通过/2失败，单独诊断3通过，原配置完整确认1360通过；失败和3815个旧产物完整性检查见 [验收记录](../artifacts/audit-t08d-0-reporting-20261020/acceptance.json)。V01跟踪旧0.6秒工具准入测试的调度敏感性，不把一次确认通过当作根因已解决。
+ 
+--- a/docs/seven-point-status.md
++++ b/docs/seven-point-status.md
+@@ -10,7 +10,7 @@
+ | Tool Use | 材料读取/检索、可选本地PyMuPDF页块/表格解析与引用定位、记忆召回、技能读取、有界目标/数值/公式绑定、模拟，以及冻结的训练拟合/留出比较 | 解析与绑定不能证明语义支持；OCR/公式识别未运行，表格和复杂阅读顺序待审核；复杂语言/单位换算仍unknown，拟合仍限已验证的profile |
+ | 工作流 | 追问、归属回复、暂停/恢复、版本与预算冻结、一次研究执行、持久调用记录、受控故障恢复/结果认领及本地所有者；统一研究入口与科学总期限 | 任意崩溃点自动恢复、跨分支全局费用/执行限额、较复杂的研究修改与失效传播仍有限；科学工具总期限不包含此前LLM讨论或研究者等待 |
+ | Skill | 固定版本的 ODE 复现、澄清复核、受约束研究指引；目录随任务模式冻结，不改变权限或科学判据 | 仍为少量内置流程；可增加有独立科学案例验收的技能，不急于通用插件市场 |
+-| Evaluation | 完整数值/故障回归、解析解、恢复演练；T08a共同清单/固定分母；T08b实际工作流；F1句式修复；T08c共同HTTP；T08d-0独立报告v2，区分待审核与运行错误并保留旧成绩 | 当前对照仍为脚本/内存HTTP；下一项T08d-1离线Codex协议/接入，服务配置稍后讨论；同模型归因、专家审核任务及真实消融待完成；旧短期限探针敏感性V01待定位 |
++| Evaluation | 完整数值/故障回归、解析解、恢复演练；T08a固定分母；T08b工作流；T08c共同HTTP；T08d-0报告v2；T08d-1独立系统任务包/原生事件及产品记录导入 | 演练仍为脚本/历史记录；真实Codex推理采集、独立科学评分、同模型归因、领域审核和消融待做；服务讨论暂缓；V01改为准入后确定性故障注入，生产期限未变 |
+ 
+ 本轮选择补 Memory 的工作上下文与 Evaluation，因为之前只有持久化与续跑，而每次请求仍可能携带不断增长的全部历史。详见 [上下文预算](context-budget.md)；前两轮能力见 [记忆与检索](memory-and-retrieval.md) 和 [受约束研究工具](agent-study-tool.md)。
+ 
+@@ -35,3 +35,5 @@
+ 用户随后明确主要与Codex竞争，候选先记gpt-6.1-sol与gpt-6-astra（“6 Atra”暂作此解），服务配置讨论按要求暂缓。T08d先补真实Codex对照协议和执行/记录接口，共同材料/预算与工具环境差异留档；另保留同模型工作流对照来区分框架和模型贡献。候选不表示已发起调用或获得材料外发授权，见[意图记录](../artifacts/audit-t08c-http-transport-20261019/comparison-intent.json)。
+ 
+ 2026-10-20，T08d-0完成 [版本化报告层](evaluation-reporting.md) 与 [当前支持矩阵](current-support.md)。旧v1源码、输入协议与实际保存成绩保持原样；新增报告将18条完成记录保留为待审核，12条初始缺口按相应分母报告，未知不再显示为已判失败。新增51项控制通过；首轮完整回归1358通过/2项旧0.6秒工具准入断言失败，单独三组诊断通过，原配置完整确认1360通过。原始失败及实际产物留档，V01继续定位，期限/旧测试未放宽。报告的上下界是记录未决范围，不是统计置信区间；未新增线上推理、正式领域审核或模型能力成绩，下一项为T08d-1。见 [验收记录](../artifacts/audit-t08d-0-reporting-20261020/acceptance.json)。
++
++随后T08d-1完成 [离线原生系统接口](system-comparison.md)：共同当前阶段输入、独立系统ID、明确session恢复/新会话、事件/交付导入、预算累计与统一报告。67项新检查通过；30阶段仅10份历史产品记录和20份编造Codex事件，18完成仍待审核；固定无网络Python探针通过，未认证真实Codex运行环境。首轮1426通过/1项旧V01失败，原三项单独通过；该唯一既有测试现改为科学工具准入后局部时钟故障注入，保留真实终止/调用断言并增加wall_deadline检查，完整确认1427通过。生产期限和产品源码不变，不将测试稳定性当模型能力提升。实际推理、独立程序执行与科学审核仍待后续配置；下一项为T07b/T07c准备。见 [验收记录](../artifacts/audit-t08d-1-system-comparison-20261020/acceptance.json)。
+--- a/tasks/research-next-phase.json
++++ b/tasks/research-next-phase.json
+@@ -7,7 +7,7 @@
+   "implementation_mode": "single_developer_no_DSH_or_subagents",
+   "product_architecture": "single logical agent with deterministic scientific tools",
+   "primary_question": "Can evidence constraints and clarification recovery reduce unsupported ODE modeling execution without unacceptable overblocking or human cost?",
+-  "next_task": "T08d-1",
++  "next_task": "T07b-T07c-design",
+   "current_version_evidence": "Engineering accepted; current-version independent real-model advantage unestablished",
+   "comparison_tracks": {
+     "S": "BioModel Agent versus actual Codex product; model, tool and budget differences disclosed",
+@@ -37,11 +37,14 @@
+   "validation_followups": [
+     {
+       "id": "V01",
+-      "status": "observed_short_deadline_test_sensitivity",
+-      "scope": "Investigate deterministic admission/readiness controls for scientific-tool timeout testing without weakening the actual total deadline",
++      "status": "deterministic_admission_control_verified",
++      "scope": "Tool-admission fault injection replaces the host-speed assumption; production total deadline behavior is unchanged",
+       "evidence": "artifacts/audit-t08d-0-reporting-20261020/deadline-diagnostics.json",
+       "observed": "Two unchanged 0.6-second probes stopped before scientific admission in the first full suite; all three passed in isolation",
+-      "root_cause_confirmed": false
++      "root_cause_confirmed": false,
++      "delivery": "artifacts/audit-t08d-1-system-comparison-20261020/v01-evidence.json",
++      "deterministic_controls_passed": 3,
++      "production_performance_improvement_claimed": false
+     }
+   ],
+   "tasks": [
+@@ -60,12 +63,20 @@
+         "scientific_capability_gain_claimed": false}
+     },
+     {
+-      "id": "T08d-1", "priority": "P0", "status": "ready_for_next_offline_implementation_turn",
++      "id": "T08d-1", "priority": "P0", "status": "engineering_accepted",
+       "depends_on": ["T08d-0"],
+       "scope": "Separate actual Codex system-comparison protocol and event/output import adapters",
+       "steps": ["Inspect existing Codex sandbox implementation without invoking old runners", "Freeze task bundle and environment visibility", "Implement versioned event/output adapter and parent-session records", "Exercise timeout, error, partial-output and missing-usage controls", "Produce proposed execution bundle without network calls"],
+       "acceptance": ["Actual Codex is not mislabeled generic_tool_agent", "Mock records cannot become live execution evidence", "No evaluator answers or other cases in task runtime", "No implicit replay after unknown remote outcomes", "Fresh and resumed trials distinguished"],
+-      "effort_estimate": "2-3 focused engineering days"
++      "effort_estimate": "2-3 focused engineering days",
++      "delivery": "artifacts/audit-t08d-1-system-comparison-20261020/acceptance.json",
++      "verification": {"new_controls_passed": 67, "full_confirmation_passed": 1427,
++        "first_full_passed": 1426, "first_full_failed": 1,
++        "offline_phases": 30, "historical_product_imports": 10,
++        "literal_native_event_fixtures": 20, "online_model_calls": 0,
++        "OS_probe_scope": "fixed offline Python only, not actual Codex runtime",
++        "existing_test_change": "V01 scientific-admission fault injection only"},
++      "remaining_for_live_stage": ["Service/auth/runtime configuration", "Supervised actual inference capture with runtime visibility verification", "Independent execution and scientific review of delivered artifacts"]
+     },
+     {
+       "id": "T07b-T07c-design", "priority": "P0", "status": "preparation_ready_independent_review_pending",
+--- /dev/null
++++ b/tasks/audit-t08d-1-system-comparison.json
+@@ -0,0 +1,8 @@
++{
++  "task_id": "T08d-1", "owner": "Codex alone",
++  "objective": "Build offline system-comparison task bundles, native Codex JSONL/product record import adapters and honest fixed-plan reporting, with explicit session ancestry and cumulative budgets.",
++  "write_scope": ["benchmarks/development/system_comparison.py", "benchmarks/development/native_capture.py", "tests/test_system_comparison.py", "tests/test_workflow_adapters.py", "docs/system-comparison.md", "docs/current-support.md", "docs/optimization-backlog.md", "docs/seven-point-status.md", "tasks/research-next-phase.json", "tasks/audit-t08d-1-system-comparison.json", "artifacts/audit-t08d-1-system-comparison-20261020"],
++  "constraints": ["No product code, v1/v2 scorers, execution adapters or HTTP transport changes", "Only pre-existing test change is V01 deterministic scientific-admission deadline injection; preserve timeout/execution/count assertions", "No online inference, real credentials, new evaluation papers, independent evalset or c13/c18 materials", "No DSH or subagents", "Externally imported events are attributed recordings, not authenticated live-model evidence", "No execution of imported programs, automatic retry or native Codex inference command", "Existing artifacts remain immutable"],
++  "scope_amendment": "First full regression again reproduced V01 (1426 pass/1 old 0.6-second admission probe fail). Replace its host-speed assumption with a test-local clock jump after confirmed scientific admission. Production deadline behavior is unchanged; original baseline and failed artifacts retained.",
++  "acceptance": ["Independent system IDs and common current-phase materials; no private rubric/future source in runtime bundle", "Explicit native command plan with persistent sessions, fixed ID resume and no implicit latest/fresh fallback", "Strict bounded event and output import, partial/error/timeout diagnostics retained", "Product-v1 record importer and uniform unreviewed output interface", "Parent session/source/settings binding and cumulative wall-budget reporting", "Raw artifacts, null usage and native-tool differences preserved", "Offline task visibility probe and negative controls", "Actual saved-record offline replay, appropriate regression, snapshots and source diff"]
++}

@@ -1,0 +1,11 @@
+{
+  "replay_ref": "25b7efdfcc7c515338c070a7efb44ca763243c040e600a6ea9f33dd26a46bdc8",
+  "scientific_status": "not_verified",
+  "external_numeric_check": {
+    "status": "pass",
+    "max_scaled_error": 1.5798733997929305e-06,
+    "scale": 10.0,
+    "threshold": 0.001,
+    "reference": "independent_handwritten_DOP853"
+  }
+}

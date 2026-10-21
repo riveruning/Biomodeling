@@ -1,0 +1,69 @@
+........................................................................ [  6%]
+........................................................................ [ 13%]
+........................................................................ [ 20%]
+........................................................................ [ 27%]
+........................................................................ [ 34%]
+........................................................................ [ 41%]
+........................................................................ [ 48%]
+........................................................................ [ 55%]
+.......................................F................................ [ 62%]
+........................................................................ [ 69%]
+........................................................................ [ 76%]
+........................................................................ [ 83%]
+........................................................................ [ 90%]
+........................................................................ [ 97%]
+.....................                                                    [100%]
+=================================== FAILURES ===================================
+__________ test_offline_cli_subprocess_stdout_is_a_single_json_record __________
+
+tmp_path = PosixPath('/tmp/biomodel-t06-full-final/test_offline_cli_subprocess_st0')
+
+    def test_offline_cli_subprocess_stdout_is_a_single_json_record(tmp_path):
+        path = tmp_path/'table.pdf'; rich_pdf(path, table=True)
+        env = dict(os.environ, PYTHONDONTWRITEBYTECODE='1')
+        completed = subprocess.run([sys.executable, '-m', 'biomodel_agent', 'source-ingest', str(path),
+                                    '--pdf-parser', 'pymupdf', '--store', str(tmp_path/'store')],
+                                   capture_output=True, text=True, env=env, timeout=15)
+        assert completed.returncode == 0, completed.stderr
+>       assert json.loads(completed.stdout)['parser'] == 'pymupdf'
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_pdf_adapter_acceptance.py:269: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/usr/lib/python3.12/json/__init__.py:346: in loads
+    return _default_decoder.decode(s)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.12/json/decoder.py:337: in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <json.decoder.JSONDecoder object at 0x7a7e32b88950>
+s = 'Consider using the pymupdf_layout package for a greatly improved page layout analysis.\n{"ref": "e0eacc53accea366a4a0..."pages": 1, "warnings": [], "parser_output_ref": "1f2aca19c4b6a8a829df13b0871e1279e1fc8b54161afa7d93cfcfa0aec5d145"}\n'
+idx = 0
+
+    def raw_decode(self, s, idx=0):
+        """Decode a JSON document from ``s`` (a ``str`` beginning with
+        a JSON document) and return a 2-tuple of the Python
+        representation and the index in ``s`` where the document ended.
+    
+        This can be used to decode a JSON document from a string that may
+        have extraneous data at the end.
+    
+        """
+        try:
+            obj, end = self.scan_once(s, idx)
+        except StopIteration as err:
+>           raise JSONDecodeError("Expecting value", s, err.value) from None
+E           json.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)
+
+/usr/lib/python3.12/json/decoder.py:355: JSONDecodeError
+=============================== warnings summary ===============================
+tests/test_recovery_core.py::test_process_owner_contention_and_abrupt_exit_release
+  /usr/lib/python3.12/multiprocessing/popen_fork.py:66: DeprecationWarning: This process (pid=3) is multi-threaded, use of fork() may lead to deadlocks in the child.
+    self.pid = os.fork()
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/test_pdf_adapter_acceptance.py::test_offline_cli_subprocess_stdout_is_a_single_json_record
+1 failed, 1028 passed, 1 warning in 196.17s (0:03:16)

@@ -1,0 +1,19 @@
+{
+  "schema_version": "1",
+  "id": "v01-02-severity-fix",
+  "objective": "修复SBML错误严重度的误判；导入模型缺失初值/参数阻止。",
+  "context": "pytest目前29passed，首个失败仅在modeling.py第851行。保留已实现的doc.checkConsistency和unit_log，不修改其它语义。",
+  "read_files": [],
+  "write_files": [
+    "src/biomodel_agent/modeling.py"
+  ],
+  "expected_files": [
+    "src/biomodel_agent/modeling.py"
+  ],
+  "instructions": "精准修复modeling.py：_severity_text使用不存在SBMLSeverityType_toString后fallback str(2)让所有error都被忽略。_split_error_log直接error.getSeverity()>=libsbml.LIBSBML_SEV_ERROR作为结构error，不要不存在stringAPI；单位category=libsbml.LIBSBML_CAT_UNITS_CONSISTENCY的warning也记录unit_log，单位error记录units_consistency fail severitywarning（仍允许探索但math未通过）；单位未声明/未核验unknown不可pass。modeling._UNIT_CATEGORIES只可靠此category，别把一般一致性category当unit丢弃结构错误。\n_package_problems需要原始XML，doc.getNamespaces可能自动注入layout/render namespace（root已发现），不是真正使用证据。改函数接收doc,sbml，调用用artifact.sbml，xml.etree.ElementTree.iterparse(StringIO(sbml),events=(start-ns,start))只取第一个root start前namespace，plugin.getURI只匹配原XML声明。L2可视化不使用L3 requiredflag；L3实际layout/render rootattrsrequired=false才允许，missingrequired由libSBMLparseerror阻止。空XML默认plugins不能fail。\nvalidate_artifact加导入完整性：所有global parameter没有value且无assignment/initial assignment定义→blockingmissing；species无initialAmount/initialConcentration且无assignment/initialassignment定义→blockingmissing（不填0）。RateRule targets missing也按parameter初值规则。数学expression undefinedsymbol由libSBMLERROR阻止。为避免改代码误生成假API，这些getter root已核对存在：getSeverity/getCategory/getErrorId/isSetValue/isSetInitialAmount/isSetInitialConcentration、rule.getVariable、initial.getSymbol。不要删除unit/error消息。\n本任务只局部修复modeling.py，不修改其它文件、不读整个项目、禁任何命令/todo，最后文字完成。",
+  "acceptance": [
+    "不存在的API删除",
+    "不改其它逻辑"
+  ],
+  "verification_commands": []
+}

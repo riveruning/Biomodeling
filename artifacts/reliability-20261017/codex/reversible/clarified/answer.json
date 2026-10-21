@@ -1,0 +1,20 @@
+{
+  "status": "ready",
+  "parameters": [
+    {"id": "kf", "value": 0.4, "unit": "min^-1"},
+    {"id": "kr", "value": 0.2, "unit": "min^-1"}
+  ],
+  "states": [
+    {"id": "A", "initial": 1.0},
+    {"id": "B", "initial": 0.25}
+  ],
+  "equations": [
+    {"state": "A", "expression": "-kf*A+kr*B"},
+    {"state": "B", "expression": "kf*A-kr*B"}
+  ],
+  "questions": [],
+  "limitations": [
+    "Initial B = 0.25 follows the author clarification, which explicitly supersedes the earlier missing initial condition.",
+    "Rate constant units min^-1 are inferred dimensionally from the supplied equations, dimensionless states, and time in minutes."
+  ]
+}

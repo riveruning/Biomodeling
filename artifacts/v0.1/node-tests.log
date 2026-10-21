@@ -1,0 +1,35 @@
+✔ quiet polling backs off, requests no full histories, prints only changes (5.238709ms)
+✔ verified in-scope file request gets review once, not blanket approve (1.524462ms)
+✔ waiting/unknown policy stops and preserves evidence without override (0.726325ms)
+✔ gateway allows workspace path but task scope forbids unrelated edits (0.827225ms)
+✔ stale permission session and duplicate requests fail closed (1.677629ms)
+✔ policy changes at final review do not become approvals (0.962559ms)
+✔ no initial activity expires early rather than polling full task deadline (0.372049ms)
+✔ repeated text without files cannot indefinitely extend implementation task (0.347329ms)
+✔ DSH completion without actual files is not delivery (0.284683ms)
+✔ unchanged existing files do not count as implementation (0.491402ms)
+✔ cancellation failure is explicit and closes the connection (0.529535ms)
+✔ task switch cannot silently reuse another task permission scope (0.247702ms)
+✔ task paths protect supervisor, reject traversal and symlink escape (2.743058ms)
+✔ missing structured tool evidence refuses review (0.249825ms)
+✔ task prompt is specific and never includes executable test command (0.288012ms)
+ℹ tests 15
+ℹ suites 0
+ℹ pass 15
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 27.444041
+
+✔ runtime overlay preserves original config and credential reference, bounds retries (3.34068ms)
+✔ runtime overrides only configured models and supported wire protocols (1.889091ms)
+✔ runtime refuses to copy a plain credential into its overlay (0.905094ms)
+ℹ tests 3
+ℹ suites 0
+ℹ pass 3
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 16.148751

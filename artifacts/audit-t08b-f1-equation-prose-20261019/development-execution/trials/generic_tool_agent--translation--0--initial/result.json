@@ -1,0 +1,74 @@
+{
+  "record": {
+    "trial_id": "generic_tool_agent--translation--0--initial",
+    "manifest_sha256": "67590824f164fa01c9533f3b460ab0b229b248dcd7f4f2f584a61e8697677c27",
+    "evidence_kind": "scripted_control",
+    "model_config": {
+      "provider": "offline_control",
+      "model": "scripted-fixture",
+      "revision": "not-a-model",
+      "temperature": 0.0,
+      "top_p": 1.0,
+      "max_output_tokens": 1000,
+      "seed": 0
+    },
+    "toolchain_sha256": "abad7db107b62cb942b96ec88df701d47c8eb236275d0cf17216f37da6686252",
+    "status": "finished",
+    "continuation": "none",
+    "parent_trial_id": null,
+    "observation": {
+      "state": "awaiting_input",
+      "executed": false,
+      "claimed_complete": false,
+      "identified_gaps": [],
+      "question_targets": [],
+      "question_texts": [
+        "What is the initial P value?"
+      ]
+    },
+    "assessment": {
+      "authority": "unreviewed",
+      "reviewer": null,
+      "evidence_refs": [],
+      "numeric": "unknown",
+      "source_support": "unknown",
+      "behavior_labels_reviewed": false
+    },
+    "telemetry": {
+      "model_calls": 2,
+      "tool_calls": 1,
+      "max_request_chars": 2683,
+      "max_response_tokens": null,
+      "elapsed_seconds": 0.2580052789999172,
+      "human_interventions": 0,
+      "human_seconds": 0.0,
+      "input_tokens": null,
+      "output_tokens": null
+    }
+  },
+  "session_ref": "238a78efd1b6c84448a20ef6c708eccbbabc98c312115ae5a1581dc3b0c8ac7e",
+  "store_root": "/home/riveruning/biologymodel_agent/artifacts/audit-t08b-f1-equation-prose-20261019/development-execution/stores/generic_tool_agent--translation--0",
+  "audit": {
+    "supervised": true,
+    "stop_reason": null,
+    "run_ref": null,
+    "native_agent_run_ref": null,
+    "request_refs": [
+      "5ce7c56ab3f44ef973cd8f302916e3237e28b5689c5a259e3f57f4c61c5ecaa4",
+      "eb18961e9ad77b2d2ba43029dc77e1392db1b285b9952ec3c098d9f03ad3da47"
+    ],
+    "response_refs": [
+      "1f7c5da40fda2467c2a3e773ce08e2e015ebf94cfaff36aedebe2ceef4cb63f5",
+      "2e4ac9d6d1555407d5285b5c0a9fd49c3fb8ca19998ceb91251ccab00053336f"
+    ],
+    "reservation_refs": [
+      "f6ea423fedcc9f549b9c8a1cf419f0019b84f43ae45583e9cb6aec445e6ea0d9",
+      "90f3ee33617b5f8eb6f5f9188f73de1bdf1bceed7a6959cace17b6800ac54e20",
+      "9ced677d442e6e8f75ca9dd573f18466d0eff6e6151d32254a679e63fe810b2c"
+    ],
+    "clarification_origin": null,
+    "runtime_adapter_sha256": "bc5684016fa4131bfc91e8db16386adacdbedc644e7e9b4bd68763a66722e1b4",
+    "scientific_support": "unknown",
+    "same_returned_model_verified": true
+  }
+}

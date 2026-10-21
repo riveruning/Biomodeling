@@ -1,0 +1,17 @@
+{
+  "status": "ready",
+  "parameters": [
+    {"id": "k", "value": 0.4, "unit": "min^-1"}
+  ],
+  "states": [
+    {"id": "A", "initial": 2.0}
+  ],
+  "equations": [
+    {"state": "A", "expression": "-k*A"}
+  ],
+  "questions": [],
+  "limitations": [
+    "A is dimensionless and t is in minutes; the unit min^-1 for k follows from the supplied equation.",
+    "The fixed compartment size is 1 dimensionless."
+  ]
+}

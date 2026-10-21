@@ -1,0 +1,49 @@
+{
+  "case_id": "c18_two_pathway_unit_conflict",
+  "time_unit": "min",
+  "times": [
+    0.0,
+    0.25,
+    0.5,
+    0.75,
+    1.0,
+    1.25,
+    1.5,
+    1.75,
+    2.0,
+    2.25,
+    2.5,
+    2.75,
+    3.0,
+    3.25,
+    3.5,
+    3.75,
+    4.0,
+    4.25,
+    4.5,
+    4.75,
+    5.0,
+    5.25,
+    5.5,
+    5.75,
+    6.0,
+    6.25,
+    6.5,
+    6.75,
+    7.0,
+    7.25,
+    7.5,
+    7.75,
+    8.0
+  ],
+  "n_samples": 33,
+  "species_to_report": [
+    "M"
+  ],
+  "output_contract": {
+    "times": "list of floats, identical to the 'times' field above",
+    "values": "object mapping each required species name to a list of floats of the same length as 'times'"
+  },
+  "tolerance_for_trajectory_match": 0.001,
+  "tolerance_definition": "A trajectory matches when, for every required species, max_i |value_i - reference_i| / scale <= 1e-3, where scale is the maximum absolute reference value of that species over the window (see gold/<case_id>.gold.json -> answer.scales)."
+}

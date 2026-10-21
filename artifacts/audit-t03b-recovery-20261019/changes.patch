@@ -1,0 +1,1565 @@
+--- a/src/biomodel_agent/agent.py
++++ b/src/biomodel_agent/agent.py
+@@ -4,6 +4,8 @@
+ import json
+ import hashlib
+ import time
++import uuid
++from copy import deepcopy
+ from typing import Any
+ 
+ from . import agent_tools, application, time_units, validation, memory, skills, studies, context
+@@ -16,6 +18,8 @@
+ from .storage import REF_RE, ArtifactError
+ from .retrieval import validate_method
+ from .invocations import InvocationJournal
++from .recovery import (RecoveryBlocked, ReplayJournal, diagnose_execution,
++                       execution_owner, implementation_fingerprint)
+ 
+ MODES = ("reproduction", "hypothesis")
+ ACTIONS = ("inspect_source", "search_sources", "recall_memory", "load_skill", "run_study", "submit_draft", "run", "finish", "ask_researcher")
+@@ -96,11 +100,12 @@
+            task_ref: str | None = None, parent_run_ref: str | None = None,
+            clarification_refs: tuple = (),
+            execution_ref: str | None = None,
+-           invocation_refs: tuple | list = ()) -> str:
++           invocation_refs: tuple | list = (), recovery_refs: tuple | list = ()) -> str:
+     refs = [r for r in source_refs + [r for r in (draft_ref, model_ref, run_ref, *checkpoints) if r]]
+     refs.extend(r for r in (task_ref, parent_run_ref, *clarification_refs) if r)
+     refs.extend(r for e in events for r in e.get('artifact_refs',[]) if r)
+     refs.extend(r for r in (execution_ref, *invocation_refs) if r)
++    refs.extend(recovery_refs)
+     ref = store.put("agent_run", {
+         "state": state, "mode": mode, "source_refs": list(source_refs),
+         "model_ref": model_ref, "run_ref": run_ref, "events": events,
+@@ -112,6 +117,7 @@
+         "checkpoint_refs": list(checkpoints),
+         "execution_ref": execution_ref,
+         "invocation_refs": list(invocation_refs),
++        "recovery_refs": list(recovery_refs),
+     }, refs=tuple(dict.fromkeys(refs)))
+     return ref
+ 
+@@ -207,6 +213,16 @@
+ 
+ 
+ def resume_agent(store: Any, provider: Any, run_ref: str, reply: str, *, respondent: str) -> str:
++    record = store.get(run_ref)
++    if record['kind'] != 'agent_run' or record['payload'].get('state') != 'awaiting_input':
++        raise ValueError('only an awaiting_input agent_run can be resumed')
++    if not record['payload'].get('task_ref'):
++        raise ValueError('legacy run has no complete resume checkpoint; start a new task')
++    with execution_owner(store, record['payload']['task_ref']):
++        return _resume_agent_owned(store, provider, run_ref, reply, respondent=respondent)
++
++
++def _resume_agent_owned(store: Any, provider: Any, run_ref: str, reply: str, *, respondent: str) -> str:
+     """Resume an awaiting-input run with an attributed, immutable researcher assertion.
+ 
+     Budgets and scientific configuration are inherited. Reusing a parent explicitly
+@@ -233,7 +249,7 @@
+         raise ValueError("incompatible resume checkpoint")
+     if any(cp.get(k) != previous.get(k) for k in
+            ('call_count', 'repair_count', 'retry_count', 'events', 'source_refs', 'model_ref', 'run_ref',
+-             'execution_ref', 'invocation_refs')):
++             'execution_ref', 'invocation_refs', 'recovery_refs')):
+         raise ValueError("run and checkpoint history do not match")
+     if task['provider'] != _provider_identity(provider):
+         raise ValueError("resume requires the original provider endpoint, class, model and generation settings")
+@@ -287,12 +303,78 @@
+     return _execute_agent(store, provider, sources, experiment, observations, solver,
+                           task['mode'], task['max_calls'], task['max_repairs'],
+                           tuple(task['allowed_mechanisms']), reference, task['scales'],
+-                          task['max_retries'], previous['task_ref'], cp, run_ref)
++                          task['max_retries'], previous['task_ref'], cp, run_ref, _owner_held=True)
++
++
++def recover_agent(store: Any, provider: Any, execution_ref: str) -> str:
++    """Explicitly continue a verified interrupted execution under local ownership.
++
++    Returned actions/results are adopted. Unknown external or scientific effects
++    require operator review and never cause automatic re-submission.
++    """
++    execution_record = store.get(execution_ref)
++    if execution_record['kind'] != 'agent_execution':
++        raise RecoveryBlocked('recovery requires an agent_execution reference')
++    execution = execution_record['payload']
++    task_ref = execution['task_ref']
++    with execution_owner(store, task_ref):
++        report = diagnose_execution(store, execution_ref)
++        if report['status'] != 'ready':
++            reason = ', '.join(report['reasons']) or 'execution already has a final agent_run; use it or agent-resume'
++            raise RecoveryBlocked(reason)
++        task = store.get(task_ref)['payload']
++        if (task.get('mode') not in MODES or type(task.get('max_repairs')) is not int
++                or not 0 <= task['max_repairs'] <= 5 or type(task.get('max_retries')) is not int
++                or not 0 <= task['max_retries'] <= 5):
++            raise RecoveryBlocked('invalid frozen mode or repair/retry budget')
++        if task['provider'] != _provider_identity(provider):
++            raise RecoveryBlocked('recovery requires the frozen provider identity and settings')
++        experiment = from_dict(ExperimentSpec, task['experiment'])
++        solver = from_dict(SolverConfig, task['solver'])
++        observations = tuple(from_dict(ObservationSpec, item) for item in task['observations'])
++        reference = from_dict(SimulationResult, task['reference']) if task['reference'] is not None else None
++        if reference is not None:
++            validation.validate_reference(reference)
++            time_units.comparison_time_unit(experiment.time_unit, reference.time_unit)
++        validation.validate_scales(task['scales'], reference.values if reference is not None else ())
++        meta = execution['recovery']
++        sources = list(meta['source_refs'])
++        if task.get('memory_scope') is not None:
++            memory.validate_snapshot(store, task['memory_scope'], sources)
++        if task.get('study_plan_ref') is not None:
++            studies.load_plan(store, task['study_plan_ref'])
++        validate_method(task.get('retrieval_method', 'lexical_v1'))
++        if task.get('context_policy') is not None:
++            context.validate_policy(task['context_policy'])
++        # Diagnosis and all frozen input preflights precede this durable receipt.
++        refs = [execution_ref, *[r for op in report['operations']
++                for r in (op['reserved_ref'], op['terminal_ref']) if r]]
++        receipt = store.put('agent_recovery', {
++            'version': 1, 'id': str(uuid.uuid4()), 'execution_ref': execution_ref,
++            'task_ref': task_ref, 'call_count': report['call_count'], 'run_count': report['run_count'],
++            'adoptable_result_refs': report['adoptable_result_refs'],
++            'invocation_refs': refs[1:], 'method': 'verified_return_replay',
++        }, refs=tuple(refs))
++        replay = ReplayJournal(store, report)
++        return _execute_agent(store, provider, sources, experiment, observations, solver,
++            task['mode'], task['max_calls'], task['max_repairs'], tuple(task['allowed_mechanisms']),
++            reference, task['scales'], task['max_retries'], task_ref, deepcopy(meta['restored']),
++            execution.get('parent_run_ref'), _owner_held=True, _journal=replay,
++            recovery_refs=[*report['recovery_refs'], receipt])
+ 
+ 
+ def _execute_agent(store, provider, source_refs, experiment, observations, solver, mode,
+                    max_calls, max_repairs, allowed_mechanisms, reference, scales,
+-                   max_retries, task_ref, restored=None, parent_run_ref=None):
++                   max_retries, task_ref, restored=None, parent_run_ref=None, *,
++                   _owner_held=False, _journal=None, recovery_refs=()):
++    if not _owner_held:
++        with execution_owner(store, task_ref):
++            return _execute_agent(store, provider, source_refs, experiment, observations, solver, mode,
++                max_calls, max_repairs, allowed_mechanisms, reference, scales, max_retries, task_ref,
++                restored, parent_run_ref, _owner_held=True, _journal=_journal, recovery_refs=recovery_refs)
++    initial_snapshot = {'version': 1, 'implementation_sha256': implementation_fingerprint(),
++                        'source_refs': list(source_refs), 'restored': deepcopy(restored),
++                        'branch_kind': 'researcher_reply' if parent_run_ref else 'initial'}
+     task_config = store.get(task_ref)['payload']
+     context_policy = task_config.get('context_policy')
+     retrieval_method = validate_method(task_config.get('retrieval_method', 'lexical_v1'))
+@@ -329,8 +411,9 @@
+         # A pre-reply draft cannot skip revalidation against the additional source.
+         if not run_count:
+             artifact = model_ref = None
+-    journal = InvocationJournal(store, task_ref, parent_run_ref=parent_run_ref,
+-                                calls=calls, runs=run_count)
++    journal = _journal or InvocationJournal(store, task_ref, parent_run_ref=parent_run_ref,
++                                calls=calls, runs=run_count, recovery=initial_snapshot,
++                                initial_refs=source_refs)
+ 
+     def invoke(name, callback, **kwargs):
+         nonlocal calls, run_count
+@@ -353,12 +436,16 @@
+             'source_refs': list(sources), 'model_ref': model, 'run_ref': run,
+             'draft_ref': draft, 'clarification_refs': list(clarification_refs),
+             'execution_ref': journal.execution_ref, 'invocation_refs': list(journal.refs),
+-        }, refs=tuple(dict.fromkeys(refs + [journal.execution_ref, *journal.refs])))
++            'recovery_refs': list(recovery_refs),
++        }, refs=tuple(dict.fromkeys(refs + [journal.execution_ref, *journal.refs, *recovery_refs])))
+ 
+     def finish_session(*args):
++        if isinstance(journal, ReplayJournal):
++            journal.assert_consumed()
+         return _final(*args, task_ref=task_ref, parent_run_ref=parent_run_ref,
+                       clarification_refs=tuple(clarification_refs),
+-                      execution_ref=journal.execution_ref, invocation_refs=journal.refs)
++                      execution_ref=journal.execution_ref, invocation_refs=journal.refs,
++                      recovery_refs=recovery_refs)
+ 
+     while calls < max_calls:
+         if memory_scope is not None:
+@@ -426,7 +513,9 @@
+                                            model_ref, run_ref, source_refs, draft_ref))
+             return finish_session(store, "failed", mode, source_refs, model_ref, run_ref, events,
+                           calls, repairs, checkpoints, draft_ref)
+-        calls_usage = {k: v for k, v in (getattr(provider, "last_usage", {}) or {}).items()
++        stored_usage = journal.last_usage if isinstance(journal, ReplayJournal) else None
++        calls_usage = {k: v for k, v in ((stored_usage if stored_usage is not None else
++                                       getattr(provider, "last_usage", {})) or {}).items()
+                        if _is_int(v)}
+         events.append({"type": "llm_call", "call": calls, "action": response.get("action"),
+                        "requests": request_trace, "context": context_audit, "response": response, "usage": calls_usage})
+@@ -569,11 +658,7 @@
+             model_ref = None
+             result = invoke('submit_draft', lambda: agent_tools.submit_draft(store, args, source_refs, mode, tuple(allowed_mechanisms)),
+                          details={'args': args},
+-                         summarize=lambda r: {'state': r['state'], 'problems': list(r['problems']),
+-                                              'checks': r['checks'],
+-                                              'draft_ref': r.get('draft_ref'), 'model_ref': r.get('model_ref'),
+-                                              'hypothesis_ref': r.get('hypothesis_ref'),
+-                                              'source_review_ref': r.get('source_review_ref')},
++                         summarize=lambda r: {k: v for k, v in r.items() if k != 'artifact'},
+                          result_refs=lambda r: [ref for ref in (r.get('draft_ref'), r.get('model_ref'),
+                                                               r.get('hypothesis_ref'), r.get('source_review_ref')) if ref])
+             if result['state'] == 'ready':
+--- a/src/biomodel_agent/cli.py
++++ b/src/biomodel_agent/cli.py
+@@ -221,6 +221,51 @@
+     return 0 if payload['state'] == 'completed' else 2
+ 
+ 
++def _cmd_agent_recovery_status(args) -> int:
++    from .recovery import diagnose_execution, open_readonly_store
++    try:
++        report = diagnose_execution(open_readonly_store(args.store), args.ref)
++        summary = {key: value for key, value in report.items() if key != 'operations'}
++        summary['operations'] = [{
++            'sequence': op['reserved']['sequence'], 'name': op['reserved']['name'],
++            'phase': op['terminal']['phase'] if op['terminal'] else 'reserved',
++            'replay_class': op['reserved']['replay_class'],
++            'reserved_ref': op['reserved_ref'], 'terminal_ref': op['terminal_ref'],
++            'retry_read_only': op.get('retry_read_only', False),
++        } for op in report['operations']]
++        print(json.dumps(summary, ensure_ascii=False))
++        return 2 if report['status'] == 'blocked' else 0
++    except Exception as exc:
++        return _fail(f'agent recovery diagnosis failed: {exc}')
++
++
++def _cmd_agent_recover(args) -> int:
++    from .storage import ArtifactStore
++    from .llm import ChatProvider
++    from .agent import recover_agent
++    from .recovery import diagnose_execution, open_readonly_store, RecoveryBlocked
++    try:
++        view = open_readonly_store(args.store)
++        report = diagnose_execution(view, args.ref)
++        if report['status'] != 'ready':
++            raise RecoveryBlocked(', '.join(report['reasons']) or 'execution already has a final agent_run')
++        config = view.get(report['task_ref'])['payload']['provider']
++        base_url = args.base_url or os.environ.get('BIOMODEL_BASE_URL')
++        if not base_url or not os.environ.get(args.api_key_env):
++            return _fail('recovery requires the frozen provider base URL and API key environment variable')
++        provider = ChatProvider(base_url, config['model'], args.api_key_env,
++                                timeout_s=config['timeout_s'], max_tokens=config['max_tokens'],
++                                json_mode=config['json_mode'])
++        store = ArtifactStore(args.store)
++        ref = recover_agent(store, provider, args.ref)
++        result = store.get(ref)['payload']
++    except Exception as exc:
++        return _fail(f'agent recovery failed: {exc}')
++    print(json.dumps({'ref': ref, 'state': result['state'], 'call_count': result['call_count'],
++                      'execution_ref': args.ref, 'recovery_refs': result['recovery_refs']}))
++    return 0 if result['state'] == 'completed' else 2
++
++
+ def _cmd_hypothesis(args) -> int:
+     from .storage import ArtifactStore
+     from .hypotheses import run_hypothesis_study
+@@ -401,6 +446,18 @@
+     p.add_argument("--api-key-env", default="BIOMODEL_API_KEY")
+     p.set_defaults(func=_cmd_agent_resume)
+ 
++    p = sub.add_parser('agent-recovery-status', help='read-only diagnosis of an interrupted agent_execution')
++    p.add_argument('ref', help='agent_execution reference, not agent_run')
++    _add_store(p)
++    p.set_defaults(func=_cmd_agent_recovery_status)
++
++    p = sub.add_parser('agent-recover', help='explicitly continue a verified interrupted execution')
++    p.add_argument('ref', help='agent_execution reference, not agent_run')
++    _add_store(p)
++    p.add_argument('--base-url')
++    p.add_argument('--api-key-env', default='BIOMODEL_API_KEY')
++    p.set_defaults(func=_cmd_agent_recover)
++
+     p = sub.add_parser("hypothesis", help="run the hypothesis study")
+     p.add_argument("--training", required=True)
+     p.add_argument("--holdout")
+--- a/src/biomodel_agent/invocations.py
++++ b/src/biomodel_agent/invocations.py
+@@ -66,7 +66,8 @@
+     """
+ 
+     def __init__(self, store: Any, task_ref: str, *, parent_run_ref: str | None = None,
+-                 calls: int = 0, runs: int = 0) -> None:
++                 calls: int = 0, runs: int = 0, recovery: dict | None = None,
++                 initial_refs: Iterable[str] = ()) -> None:
+         self._store = store
+         self._task_ref = task_ref
+         record = store.get(task_ref)
+@@ -86,7 +87,10 @@
+                 raise ValueError("parent_run_ref must name an agent_run record")
+         self._max_calls = max_calls
+         self._max_runs = 1
+-        refs: list[str] = [task_ref]
++        self._sequence = 0
++        if recovery is not None:
++            _require_json(recovery, 'recovery metadata')
++        refs: list[str] = [task_ref, *initial_refs]
+         if parent_run_ref is not None:
+             refs.append(parent_run_ref)
+         self.execution_ref: str = store.put("agent_execution", {
+@@ -98,10 +102,38 @@
+             "base_run_count": runs,
+             "max_calls": max_calls,
+             "max_runs": 1,
++            **({'recovery': recovery} if recovery is not None else {}),
+         }, refs=tuple(dict.fromkeys(refs)))
+         self.refs: list[str] = []
+         self.calls: int = calls
+         self.runs: int = runs
++
++    @classmethod
++    def reopen(cls, store: Any, execution_ref: str, *, refs: list[str], calls: int,
++               runs: int, next_sequence: int) -> InvocationJournal:
++        """Attach only after recovery diagnosis and acquiring the task owner.
++
++        Does not invent another execution or spend an additional reservation.
++        """
++        execution = store.get(execution_ref)
++        if execution['kind'] != 'agent_execution':
++            raise ValueError('not an agent_execution')
++        payload = execution['payload']
++        task = store.get(payload['task_ref'])
++        if task['kind'] != 'agent_task':
++            raise ValueError('not an agent_task')
++        maximum = task['payload']['max_calls']
++        if (type(maximum) is not int or not 1 <= maximum <= 50
++                or not _is_count(calls, maximum) or not _is_count(runs, 1)
++                or type(next_sequence) is not int or next_sequence < 1):
++            raise ValueError('invalid attached journal counters')
++        journal = cls.__new__(cls)
++        journal._store, journal._task_ref = store, payload['task_ref']
++        journal._max_calls, journal._max_runs = maximum, 1
++        journal._sequence = next_sequence - 1
++        journal.execution_ref, journal.refs = execution_ref, list(refs)
++        journal.calls, journal.runs = calls, runs
++        return journal
+ 
+     # -- budget ---------------------------------------------------------------
+ 
+@@ -127,6 +159,7 @@
+             "version": 1,
+             "execution_ref": self.execution_ref,
+             "operation_id": operation_id,
++            "sequence": self._sequence + 1,
+             "name": name,
+             "phase": "reserved",
+             "call_count": call_count,
+@@ -135,6 +168,7 @@
+             "details": details,
+         }, refs=(self.execution_ref,))
+         self.calls, self.runs = call_count, run_count
++        self._sequence += 1
+         self.refs.append(reserved_ref)
+         return reserved_ref, operation_id, call_count, run_count
+ 
+@@ -184,7 +218,8 @@
+ 
+     def _terminal(self, name: str, operation_id: str, phase: str,
+                   call_count: int, run_count: int, details: Any,
+-                  reserved_ref: str, result_refs: tuple[str, ...]) -> None:
++                  reserved_ref: str, result_refs: tuple[str, ...], *,
++                  sequence: int | None = None) -> None:
+         """Persist the single terminal record for an operation.
+ 
+         Refs stay flat and shallow: the execution record, this operation's
+@@ -198,6 +233,7 @@
+             "version": 1,
+             "execution_ref": self.execution_ref,
+             "operation_id": operation_id,
++            "sequence": self._sequence if sequence is None else sequence,
+             "name": name,
+             "phase": phase,
+             "call_count": call_count,
+--- /dev/null
++++ b/src/biomodel_agent/recovery.py
+@@ -0,0 +1,412 @@
++"""Explicit recovery of verified invocation traces; no unknown-effect retry."""
++from __future__ import annotations
++
++from contextlib import contextmanager
++from copy import deepcopy
++import hashlib
++import importlib.metadata
++import json
++import os
++from pathlib import Path
++import platform
++
++from .domain.contracts import ModelArtifact
++from .domain.serialization import from_dict
++from .invocations import InvocationJournal, REPLAY_CLASSES
++from .storage import REF_RE, ArtifactStore, canonical_bytes
++
++
++class RecoveryBlocked(ValueError):
++    """A recovery precondition has not been established."""
++
++
++def open_readonly_store(root):
++    """Existing artifact view without mkdir, SQLite pragmas or index repairs."""
++    view = ArtifactStore.__new__(ArtifactStore)
++    view.root = Path(root)
++    view.objects_dir = view.root / 'objects'
++    view.blobs_dir = view.root / 'blobs'
++    view.index_path = view.root / 'index.sqlite'
++    if not view.objects_dir.is_dir() or not view.blobs_dir.is_dir():
++        raise RecoveryBlocked('recovery diagnosis requires an existing artifact store')
++    return view
++
++
++def implementation_fingerprint() -> str:
++    root = Path(__file__).parent
++    digest = hashlib.sha256()
++    for path in sorted(root.rglob('*.py')):
++        digest.update(canonical_bytes([str(path.relative_to(root)), path.read_bytes().hex()]))
++    versions = {'python': platform.python_version()}
++    for name in ('numpy', 'scipy', 'python-libsbml', 'libroadrunner'):
++        try:
++            versions[name] = importlib.metadata.version(name)
++        except importlib.metadata.PackageNotFoundError:
++            versions[name] = 'unavailable'
++    digest.update(canonical_bytes(versions))
++    return digest.hexdigest()
++
++
++@contextmanager
++def execution_owner(store, task_ref):
++    if not isinstance(task_ref, str) or not REF_RE.fullmatch(task_ref):
++        raise RecoveryBlocked('invalid task reference for ownership')
++    if store.get(task_ref)['kind'] != 'agent_task':
++        raise RecoveryBlocked('owner reference must be an agent_task')
++    try:
++        import fcntl
++    except ImportError as exc:
++        raise RecoveryBlocked('local file ownership is unsupported on this platform') from exc
++    directory = store.root / '.agent-owners'
++    directory.mkdir(mode=0o700, exist_ok=True)
++    if directory.is_symlink():
++        raise RecoveryBlocked('owner directory must not be a symlink')
++    fd = os.open(directory / (task_ref + '.lock'),
++                 os.O_RDWR | os.O_CREAT | os.O_CLOEXEC | os.O_NOFOLLOW, 0o600)
++    try:
++        try:
++            fcntl.flock(fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
++        except BlockingIOError as exc:
++            raise RecoveryBlocked('task already has an active execution owner') from exc
++        yield
++    finally:
++        os.close(fd)  # close releases flock even during BaseException
++
++
++def _count(value, limit):
++    return type(value) is int and 0 <= value <= limit
++
++
++def _inventory(store):
++    """Read object files, including objects landed before their index commit."""
++    records = {}
++    for path in sorted(store.objects_dir.glob('*.json')):
++        if REF_RE.fullmatch(path.stem):
++            # Hash/schema validation for all files; transitive verification is
++            # done for relevant records below. Never repair the index here.
++            records[path.stem] = store._read_envelope(path.stem)
++    return records
++
++
++def _initial_scope(store, execution, task):
++    meta = execution.get('recovery')
++    if not isinstance(meta, dict) or type(meta.get('version')) is not int or meta['version'] != 1:
++        raise RecoveryBlocked('legacy_or_incompatible_recovery_snapshot')
++    if meta.get('implementation_sha256') != implementation_fingerprint():
++        raise RecoveryBlocked('implementation_fingerprint_mismatch')
++    sources = meta.get('source_refs')
++    if not isinstance(sources, list):
++        raise RecoveryBlocked('invalid_initial_source_scope')
++    for ref in sources:
++        if store.get(ref)['kind'] != 'source':
++            raise RecoveryBlocked('initial_scope_contains_non_source')
++    restored = meta.get('restored')
++    parent_ref = execution.get('parent_run_ref')
++    if parent_ref is None:
++        if restored is not None or sources != task['source_refs']:
++            raise RecoveryBlocked('initial_scope_does_not_match_task')
++        if execution['base_call_count'] or execution['base_run_count']:
++            raise RecoveryBlocked('initial_execution_has_inherited_budget')
++        return
++    if not isinstance(restored, dict):
++        raise RecoveryBlocked('resumed_execution_missing_initial_snapshot')
++    parent = store.get(parent_ref)
++    previous = parent['payload']
++    if (parent['kind'] != 'agent_run' or previous.get('task_ref') != execution['task_ref']
++            or previous.get('state') != 'awaiting_input'):
++        raise RecoveryBlocked('invalid_resume_parent')
++    cp_record = store.get(previous['checkpoint_ref'])
++    cp = cp_record['payload']
++    if cp_record['kind'] != 'agent_checkpoint' or cp.get('task_ref') != execution['task_ref']:
++        raise RecoveryBlocked('invalid_resume_parent_checkpoint')
++    clarification_refs = restored.get('clarification_refs', [])
++    old_clarifications = previous.get('clarification_refs', [])
++    if clarification_refs[:-1] != old_clarifications or len(clarification_refs) != len(old_clarifications) + 1:
++        raise RecoveryBlocked('invalid_initial_clarification_lineage')
++    clarification_ref = clarification_refs[-1]
++    record = store.get(clarification_ref)
++    clarification = record['payload']
++    if (record['kind'] != 'researcher_clarification' or clarification.get('parent_run_ref') != parent_ref
++            or clarification.get('checkpoint_ref') != previous['checkpoint_ref']):
++        raise RecoveryBlocked('invalid_initial_clarification')
++    if len(sources) != len(cp['source_refs']) + 1 or sources[:-1] != cp['source_refs']:
++        raise RecoveryBlocked('invalid_resumed_source_scope')
++    source_ref = sources[-1]
++    source = store.get(source_ref)['payload']
++    if source.get('clarification_ref') != clarification_ref:
++        raise RecoveryBlocked('clarification_source_mismatch')
++    from .agent import _reply_message
++    pending = [e for e in cp['events'] if e.get('type') == 'awaiting_input']
++    expected = deepcopy(cp)
++    expected['events'].append({'type': 'researcher_reply', 'call': cp['call_count'],
++        'parent_run_ref': parent_ref, 'respondent': clarification['respondent'],
++        'source_ref': source_ref, 'artifact_refs': [clarification_ref, source_ref]})
++    expected['messages'].append(_reply_message(pending[-1]['question'], clarification['respondent'],
++                                               source_ref, clarification['reply']))
++    expected['checkpoint_refs'] = previous['checkpoint_refs']
++    expected['clarification_refs'] = clarification_refs
++    if restored != expected:
++        raise RecoveryBlocked('initial_resume_snapshot_mismatch')
++    if (restored.get('call_count') != execution['base_call_count']
++            or restored.get('run_count') != execution['base_run_count']):
++        raise RecoveryBlocked('initial_resume_budget_mismatch')
++
++
++def _returned(store, operation, adoptable, task):
++    reserved, terminal = operation['reserved'], operation['terminal']
++    name, details = reserved['name'], terminal['details']
++    envelope = store.get(operation['terminal_ref'])
++    if not isinstance(details, dict):
++        raise RecoveryBlocked('returned_details_must_be_object')
++    if name == 'respond':
++        response = json.loads(details['response_json'])
++        if not isinstance(response, dict):
++            raise RecoveryBlocked('invalid_cached_response')
++    elif name == 'submit_draft':
++        required = {'state', 'problems', 'checks', 'draft_ref', 'model_ref', 'hypothesis_ref',
++                    'source_review_ref', 'source_review', 'citation_diagnostics'}
++        if not required <= details.keys():
++            raise RecoveryBlocked('incomplete_draft_return_snapshot')
++        for key, kind in (('model_ref', 'model'), ('draft_ref', 'model_draft'),
++                          ('hypothesis_ref', 'hypothesis'), ('source_review_ref', 'source_review')):
++            ref = details.get(key)
++            if ref and (ref not in envelope['refs'] or store.get(ref)['kind'] != kind):
++                raise RecoveryBlocked('invalid_draft_result_binding')
++        if details['state'] == 'ready' and (not details['model_ref'] or not details['draft_ref']):
++            raise RecoveryBlocked('ready_draft_missing_model')
++    elif name in ('run', 'run_study'):
++        ref = details['result_ref']
++        expected_kind = 'run' if name == 'run' else 'hypothesis_study'
++        if ref not in envelope['refs'] or store.get(ref)['kind'] != expected_kind:
++            raise RecoveryBlocked('invalid_scientific_result_binding')
++        if name == 'run':
++            for key, kind in (('model_ref', 'model'), ('draft_ref', 'model_draft')):
++                if store.get(reserved['details'][key])['kind'] != kind:
++                    raise RecoveryBlocked('invalid_run_input_binding')
++            model_ref, draft_ref = (reserved['details'][key] for key in ('model_ref', 'draft_ref'))
++            model = store.get(model_ref)
++            if draft_ref not in model['refs']:
++                raise RecoveryBlocked('run_model_draft_mismatch')
++            run = store.get(ref)
++            input_ref = run['payload']['input_ref']
++            inputs = store.get(input_ref)
++            frozen = inputs['payload']
++            if inputs['kind'] != 'simulation_input' or input_ref not in run['refs']:
++                raise RecoveryBlocked('invalid_simulation_input_binding')
++            expected = {key: task[key] for key in ('experiment', 'observations', 'solver', 'reference', 'scales')}
++            expected.update(artifact=model['payload'], strict=task['mode'] == 'reproduction',
++                nonnegative=[s['id'] for s in store.get(draft_ref)['payload']['states'] if s.get('nonnegative')],
++                threshold=1e-3)
++            if any(canonical_bytes(frozen.get(key)) != canonical_bytes(value) for key, value in expected.items()):
++                raise RecoveryBlocked('scientific_result_frozen_inputs_mismatch')
++        else:
++            plan_ref = reserved['details']['plan_ref']
++            result = store.get(ref)
++            if (store.get(plan_ref)['kind'] != 'hypothesis_study_plan'
++                    or task.get('study_plan_ref') != plan_ref or result['payload'].get('plan_ref') != plan_ref
++                    or plan_ref not in result['refs']):
++                raise RecoveryBlocked('invalid_study_plan_binding')
++        adoptable.append(ref)
++    elif name == 'inspect_source' and type(details.get('page_found')) is not bool:
++        raise RecoveryBlocked('invalid_inspect_return')
++
++
++def diagnose_execution(store, execution_ref):
++    report = dict(execution_ref=execution_ref, task_ref=None, status='blocked', reasons=[],
++                  operations=[], call_count=0, run_count=0, final_run_refs=[],
++                  adoptable_result_refs=[], recovery_refs=[])
++    try:
++        record = store.get(execution_ref)
++        execution = record['payload']
++        if record['kind'] != 'agent_execution' or type(execution.get('version')) is not int or execution['version'] != 1:
++            raise RecoveryBlocked('incompatible_execution_version')
++        task_ref = report['task_ref'] = execution['task_ref']
++        task_record = store.get(task_ref)
++        task = task_record['payload']
++        if task_record['kind'] != 'agent_task' or type(task.get('resume_version')) is not int or task['resume_version'] != 1:
++            raise RecoveryBlocked('incompatible_task_version')
++        max_calls = task['max_calls']
++        if (type(max_calls) is not int or not 1 <= max_calls <= 50
++                or type(execution.get('max_calls')) is not int or execution['max_calls'] != max_calls
++                or type(execution.get('max_runs')) is not int or execution['max_runs'] != 1
++                or not _count(execution.get('base_call_count'), max_calls)
++                or not _count(execution.get('base_run_count'), 1) or task_ref not in record['refs']):
++            raise RecoveryBlocked('invalid_execution_budgets_or_task_binding')
++        report['call_count'], report['run_count'] = execution['base_call_count'], execution['base_run_count']
++        inventory = _inventory(store)
++        grouped = {}
++        for ref, envelope in inventory.items():
++            payload = envelope['payload']
++            if envelope['kind'] in ('agent_invocation', 'agent_run', 'agent_recovery') and not isinstance(payload, dict):
++                raise RecoveryBlocked('malformed_recovery_object')
++            if not isinstance(payload, dict) or payload.get('execution_ref') != execution_ref:
++                continue
++            if envelope['kind'] not in ('agent_invocation', 'agent_run', 'agent_recovery'):
++                continue
++            store.get(ref)  # full reference verification, without index repairs
++            if envelope['kind'] == 'agent_run':
++                if payload.get('task_ref') != task_ref or execution_ref not in envelope['refs']:
++                    raise RecoveryBlocked('invalid_final_run_binding')
++                report['final_run_refs'].append(ref)
++            elif envelope['kind'] == 'agent_recovery':
++                report['recovery_refs'].append(ref)
++            else:
++                if execution_ref not in envelope['refs']:
++                    raise RecoveryBlocked('invocation_missing_execution_binding')
++                grouped.setdefault(payload['operation_id'], []).append((ref, payload))
++        pairs = []
++        for operation_id, rows in grouped.items():
++            if not isinstance(operation_id, str) or not operation_id:
++                raise RecoveryBlocked('invalid_operation_id')
++            reserved = [(r, p) for r, p in rows if p.get('phase') == 'reserved']
++            terminals = [(r, p) for r, p in rows if p.get('phase') in ('returned', 'error', 'interrupted')]
++            if len(reserved) != 1 or len(terminals) > 1 or len(rows) != len(reserved) + len(terminals):
++                raise RecoveryBlocked('ambiguous_operation_phases')
++            rref, res = reserved[0]
++            tref, term = terminals[0] if terminals else (None, None)
++            if (type(res.get('sequence')) is not int or res['sequence'] < 1
++                    or type(res.get('version')) is not int or res['version'] != 1
++                    or res.get('name') not in REPLAY_CLASSES
++                    or res.get('replay_class') != REPLAY_CLASSES[res['name']]
++                    or not isinstance(res.get('details'), dict)):
++                raise RecoveryBlocked('invalid_or_legacy_reservation')
++            if term is not None:
++                keys = ('version', 'execution_ref', 'operation_id', 'sequence', 'name',
++                        'call_count', 'run_count', 'replay_class')
++                if (any(type(term.get(k)) is not type(res.get(k)) or term.get(k) != res.get(k) for k in keys)
++                        or rref not in inventory[tref]['refs']):
++                    raise RecoveryBlocked('terminal_reservation_mismatch')
++            pairs.append(dict(reserved_ref=rref, terminal_ref=tref, reserved=res, terminal=term))
++        pairs.sort(key=lambda op: op['reserved']['sequence'])
++        report['operations'] = pairs
++        calls, runs = report['call_count'], report['run_count']
++        for sequence, operation in enumerate(pairs, 1):
++            res, term = operation['reserved'], operation['terminal']
++            calls += int(res['name'] == 'respond')
++            runs += int(res['name'] in ('run', 'run_study'))
++            if (res['sequence'] != sequence or not _count(res.get('call_count'), max_calls)
++                    or not _count(res.get('run_count'), 1) or res['call_count'] != calls or res['run_count'] != runs):
++                raise RecoveryBlocked('journal_sequence_or_budget_mismatch')
++            report['call_count'], report['run_count'] = calls, runs
++            if term is None:
++                if sequence != len(pairs):
++                    raise RecoveryBlocked('unresolved_operation_before_later_work')
++                if res['replay_class'] == 'read_only':
++                    operation['retry_read_only'] = True
++                else:
++                    reasons = {'external_unknown': 'external_outcome_unknown',
++                        'scientific_execution': 'scientific_outcome_unknown', 'artifact_write': 'partial_artifacts_unknown'}
++                    report['reasons'].append(reasons[res['replay_class']])
++            elif term['phase'] != 'returned':
++                report['reasons'].append('recorded_error_or_interruption_requires_review')
++            else:
++                _returned(store, operation, report['adoptable_result_refs'], task)
++        # Legacy records may still expose verified result references, but do
++        # not invent the missing initial execution state.
++        _initial_scope(store, execution, task)
++        initial_sources = execution['recovery']['source_refs']
++        if any(ref not in record['refs'] for ref in initial_sources):
++            raise RecoveryBlocked('initial_sources_missing_from_execution_refs')
++        ordered_refs = [ref for op in pairs for ref in (op['reserved_ref'], op['terminal_ref']) if ref]
++        for receipt_ref in report['recovery_refs']:
++            receipt_record = store.get(receipt_ref)
++            receipt = receipt_record['payload']
++            prefix = receipt.get('invocation_refs')
++            if (type(receipt.get('version')) is not int or receipt['version'] != 1
++                    or receipt.get('task_ref') != task_ref or receipt.get('method') != 'verified_return_replay'
++                    or not isinstance(prefix, list) or prefix != ordered_refs[:len(prefix)]
++                    or receipt_record['refs'] != [execution_ref, *prefix]):
++                raise RecoveryBlocked('invalid_recovery_receipt_binding')
++            prior_operations = [op for op in pairs if op['reserved_ref'] in prefix]
++            last = prior_operations[-1]['reserved'] if prior_operations else execution
++            expected_calls = last.get('call_count', execution['base_call_count'])
++            expected_runs = last.get('run_count', execution['base_run_count'])
++            if (type(receipt.get('call_count')) is not int or receipt['call_count'] != expected_calls
++                    or type(receipt.get('run_count')) is not int or receipt['run_count'] != expected_runs):
++                raise RecoveryBlocked('invalid_recovery_receipt_budget')
++        for final_ref in report['final_run_refs']:
++            final = store.get(final_ref)['payload']
++            cp = store.get(final['checkpoint_ref'])
++            if (final.get('invocation_refs') != ordered_refs or final.get('source_refs') != initial_sources
++                    or type(final.get('call_count')) is not int or final['call_count'] != calls
++                    or cp['kind'] != 'agent_checkpoint' or cp['payload'].get('execution_ref') != execution_ref
++                    or cp['payload'].get('invocation_refs') != ordered_refs
++                    or set(final.get('recovery_refs', [])) != set(report['recovery_refs'])):
++                raise RecoveryBlocked('final_run_journal_mismatch')
++        report['status'] = ('blocked' if report['reasons'] else
++                            'finished' if report['final_run_refs'] else 'ready')
++    except (ValueError, KeyError, TypeError, OSError, IndexError) as exc:
++        # Report stable failures, never raw provider/transport exceptions.
++        reason = str(exc) if isinstance(exc, RecoveryBlocked) else 'invalid_or_unavailable_recovery_record:' + type(exc).__name__
++        report['reasons'].append(reason)
++        report['status'] = 'blocked'
++    return report
++
++
++class ReplayJournal:
++    """Reconstruct local control state from verified returned calls under owner lock."""
++    def __init__(self, store, report):
++        if report['status'] != 'ready':
++            raise RecoveryBlocked('execution is not eligible for continuation')
++        self._store, self._operations = store, deepcopy(report['operations'])
++        self.execution_ref = report['execution_ref']
++        execution = store.get(self.execution_ref)['payload']
++        self.calls, self.runs = execution['base_call_count'], execution['base_run_count']
++        self.refs, self._position, self.last_usage = [], 0, None
++        refs = [ref for op in self._operations for ref in (op['reserved_ref'], op['terminal_ref']) if ref]
++        self._live = InvocationJournal.reopen(store, self.execution_ref, refs=refs,
++            calls=report['call_count'], runs=report['run_count'], next_sequence=len(self._operations) + 1)
++
++    def assert_consumed(self):
++        if self._position != len(self._operations):
++            raise RecoveryBlocked('replay ended with unconsumed operations')
++
++    def invoke(self, name, callback, *, details=None, summarize=None, result_refs=None):
++        self.last_usage = None
++        if self._position >= len(self._operations):
++            try:
++                return self._live.invoke(name, callback, details=details, summarize=summarize, result_refs=result_refs)
++            finally:
++                self.calls, self.runs = self._live.calls, self._live.runs
++                self.refs = list(self._live.refs)
++        operation = self._operations[self._position]
++        res, term = operation['reserved'], operation['terminal']
++        if name != res['name'] or canonical_bytes(details or {}) != canonical_bytes(res['details']):
++            raise RecoveryBlocked('replay request differs from recorded operation')
++        self._position += 1
++        self.calls, self.runs = res['call_count'], res['run_count']
++        self.refs.append(operation['reserved_ref'])
++        if term is None:
++            if not operation.get('retry_read_only'):
++                raise RecoveryBlocked('unknown side effect cannot be replayed')
++            try:
++                value = callback()
++            except BaseException as exc:
++                phase = 'error' if isinstance(exc, Exception) else 'interrupted'
++                self._live._terminal(name, res['operation_id'], phase, self.calls, self.runs,
++                    {'error_type': type(exc).__name__}, operation['reserved_ref'], (), sequence=res['sequence'])
++                raise
++            summary = summarize(value) if summarize else value
++            refs = tuple(ref for ref in (result_refs(value) if result_refs else ()) if ref)
++            self._live._terminal(name, res['operation_id'], 'returned', self.calls, self.runs,
++                summary if summary is not None else {}, operation['reserved_ref'], refs, sequence=res['sequence'])
++            self.refs = list(self._live.refs)
++            return value
++        self.refs.append(operation['terminal_ref'])
++        out = deepcopy(term['details'])
++        if name == 'respond':
++            self.last_usage = out.get('usage', {})
++            return json.loads(out['response_json'])
++        if name == 'submit_draft':
++            out['artifact'] = (from_dict(ModelArtifact, self._store.get(out['model_ref'])['payload'])
++                               if out.get('model_ref') else None)
++        elif name in ('run', 'run_study'):
++            return out['result_ref']
++        elif name == 'inspect_source':
++            args = res['details']['args']
++            page = next((p['text'] for p in self._store.get(args['source_ref'])['payload']['pages']
++                         if p['number'] == args['page']), None)
++            if (page is not None) != out['page_found']:
++                raise RecoveryBlocked('immutable source page differs from read record')
++            return page
++        return out
+--- /dev/null
++++ b/tests/test_recovery_core.py
+@@ -0,0 +1,231 @@
++"""Codex-owned recovery integrity and ownership tests; no service calls."""
++from copy import deepcopy
++import json
++import multiprocessing as mp
++import gc
++
++import pytest
++
++from biomodel_agent import recovery
++from biomodel_agent.invocations import InvocationJournal
++from biomodel_agent.storage import ArtifactStore
++
++
++def make(tmp_path, **overrides):
++    store = ArtifactStore(tmp_path / 'store')
++    source = store.put('source', {'pages': [{'number': 1, 'text': 'Initial x = 1.'}]})
++    task = store.put('agent_task', {
++        'resume_version': 1, 'max_calls': 4, 'max_repairs': 2, 'max_retries': 2,
++        'source_refs': [source], 'mode': 'reproduction', 'provider': {},
++        'study_plan_ref': None, 'memory_scope': None,
++    }, refs=(source,))
++    meta = dict(version=1, implementation_sha256=recovery.implementation_fingerprint(),
++                source_refs=[source], restored=None)
++    meta.update(overrides)
++    journal = InvocationJournal(store, task, recovery=meta, initial_refs=(source,))
++    return store, source, task, journal
++
++
++def response(journal, action='ask_researcher'):
++    value = {'action': action, 'args': {'question': 'Initial x?'} if action == 'ask_researcher' else {}}
++    journal.invoke('respond', lambda: value, details={'request_messages': [], 'context': {}},
++                   summarize=lambda r: {'response_json': json.dumps(r), 'usage': {'total_tokens': 7}})
++    return value
++
++
++def snapshot(root):
++    # Close unreachable fixture SQLite connections before comparing on-disk
++    # bytes: connection finalizers can checkpoint WAL during unrelated GC.
++    gc.collect()
++    return {str(p.relative_to(root)): p.read_bytes() for p in root.rglob('*')
++            if p.is_file() and not p.name.endswith(('-wal', '-shm'))}
++
++
++def test_diagnose_is_read_only_and_sequence_is_explicit(tmp_path, monkeypatch):
++    store, source, task, j = make(tmp_path)
++    response(j)
++    before = snapshot(store.root)
++    def forbidden(*a, **k):
++        pytest.fail('diagnosis attempted a storage mutation or opened SQLite')
++    monkeypatch.setattr(store, 'put', forbidden)
++    monkeypatch.setattr(store, '_db', forbidden)
++    report = recovery.diagnose_execution(store, j.execution_ref)
++    assert report['status'] == 'ready', report
++    assert report['call_count'] == 1 and report['run_count'] == 0
++    assert report['task_ref'] == task and len(report['operations']) == 1
++    pair = report['operations'][0]
++    assert pair['reserved']['sequence'] == pair['terminal']['sequence'] == 1
++    assert snapshot(store.root) == before
++    assert not (store.root / '.agent-owners').exists()
++
++
++def test_cached_response_and_reads_do_not_call_callbacks_or_add_records(tmp_path):
++    store, _, _, j = make(tmp_path)
++    value = response(j)
++    j.invoke('search_sources', lambda: {'results': [{'text': 'x = 1'}]}, details={'args': {'query': 'x'}})
++    report = recovery.diagnose_execution(store, j.execution_ref)
++    replay = recovery.ReplayJournal(store, report)
++    def forbidden():
++        pytest.fail('cached operation callback repeated')
++    before = snapshot(store.root)
++    assert replay.invoke('respond', forbidden, details={'request_messages': [], 'context': {}}) == value
++    assert replay.last_usage == {'total_tokens': 7}
++    out = replay.invoke('search_sources', forbidden, details={'args': {'query': 'x'}})
++    out['results'][0]['text'] = 'local mutation'
++    replay.assert_consumed()
++    assert replay.calls == 1 and replay.runs == 0
++    assert replay.refs == j.refs and snapshot(store.root) == before
++
++
++@pytest.mark.parametrize('name,details', [('respond', {'changed': True}),
++                                          ('search_sources', {'request_messages': [], 'context': {}})])
++def test_replay_mismatch_blocks_before_callback(tmp_path, name, details):
++    store, _, _, j = make(tmp_path)
++    response(j)
++    replay = recovery.ReplayJournal(store, recovery.diagnose_execution(store, j.execution_ref))
++    with pytest.raises(recovery.RecoveryBlocked):
++        replay.invoke(name, lambda: pytest.fail('mismatch executed'), details=details)
++    with pytest.raises(recovery.RecoveryBlocked):
++        replay.assert_consumed()
++
++
++def test_new_calls_after_replay_keep_spent_budget_and_sequence(tmp_path):
++    store, _, _, j = make(tmp_path)
++    response(j)
++    replay = recovery.ReplayJournal(store, recovery.diagnose_execution(store, j.execution_ref))
++    response(replay)
++    response(replay)
++    assert replay.calls == 2
++    report = recovery.diagnose_execution(store, j.execution_ref)
++    assert report['status'] == 'ready', report
++    assert [o['reserved']['sequence'] for o in report['operations']] == [1, 2]
++    assert len(store.list('agent_execution')) == 1
++
++
++@pytest.mark.parametrize('name,reason', [('respond', 'external_outcome_unknown'),
++    ('run', 'scientific_outcome_unknown'), ('run_study', 'scientific_outcome_unknown'),
++    ('submit_draft', 'partial_artifacts_unknown')])
++def test_unknown_effects_are_not_safe_retries(tmp_path, name, reason):
++    store, _, _, j = make(tmp_path)
++    j._reserve(name, {})
++    report = recovery.diagnose_execution(store, j.execution_ref)
++    assert report['status'] == 'blocked'
++    assert any(reason in r for r in report['reasons']), report
++
++
++def test_reserved_read_only_reuses_same_reservation(tmp_path):
++    store, _, _, j = make(tmp_path)
++    response(j)
++    j._reserve('search_sources', {'args': {'query': 'x'}})
++    report = recovery.diagnose_execution(store, j.execution_ref)
++    assert report['status'] == 'ready', report
++    replay = recovery.ReplayJournal(store, report)
++    response(replay)
++    observed = []
++    out = replay.invoke('search_sources', lambda: observed.append('read') or {'results': []},
++                        details={'args': {'query': 'x'}})
++    replay.assert_consumed()
++    assert out == {'results': []} and observed == ['read']
++    rows = [store.get(ref)['payload'] for ref in store.list('agent_invocation')]
++    assert sum(r['name'] == 'search_sources' and r['phase'] == 'reserved' for r in rows) == 1
++    assert sum(r['name'] == 'search_sources' and r['phase'] == 'returned' for r in rows) == 1
++    assert replay.calls == 1 and replay.runs == 0
++
++
++@pytest.mark.parametrize('error', [ValueError('secret diagnostic'), SystemExit('secret interrupt')])
++def test_logged_error_and_interrupt_do_not_imply_no_effects(tmp_path, error):
++    store, _, _, j = make(tmp_path)
++    def fail():
++        raise error
++    with pytest.raises(type(error)):
++        j.invoke('search_sources', fail)
++    report = recovery.diagnose_execution(store, j.execution_ref)
++    assert report['status'] == 'blocked'
++    assert 'secret' not in json.dumps(report)
++
++
++def test_missing_index_entry_does_not_hide_reserved_request(tmp_path):
++    store, _, _, j = make(tmp_path)
++    ref, *_ = j._reserve('respond', {})
++    with store._db() as conn:
++        conn.execute('DELETE FROM artifact_index WHERE ref=?', (ref,))
++    before = snapshot(store.root)
++    report = recovery.diagnose_execution(store, j.execution_ref)
++    assert report['status'] == 'blocked' and report['call_count'] == 1
++    assert len(report['operations']) == 1
++    assert snapshot(store.root) == before
++    assert ref not in store.list('agent_invocation')
++
++
++@pytest.mark.parametrize('change', ['sequence_gap', 'bool_count', 'counter_jump', 'wrong_class',
++                                    'duplicate_terminal', 'wrong_reservation_ref'])
++def test_inconsistent_or_ambiguous_trace_is_refused(tmp_path, change):
++    store, _, _, j = make(tmp_path)
++    reserved_ref, op_id, calls, runs = j._reserve('respond', {})
++    reserved = store.get(reserved_ref)
++    if change == 'sequence_gap':
++        reserved['payload']['sequence'] = 2
++    elif change == 'bool_count':
++        reserved['payload']['call_count'] = True
++    elif change == 'counter_jump':
++        reserved['payload']['call_count'] = 3
++    elif change == 'wrong_class':
++        reserved['payload']['replay_class'] = 'read_only'
++    if change in ('sequence_gap', 'bool_count', 'counter_jump', 'wrong_class'):
++        # Replace fixture inventory, not an actual immutable production record.
++        (store.objects_dir / (reserved_ref + '.json')).unlink()
++        with store._db() as conn:
++            conn.execute('DELETE FROM artifact_index WHERE ref=?', (reserved_ref,))
++        reserved_ref = store.put('agent_invocation', reserved['payload'], refs=reserved['refs'])
++    payload = deepcopy(reserved['payload'])
++    payload.update(phase='returned', details={'response_json': '{"action":"finish","args":{}}', 'usage': {}})
++    refs = (j.execution_ref,) if change == 'wrong_reservation_ref' else (j.execution_ref, reserved_ref)
++    store.put('agent_invocation', payload, refs=refs)
++    if change == 'duplicate_terminal':
++        payload['details']['usage'] = {'total_tokens': 1}
++        store.put('agent_invocation', payload, refs=refs)
++    report = recovery.diagnose_execution(store, j.execution_ref)
++    assert report['status'] == 'blocked', report
++
++
++def test_fingerprint_mismatch_and_legacy_snapshot_are_blocked(tmp_path):
++    store, _, task, j = make(tmp_path, implementation_sha256='0' * 64)
++    assert recovery.diagnose_execution(store, j.execution_ref)['status'] == 'blocked'
++    old = InvocationJournal(store, task)
++    assert recovery.diagnose_execution(store, old.execution_ref)['status'] == 'blocked'
++
++
++def hold_owner(root, task, pipe):
++    store = ArtifactStore(root)
++    with recovery.execution_owner(store, task):
++        pipe.send('held')
++        pipe.recv()
++
++
++def test_process_owner_contention_and_abrupt_exit_release(tmp_path):
++    store, _, task, _ = make(tmp_path)
++    ctx = mp.get_context('fork')
++    parent, child = ctx.Pipe()
++    process = ctx.Process(target=hold_owner, args=(str(store.root), task, child))
++    process.start()
++    try:
++        assert parent.poll(10) and parent.recv() == 'held'
++        with pytest.raises(recovery.RecoveryBlocked):
++            with recovery.execution_owner(store, task):
++                pytest.fail('concurrent owner admitted')
++    finally:
++        process.terminate()
++        process.join(10)
++    assert not process.is_alive()
++    with recovery.execution_owner(store, task):
++        pass
++    assert list((store.root / '.agent-owners').iterdir())
++
++
++def test_owner_validates_ref_and_task_kind_before_lock_path(tmp_path):
++    store, source, _, _ = make(tmp_path)
++    for ref in ('../escape', source):
++        with pytest.raises(ValueError):
++            with recovery.execution_owner(store, ref):
++                pytest.fail('invalid lock admitted')
++    assert not (store.root / '.agent-owners').exists()
+--- /dev/null
++++ b/tests/test_recovery_acceptance.py
+@@ -0,0 +1,411 @@
++"""Codex-owned acceptance: scripted inference, real tools, real process exits."""
++from copy import deepcopy
++import json
++import multiprocessing as mp
++import os
++
++import pytest
++
++from biomodel_agent import agent, application, bundles, recovery, cli, studies, memory
++from biomodel_agent.domain.contracts import ExperimentSpec, SimulationResult
++from biomodel_agent.storage import ArtifactStore
++from test_invocation_acceptance import Scripted, act, fixture, run, phase
++
++
++def execution(store):
++    return store.list('agent_execution')[-1]
++
++
++def post_result_crash(store, source, proposal, monkeypatch, **kwargs):
++    provider = Scripted([{'action': 'submit_draft', 'args': proposal}, act('run')])
++    with monkeypatch.context() as patch:
++        patch.setattr(agent, '_run_facts', lambda *a: (_ for _ in ()).throw(SystemExit('saved run')))
++        with pytest.raises(SystemExit):
++            run(store, source, provider, **kwargs)
++    return provider, execution(store)
++
++
++def test_adopt_real_simulation_after_crash_without_running_or_resubmitting_draft(tmp_path, monkeypatch):
++    store, source, proposal = fixture(tmp_path)
++    original, ref = post_result_crash(store, source, proposal, monkeypatch)
++    saved_runs = store.list('run')
++    saved_models = store.list('model')
++    report = recovery.diagnose_execution(store, ref)
++    assert report['status'] == 'ready', report
++    assert report['adoptable_result_refs'] == saved_runs
++    provider = Scripted([act('finish')])
++    monkeypatch.setattr(application, 'run_reproduction', lambda *a, **k: pytest.fail('simulation repeated'))
++    monkeypatch.setattr(agent.agent_tools, 'submit_draft', lambda *a, **k: pytest.fail('draft repeated'))
++    final = store.get(agent.recover_agent(store, provider, ref))
++    result = final['payload']
++    assert result['state'] == 'completed' and result['call_count'] == 3
++    assert len(original.calls) == 2 and len(provider.calls) == 1
++    assert result['run_ref'] == saved_runs[0] and store.list('run') == saved_runs
++    assert store.list('model') == saved_models and len(store.list('agent_execution')) == 1
++    assert store.get(saved_runs[0])['payload']['simulation']['values']['x'][-1] == pytest.approx(.670320046, abs=1e-6)
++    assert store.get(saved_runs[0])['payload']['scientific_status'] == 'not_verified'
++    assert len(result['recovery_refs']) == 1
++    manifest = bundles.export_bundle(store, next(r for r in store.list('agent_run')), tmp_path / 'bundle')
++    assert set(result['recovery_refs'] + result['invocation_refs'] + [ref]).issubset(manifest['objects_and_blobs'])
++
++
++def test_returned_response_is_adopted_at_exhausted_budget(tmp_path, monkeypatch):
++    store, source, _ = fixture(tmp_path)
++    old = Scripted([act('ask_researcher', question='Confirm x?')])
++    with monkeypatch.context() as patch:
++        patch.setattr(agent, '_assistant', lambda *a: (_ for _ in ()).throw(SystemExit()))
++        with pytest.raises(SystemExit):
++            run(store, source, old, max_calls=1)
++    provider = Scripted([])
++    ref = agent.recover_agent(store, provider, execution(store))
++    result = store.get(ref)['payload']
++    assert result['state'] == 'awaiting_input' and result['call_count'] == 1
++    assert not provider.calls
++    calls = [e for e in result['events'] if e['type'] == 'llm_call']
++    assert len(calls) == 1 and calls[0]['usage'] == {'total_tokens': 3}
++
++
++def test_returned_draft_is_rebuilt_from_model_ref_without_tool_repeat(tmp_path, monkeypatch):
++    store, source, proposal = fixture(tmp_path)
++    put = store.put
++    def fault(kind, payload, refs=None):
++        ref = put(kind, payload, refs)
++        if kind == 'agent_invocation' and payload['name'] == 'submit_draft' and payload['phase'] == 'returned':
++            raise SystemExit('after draft return recorded')
++        return ref
++    with monkeypatch.context() as patch:
++        patch.setattr(store, 'put', fault)
++        with pytest.raises(SystemExit):
++            run(store, source, Scripted([{'action': 'submit_draft', 'args': proposal}]))
++    monkeypatch.setattr(agent.agent_tools, 'submit_draft', lambda *a, **k: pytest.fail('draft repeated'))
++    result = store.get(agent.recover_agent(store, Scripted([act('run'), act('finish')]), execution(store)))['payload']
++    assert result['state'] == 'completed' and result['call_count'] == 3
++    assert len(store.list('run')) == len(store.list('model')) == 1
++
++
++@pytest.mark.parametrize('action,args', [
++    ('search_sources', {'query': 'parameter k'}),
++    ('inspect_source', {'page': 1, 'start': 0, 'end': 10}),
++    ('load_skill', {'name': 'ode_reproduction'}),
++    ('recall_memory', {'query': 'initial x'}),
++])
++def test_returned_read_feedback_can_be_reconstructed(tmp_path, monkeypatch, action, args):
++    store, source, _ = fixture(tmp_path)
++    args = dict(args)
++    if action == 'inspect_source':
++        args['source_ref'] = source
++    original = store.put
++    def fault(kind, payload, refs=None):
++        ref = original(kind, payload, refs)
++        if kind == 'agent_invocation' and payload['name'] == action and payload['phase'] == 'returned':
++            raise SystemExit('after read record')
++        return ref
++    with monkeypatch.context() as patch:
++        patch.setattr(store, 'put', fault)
++        with pytest.raises(SystemExit):
++            run(store, source, Scripted([{'action': action, 'args': args}]), memory_project='recover-read')
++    final = store.get(agent.recover_agent(store, Scripted([act('ask_researcher', question='Continue?')]), execution(store)))['payload']
++    assert final['state'] == 'awaiting_input' and final['call_count'] == 2
++    assert len(phase(store, action, 'reserved')) == len(phase(store, action, 'returned')) == 1
++
++
++def test_unknown_external_result_never_retries_or_writes_recovery_receipt(tmp_path, monkeypatch):
++    store, source, _ = fixture(tmp_path)
++    put = store.put
++    def fault(kind, payload, refs=None):
++        if kind == 'agent_invocation' and payload['name'] == 'respond' and payload['phase'] == 'returned':
++            raise OSError('lost response record')
++        return put(kind, payload, refs)
++    with monkeypatch.context() as patch:
++        patch.setattr(store, 'put', fault)
++        with pytest.raises(OSError):
++            run(store, source, Scripted([act('ask_researcher', question='x?')]))
++    provider = Scripted([act('finish')])
++    count = len(store.list())
++    with pytest.raises(recovery.RecoveryBlocked, match='external_outcome_unknown'):
++        agent.recover_agent(store, provider, execution(store))
++    assert not provider.calls and len(store.list()) == count
++
++
++def test_partial_scientific_result_without_return_is_not_guessed_or_recomputed(tmp_path, monkeypatch):
++    store, source, proposal = fixture(tmp_path)
++    original = application.run_reproduction
++    def partial(*args, **kwargs):
++        original(*args, **kwargs)
++        raise SystemExit('partial result exists')
++    with monkeypatch.context() as patch:
++        patch.setattr(application, 'run_reproduction', partial)
++        with pytest.raises(SystemExit):
++            run(store, source, Scripted([{'action': 'submit_draft', 'args': proposal}, act('run')]))
++    assert len(store.list('run')) == 1
++    report = recovery.diagnose_execution(store, execution(store))
++    assert report['status'] == 'blocked' and not report['adoptable_result_refs']
++    with pytest.raises(recovery.RecoveryBlocked):
++        agent.recover_agent(store, Scripted([]), execution(store))
++    assert len(store.list('run')) == 1 and not store.list('agent_recovery')
++
++
++def test_repeat_recovery_of_finalized_execution_is_refused_without_writes(tmp_path, monkeypatch):
++    store, source, _ = fixture(tmp_path)
++    with monkeypatch.context() as patch:
++        patch.setattr(agent, '_assistant', lambda *a: (_ for _ in ()).throw(SystemExit()))
++        with pytest.raises(SystemExit):
++            run(store, source, Scripted([act('ask_researcher', question='x?')]))
++    ref = execution(store)
++    agent.recover_agent(store, Scripted([]), ref)
++    count = len(store.list())
++    assert recovery.diagnose_execution(store, ref)['status'] == 'finished'
++    with pytest.raises(recovery.RecoveryBlocked):
++        agent.recover_agent(store, Scripted([]), ref)
++    assert len(store.list()) == count
++
++
++def test_recovery_can_crash_again_after_a_new_response_and_resume_without_resending(tmp_path, monkeypatch):
++    store, source, proposal = fixture(tmp_path)
++    _, ref = post_result_crash(store, source, proposal, monkeypatch)
++    assistant = agent._assistant
++    def fault(text):
++        if json.loads(text)['action'] == 'finish':
++            raise SystemExit('new paid response was recorded before this crash')
++        return assistant(text)
++    provider = Scripted([act('finish')])
++    with monkeypatch.context() as patch:
++        patch.setattr(agent, '_assistant', fault)
++        with pytest.raises(SystemExit):
++            agent.recover_agent(store, provider, ref)
++    assert len(provider.calls) == 1
++    last = Scripted([])
++    final = store.get(agent.recover_agent(store, last, ref))['payload']
++    assert final['state'] == 'completed' and final['call_count'] == 3 and not last.calls
++    assert len(final['recovery_refs']) == 2 and len(store.list('run')) == 1
++    assert [o['reserved']['sequence'] for o in recovery.diagnose_execution(store, ref)['operations']] == list(range(1, 6))
++
++
++def test_provider_identity_mismatch_refuses_before_receipt(tmp_path, monkeypatch):
++    store, source, proposal = fixture(tmp_path)
++    _, ref = post_result_crash(store, source, proposal, monkeypatch)
++    provider = Scripted([])
++    provider.model = 'different'
++    before = len(store.list())
++    with pytest.raises(recovery.RecoveryBlocked, match='provider'):
++        agent.recover_agent(store, provider, ref)
++    assert len(store.list()) == before and not provider.calls
++
++
++def test_owner_applies_to_normal_run_resume_and_recovery_before_side_effects(tmp_path, monkeypatch):
++    store, source, proposal = fixture(tmp_path)
++    _, ref = post_result_crash(store, source, proposal, monkeypatch)
++    task_ref = store.get(ref)['payload']['task_ref']
++    before = len(store.list())
++    with recovery.execution_owner(store, task_ref):
++        with pytest.raises(recovery.RecoveryBlocked, match='owner'):
++            agent.recover_agent(store, Scripted([]), ref)
++        with pytest.raises(recovery.RecoveryBlocked, match='owner'):
++            run(store, source, Scripted([]))
++    assert len(store.list()) == before
++    parent = run(store, source, Scripted([act('ask_researcher', question='x?')]))
++    task_ref = store.get(parent)['payload']['task_ref']
++    before = len(store.list())
++    with recovery.execution_owner(store, task_ref):
++        with pytest.raises(recovery.RecoveryBlocked, match='owner'):
++            agent.resume_agent(store, Scripted([]), parent, 'x = 1.', respondent='A')
++    assert len(store.list()) == before and not store.list('researcher_clarification')
++
++
++def test_interrupted_researcher_branch_preserves_attribution_and_inherited_counts(tmp_path, monkeypatch):
++    store, source, _ = fixture(tmp_path)
++    parent = run(store, source, Scripted([act('ask_researcher', question='x?')]), max_calls=3)
++    original = deepcopy(store.get(parent))
++    with monkeypatch.context() as patch:
++        patch.setattr(agent, '_assistant', lambda *a: (_ for _ in ()).throw(SystemExit()))
++        with pytest.raises(SystemExit):
++            agent.resume_agent(store, Scripted([act('ask_researcher', question='k?')]),
++                               parent, 'Initial x = 1.', respondent='Researcher A')
++    ref = execution(store)
++    report = recovery.diagnose_execution(store, ref)
++    assert report['status'] == 'ready', report
++    final = store.get(agent.recover_agent(store, Scripted([]), ref))['payload']
++    assert final['state'] == 'awaiting_input' and final['call_count'] == 2
++    assert final['parent_run_ref'] == parent and len(final['clarification_refs']) == 1
++    assert store.get(parent) == original and len(store.list('researcher_clarification')) == 1
++
++
++def abrupt(root, source, proposal, point):
++    store = ArtifactStore(root)
++    if point == 'provider':
++        def die(messages):
++            os._exit(41)
++        provider = Scripted([])
++        provider.respond = die
++    elif point == 'read':
++        from biomodel_agent import retrieval
++        def die(*args, **kwargs):
++            os._exit(44)
++        retrieval.search_sources = die
++        provider = Scripted([act('search_sources', query='parameter k')])
++    else:
++        provider = Scripted([{'action': 'submit_draft', 'args': proposal}, act('run')])
++        def die(*args):
++            os._exit(42)
++        agent._run_facts = die
++    run(store, source, provider)
++
++
++@pytest.mark.parametrize('point,code', [('provider', 41), ('result', 42), ('read', 44)])
++def test_process_exit_leaves_durable_state_and_safe_recovery_decision(tmp_path, point, code):
++    store, source, proposal = fixture(tmp_path)
++    child = mp.get_context('spawn').Process(target=abrupt, args=(str(store.root), source, proposal, point))
++    child.start()
++    child.join(30)
++    if child.is_alive():
++        child.terminate(); child.join(5)
++        pytest.fail('child exceeded process-exit budget')
++    assert child.exitcode == code
++    reopened = ArtifactStore(store.root)
++    ref = execution(reopened)
++    report = recovery.diagnose_execution(reopened, ref)
++    if point == 'provider':
++        assert report['status'] == 'blocked' and report['call_count'] == 1
++        with pytest.raises(recovery.RecoveryBlocked):
++            agent.recover_agent(reopened, Scripted([]), ref)
++        assert not reopened.list('agent_recovery')
++    elif point == 'result':
++        assert report['status'] == 'ready' and report['run_count'] == 1
++        final = reopened.get(agent.recover_agent(reopened, Scripted([act('finish')]), ref))['payload']
++        assert final['state'] == 'completed' and len(reopened.list('run')) == 1
++    else:
++        assert report['status'] == 'ready' and report['run_count'] == 0
++        assert report['operations'][-1]['retry_read_only'] is True
++        final = reopened.get(agent.recover_agent(reopened,
++            Scripted([act('ask_researcher', question='Continue?')]), ref))['payload']
++        assert final['state'] == 'awaiting_input' and final['call_count'] == 2
++        assert len(phase(reopened, 'search_sources', 'reserved')) == 1
++        assert len(phase(reopened, 'search_sources', 'returned')) == 1
++
++
++def test_result_for_another_experiment_is_not_adopted(tmp_path, monkeypatch):
++    store, source, proposal = fixture(tmp_path)
++    _, ref = post_result_crash(store, source, proposal, monkeypatch)
++    term_ref, term = phase(store, 'run', 'returned')[0]
++    old_run = store.get(term['payload']['details']['result_ref'])
++    inputs = store.get(old_run['payload']['input_ref'])
++    inputs['payload']['experiment']['times'] = [0., 2.]
++    wrong_input = store.put(inputs['kind'], inputs['payload'], refs=inputs['refs'])
++    old_run['payload']['input_ref'] = wrong_input
++    wrong_run = store.put('run', old_run['payload'], refs=[wrong_input])
++    term['payload']['details']['result_ref'] = wrong_run
++    refs = [r for r in term['refs'] if r != phase(store, 'run', 'returned')[0][1]['payload']['details']['result_ref']]
++    (store.objects_dir / (term_ref + '.json')).unlink()
++    with store._db() as conn:
++        conn.execute('DELETE FROM artifact_index WHERE ref=?', (term_ref,))
++    store.put('agent_invocation', term['payload'], refs=[*refs, wrong_run])
++    report = recovery.diagnose_execution(store, ref)
++    assert report['status'] == 'blocked' and 'scientific_result_frozen_inputs_mismatch' in report['reasons']
++
++
++def test_real_study_result_is_adopted_without_fitting_again(tmp_path, monkeypatch):
++    from test_agent_studies import config
++    from biomodel_agent.domain.serialization import from_dict
++    store, source, _ = fixture(tmp_path)
++    plan = studies.prepare_study(store, config())
++    exp = from_dict(ExperimentSpec, studies.load_plan(store, plan)['config']['training'][0]['experiment'])
++    with monkeypatch.context() as patch:
++        patch.setattr(studies, 'result_summary', lambda *a: (_ for _ in ()).throw(SystemExit('fit saved')))
++        with pytest.raises(SystemExit):
++            agent.run_agent(store, Scripted([act('run_study')]), [source], exp,
++                            mode='hypothesis', study_plan_ref=plan)
++    ref = execution(store)
++    report = recovery.diagnose_execution(store, ref)
++    assert report['status'] == 'ready', report
++    result_ref = report['adoptable_result_refs'][0]
++    monkeypatch.setattr(studies, 'execute_study', lambda *a: pytest.fail('study fitted twice'))
++    result = store.get(agent.recover_agent(store, Scripted([act('finish')]), ref))['payload']
++    assert result['state'] == 'completed' and result['run_ref'] == result_ref
++    assert result['call_count'] == 2
++    assert len(phase(store, 'run_study', 'reserved')) == 1
++
++
++def test_negative_scientific_result_does_not_become_completed_after_recovery(tmp_path, monkeypatch):
++    store, source, proposal = fixture(tmp_path)
++    # Real ODE solve versus a disagreeing reference: failure remains failure.
++    _, ref = post_result_crash(store, source, proposal, monkeypatch,
++        reference=SimulationResult('succeeded', (0., 1.), {'x': (10., 10.)}), scales={'x': 1.})
++    result = store.get(agent.recover_agent(store, Scripted([act('finish')]), ref))['payload']
++    assert result['state'] == 'incomplete'
++    assert application.derive_scientific_status(store.get(result['run_ref'])['payload']) == 'failed'
++    assert len(store.list('run')) == 1
++
++
++def test_stale_memory_blocks_before_recovery_receipt_or_provider(tmp_path, monkeypatch):
++    store, source, proposal = fixture(tmp_path)
++    ref = memory.remember(store, project_id='p', content='Check tolerances.',
++                          category='experience', author='A', source_refs=[source])
++    _, execution_ref = post_result_crash(store, source, proposal, monkeypatch, memory_project='p')
++    memory.retract(store, ref, author='A', reason='No longer applicable')
++    provider = Scripted([])
++    before = store.list()
++    with pytest.raises(ValueError, match='stale'):
++        agent.recover_agent(store, provider, execution_ref)
++    assert store.list() == before and not provider.calls
++
++
++def test_cli_diagnosis_is_read_only_and_works_without_index(tmp_path, monkeypatch, capsys):
++    store, source, _ = fixture(tmp_path)
++    with monkeypatch.context() as patch:
++        patch.setattr(agent, '_assistant', lambda *a: (_ for _ in ()).throw(SystemExit()))
++        with pytest.raises(SystemExit):
++            run(store, source, Scripted([act('ask_researcher', question='x?')]))
++    ref = execution(store)
++    # A diagnosis must not repair a missing index or initialize a new one.
++    store.index_path.unlink()
++    before = {str(p): p.read_bytes() for p in store.root.rglob('*') if p.is_file()}
++    assert cli.main(['agent-recovery-status', ref, '--store', str(store.root)]) == 0
++    summary = json.loads(capsys.readouterr().out)
++    assert summary['status'] == 'ready' and summary['call_count'] == 1
++    assert 'request_messages' not in json.dumps(summary)
++    assert {str(p): p.read_bytes() for p in store.root.rglob('*') if p.is_file()} == before
++
++
++def test_cli_unknown_provider_outcome_needs_no_credentials_and_is_not_retried(tmp_path, monkeypatch, capsys):
++    store, source, _ = fixture(tmp_path)
++    with pytest.raises(SystemExit):
++        run(store, source, Scripted([SystemExit('provider interrupted')]))
++    ref = execution(store)
++    monkeypatch.delenv('BIOMODEL_API_KEY', raising=False)
++    monkeypatch.setattr('biomodel_agent.llm.ChatProvider', lambda *a, **k: pytest.fail('provider constructed'))
++    before = store.list()
++    assert cli.main(['agent-recover', ref, '--store', str(store.root)]) == 1
++    output = capsys.readouterr()
++    assert 'requires_review' in output.err or 'requires_review' in output.out
++    assert store.list() == before
++
++
++def active_agent(root, source, pipe):
++    store = ArtifactStore(root)
++    provider = Scripted([])
++    def wait(messages):
++        pipe.send('provider_entered')
++        pipe.recv()
++    provider.respond = wait
++    run(store, source, provider)
++
++
++def test_live_agent_owner_refuses_recovery_in_another_process(tmp_path):
++    store, source, _ = fixture(tmp_path)
++    ctx = mp.get_context('spawn')
++    parent, child = ctx.Pipe()
++    process = ctx.Process(target=active_agent, args=(str(store.root), source, child))
++    process.start()
++    try:
++        assert parent.poll(20) and parent.recv() == 'provider_entered'
++        ref = execution(store)
++        before = store.list()
++        with pytest.raises(recovery.RecoveryBlocked, match='owner'):
++            agent.recover_agent(store, Scripted([]), ref)
++        assert store.list() == before
++    finally:
++        process.terminate(); process.join(10)
++    assert not process.is_alive()
++    # This is now unknown external work, not an expired lease to be retried.
++    with pytest.raises(recovery.RecoveryBlocked, match='external_outcome_unknown'):
++        agent.recover_agent(store, Scripted([]), ref)
+--- a/docs/optimization-backlog.md
++++ b/docs/optimization-backlog.md
+@@ -9,8 +9,8 @@
+ | T01 | 严格模式中明确数值失败被归为 not_verified，Agent 仍 completed；统一失败裁决 | **已验收**：[结果与限制](run-verdict.md) | 实际负值模拟、收敛/比较失败和旧记录检查已覆盖；定向45通过，完整748通过，原有测试保留 |
+ | T02 | Python 构造器与 JSON 数值校验不一致 | **已验收**：[结果与限制](strict-numeric-contracts.md) | DSH两文件实现，独立审查无生产修正；定向189通过，完整811通过，保留异常结果诊断与合法历史读取 |
+ | T03a | 工具调用与调用预算缺少一致的持久化边界 | **已验收**：[结果与限制](invocation-journal.md) | 版本化预留/返回/错误/中断、平坦引用及继承计数；定向233通过，完整849通过；尚无自动恢复 |
+-| T03b | 任意中断恢复、结果认领、执行所有者与重试分类 | **下一项** | T03a已完成；已存结果不重复计算，外部结果未知不盲目重发，冲突执行拒绝，显式分支可追溯 |
+-| T04 | 旧 hypothesis / study-run / Agent 研究入口不同，预测不受统一期限控制 | 待实施 | T01、T03a；共享冻结用例，区分所有计算失败与科学负结果，整个研究有 deadline |
++| T03b | 受控中断恢复、结果认领、执行所有者与重试分类 | **已验收**：[结果与限制](controlled-recovery.md) | 只读诊断、冻结初态/源码版本、返回值认领、进程所有者与恢复收据；定向113通过，完整895通过；未知外部/部分计算结果及异常路径保守阻断 |
++| T04 | 旧 hypothesis / study-run / Agent 研究入口不同，预测不受统一期限控制 | **下一项** | T01、T03a/T03b；共享冻结用例，区分所有计算失败与科学负结果，整个研究有 deadline |
+ | T05 | 引文中的数值可错绑目标，公式可不对应草稿 | 待实施 | T01；新增结构化证据记录，先覆盖直接赋值、简单公式和符号映射；未知语法待审核 |
+ | T06 | PDF 只有 pypdf 逐页文本，尚未接入成熟解析结果 | 待实施 | T05 位置契约；薄适配成熟解析输出，保留原 PDF、版本和页/块定位，失败不伪造内容 |
+ | T07 | 检索目前只有待独立审核的合成开发对照 | 待材料审核 / 实施 | 标注可先准备，端到端依赖 T05/T06；按论文划分材料，评价覆盖、错引、干扰、上下文与耗时，实测决定 embedding |
+@@ -27,7 +27,9 @@
+ 
+ T03a已归档[实现任务卡](../tasks/audit-t03a-invocations.json)与[一次有界修订](../tasks/audit-t03a-complete-integration.json)。DSH交付主体，连接异常及不完整编辑暂停均留档；Codex补齐已定位的异常类型/最终引用转发，并独立验证。子进程直接退出证据、平坦导出与预算继承已覆盖，不把持久记录称为自动恢复。
+ 
+-下一项T03b先定义兼容版本、冻结输入、日志完整性和执行所有者预检；从中断日志收集状态，优先认领已返回的真实产物；对外部请求结果未知或部分产物不能定位的情况明确停留待处置，不盲目重发。分开实现只读恢复诊断、受控继续、并发所有者/显式分支，每步都有跨进程故障和重复执行负控制；不一次引入全套通用工作流框架。
++T03b已归档[原DSH任务卡](../tasks/audit-t03b-recovery-core.json)、[执行与分工变更记录](../artifacts/audit-t03b-recovery-20261019/execution-plan.md)。DSH请求与最小READY探测均超时、零代码交付；用户明确授权本轮由Codex接手实现。原测试未修改，实际进程退出、模拟/拟合结果认领、恢复再次中断及只读预留补齐均留档。没有把受控恢复称为任意中断自动恢复，也不猜测旧记录的缺失初态。
++
++下一项T04先用同一冻结研究案例比较旧hypothesis、study-run与Agent入口，复现当前裁决/期限差异；明确研究总deadline如何分配到拟合、预测和比较，再统一共用执行层。分别验证计算失败、超时、有效科学负结果，以及中断后不重复执行；保留T03b的调用预算、所有者与结果认领边界。
+ 
+ 任务不涉及 c13/c18 材料、独立评测材料、密钥或外部模型评价。此前四次 USTC 外发审批拒绝仍有效，不重试或改道。
+ 
+--- a/docs/seven-point-status.md
++++ b/docs/seven-point-status.md
+@@ -18,4 +18,4 @@
+ 
+ 此前四次 c13/c18 USTC 在线回归仍待明确的材料外发授权，未用新的工具改道重试。当前离线开发没有更新原冻结版模型成绩或把已见材料当作新留出集。
+ 
+-2026-10-19 架构复审发现验证失败聚合、证据目标绑定及异常恢复缺口，已保存[审计后的优化任务队列](optimization-backlog.md)。按单项任务卡由 DSH 实现，Codex 独立审查与验收；[T01 运行裁决](run-verdict.md)、[T02 输入契约](strict-numeric-contracts.md)已验收；[T03a 调用记录与预算持久化](invocation-journal.md)已验收，完整回归849项通过，覆盖平坦调用引用、预算继承与进程退出记录。下一项为T03b受控恢复与结果认领；目前仍没有任意中断自动恢复，这些结果不表示真实模型科研能力提升。
++2026-10-19 架构复审发现验证失败聚合、证据目标绑定及异常恢复缺口，已保存[审计后的优化任务队列](optimization-backlog.md)。按单项任务卡推进；[T01 运行裁决](run-verdict.md)、[T02 输入契约](strict-numeric-contracts.md)、[T03a 调用记录](invocation-journal.md)及[T03b受控恢复与结果认领](controlled-recovery.md)已验收。T03b在DSH通道超时后，经用户明确授权改由Codex实现与验收；完整回归895项通过，覆盖实际进程退出、已返回模拟/拟合认领、未知结果阻断、只读预留恢复和并发所有者。下一项为T04研究入口与总期限统一；仍不承诺任意中断自动恢复，这些结果不表示真实模型科研能力提升。
+--- a/docs/invocation-journal.md
++++ b/docs/invocation-journal.md
+@@ -1,6 +1,8 @@
+ # 调用记录与预算持久化（T03a）
+ 
+ 2026-10-19，已验收。任务来源：[优化任务队列](optimization-backlog.md)。本轮给单Agent增加持久调用边界，自动恢复、结果认领和并发所有者仍由T03b处理。
++
++后续[T03b受控恢复](controlled-recovery.md)已实现并验收，新增序号、冻结初态、显式结果认领和本地所有者锁。下文保留T03a当轮事实与限制，不能把后续能力回写为历史验收。
+ 
+ ## 问题与实现
+ 
+--- /dev/null
++++ b/docs/controlled-recovery.md
+@@ -0,0 +1,66 @@
++# 受控故障恢复与结果认领（T03b）
++
++任务来自[优化队列](optimization-backlog.md)，建立在[T03a 调用记录](invocation-journal.md)上。新增显式恢复入口，保留单 Agent 与确定性科学工具架构。它支持有完整、兼容记录的中断执行；结果未知时停留待处置，不承诺任意崩溃都能自动继续。
++
++## 使用
++
++```bash
++# EXECUTION_REF 指 agent_execution；不是 agent_run。
++.venv/bin/python -m biomodel_agent agent-recovery-status EXECUTION_REF --store artifacts/my-agent
++
++# 诊断就绪后，由操作者明确发起；沿用原模型、地址与生成设置。
++.venv/bin/python -m biomodel_agent agent-recover EXECUTION_REF --store artifacts/my-agent \
++  --base-url https://YOUR_ORIGINAL_PROVIDER/v1
++```
++
++第二条使用原 API key 环境变量，支持 `--api-key-env`；恢复不会修改冻结科学设置或调用上限。已有 `awaiting_input` 最终记录仍通过 `agent-resume` 加研究者回复，不通过故障恢复入口续跑。Python API 为 `recovery.diagnose_execution(store, execution_ref)` 和 `agent.recover_agent(store, provider, execution_ref)`。
++
++诊断返回 `ready` / `blocked` / `finished`，以及累计调用/计算计数、稳定操作顺序、阻断原因、已绑定结果引用和既有恢复记录。CLI 只显示摘要，不重复打印完整请求与原文。`ready` 表示日志与兼容性允许重建；实际继续仍会在所有者锁内重新诊断，并检查原提供方身份、科学配置、记忆有效性及研究计划。
++
++## 持久化与恢复规则
++
++每次新执行保留原始初态：来源白名单、原研究者回复分支初态，以及源码、Python 和主要科学库版本的指纹。每次调用增加严格正整数 `sequence`，预留与终态共享序号；不依靠索引时间排序。原调用预算仍在执行前预留，不因恢复或错误退还。
++
++只读诊断直接扫描不可变对象，验证哈希、引用、版本、操作配对、序号和累计预算。对象落盘后而索引尚未提交的预留也能发现。命令行诊断使用已有存储的只读视图，不初始化 SQLite、不修复索引、不写新对象或锁文件。
++
++| 中断状态 | 恢复行为 |
++|---|---|
++| 模型回答已经写入 returned，但动作未处理 | 复用回答与 usage，不重发请求，不再计一次调用 |
++| 草稿已返回 | 从保存的完整检查结果与真实 model 引用恢复，不再提交草稿 |
++| 模拟或研究已 returned 并绑定实际结果 | 验证结果类型、原模型/草稿或计划、冻结科学输入；沿用结果引用，不重算、不重新拟合 |
++| 读工具只有最后一条 reserved | 允许重新读取；沿用同一预留、操作 ID 和序号，补真实终态 |
++| 外部请求只有 reserved | `external_outcome_unknown`，拒绝自动重发 |
++| 计算只有 reserved，或只有无法定位的部分产物 | 拒绝继续；不通过“找最新结果”推断归属 |
++| 已记录 error / interrupted | 仅异常类型不足以重建原异常处理流程，保守阻断；不推断没有副作用 |
++| 已有最终 agent_run | 拒绝再次故障恢复；研究者追问使用正常恢复入口 |
++| 指纹、来源范围、结果绑定、日志配对或计数不一致 | 在继续执行前拒绝 |
++
++重建时从已冻结的初态执行原有控制逻辑，对已经返回的调用注入保存的真实返回值；不调用其 provider/工具 callback。每一步的名称和请求数据必须与记录完全一致，剩余记录未消费则拒绝完成。后续新调用仍走原预留边界。实际调用次数继承，已消费的科学执行仍只有一次。
++
++恢复沿用原 `execution_ref`，新增 `agent_recovery` 收据，记录当时的调用集合、预算和可认领结果。收据不表示已经完成。恢复本身再次崩溃后，可继续检查同一执行；已保存的新回答也会复用。最终检查点和 agent_run 引用原调用与恢复收据，正常 bundle 导出保留闭包。
++
++## 所有者与研究者分支
++
++正常执行、研究者回复恢复和故障恢复，均持有同一冻结任务的本地 `flock` 所有者锁；竞争执行立即拒绝。锁覆盖 provider 和科学工具，拒绝抢占时尚未写研究者回复或恢复收据。锁文件保留，进程退出由操作系统释放，不按文件年龄或 PID 猜测租约过期，也不删除锁文件制造新锁。
++
++研究者显式再次使用同一暂停父记录并提交回复，会创建不同执行 ID，保存父记录、归属回复和 `researcher_reply` 分支类别；原历史不覆盖。故障恢复延续已有执行，不会自动创建替代分支。预算按分支继承，尚无跨分支全局金额/token 上限。
++
++## 验收与适用范围
++
++完整回归895项通过，138.92秒，无失败、错误或跳过；原有测试文件哈希保持。新增46项完整性/恢复验收，定向组合113项通过后，补充只读工具跨进程退出案例并纳入最终完整回归。保存原失败证据与验收假设修正，不以新增测试数量宣称模型能力提升。
++
++实际进程直接退出的三组产物：provider入口只留下预留，恢复阻断且零新请求；模拟返回后退出，恢复仍使用同一结果，科学执行保持1次、只新增1次finish脚本回答，ODE终点约0.670320283且科学状态仍not_verified；读工具预留后退出，沿用同一预留补齐返回，之后正常追问。两组可继续案例均导出完整调用/恢复闭包。另有真实拟合不重复执行、恢复再次中断、旧分支归属、错误结果输入及科学失败负控制。
++
++实现、独立检查与完整回归结果见 [T03b 验收记录](../artifacts/audit-t03b-recovery-20261019/acceptance.json)；可复查的进程退出、结果认领和导出产物见 [故障结果](../artifacts/audit-t03b-recovery-20261019/fault-results.json)。单元完整性检查、真实确定性计算和脚本动作流程分别留档，不视为模型科研能力提升。
++
++原分工为 DSH 实现、Codex 验收。首轮 DSH 60 秒流空闲超时且未写文件；仅含 READY 的最小探测也在 30 秒超时。用户随后明确授权“这轮由 Codex 接手实现”，因此本轮主体代码与验收均由 Codex 完成；没有把失败派发写作 DSH 交付，也没有更改提供方或审批策略。
++
++当前边界：
++
++- 历史 T03a 故障记录缺少完整恢复初态/序号，拒绝猜测迁移；原有正常追问暂停点的兼容行为保留。
++- 源码或所列运行版本变化会保守阻断故障恢复；没有自动跨版本迁移。普通文档变更不改变源码指纹。
++- 已记录异常的路径仍需人工处置，原正常运行中的 ProviderError 有界重试策略沿用；本轮没有扩大外部请求重发权限。
++- 所有者锁只针对遵循该 API 的本机进程和同一存储；不提供分布式、跨副本或绕开入口直接调用科学工具的互斥保证。
++- 诊断扫描对象的成本随存储规模增长；未做独立的大规模延迟评价。
++- 覆盖进程退出和受控写故障，不承诺断电、外部服务幂等或端到端 exactly-once。保存的记录提供一致性审查，不是对存储写入者身份的认证。
++- 未运行真实模型能力对照，未发送 c13/c18 材料，未重试之前被拒绝的在线回归。
+--- /dev/null
++++ b/tasks/audit-t03b-recovery-core.json
+@@ -0,0 +1,13 @@
++{
++  "schema_version": "1",
++  "id": "audit-t03b-recovery-core",
++  "objective": "实现只读恢复诊断、进程所有者锁与已返回调用的受控重放核心，不接入Agent入口。",
++  "context": "T03a完整849项通过。用户明确继续T03b并沿用Codex验收/DSH代码分工。recovery.py是Codex准备的空文件，不算交付。契约固定接口；Agent集成将单独派发。仅开发源码，不含论文评测材料。",
++  "read_files": ["artifacts/audit-t03b-recovery-20261019/implementation-contract-core.md", "src/biomodel_agent/storage.py", "src/biomodel_agent/domain/serialization.py", "src/biomodel_agent/domain/contracts.py"],
++  "write_files": ["src/biomodel_agent/recovery.py", "src/biomodel_agent/invocations.py"],
++  "expected_files": ["src/biomodel_agent/recovery.py", "src/biomodel_agent/invocations.py"],
++  "instructions": "先读implementation-contract-core与invocations/storage，按固定接口实现。所有代码在两个允许文件中，保留T03a语义。只用明确文件read/write/edit，不用shell/目录扫描/网络/子Agent，不改测试、任务卡或监督程序。先交付核心模块，再概述接口和限制；验收与Agent接线由Codex安排。",
++  "acceptance": ["诊断只读并校验序号、配对、冻结版本及预算", "已返回产物重放不重复计算/付费，未知结果阻断", "flock进程互斥且崩溃释放，不删锁文件", "T03a旧API和持久化边界保持"],
++  "verification_commands": [],
++  "budget": {"first_activity_ms":120000,"idle_ms":180000,"first_write_ms":240000,"write_idle_ms":240000,"total_ms":600000}
++}

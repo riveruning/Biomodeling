@@ -1,0 +1,28 @@
+{
+  "id": "chatcmpl-3d6e0126-48c6-44a4-95e3-1f36c87febf6",
+  "created": 1792203817,
+  "model": "qwen3.8-chat",
+  "object": "chat.completion",
+  "choices": [
+    {
+      "finish_reason": "stop",
+      "index": 0,
+      "message": {
+        "content": "{\"action\": \"submit_draft\", \"args\": {\"draft\": {\"id\": \"synthetic_ode_d\", \"states\": [{\"id\": \"D\", \"initial\": 1.0, \"unit\": \"dimensionless\", \"quantity_kind\": \"variable\", \"nonnegative\": true}], \"parameters\": [{\"id\": \"k\", \"value\": 0.3, \"unit\": \"per minute\", \"origin\": \"equation legend\"}], \"compartment\": {\"id\": \"C\", \"size\": 1, \"unit\": \"dimensionless\"}, \"reactions\": [], \"rate_rules\": [{\"state\": \"D\", \"expression\": \"-k*D\"}], \"derived\": [], \"time_unit\": \"minutes\"}, \"evidence\": [{\"target\": \"D/initial\", \"source_ref\": \"b4adeba98f70b156540f3e66c585503c5edab2a64890bc1a8cc8435499b53fdd\", \"page\": 1, \"quote\": \"Initial D = 1.0.\"}, {\"target\": \"k/value\", \"source_ref\": \"b4adeba98f70b156540f3e66c585503c5edab2a64890bc1a8cc8435499b53fdd\", \"page\": 1, \"quote\": \"Parameter k = 0.3.\"}, {\"target\": \"rule:D/expression\", \"source_ref\": \"b4adeba98f70b156540f3e66c585503c5edab2a64890bc1a8cc8435499b53fdd\", \"page\": 1, \"quote\": \"Equation dD/dt = -k*D.\"}, {\"target\": \"time_unit\", \"source_ref\": \"b4adeba98f70b156540f3e66c585503c5edab2a64890bc1a8cc8435499b53fdd\", \"page\": 1, \"quote\": \"Time t is in minutes.\"}, {\"target\": \"C/size\", \"source_ref\": \"b4adeba98f70b156540f3e66c585503c5edab2a64890bc1a8cc8435499b53fdd\", \"page\": 1, \"quote\": \"The fixed compartment has size 1 dimensionless.\"}], \"mechanism\": \"First-order decay of D with rate constant k.\"}, \"reason\": \"Source defines a single ODE dD/dt=-k*D with D0=1, k=0.3, time in minutes, compartment size 1.\"}}",
+        "role": "assistant",
+        "provider_specific_fields": {
+          "refusal": null
+        }
+      },
+      "provider_specific_fields": {}
+    }
+  ],
+  "usage": {
+    "completion_tokens": 657,
+    "prompt_tokens": 1118,
+    "total_tokens": 1775,
+    "prompt_tokens_details": {
+      "cached_tokens": 0
+    }
+  }
+}

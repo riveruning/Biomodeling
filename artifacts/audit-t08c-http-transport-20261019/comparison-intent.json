@@ -1,0 +1,16 @@
+{
+  "provenance": "Direct user reply during T08c finalization",
+  "raw_model_names": ["6.1sol", "6 Atra"],
+  "primary_comparison": "BioModel Agent versus actual Codex product execution",
+  "candidate_targets": [
+    {"runtime": "Codex", "model_id": "gpt-6.1-sol", "status": "candidate_requested_by_user"},
+    {"runtime": "Codex", "model_id": "gpt-6-astra", "status": "tentative_interpretation_of_Atra"}
+  ],
+  "configuration_discussion": "deferred_at_user_request",
+  "next_engineering_scope": "Define Codex comparison protocol and actual execution/record adapters, freezing materials, budgets and tool-environment differences.",
+  "secondary_comparison": "Same underlying model across fixed, generic tool and domain workflows to assess framework contribution separately from model/runtime differences.",
+  "selected_endpoint": null,
+  "transmission_authorization_granted_by_this_reply": false,
+  "online_runs_started": false,
+  "notes": ["Candidate IDs are planning records, not a model capability/availability claim.", "Do not conflate Codex system comparison with same-model framework attribution.", "Existing c13/c18 USTC denials remain in force."]
+}

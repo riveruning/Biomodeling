@@ -1,0 +1,161 @@
+..FF..........F                                                          [100%]
+=================================== FAILURES ===================================
+________________ test_controlled_convergence_failure_is_failed _________________
+
+tmp_path = PosixPath('/tmp/biomodel-t01-dsh-tests/test_controlled_convergence_fa0')
+
+    def test_controlled_convergence_failure_is_failed(tmp_path):
+        """A convergence check that genuinely fails (blocking) must drive the
+        verdict to 'failed' even though the raw execution succeeded and the
+        nonnegativity check passed.  A near-degenerate solver (very loose rtol)
+        forces the 10x refinement to disagree with the coarse run."""
+        store = ArtifactStore(tmp_path / "store")
+        exp = ExperimentSpec((0.0, 1.0))
+        from biomodel_agent.domain.contracts import SolverConfig
+    
+        def simulate_stub(artifact, experiment, observations, solver):
+            if solver.rtol < 1e-7:
+                return SimulationResult(
+                    "succeeded", experiment.times,
+                    {"x": tuple(2.0 * math.exp(-0.5 * t) for t in experiment.times)})
+            return SimulationResult(
+                "succeeded", experiment.times,
+                {"x": tuple(math.exp(-0.5 * t) for t in experiment.times)})
+    
+        monkey = pytest.MonkeyPatch()
+        monkey.setattr(application.simulation, "simulate", simulate_stub)
+        try:
+            ref = application.run_reproduction(
+                store, _decay_artifact(), exp, strict=True,
+                solver=SolverConfig(rtol=1.0), use_cache=False)
+        finally:
+            monkey.undo()
+        payload = store.get(ref)["payload"]
+        assert payload["status"] == "succeeded"
+        numeric = _numeric_checks(payload)
+>       assert numeric["convergence"]["status"] == "fail"
+E       AssertionError: assert 'pass' == 'fail'
+E         
+E         - fail
+E         + pass
+
+tests/test_run_verdict.py:162: AssertionError
+_____________ test_unknown_checks_stay_not_verified_and_cli_exit_2 _____________
+
+tmp_path = PosixPath('/tmp/biomodel-t01-dsh-tests/test_unknown_checks_stay_not_v0')
+
+    def test_unknown_checks_stay_not_verified_and_cli_exit_2(tmp_path):
+        """Succeeded run, no explicit failure, but convergence unknown and source
+        not fully supported: verdict is 'not_verified' (not 'failed', not pass);
+        strict CLI exits 2 (unverified), non-strict exits 0 (legacy behavior)."""
+        store = ArtifactStore(tmp_path / "store")
+        exp = ExperimentSpec((0.0, 1.0))
+        ref = application.run_reproduction(
+            store, _decay_artifact(), exp, strict=True, use_cache=False)
+        payload = store.get(ref)["payload"]
+        assert payload["status"] == "succeeded"
+        numeric = _numeric_checks(payload)
+>       assert numeric["convergence"]["status"] in ("unknown", "fail")
+E       AssertionError: assert 'pass' in ('unknown', 'fail')
+
+tests/test_run_verdict.py:185: AssertionError
+____________________ test_verdict_priority_and_basis_shape _____________________
+
+    def test_verdict_priority_and_basis_shape():
+        from biomodel_agent.application import (
+            Check,
+            ValidationReport,
+            blocking_verdict_basis,
+            derive_scientific_status,
+            initial_scientific_status,
+        )
+    
+        ok_source = {"status": "complete", "semantic_support": "supported", "units_unknown": False}
+        bad_source = {"status": "incomplete", "semantic_support": "unknown", "units_unknown": True}
+    
+        # 1. explicit failure beats everything, including a pass-looking comparison.
+        r1 = derive_scientific_status({
+            "status": "succeeded", "scientific_status": "not_verified",
+            "static_validation": {"checks": []},
+            "numeric_validation": {"checks": [
+                {"code": "finite", "status": "pass", "severity": "blocking", "message": ""},
+                {"code": "nonnegative", "status": "fail", "severity": "blocking", "message": "neg"}]},
+            "comparison": {"status": "pass"},
+        })
+        assert r1 == "failed"
+    
+        # 2. no failure, missing provenance -> not_verified, empty basis.
+        r2 = derive_scientific_status({
+            "status": "succeeded", "scientific_status": "not_verified",
+            "numeric_validation": {"checks": [
+                {"code": "finite", "status": "pass", "severity": "blocking", "message": ""}]},
+            "comparison": {"status": "not_run"},
+        })
+        assert r2 == "not_verified" and blocking_verdict_basis({"status": "succeeded"}) == {}
+    
+        # 3. non-blocking/warning fails are not failures.
+        r3 = derive_scientific_status({
+            "status": "succeeded",
+            "numeric_validation": {"checks": [
+                {"code": "convergence", "status": "fail", "severity": "warning", "message": ""}]},
+            "comparison": {"status": "not_run"},
+        })
+        assert r3 == "not_verified"
+    
+        # 4. initial status: strict pass requires real comparison + required
+        #    numeric pass + supported sources; unknown source -> not_verified.
+        numeric_ok = ValidationReport((
+            Check("finite", "pass", severity="blocking"),
+            Check("convergence", "pass", severity="blocking"),
+        ))
+>       assert initial_scientific_status("succeeded", (), numeric_ok, "pass", ok_source, True) == "passed_structured_reference"
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_run_verdict.py:513: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+result_status = 'succeeded', static_checks = ()
+numeric_checks = ValidationReport(checks=(Check(code='finite', status='pass', message='', severity='blocking'), Check(code='convergence', status='pass', message='', severity='blocking')))
+comparison_status = 'pass'
+source = {'status': 'complete', 'semantic_support': 'supported', 'units_unknown': False}
+strict = True
+
+    def initial_scientific_status(result_status: str, static_checks: object, numeric_checks: object,
+                                  comparison_status: object, source: Mapping, strict: bool) -> str:
+        """Verdict for a *new* run record, computed before anything is stored.
+    
+        Failure conditions mirror :func:`derive_scientific_status` (execution not
+        succeeded, blocking static/numeric failure, comparison 'fail').  When
+        nothing failed:
+    
+        - strict: ``passed_structured_reference`` only when the frozen reference
+          comparison genuinely passed, the required numeric checks (finite and,
+          when it was run, convergence) passed and were actually present, and the
+          source validation is fully supported; anything less stays
+          ``not_verified`` -- unknown provenance is never promoted to pass and
+          never auto-failed either.
+        - normal mode keeps the original semantics: a numerical pass without a
+          reference is only an honesty label, and only a reference fail or a
+          numeric failure is a fail.
+    
+        ``source`` is the ``_source_validation`` mapping (its exact contents are
+        not re-read here).
+        """
+        if result_status != "succeeded":
+            return "failed"
+        if _blocking_check_failures_dataclass(static_checks) or _blocking_check_failures_dataclass(numeric_checks):
+            return "failed"
+        if comparison_status == "fail":
+            return "failed"
+        if strict:
+            required_codes = ("finite",)
+>           if any(getattr(c, "code", "") == "convergence" for c in (numeric_checks or ())):
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           TypeError: 'ValidationReport' object is not iterable
+
+src/biomodel_agent/application.py:332: TypeError
+=========================== short test summary info ============================
+FAILED tests/test_run_verdict.py::test_controlled_convergence_failure_is_failed
+FAILED tests/test_run_verdict.py::test_unknown_checks_stay_not_verified_and_cli_exit_2
+FAILED tests/test_run_verdict.py::test_verdict_priority_and_basis_shape - Typ...
+3 failed, 12 passed in 7.51s

@@ -1,0 +1,45 @@
+{
+  "trial_id": "domain_agent--translation--0--clarified",
+  "manifest_sha256": "67590824f164fa01c9533f3b460ab0b229b248dcd7f4f2f584a61e8697677c27",
+  "evidence_kind": "scripted_control",
+  "model_config": {
+    "provider": "offline_control",
+    "model": "scripted-fixture",
+    "revision": "not-a-model",
+    "temperature": 0.0,
+    "top_p": 1.0,
+    "max_output_tokens": 1000,
+    "seed": 0
+  },
+  "toolchain_sha256": "abad7db107b62cb942b96ec88df701d47c8eb236275d0cf17216f37da6686252",
+  "status": "finished",
+  "continuation": "resumed",
+  "parent_trial_id": "domain_agent--translation--0--initial",
+  "observation": {
+    "state": "completed",
+    "executed": true,
+    "claimed_complete": true,
+    "identified_gaps": [],
+    "question_targets": [],
+    "question_texts": []
+  },
+  "assessment": {
+    "authority": "unreviewed",
+    "reviewer": null,
+    "evidence_refs": [],
+    "numeric": "unknown",
+    "source_support": "unknown",
+    "behavior_labels_reviewed": false
+  },
+  "telemetry": {
+    "model_calls": 3,
+    "tool_calls": 3,
+    "max_request_chars": 13228,
+    "max_response_tokens": null,
+    "elapsed_seconds": 2.963971097000467,
+    "human_interventions": 0,
+    "human_seconds": 0.0,
+    "input_tokens": null,
+    "output_tokens": null
+  }
+}

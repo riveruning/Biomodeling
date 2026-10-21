@@ -1,0 +1,19 @@
+{
+  "status": "executed",
+  "initial_values": {
+    "S": 0.0
+  },
+  "parameters": {
+    "V": 0.9,
+    "K": 0.7
+  },
+  "calls": 1,
+  "tokens": 804,
+  "variant": "official_original_prompt_alternative_LLM_compatible_runtime",
+  "questions": [],
+  "native_clarification_capability": "not_available",
+  "system": "kinmodgpt",
+  "case": "saturation",
+  "phase": "clarified",
+  "elapsed_seconds": 5.330670810995798
+}

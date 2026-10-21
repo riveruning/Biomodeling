@@ -1,0 +1,15 @@
+{
+  "status": "completed",
+  "calls": 4,
+  "tokens": 8341,
+  "questions": [],
+  "problems": [],
+  "model_ref": "84a0b48ef1f6a8c6ec552e37acbbb5ed58d66990c63af9c174b213d94045cac0",
+  "run_ref": "5eec013c0aba7d3ac7a51344cc9643b589f71031491393db341b85aa0a26fcba",
+  "agent_ref": "e0eaa263d9ac6f888cfe1ac47af1aba09834164b884b04cd6df4bd7ff4c02cc5",
+  "product_modules_sha256": "6576b32fccfcdeb47f6de998db003859c0ba3f9c9da831e42eb3155fbbe54775",
+  "system": "biomodel",
+  "case": "logistic",
+  "phase": "clarified",
+  "elapsed_seconds": 42.83456874499825
+}

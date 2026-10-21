@@ -1,0 +1,14 @@
+{
+  "taskId": "audit-t03b-recovery-core",
+  "bridgeTaskId": "4db50834-1d70-4515-94c3-27b98f1f572d",
+  "outcome": "error",
+  "elapsedMs": 64189,
+  "polls": 7,
+  "reviews": 0,
+  "changedFiles": [],
+  "missingFiles": [],
+  "delivered": false,
+  "acceptance": "not_run",
+  "error": "RequestError: Internal error: turn failed: pi-ai stream idle timeout after 60000ms\n    at Connection.handleResponse (file:///home/riveruning/tools/mcp-acp-bridge/node_modules/@agentclientprotocol/sdk/dist/acp.js:1173:40)\n    at Connection.processMessage (file:///home/riveruning/tools/mcp-acp-bridge/node_modules/@agentclientprotocol/sdk/dist/acp.js:1099:18)\n    at Connection.receive (file:///home/riveruning/tools/mcp-acp-bridge/node_modules/@agentclientprotocol/sdk/dist/acp.js:1037:30)\n    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)",
+  "outputDirectory": "/home/riveruning/biologymodel_agent/.workflow/runs/audit-t03b-recovery-core-1792394981310-f106c8b8"
+}

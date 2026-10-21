@@ -1,0 +1,14 @@
+[
+  {
+    "scale": 1e+308,
+    "threshold": 3.0,
+    "json_safe": false,
+    "result": "{'time_unit': 'unknown', 'time_unit_status': 'unknown', 'max_scaled_error': inf, 'status': 'fail', 'threshold': 3.0, 'scales': {'x': 1e+308}, 'worst': 'x[0]', 'columns': ['x']}"
+  },
+  {
+    "scale": 1.0,
+    "threshold": 0.001,
+    "json_safe": false,
+    "result": "{'time_unit': 'unknown', 'time_unit_status': 'unknown', 'max_scaled_error': inf, 'status': 'fail', 'threshold': 0.001, 'scales': {'x': 1.0}, 'worst': 'x[0]', 'columns': ['x']}"
+  }
+]

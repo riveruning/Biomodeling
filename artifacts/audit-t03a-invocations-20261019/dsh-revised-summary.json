@@ -1,0 +1,32 @@
+{
+  "taskId": "audit-t03a-complete-integration",
+  "bridgeTaskId": "7f719461-2810-4a3f-9edb-9d3deceb7ccf",
+  "outcome": "needs_review",
+  "elapsedMs": 120370,
+  "polls": 36,
+  "reviews": 16,
+  "changedFiles": [
+    "src/biomodel_agent/agent.py"
+  ],
+  "missingFiles": [],
+  "delivered": true,
+  "acceptance": "not_run",
+  "reason": "Edit needs explicit old and new text",
+  "requestId": "b5711465-afc1-4a59-a4ef-6c2b0948e000",
+  "policy": {
+    "decision": "wait",
+    "rule": "missing_edit",
+    "reason": "Edit needs explicit old and new text",
+    "operation": "edit",
+    "command": null,
+    "cwd": "/home/riveruning/biologymodel_agent",
+    "paths": [],
+    "missing": [
+      "old/new text"
+    ],
+    "impact": [
+      "Replace file text"
+    ]
+  },
+  "outputDirectory": "/home/riveruning/biologymodel_agent/.workflow/runs/audit-t03a-complete-integration-1792380311802-2f86d746"
+}

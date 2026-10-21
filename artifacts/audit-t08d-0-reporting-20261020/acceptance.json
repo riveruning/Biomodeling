@@ -1,0 +1,148 @@
+{
+  "task_id": "T08d-0",
+  "status": "engineering_accepted",
+  "owner": "Codex alone",
+  "reporting_protocol": "agent_evaluation_report_v2",
+  "unchanged_input_protocol": "agent_evaluation_v1",
+  "checks": {
+    "baseline": {
+      "tests": 2,
+      "errors": 2,
+      "failures": 0,
+      "skipped": 0,
+      "seconds": 0.05
+    },
+    "boundary": {
+      "tests": 45,
+      "errors": 0,
+      "failures": 2,
+      "skipped": 0,
+      "seconds": 1.81
+    },
+    "controls": {
+      "tests": 45,
+      "errors": 0,
+      "failures": 0,
+      "skipped": 0,
+      "seconds": 1.831
+    },
+    "deadline-diagnostic": {
+      "tests": 3,
+      "errors": 0,
+      "failures": 0,
+      "skipped": 0,
+      "seconds": 3.303
+    },
+    "expanded": {
+      "tests": 44,
+      "errors": 0,
+      "failures": 1,
+      "skipped": 0,
+      "seconds": 1.787
+    },
+    "final-controls": {
+      "tests": 51,
+      "errors": 0,
+      "failures": 0,
+      "skipped": 0,
+      "seconds": 1.905
+    },
+    "first": {
+      "tests": 2,
+      "errors": 0,
+      "failures": 0,
+      "skipped": 0,
+      "seconds": 0.174
+    },
+    "full-confirmation": {
+      "tests": 1360,
+      "errors": 0,
+      "failures": 0,
+      "skipped": 0,
+      "seconds": 353.572
+    },
+    "full": {
+      "tests": 1360,
+      "errors": 0,
+      "failures": 2,
+      "skipped": 0,
+      "seconds": 356.121
+    }
+  },
+  "new_controls": 51,
+  "baseline_note": "Two missing-module errors establish absence of report v2, not an existing product regression.",
+  "preserved_development_failures": [
+    "expanded: positive fixture marked target labels reviewed but did not populate the synthetic mappings; test setup corrected",
+    "boundary: same fixture issue plus not-applicable parent question criterion incorrectly treated as pending recovery; reporter fixed and negative control retained",
+    "first full suite: two unchanged 0.6-second tool-deadline probes timed out before scientific-call admission; isolated three-case run passed; no old source/test/timeout changed; all failed artifacts and one complete confirmation run retained"
+  ],
+  "actual_saved_record_results": {
+    "status": "saved_record_report_invariants_verified",
+    "planned_phases": 30,
+    "pending_completion_adjudications": 18,
+    "initial_gap_phases": 12,
+    "all_behavior_target_labels_pending": true,
+    "legacy_json_results_identical": true,
+    "manifest_and_records_unchanged": true,
+    "bounds_are_confidence_intervals": false,
+    "model_capability_change_claimed": false,
+    "new_scientific_runs": 0,
+    "online_inference_calls": 0,
+    "actual_independent_review_decisions": 0
+  },
+  "original_product_sources_and_existing_tests_unchanged": true,
+  "legacy_scorer_and_execution_transport_unchanged": true,
+  "prior_artifact_files_unchanged": 3815,
+  "product_toolchain_sha256": "abad7db107b62cb942b96ec88df701d47c8eb236275d0cf17216f37da6686252",
+  "existing_baseline_files": 216,
+  "modified_baseline_files": [
+    "tests/test_evaluation_reporting.py",
+    "docs/agent-study-tool.md",
+    "docs/optimization-backlog.md",
+    "docs/seven-point-status.md",
+    "tasks/research-next-phase.json",
+    "README.md"
+  ],
+  "changed_files": [
+    "benchmarks/development/evaluation_reporting.py",
+    "tests/test_evaluation_reporting.py",
+    "docs/evaluation-reporting.md",
+    "docs/current-support.md",
+    "docs/agent-study-tool.md",
+    "docs/optimization-backlog.md",
+    "docs/seven-point-status.md",
+    "README.md",
+    "tasks/research-next-phase.json",
+    "tasks/audit-t08d-0-reporting.json"
+  ],
+  "final_hashes": {
+    "benchmarks/development/evaluation_reporting.py": "5b47b6f4b20765fcbabc2b29352e8ef700d99aed086bdb43ba63a17ed88e7d58",
+    "tests/test_evaluation_reporting.py": "db584b112bb98d0d76948410ef0dd3cf2d62f193b6a0ac88c6f4391246d1b7ab",
+    "docs/evaluation-reporting.md": "dcc199b032050aaae886d1dca6bf0149ca7b29941124ef34a9c741c09968b7f7",
+    "docs/current-support.md": "16d50a712596b8edcefe7907398b3a3de64729e7e81850f84eb6e8c588e0ce79",
+    "docs/agent-study-tool.md": "328b1609d53617d4b9cd6970759b7429ec3043f74ab7a4b766c96454eebcdc46",
+    "docs/optimization-backlog.md": "f5eaae2fdcd009b705779b58c250795b3c6c3c2abcf6721db8ba9bec7e183b41",
+    "docs/seven-point-status.md": "483e2c50fedece75434b076b5045e8c30ed6bfa815c71ae2c5c572cc6efd3c5b",
+    "README.md": "b7704347882e4736a79050d0fdc5e38f13fead2e7e9f5dbb9496f2b7cddce942",
+    "tasks/research-next-phase.json": "18a1566a89079728a4e4ca7ac868ec3c731eb2420be50390dc96a094b3930ac2",
+    "tasks/audit-t08d-0-reporting.json": "72f7107d523337d8a11625f15f4fa6f260b3e7a39f200e8bf99b479af18f1df8"
+  },
+  "local_document_links_verified": 14,
+  "next_task": "T08d-1",
+  "T07_independent_domain_review": "pending",
+  "T08_actual_current_version_real_model_comparison": "pending",
+  "online_inference_calls": 0,
+  "new_comparison_scientific_runs": 0,
+  "regression_tests_use_actual_scientific_backends": true,
+  "real_credentials_read": false,
+  "new_evaluation_papers_added": false,
+  "independent_evalset_or_c13_c18_materials_read": false,
+  "limits": [
+    "Only reporting over v1 seen synthetic development inputs; no new runtime or Codex system execution yet.",
+    "Unknown-rate bounds are descriptive identification bounds, not statistical confidence intervals.",
+    "Attributed judgments, model identity and evidence contents are not independently authenticated.",
+    "Fixture tests and reporting improvements do not establish model capability gains.",
+    "Current support matrix and study deadline documentation updated without changing scientific tool behavior.",
+    "Two first-run short-deadline probe failures remain disclosed despite isolated and full confirmation results; scheduling sensitivity is observed, not a proven root-cause diagnosis."
+  ]
+}

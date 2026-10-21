@@ -1,0 +1,14 @@
+# T01 首批交付审查：有界修订
+
+第一批 DSH 达到600秒时限，4个文件已交付，连接已取消/关闭。核心旧反例已修复，但独立11例8过3失败；DSH自身15例12过3失败。因此尚未验收。只修 application.py 与 test_run_verdict.py，不重新阅读其他无关文件，不扩大任务。
+
+具体修订，保持当前 public helper 名称与签名：
+
+1. derive_scientific_status 不能对所有没有失败的记录无条件返回 not_verified。通过真实参考比较、finite/convergence均实际存在且pass、所有blocking数值检查都pass时，structured_execution 应保留 passed_structured_reference。strict_reproduction 还必须有明确的完整source、semantic_support=supported、units_unknown=False。来源字段缺失不能当作已支持。模式未知的旧记录保守处理，不能因默认普通模式而升级。明确failed优先规则保持。
+2. initial_scientific_status 和 derive_scientific_status 用同一裁决内核，不复制两套判据。initial 可以把 Check 序列转换成dict，组成包含mode/source_validation的临时record再调用derive；ValidationReport输入可先取checks。不要让空检查集通过，也不要因unknown/not_run而返回failed。必要finite/convergence缺失或不通过均只能not_verified（明确blocking/fail仍failed）。
+3. 缓存裁决目前组装的临时dict丢了mode/source_validation，改为对完整candidate调用共享helper，保留有效参考通过状态。缓存数值预筛不放宽。
+4. 测试修复：受控收敛stub用solver.rtol < 1.0区分当前粗细（1.0与0.1），原来的1e-7阈值令两条轨迹相同。unknown检查测试应明确注入unknown的数值报告，不依赖环境也不能把fail当作该负控制成功。priority测试用numeric_ok.checks（或支持ValidationReport，但调用与契约要一致）。
+5. 修正source_unknown_controls中的错误断言：该普通模式真实参考pass的记录，derive应该仍为passed_structured_reference；严格未支持来源的记录仍not_verified。删除未使用的无效SBML常量和永远未走到run/finish的Agent伪测试；保留真实Agent完整动作链，或至少校验mock run工具确实被调用。不用增加长篇重复注释。
+6. 补正控制：有效参考通过在缓存和Agent _run_facts里保留；缺失/unknown数值检查即使comparison pass也保持not_verified。保存原有失败反例。
+
+Codex独立验收脚本不允许DSH修改，已经保留初始和首批失败日志。只交付这次精确修订；不运行shell或测试，Codex随后验收。能用小型helper解决就不要扩展新框架或再改CLI/Agent。

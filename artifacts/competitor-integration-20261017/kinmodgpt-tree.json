@@ -1,0 +1,1364 @@
+{
+  "sha": "2b337a3d472e7d482ddb34bb25743d7618285430",
+  "url": "https://api.github.com/repos/kmaeda16/KinModGPT/git/trees/2b337a3d472e7d482ddb34bb25743d7618285430",
+  "tree": [
+    {
+      "path": ".gitignore",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "827ec46aad8a2f2418a35daac3c0375bcc80f7ea",
+      "size": 1820,
+      "url": "https://api.github.com/repos/kmaeda16/KinModGPT/git/blobs/827ec46aad8a2f2418a35daac3c0375bcc80f7ea"
+    },
+    {
+      "path": "Conversion",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "3f3efba1736b2057b464f518d5aa7db6fe0fdf61",
+      "url": "https://api.github.com/repos/kmaeda16/KinModGPT/git/trees/3f3efba1736b2057b464f518d5aa7db6fe0fdf61"
+    },
+    {
+      "path": "Conversion/1. text-davinci-003_only",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "a9ae68c12ba9351172cc2b6db051c014720fc915",
+      "url": "https://api.github.com/repos/kmaeda16/KinModGPT/git/trees/a9ae68c12ba9351172cc2b6db051c014720fc915"
+    },
+    {
+      "path": "Conversion/1. text-davinci-003_only/Instruction.txt",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "f64efa052e3bf5e5ddc4ab8c75d537a838bfe059",
+      "size": 263,
+      "url": "https://api.github.com/repos/kmaeda16/KinModGPT/git/blobs/f64efa052e3bf5e5ddc4ab8c75d537a838bfe059"
+    },
+    {
+      "path": "Conversion/1. text-davinci-003_only/Results",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "8c5173cb3aa89167ba59999d83c83e3de6ae8206",
+      "url": "https://api.github.com/repos/kmaeda16/KinModGPT/git/trees/8c5173cb3aa89167ba59999d83c83e3de6ae8206"
+    },
+    {
+      "path": "Conversion/1. text-davinci-003_only/Results/decay",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "e60ac8e126cc6a9aeea1e36e9f6c4a01c38f8dd8",
+      "url": "https://api.github.com/repos/kmaeda16/KinModGPT/git/trees/e60ac8e126cc6a9aeea1e36e9f6c4a01c38f8dd8"
+    },
+    {
+      "path": "Conversion/1. text-davinci-003_only/Results/decay/decay_SBML_model.xml",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "1e2802616311e6831c2e14c7a2294fc8e6bc209e",
+      "size": 744,
+      "url": "https://api.github.com/repos/kmaeda16/KinModGPT/git/blobs/1e2802616311e6831c2e14c7a2294fc8e6bc209e"
+    },
+    {
+      "path": "Conversion/1. text-davinci-003_only/Results/decay/decay_conversation_log.txt",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "e39c85cb7467f4220862d72cb9747b7a23f56a91",
+      "size": 1066,
+      "url": "https://api.github.com/repos/kmaeda16/KinModGPT/git/blobs/e39c85cb7467f4220862d72cb9747b7a23f56a91"
+    },
+    {
+      "path": "Conversion/1. text-davinci-003_only/Results/heat_shock_response",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "f5be097ba6019f8a97f4a95b718642faa21c150c",
+      "url": "https://api.github.com/repos/kmaeda16/KinModGPT/git/trees/f5be097ba6019f8a97f4a95b718642faa21c150c"
+    },
+    {
+      "path": "Conversion/1. text-davinci-003_only/Results/heat_shock_response/heat_shock_response_SBML_model.xml",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "0d44f21bf696fb4637af23d7f2a3495e77dc89d1",
+      "size": 6572,
+      "url": "https://api.github.com/repos/kmaeda16/KinModGPT/git/blobs/0d44f21bf696fb4637af23d7f2a3495e77dc89d1"
+    },
+    {
+      "path": "Conversion/1. text-davinci-003_only/Results/heat_shock_response/heat_shock_response_conversation_log.txt",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "06989e4ddcedbeefa636e03a5f163748570a8536",
+      "size": 8556,
+      "url": "https://api.github.com/repos/kmaeda16/KinModGPT/git/blobs/06989e4ddcedbeefa636e03a5f163748570a8536"
+    },
+    {
+      "path": "Conversion/1. text-davinci-003_only/Results/hiv",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "cdfcf8555e13eb371c456b6053f196b8e05cba8f",
+      "url": "https://api.github.com/repos/kmaeda16/KinModGPT/git/trees/cdfcf8555e13eb371c456b6053f196b8e05cba8f"
+    },
+    {
+      "path": "Conversion/1. text-davinci-003_only/Results/hiv/hiv_SBML_model.xml",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "4475b95a2c926dd6c3947a2fd9d99f4a2de1b6ac",
+      "size": 2883,
+      "url": "https://api.github.com/repos/kmaeda16/KinModGPT/git/blobs/4475b95a2c926dd6c3947a2fd9d99f4a2de1b6ac"
+    },
+    {
+      "path": "Conversion/1. text-davinci-003_only/Results/hiv/hiv_conversation_log.txt",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "48917da629a16ca3cebcb142239391af695725d2",
+      "size": 3528,
+      "url": "https://api.github.com/repos/kmaeda16/KinModGPT/git/blobs/48917da629a16ca3cebcb142239391af695725d2"
+    },
+    {
+      "path": "Conversion/1. text-davinci-003_only/Results/three-step",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "173437b67a4ab303efbb70b7077eb9fae9e8efb1",
+      "url": "https://api.github.com/repos/kmaeda16/KinModGPT/git/trees/173437b67a4ab303efbb70b7077eb9fae9e8efb1"
+    },
+    {
+      "path": "Conversion/1. text-davinci-003_only/Results/three-step/three-step_SBML_model.xml",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "5bc99b192ac36a0f80a8c74cc6470991d63976bd",
+      "size": 4407,
+      "url": "https://api.github.com/repos/kmaeda16/KinModGPT/git/blobs/5bc99b192ac36a0f80a8c74cc6470991d63976bd"
+    },
+    {
+      "path": "Conversion/1. text-davinci-003_only/Results/three-step/three-step_conversation_log.txt",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "68ee8d6e4c59e7a6e323a9c0413035bd9eb95b6a",
+      "size": 5072,
+      "url": "https://api.github.com/repos/kmaeda16/KinModGPT/git/blobs/68ee8d6e4c59e7a6e323a9c0413035bd9eb95b6a"
+    },
+    {
+      "path": "Conversion/1. text-davinci-003_only/RunMe.sh",
+      "mode": "100755",
+      "type": "blob",
+      "sha": "01e302e4c13ba47d84291b42443bd3a2bce589fc",
+      "size": 1571,
+      "url": "https://api.github.com/repos/kmaeda16/KinModGPT/git/blobs/01e302e4c13ba47d84291b42443bd3a2bce589fc"
+    },
+    {
+      "path": "Conversion/1. text-davinci-003_only/env.yml",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "955c9bca725e6b90d564f5266548244fbb0fef26",
+      "size": 2375,
+      "url": "https://api.github.com/repos/kmaeda16/KinModGPT/git/blobs/955c9bca725e6b90d564f5266548244fbb0fef26"
+    },
+    {
+      "path": "Conversion/1. text-davinci-003_only/main.py",
+      "mode": "100755",
+      "type": "blob",
+      "sha": "544c39136ba842662645abb047ca3d5dae936d50",
+      "size": 2843,
+      "url": "https://api.github.com/repos/kmaeda16/KinModGPT/git/blobs/544c39136ba842662645abb047ca3d5dae936d50"
+    },
+    {
+      "path": "Conversion/1. text-davinci-003_only/stdout.txt",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "e5a5e9470a3bae39c3432181c2275198c7ae74dd",
+      "size": 24255,
+      "url": "https://api.github.com/repos/kmaeda16/KinModGPT/git/blobs/e5a5e9470a3bae39c3432181c2275198c7ae74dd"
+    },
+    {
+      "path": "Conversion/2. gpt-3.5-turbo_only",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "4292e4fa89a80071c4e0081cf0481d25dbdda306",
+      "url": "https://api.github.com/repos/kmaeda16/KinModGPT/git/trees/4292e4fa89a80071c4e0081cf0481d25dbdda306"
+    },
+    {
+      "path": "Conversion/2. gpt-3.5-turbo_only/Instruction.txt",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "f64efa052e3bf5e5ddc4ab8c75d537a838bfe059",
+      "size": 263,
+      "url": "https://api.github.com/repos/kmaeda16/KinModGPT/git/blobs/f64efa052e3bf5e5ddc4ab8c75d537a838bfe059"
+    },
+    {
+      "path": "Conversion/2. gpt-3.5-turbo_only/Results",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "a2ba033f93df1f8cf242fe7d86ed38d33e8faff7",
+      "url": "https://api.github.com/repos/kmaeda16/KinModGPT/git/trees/a2ba033f93df1f8cf242fe7d86ed38d33e8faff7"
+    },
+    {
+      "path": "Conversion/2. gpt-3.5-turbo_only/Results/decay",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "b96735e0f816f618745409cbfad036c9311e8f1d",
+      "url": "https://api.github.com/repos/kmaeda16/KinModGPT/git/trees/b96735e0f816f618745409cbfad036c9311e8f1d"
+    },
+    {
+      "path": "Conversion/2. gpt-3.5-turbo_only/Results/decay/decay_SBML_model.xml",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "125a0534568fbb64c9828f7a1b54c9430eeaea9a",
+      "size": 1101,
+      "url": "https://api.github.com/repos/kmaeda16/KinModGPT/git/blobs/125a0534568fbb64c9828f7a1b54c9430eeaea9a"
+    },
+    {
+      "path": "Conversion/2. gpt-3.5-turbo_only/Results/decay/decay_conversation_log.txt",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "55cdaf7ece04f4ad81aaf42903aad0b3e33fb27f",
+      "size": 1423,
+      "url": "https://api.github.com/repos/kmaeda16/KinModGPT/git/blobs/55cdaf7ece04f4ad81aaf42903aad0b3e33fb27f"
+    },
+    {
+      "path": "Conversion/2. gpt-3.5-turbo_only/Results/heat_shock_response",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "9e9f2ad18e250124566dac4230a3539829be44f1",
+      "url": "https://api.github.com/repos/kmaeda16/KinModGPT/git/trees/9e9f2ad18e250124566dac4230a3539829be44f1"
+    },
+    {
+      "path": "Conversion/2. gpt-3.5-turbo_only/Results/heat_shock_response/heat_shock_response_SBML_model.xml",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "49ca5cb17bb251a61922641d3d26e4f5653c8610",
+      "size": 7597,
+      "url": "https://api.github.com/repos/kmaeda16/KinModGPT/git/blobs/49ca5cb17bb251a61922641d3d26e4f5653c8610"
+    },
+    {
+      "path": "Conversion/2. gpt-3.5-turbo_only/Results/heat_shock_response/heat_shock_response_conversation_log.txt",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "67afef80305e0c21c1a2f5096e181b51a59e81bf",
+      "size": 9581,
+      "url": "https://api.github.com/repos/kmaeda16/KinModGPT/git/blobs/67afef80305e0c21c1a2f5096e181b51a59e81bf"
+    },
+    {
+      "path": "Conversion/2. gpt-3.5-turbo_only/Results/hiv",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "eb92b29a006bf62b3bfac1fedb4e836135bee5f6",
+      "url": "https://api.github.com/repos/kmaeda16/KinModGPT/git/trees/eb92b29a006bf62b3bfac1fedb4e836135bee5f6"
+    },
+    {
+      "path": "Conversion/2. gpt-3.5-turbo_only/Results/hiv/hiv_SBML_model.xml",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "882165f2bdadf93980865f73756c8d3e3ebad6d3",
+      "size": 3679,
+      "url": "https://api.github.com/repos/kmaeda16/KinModGPT/git/blobs/882165f2bdadf93980865f73756c8d3e3ebad6d3"
+    },
+    {
+      "path": "Conversion/2. gpt-3.5-turbo_only/Results/hiv/hiv_conversation_log.txt",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "ec5b253d5cd01295a0e6498c10a241dcc8af9bd7",
+      "size": 4324,
+      "url": "https://api.github.com/repos/kmaeda16/KinModGPT/git/blobs/ec5b253d5cd01295a0e6498c10a241dcc8af9bd7"
+    },
+    {
+      "path": "Conversion/2. gpt-3.5-turbo_only/Results/three-step",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "695619435705e20d1c39262795909b41c06f9a23",
+      "url": "https://api.github.com/repos/kmaeda16/KinModGPT/git/trees/695619435705e20d1c39262795909b41c06f9a23"
+    },
+    {
+      "path": "Conversion/2. gpt-3.5-turbo_only/Results/three-step/three-step_SBML_model.xml",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "661762bfb4d26ff518d73bec3fbbe687d9b2b346",
+      "size": 8000,
+      "url": "https://api.github.com/repos/kmaeda16/KinModGPT/git/blobs/661762bfb4d26ff518d73bec3fbbe687d9b2b346"
+    },
+    {
+      "path": "Conversion/2. gpt-3.5-turbo_only/Results/three-step/three-step_conversation_log.txt",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "f33a0b9251b5f75999d37adbdaec99b94930b18c",
+      "size": 8665,
+      "url": "https://api.github.com/repos/kmaeda16/KinModGPT/git/blobs/f33a0b9251b5f75999d37adbdaec99b94930b18c"
+    },
+    {
+      "path": "Conversion/2. gpt-3.5-turbo_only/RunMe.sh",
+      "mode": "100755",
+      "type": "blob",
+      "sha": "01e302e4c13ba47d84291b42443bd3a2bce589fc",
+      "size": 1571,
+      "url": "https://api.github.com/repos/kmaeda16/KinModGPT/git/blobs/01e302e4c13ba47d84291b42443bd3a2bce589fc"
+    },
+    {
+      "path": "Conversion/2. gpt-3.5-turbo_only/env.yml",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "955c9bca725e6b90d564f5266548244fbb0fef26",
+      "size": 2375,
+      "url": "https://api.github.com/repos/kmaeda16/KinModGPT/git/blobs/955c9bca725e6b90d564f5266548244fbb0fef26"
+    },
+    {
+      "path": "Conversion/2. gpt-3.5-turbo_only/main.py",
+      "mode": "100755",
+      "type": "blob",
+      "sha": "3e1cf095da4fa2b79cc76c56ed9d0b6fcf277645",
+      "size": 3125,
+      "url": "https://api.github.com/repos/kmaeda16/KinModGPT/git/blobs/3e1cf095da4fa2b79cc76c56ed9d0b6fcf277645"
+    },
+    {
+      "path": "Conversion/2. gpt-3.5-turbo_only/stdout.txt",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "28b494a015a8f0b3f4f0411164356c79ad92dfc7",
+      "size": 30027,
+      "url": "https://api.github.com/repos/kmaeda16/KinModGPT/git/blobs/28b494a015a8f0b3f4f0411164356c79ad92dfc7"
+    },
+    {
+      "path": "Conversion/3. gpt-4_only",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "17ae5dcd5063769a2eecf7805bab2ec8844cfa53",
+      "url": "https://api.github.com/repos/kmaeda16/KinModGPT/git/trees/17ae5dcd5063769a2eecf7805bab2ec8844cfa53"
+    },
+    {
+      "path": "Conversion/3. gpt-4_only/Instruction.txt",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "f64efa052e3bf5e5ddc4ab8c75d537a838bfe059",
+      "size": 263,
+      "url": "https://api.github.com/repos/kmaeda16/KinModGPT/git/blobs/f64efa052e3bf5e5ddc4ab8c75d537a838bfe059"
+    },
+    {
+      "path": "Conversion/3. gpt-4_only/Results",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "4364cd318a01194305465bfb61320ee26274886b",
+      "url": "https://api.github.com/repos/kmaeda16/KinModGPT/git/trees/4364cd318a01194305465bfb61320ee26274886b"
+    },
+    {
+      "path": "Conversion/3. gpt-4_only/Results/decay",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "3513cf3310a1849ab410e135ae2d729992cead0f",
+      "url": "https://api.github.com/repos/kmaeda16/KinModGPT/git/trees/3513cf3310a1849ab410e135ae2d729992cead0f"
+    },
+    {
+      "path": "Conversion/3. gpt-4_only/Results/decay/decay_SBML_model.xml",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "35fc4180d2896a2414d87dfeb1e44943e2119c5d",
+      "size": 1120,
+      "url": "https://api.github.com/repos/kmaeda16/KinModGPT/git/blobs/35fc4180d2896a2414d87dfeb1e44943e2119c5d"
+    },
+    {
+      "path": "Conversion/3. gpt-4_only/Results/decay/decay_conversation_log.txt",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "b8f31401f6ba7feeb7c4a66108a988b38d23095a",
+      "size": 1442,
+      "url": "https://api.github.com/repos/kmaeda16/KinModGPT/git/blobs/b8f31401f6ba7feeb7c4a66108a988b38d23095a"
+    },
+    {
+      "path": "Conversion/3. gpt-4_only/Results/heat_shock_response",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "24cac176e64691b55f928080c90677387d018a92",
+      "url": "https://api.github.com/repos/kmaeda16/KinModGPT/git/trees/24cac176e64691b55f928080c90677387d018a92"
+    },
+    {
+      "path": "Conversion/3. gpt-4_only/Results/heat_shock_response/heat_shock_response_SBML_model.xml",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "0929062cfaffb1be882812d14e8716fc92496833",
+      "size": 6730,
+      "url": "https://api.github.com/repos/kmaeda16/KinModGPT/git/blobs/0929062cfaffb1be882812d14e8716fc92496833"
+    },
+    {
+      "path": "Conversion/3. gpt-4_only/Results/heat_shock_response/heat_shock_response_conversation_log.txt",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "c9f3d7ba7722e53bc580280096648837b8b4d83d",
+      "size": 8714,
+      "url": "https://api.github.com/repos/kmaeda16/KinModGPT/git/blobs/c9f3d7ba7722e53bc580280096648837b8b4d83d"
+    },
+    {
+      "path": "Conversion/3. gpt-4_only/Results/hiv",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "66c56c9411eb9db8a6d5b9126b0f0cd468803c94",
+      "url": "https://api.github.com/repos/kmaeda16/KinModGPT/git/trees/66c56c9411eb9db8a6d5b9126b0f0cd468803c94"
+    },
+    {
+      "path": "Conversion/3. gpt-4_only/Results/hiv/hiv_SBML_model.xml",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "c49cd2cbba0989f3d2aad1b2cbceeb0e0c1fddad",
+      "size": 2894,
+      "url": "https://api.github.com/repos/kmaeda16/KinModGPT/git/blobs/c49cd2cbba0989f3d2aad1b2cbceeb0e0c1fddad"
+    },
+    {
+      "path": "Conversion/3. gpt-4_only/Results/hiv/hiv_conversation_log.txt",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "db54547654f93182f48eb9ec2f4701a74ac0b564",
+      "size": 3539,
+      "url": "https://api.github.com/repos/kmaeda16/KinModGPT/git/blobs/db54547654f93182f48eb9ec2f4701a74ac0b564"
+    },
+    {
+      "path": "Conversion/3. gpt-4_only/Results/three-step",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "688c8a3bf6b44f3dd29c6b44a5a64994cc8bd37b",
+      "url": "https://api.github.com/repos/kmaeda16/KinModGPT/git/trees/688c8a3bf6b44f3dd29c6b44a5a64994cc8bd37b"
+    },
+    {
+      "path": "Conversion/3. gpt-4_only/Results/three-step/three-step_SBML_model.xml",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "c18506daca16d573990ae63622ce14f8a43bc5a7",
+      "size": 5799,
+      "url": "https://api.github.com/repos/kmaeda16/KinModGPT/git/blobs/c18506daca16d573990ae63622ce14f8a43bc5a7"
+    },
+    {
+      "path": "Conversion/3. gpt-4_only/Results/three-step/three-step_conversation_log.txt",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "4856d3a709a440f99598942bc76b428282b19e16",
+      "size": 6464,
+      "url": "https://api.github.com/repos/kmaeda16/KinModGPT/git/blobs/4856d3a709a440f99598942bc76b428282b19e16"
+    },
+    {
+      "path": "Conversion/3. gpt-4_only/RunMe.sh",
+      "mode": "100755",
+      "type": "blob",
+      "sha": "01e302e4c13ba47d84291b42443bd3a2bce589fc",
+      "size": 1571,
+      "url": "https://api.github.com/repos/kmaeda16/KinModGPT/git/blobs/01e302e4c13ba47d84291b42443bd3a2bce589fc"
+    },
+    {
+      "path": "Conversion/3. gpt-4_only/env.yml",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "955c9bca725e6b90d564f5266548244fbb0fef26",
+      "size": 2375,
+      "url": "https://api.github.com/repos/kmaeda16/KinModGPT/git/blobs/955c9bca725e6b90d564f5266548244fbb0fef26"
+    },
+    {
+      "path": "Conversion/3. gpt-4_only/main.py",
+      "mode": "100755",
+      "type": "blob",
+      "sha": "e4e2165e1d95f0fd93068b51f7ad98da31ac9f1f",
+      "size": 3117,
+      "url": "https://api.github.com/repos/kmaeda16/KinModGPT/git/blobs/e4e2165e1d95f0fd93068b51f7ad98da31ac9f1f"
+    },
+    {
+      "path": "Conversion/3. gpt-4_only/stdout.txt",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "4d09c15d62ce62349a5a8c531f3315083da3da76",
+      "size": 26195,
+      "url": "https://api.github.com/repos/kmaeda16/KinModGPT/git/blobs/4d09c15d62ce62349a5a8c531f3315083da3da76"
+    },
+    {
+      "path": "Conversion/4. KinModGPT_text-davinci-003",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "1046b65391ff9e2b4cff22c45094c3bf466beb1a",
+      "url": "https://api.github.com/repos/kmaeda16/KinModGPT/git/trees/1046b65391ff9e2b4cff22c45094c3bf466beb1a"
+    },
+    {
+      "path": "Conversion/4. KinModGPT_text-davinci-003/Instruction.txt",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "4b9bb423c314b4459e4ab028961a41b561b70e13",
+      "size": 1906,
+      "url": "https://api.github.com/repos/kmaeda16/KinModGPT/git/blobs/4b9bb423c314b4459e4ab028961a41b561b70e13"
+    },
+    {
+      "path": "Conversion/4. KinModGPT_text-davinci-003/KinModGPT.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "1983106dfd0a7824fc036945dafa9b9c70676b31",
+      "size": 3815,
+      "url": "https://api.github.com/repos/kmaeda16/KinModGPT/git/blobs/1983106dfd0a7824fc036945dafa9b9c70676b31"
+    },
+    {
+      "path": "Conversion/4. KinModGPT_text-davinci-003/Results",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "704ecdd9c7357d9cfce5cb83987742015f66e725",
+      "url": "https://api.github.com/repos/kmaeda16/KinModGPT/git/trees/704ecdd9c7357d9cfce5cb83987742015f66e725"
+    },
+    {
+      "path": "Conversion/4. KinModGPT_text-davinci-003/Results/decay",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "81ada1fca4711a7a633df277bc6f1abb738ea473",
+      "url": "https://api.github.com/repos/kmaeda16/KinModGPT/git/trees/81ada1fca4711a7a633df277bc6f1abb738ea473"
+    },
+    {
+      "path": "Conversion/4. KinModGPT_text-davinci-003/Results/decay/decay_Antimony_model.txt",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "5e3d77a041629421ca602e49743e795c8a139ffb",
+      "size": 37,
+      "url": "https://api.github.com/repos/kmaeda16/KinModGPT/git/blobs/5e3d77a041629421ca602e49743e795c8a139ffb"
+    },
+    {
+      "path": "Conversion/4. KinModGPT_text-davinci-003/Results/decay/decay_SBML_model.xml",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "cd92244c5f8fa5631099107a0bbcc6c143d66bb0",
+      "size": 1216,
+      "url": "https://api.github.com/repos/kmaeda16/KinModGPT/git/blobs/cd92244c5f8fa5631099107a0bbcc6c143d66bb0"
+    },
+    {
+      "path": "Conversion/4. KinModGPT_text-davinci-003/Results/decay/decay_conversation_log.txt",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "a9aaa14ae9a1f085f86f9280db6258a6f4d8482f",
+      "size": 2006,
+      "url": "https://api.github.com/repos/kmaeda16/KinModGPT/git/blobs/a9aaa14ae9a1f085f86f9280db6258a6f4d8482f"
+    },
+    {
+      "path": "Conversion/4. KinModGPT_text-davinci-003/Results/heat_shock_response",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "60ff1e3134b37691cd57e2f60dd355c24434eae1",
+      "url": "https://api.github.com/repos/kmaeda16/KinModGPT/git/trees/60ff1e3134b37691cd57e2f60dd355c24434eae1"
+    },
+    {
+      "path": "Conversion/4. KinModGPT_text-davinci-003/Results/heat_shock_response/heat_shock_response_Antimony_model.txt",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "0eedec5126f0c782c619989f5fc5385ad84ca2ba",
+      "size": 4030,
+      "url": "https://api.github.com/repos/kmaeda16/KinModGPT/git/blobs/0eedec5126f0c782c619989f5fc5385ad84ca2ba"
+    },
+    {
+      "path": "Conversion/4. KinModGPT_text-davinci-003/Results/heat_shock_response/heat_shock_response_SBML_model.xml",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "dfa8b3f6959aa1aa68d609cad186cfd4e79d12c3",
+      "size": 39890,
+      "url": "https://api.github.com/repos/kmaeda16/KinModGPT/git/blobs/dfa8b3f6959aa1aa68d609cad186cfd4e79d12c3"
+    },
+    {
+      "path": "Conversion/4. KinModGPT_text-davinci-003/Results/heat_shock_response/heat_shock_response_conversation_log.txt",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "a05bdb2319f3237998006a174b14a026e75a943a",
+      "size": 9669,
+      "url": "https://api.github.com/repos/kmaeda16/KinModGPT/git/blobs/a05bdb2319f3237998006a174b14a026e75a943a"
+    },
+    {
+      "path": "Conversion/4. KinModGPT_text-davinci-003/Results/hiv",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "09215982253fec40f994bea1e1780a2dc716c4c1",
+      "url": "https://api.github.com/repos/kmaeda16/KinModGPT/git/trees/09215982253fec40f994bea1e1780a2dc716c4c1"
+    },
+    {
+      "path": "Conversion/4. KinModGPT_text-davinci-003/Results/hiv/hiv_Antimony_model.txt",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "9ae6f8900d7daf9e736caeb5851c0952d4755f55",
+      "size": 450,
+      "url": "https://api.github.com/repos/kmaeda16/KinModGPT/git/blobs/9ae6f8900d7daf9e736caeb5851c0952d4755f55"
+    },
+    {
+      "path": "Conversion/4. KinModGPT_text-davinci-003/Results/hiv/hiv_SBML_model.xml",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "f76a60bd11ac8cd7d4542b8e026038c4a8be742b",
+      "size": 8918,
+      "url": "https://api.github.com/repos/kmaeda16/KinModGPT/git/blobs/f76a60bd11ac8cd7d4542b8e026038c4a8be742b"
+    },
+    {
+      "path": "Conversion/4. KinModGPT_text-davinci-003/Results/hiv/hiv_conversation_log.txt",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "3a7d2711d9f4728a827099ef278ec0896b7d0370",
+      "size": 2758,
+      "url": "https://api.github.com/repos/kmaeda16/KinModGPT/git/blobs/3a7d2711d9f4728a827099ef278ec0896b7d0370"
+    },
+    {
+      "path": "Conversion/4. KinModGPT_text-davinci-003/Results/three-step",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "5b65ea64dbe8f6eeb1214fda654edfe1c677d7aa",
+      "url": "https://api.github.com/repos/kmaeda16/KinModGPT/git/trees/5b65ea64dbe8f6eeb1214fda654edfe1c677d7aa"
+    },
+    {
+      "path": "Conversion/4. KinModGPT_text-davinci-003/Results/three-step/three-step_Antimony_model.txt",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "c149bc748ea9258dafa5ab20a393af310102ef7f",
+      "size": 974,
+      "url": "https://api.github.com/repos/kmaeda16/KinModGPT/git/blobs/c149bc748ea9258dafa5ab20a393af310102ef7f"
+    },
+    {
+      "path": "Conversion/4. KinModGPT_text-davinci-003/Results/three-step/three-step_SBML_model.xml",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "7bcfc086868fc8759be5254fb9a600b3bf84f59c",
+      "size": 13886,
+      "url": "https://api.github.com/repos/kmaeda16/KinModGPT/git/blobs/7bcfc086868fc8759be5254fb9a600b3bf84f59c"
+    },
+    {
+      "path": "Conversion/4. KinModGPT_text-davinci-003/Results/three-step/three-step_conversation_log.txt",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "9ccf50df67b4880dc8034370652c385cd688cb49",
+      "size": 3314,
+      "url": "https://api.github.com/repos/kmaeda16/KinModGPT/git/blobs/9ccf50df67b4880dc8034370652c385cd688cb49"
+    },
+    {
+      "path": "Conversion/4. KinModGPT_text-davinci-003/RunMe.sh",
+      "mode": "100755",
+      "type": "blob",
+      "sha": "bfb8ebd8c2eae3bd4d825b07139ae4bb82db6c23",
+      "size": 1909,
+      "url": "https://api.github.com/repos/kmaeda16/KinModGPT/git/blobs/bfb8ebd8c2eae3bd4d825b07139ae4bb82db6c23"
+    },
+    {
+      "path": "Conversion/4. KinModGPT_text-davinci-003/env.yml",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "955c9bca725e6b90d564f5266548244fbb0fef26",
+      "size": 2375,
+      "url": "https://api.github.com/repos/kmaeda16/KinModGPT/git/blobs/955c9bca725e6b90d564f5266548244fbb0fef26"
+    },
+    {
+      "path": "Conversion/4. KinModGPT_text-davinci-003/main.py",
+      "mode": "100755",
+      "type": "blob",
+      "sha": "3c41dbfa9cd1d91b22be4159c68e88f8b43f55ba",
+      "size": 2451,
+      "url": "https://api.github.com/repos/kmaeda16/KinModGPT/git/blobs/3c41dbfa9cd1d91b22be4159c68e88f8b43f55ba"
+    },
+    {
+      "path": "Conversion/4. KinModGPT_text-davinci-003/stdout.txt",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "fbf490b4eca82e731f199044ab39d91234056daa",
+      "size": 93722,
+      "url": "https://api.github.com/repos/kmaeda16/KinModGPT/git/blobs/fbf490b4eca82e731f199044ab39d91234056daa"
+    },
+    {
+      "path": "Conversion/5. KinModGPT_gpt-3.5-turbo",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "b2e8ceffbf1379f581891ddd9a3c50ac18c9c376",
+      "url": "https://api.github.com/repos/kmaeda16/KinModGPT/git/trees/b2e8ceffbf1379f581891ddd9a3c50ac18c9c376"
+    },
+    {
+      "path": "Conversion/5. KinModGPT_gpt-3.5-turbo/Instruction.txt",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "4b9bb423c314b4459e4ab028961a41b561b70e13",
+      "size": 1906,
+      "url": "https://api.github.com/repos/kmaeda16/KinModGPT/git/blobs/4b9bb423c314b4459e4ab028961a41b561b70e13"
+    },
+    {
+      "path": "Conversion/5. KinModGPT_gpt-3.5-turbo/KinModGPT.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "40789d166d1f456c4bd86926da2cc3b7027fcfd8",
+      "size": 4090,
+      "url": "https://api.github.com/repos/kmaeda16/KinModGPT/git/blobs/40789d166d1f456c4bd86926da2cc3b7027fcfd8"
+    },
+    {
+      "path": "Conversion/5. KinModGPT_gpt-3.5-turbo/Results",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "c64252bb047e6dd3d623faf7034495b587ba5048",
+      "url": "https://api.github.com/repos/kmaeda16/KinModGPT/git/trees/c64252bb047e6dd3d623faf7034495b587ba5048"
+    },
+    {
+      "path": "Conversion/5. KinModGPT_gpt-3.5-turbo/Results/decay",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "ef8dc32bbddcd03f7b57de58dd6cb71cc61a26f6",
+      "url": "https://api.github.com/repos/kmaeda16/KinModGPT/git/trees/ef8dc32bbddcd03f7b57de58dd6cb71cc61a26f6"
+    },
+    {
+      "path": "Conversion/5. KinModGPT_gpt-3.5-turbo/Results/decay/decay_Antimony_model.txt",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "3d202503fb1855625521e5366df5db22f0571c0a",
+      "size": 42,
+      "url": "https://api.github.com/repos/kmaeda16/KinModGPT/git/blobs/3d202503fb1855625521e5366df5db22f0571c0a"
+    },
+    {
+      "path": "Conversion/5. KinModGPT_gpt-3.5-turbo/Results/decay/decay_SBML_model.xml",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "7607349023d41a6dd8b689f6b48efa0969da32fe",
+      "size": 1369,
+      "url": "https://api.github.com/repos/kmaeda16/KinModGPT/git/blobs/7607349023d41a6dd8b689f6b48efa0969da32fe"
+    },
+    {
+      "path": "Conversion/5. KinModGPT_gpt-3.5-turbo/Results/decay/decay_conversation_log.txt",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "4f84ecec4bfd503c91ab58270ca7ca74c8ec89ea",
+      "size": 2008,
+      "url": "https://api.github.com/repos/kmaeda16/KinModGPT/git/blobs/4f84ecec4bfd503c91ab58270ca7ca74c8ec89ea"
+    },
+    {
+      "path": "Conversion/5. KinModGPT_gpt-3.5-turbo/Results/hiv",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "7cfae3248cdec2a3064037124f21404e72b5575a",
+      "url": "https://api.github.com/repos/kmaeda16/KinModGPT/git/trees/7cfae3248cdec2a3064037124f21404e72b5575a"
+    },
+    {
+      "path": "Conversion/5. KinModGPT_gpt-3.5-turbo/Results/hiv/hiv_Antimony_model.txt",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "9ae6f8900d7daf9e736caeb5851c0952d4755f55",
+      "size": 450,
+      "url": "https://api.github.com/repos/kmaeda16/KinModGPT/git/blobs/9ae6f8900d7daf9e736caeb5851c0952d4755f55"
+    },
+    {
+      "path": "Conversion/5. KinModGPT_gpt-3.5-turbo/Results/hiv/hiv_SBML_model.xml",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "f76a60bd11ac8cd7d4542b8e026038c4a8be742b",
+      "size": 8918,
+      "url": "https://api.github.com/repos/kmaeda16/KinModGPT/git/blobs/f76a60bd11ac8cd7d4542b8e026038c4a8be742b"
+    },
+    {
+      "path": "Conversion/5. KinModGPT_gpt-3.5-turbo/Results/hiv/hiv_conversation_log.txt",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "f0b7b3a75686207525324870e3c588c3cc0ed271",
+      "size": 2757,
+      "url": "https://api.github.com/repos/kmaeda16/KinModGPT/git/blobs/f0b7b3a75686207525324870e3c588c3cc0ed271"
+    },
+    {
+      "path": "Conversion/5. KinModGPT_gpt-3.5-turbo/Results/three-step",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "75bdc89c0d45f56fcfd131dccf89ccb9f6fb779b",
+      "url": "https://api.github.com/repos/kmaeda16/KinModGPT/git/trees/75bdc89c0d45f56fcfd131dccf89ccb9f6fb779b"
+    },
+    {
+      "path": "Conversion/5. KinModGPT_gpt-3.5-turbo/Results/three-step/three-step_Antimony_model.txt",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "c0be0483eef46ae6074892483f7fb2f31ebebf45",
+      "size": 943,
+      "url": "https://api.github.com/repos/kmaeda16/KinModGPT/git/blobs/c0be0483eef46ae6074892483f7fb2f31ebebf45"
+    },
+    {
+      "path": "Conversion/5. KinModGPT_gpt-3.5-turbo/Results/three-step/three-step_SBML_model.xml",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "91414c862805aa1cd309965fe0cf3d25522b43c6",
+      "size": 14728,
+      "url": "https://api.github.com/repos/kmaeda16/KinModGPT/git/blobs/91414c862805aa1cd309965fe0cf3d25522b43c6"
+    },
+    {
+      "path": "Conversion/5. KinModGPT_gpt-3.5-turbo/Results/three-step/three-step_conversation_log.txt",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "71bc6d67b657fa53c75891c1269a5d3704824e25",
+      "size": 3417,
+      "url": "https://api.github.com/repos/kmaeda16/KinModGPT/git/blobs/71bc6d67b657fa53c75891c1269a5d3704824e25"
+    },
+    {
+      "path": "Conversion/5. KinModGPT_gpt-3.5-turbo/RunMe.sh",
+      "mode": "100755",
+      "type": "blob",
+      "sha": "bfb8ebd8c2eae3bd4d825b07139ae4bb82db6c23",
+      "size": 1909,
+      "url": "https://api.github.com/repos/kmaeda16/KinModGPT/git/blobs/bfb8ebd8c2eae3bd4d825b07139ae4bb82db6c23"
+    },
+    {
+      "path": "Conversion/5. KinModGPT_gpt-3.5-turbo/env.yml",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "955c9bca725e6b90d564f5266548244fbb0fef26",
+      "size": 2375,
+      "url": "https://api.github.com/repos/kmaeda16/KinModGPT/git/blobs/955c9bca725e6b90d564f5266548244fbb0fef26"
+    },
+    {
+      "path": "Conversion/5. KinModGPT_gpt-3.5-turbo/main.py",
+      "mode": "100755",
+      "type": "blob",
+      "sha": "b7d57f12b313e4c7c52ab8333d81aba3036bfc1a",
+      "size": 2471,
+      "url": "https://api.github.com/repos/kmaeda16/KinModGPT/git/blobs/b7d57f12b313e4c7c52ab8333d81aba3036bfc1a"
+    },
+    {
+      "path": "Conversion/5. KinModGPT_gpt-3.5-turbo/stdout.txt",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "072cb7b618b4a346315b5a88be2769d9ca93c6f3",
+      "size": 56414,
+      "url": "https://api.github.com/repos/kmaeda16/KinModGPT/git/blobs/072cb7b618b4a346315b5a88be2769d9ca93c6f3"
+    },
+    {
+      "path": "Conversion/6. KinModGPT_gpt-4",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "b4041c1e1761f77031f7217d853b3a80f5b557c8",
+      "url": "https://api.github.com/repos/kmaeda16/KinModGPT/git/trees/b4041c1e1761f77031f7217d853b3a80f5b557c8"
+    },
+    {
+      "path": "Conversion/6. KinModGPT_gpt-4/Instruction.txt",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "4b9bb423c314b4459e4ab028961a41b561b70e13",
+      "size": 1906,
+      "url": "https://api.github.com/repos/kmaeda16/KinModGPT/git/blobs/4b9bb423c314b4459e4ab028961a41b561b70e13"
+    },
+    {
+      "path": "Conversion/6. KinModGPT_gpt-4/KinModGPT.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "0a31220f09f81c8e10b34b7bf55016df483c57eb",
+      "size": 4082,
+      "url": "https://api.github.com/repos/kmaeda16/KinModGPT/git/blobs/0a31220f09f81c8e10b34b7bf55016df483c57eb"
+    },
+    {
+      "path": "Conversion/6. KinModGPT_gpt-4/Results",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "ac7c915ab428cde86b82e108738b4d6afd715e67",
+      "url": "https://api.github.com/repos/kmaeda16/KinModGPT/git/trees/ac7c915ab428cde86b82e108738b4d6afd715e67"
+    },
+    {
+      "path": "Conversion/6. KinModGPT_gpt-4/Results/decay",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "a82e407b16cf7eeaede7934269bf175288411d2f",
+      "url": "https://api.github.com/repos/kmaeda16/KinModGPT/git/trees/a82e407b16cf7eeaede7934269bf175288411d2f"
+    },
+    {
+      "path": "Conversion/6. KinModGPT_gpt-4/Results/decay/decay_Antimony_model.txt",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "6a49f3fab0bf8eabc71ad3b8fe24303a639de22b",
+      "size": 37,
+      "url": "https://api.github.com/repos/kmaeda16/KinModGPT/git/blobs/6a49f3fab0bf8eabc71ad3b8fe24303a639de22b"
+    },
+    {
+      "path": "Conversion/6. KinModGPT_gpt-4/Results/decay/decay_SBML_model.xml",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "cd92244c5f8fa5631099107a0bbcc6c143d66bb0",
+      "size": 1216,
+      "url": "https://api.github.com/repos/kmaeda16/KinModGPT/git/blobs/cd92244c5f8fa5631099107a0bbcc6c143d66bb0"
+    },
+    {
+      "path": "Conversion/6. KinModGPT_gpt-4/Results/decay/decay_conversation_log.txt",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "6ef6f87b280e76deb885767d7704f736dc4ee2cf",
+      "size": 2005,
+      "url": "https://api.github.com/repos/kmaeda16/KinModGPT/git/blobs/6ef6f87b280e76deb885767d7704f736dc4ee2cf"
+    },
+    {
+      "path": "Conversion/6. KinModGPT_gpt-4/Results/heat_shock_response",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "3086039b8f75c09b8699ef23633de2622d8046bd",
+      "url": "https://api.github.com/repos/kmaeda16/KinModGPT/git/trees/3086039b8f75c09b8699ef23633de2622d8046bd"
+    },
+    {
+      "path": "Conversion/6. KinModGPT_gpt-4/Results/heat_shock_response/heat_shock_response_Antimony_model.txt",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "b97c8b38856d297053122bddd14400a496f49d25",
+      "size": 4052,
+      "url": "https://api.github.com/repos/kmaeda16/KinModGPT/git/blobs/b97c8b38856d297053122bddd14400a496f49d25"
+    },
+    {
+      "path": "Conversion/6. KinModGPT_gpt-4/Results/heat_shock_response/heat_shock_response_SBML_model.xml",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "4afccd7896c3387a736541e02a86c38c674890a6",
+      "size": 39912,
+      "url": "https://api.github.com/repos/kmaeda16/KinModGPT/git/blobs/4afccd7896c3387a736541e02a86c38c674890a6"
+    },
+    {
+      "path": "Conversion/6. KinModGPT_gpt-4/Results/heat_shock_response/heat_shock_response_conversation_log.txt",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "1b9ced2dfbf7c9de5175b2eff2cfccff7f1bf0a6",
+      "size": 9689,
+      "url": "https://api.github.com/repos/kmaeda16/KinModGPT/git/blobs/1b9ced2dfbf7c9de5175b2eff2cfccff7f1bf0a6"
+    },
+    {
+      "path": "Conversion/6. KinModGPT_gpt-4/Results/hiv",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "7cfae3248cdec2a3064037124f21404e72b5575a",
+      "url": "https://api.github.com/repos/kmaeda16/KinModGPT/git/trees/7cfae3248cdec2a3064037124f21404e72b5575a"
+    },
+    {
+      "path": "Conversion/6. KinModGPT_gpt-4/Results/hiv/hiv_Antimony_model.txt",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "9ae6f8900d7daf9e736caeb5851c0952d4755f55",
+      "size": 450,
+      "url": "https://api.github.com/repos/kmaeda16/KinModGPT/git/blobs/9ae6f8900d7daf9e736caeb5851c0952d4755f55"
+    },
+    {
+      "path": "Conversion/6. KinModGPT_gpt-4/Results/hiv/hiv_SBML_model.xml",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "f76a60bd11ac8cd7d4542b8e026038c4a8be742b",
+      "size": 8918,
+      "url": "https://api.github.com/repos/kmaeda16/KinModGPT/git/blobs/f76a60bd11ac8cd7d4542b8e026038c4a8be742b"
+    },
+    {
+      "path": "Conversion/6. KinModGPT_gpt-4/Results/hiv/hiv_conversation_log.txt",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "f0b7b3a75686207525324870e3c588c3cc0ed271",
+      "size": 2757,
+      "url": "https://api.github.com/repos/kmaeda16/KinModGPT/git/blobs/f0b7b3a75686207525324870e3c588c3cc0ed271"
+    },
+    {
+      "path": "Conversion/6. KinModGPT_gpt-4/Results/three-step",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "d1d80bd5daa9762b42faa338c5d93142de69e7f7",
+      "url": "https://api.github.com/repos/kmaeda16/KinModGPT/git/trees/d1d80bd5daa9762b42faa338c5d93142de69e7f7"
+    },
+    {
+      "path": "Conversion/6. KinModGPT_gpt-4/Results/three-step/three-step_Antimony_model.txt",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "c149bc748ea9258dafa5ab20a393af310102ef7f",
+      "size": 974,
+      "url": "https://api.github.com/repos/kmaeda16/KinModGPT/git/blobs/c149bc748ea9258dafa5ab20a393af310102ef7f"
+    },
+    {
+      "path": "Conversion/6. KinModGPT_gpt-4/Results/three-step/three-step_SBML_model.xml",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "7bcfc086868fc8759be5254fb9a600b3bf84f59c",
+      "size": 13886,
+      "url": "https://api.github.com/repos/kmaeda16/KinModGPT/git/blobs/7bcfc086868fc8759be5254fb9a600b3bf84f59c"
+    },
+    {
+      "path": "Conversion/6. KinModGPT_gpt-4/Results/three-step/three-step_conversation_log.txt",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "970e41477965735dbcd3d4a0f735218bf53f9fcc",
+      "size": 3313,
+      "url": "https://api.github.com/repos/kmaeda16/KinModGPT/git/blobs/970e41477965735dbcd3d4a0f735218bf53f9fcc"
+    },
+    {
+      "path": "Conversion/6. KinModGPT_gpt-4/RunMe.sh",
+      "mode": "100755",
+      "type": "blob",
+      "sha": "bfb8ebd8c2eae3bd4d825b07139ae4bb82db6c23",
+      "size": 1909,
+      "url": "https://api.github.com/repos/kmaeda16/KinModGPT/git/blobs/bfb8ebd8c2eae3bd4d825b07139ae4bb82db6c23"
+    },
+    {
+      "path": "Conversion/6. KinModGPT_gpt-4/env.yml",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "955c9bca725e6b90d564f5266548244fbb0fef26",
+      "size": 2375,
+      "url": "https://api.github.com/repos/kmaeda16/KinModGPT/git/blobs/955c9bca725e6b90d564f5266548244fbb0fef26"
+    },
+    {
+      "path": "Conversion/6. KinModGPT_gpt-4/main.py",
+      "mode": "100755",
+      "type": "blob",
+      "sha": "b7d57f12b313e4c7c52ab8333d81aba3036bfc1a",
+      "size": 2471,
+      "url": "https://api.github.com/repos/kmaeda16/KinModGPT/git/blobs/b7d57f12b313e4c7c52ab8333d81aba3036bfc1a"
+    },
+    {
+      "path": "Conversion/6. KinModGPT_gpt-4/stdout.txt",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "c09fec231b375e33c994f77117fa04813d34791a",
+      "size": 93785,
+      "url": "https://api.github.com/repos/kmaeda16/KinModGPT/git/blobs/c09fec231b375e33c994f77117fa04813d34791a"
+    },
+    {
+      "path": "Conversion/7. INDRA",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "34ad4c8197b5df01e35582235a073832e9e57968",
+      "url": "https://api.github.com/repos/kmaeda16/KinModGPT/git/trees/34ad4c8197b5df01e35582235a073832e9e57968"
+    },
+    {
+      "path": "Conversion/7. INDRA/Results",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "97b67d07f9d0dc13f681e03c9fe51038c066ab5e",
+      "url": "https://api.github.com/repos/kmaeda16/KinModGPT/git/trees/97b67d07f9d0dc13f681e03c9fe51038c066ab5e"
+    },
+    {
+      "path": "Conversion/7. INDRA/Results/decay",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "7c4d8cc25c7a5a7484415bb1a8d75a012199226d",
+      "url": "https://api.github.com/repos/kmaeda16/KinModGPT/git/trees/7c4d8cc25c7a5a7484415bb1a8d75a012199226d"
+    },
+    {
+      "path": "Conversion/7. INDRA/Results/decay/decay_SBML_model.xml",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "9748e2319c18dd2a649f7fba5c4992a9925133f1",
+      "size": 1393,
+      "url": "https://api.github.com/repos/kmaeda16/KinModGPT/git/blobs/9748e2319c18dd2a649f7fba5c4992a9925133f1"
+    },
+    {
+      "path": "Conversion/7. INDRA/Results/hiv",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "284da367df7ffee9a78d215aec60873eec78303f",
+      "url": "https://api.github.com/repos/kmaeda16/KinModGPT/git/trees/284da367df7ffee9a78d215aec60873eec78303f"
+    },
+    {
+      "path": "Conversion/7. INDRA/Results/hiv/hiv_SBML_model.xml",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "94da480cde53e84d11fc4462eb47d44b04a5be4a",
+      "size": 1310,
+      "url": "https://api.github.com/repos/kmaeda16/KinModGPT/git/blobs/94da480cde53e84d11fc4462eb47d44b04a5be4a"
+    },
+    {
+      "path": "Conversion/7. INDRA/RunMe.sh",
+      "mode": "100755",
+      "type": "blob",
+      "sha": "37da04a0f30785058ff26eabe7adb7334afaacb8",
+      "size": 1205,
+      "url": "https://api.github.com/repos/kmaeda16/KinModGPT/git/blobs/37da04a0f30785058ff26eabe7adb7334afaacb8"
+    },
+    {
+      "path": "Conversion/7. INDRA/env.yml",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "8bd44e78c8905033cccb1d8a5f16c4bf0e8c5656",
+      "size": 1958,
+      "url": "https://api.github.com/repos/kmaeda16/KinModGPT/git/blobs/8bd44e78c8905033cccb1d8a5f16c4bf0e8c5656"
+    },
+    {
+      "path": "Conversion/7. INDRA/example",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "48cf22ae07cd7f6085312dcbec28a58ab4fd3f8f",
+      "url": "https://api.github.com/repos/kmaeda16/KinModGPT/git/trees/48cf22ae07cd7f6085312dcbec28a58ab4fd3f8f"
+    },
+    {
+      "path": "Conversion/7. INDRA/example/example.txt",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "f9257484f790ddaebafbc4b9b1f0135a4162bccb",
+      "size": 62,
+      "url": "https://api.github.com/repos/kmaeda16/KinModGPT/git/blobs/f9257484f790ddaebafbc4b9b1f0135a4162bccb"
+    },
+    {
+      "path": "Conversion/7. INDRA/example/example_SBML_model.xml",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "9a1218244f910906e9388c0feaef3ae3485a6e7c",
+      "size": 6053,
+      "url": "https://api.github.com/repos/kmaeda16/KinModGPT/git/blobs/9a1218244f910906e9388c0feaef3ae3485a6e7c"
+    },
+    {
+      "path": "Conversion/7. INDRA/main.py",
+      "mode": "100755",
+      "type": "blob",
+      "sha": "18814391d742780d939aca7f3d6d43a2770fc68a",
+      "size": 1591,
+      "url": "https://api.github.com/repos/kmaeda16/KinModGPT/git/blobs/18814391d742780d939aca7f3d6d43a2770fc68a"
+    },
+    {
+      "path": "Conversion/7. INDRA/stdout.txt",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "3868b553a40777d12a232be5301c539a57e0e09d",
+      "size": 17012,
+      "url": "https://api.github.com/repos/kmaeda16/KinModGPT/git/blobs/3868b553a40777d12a232be5301c539a57e0e09d"
+    },
+    {
+      "path": "Conversion/7. INDRA/trips_output.xml",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "f69cde633e6e4f05e258f6c4ab76b809ab0a116a",
+      "size": 13038,
+      "url": "https://api.github.com/repos/kmaeda16/KinModGPT/git/blobs/f69cde633e6e4f05e258f6c4ab76b809ab0a116a"
+    },
+    {
+      "path": "Conversion/README.md",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "127921a0b7890bf89801b30832f7c1d455debb17",
+      "size": 1429,
+      "url": "https://api.github.com/repos/kmaeda16/KinModGPT/git/blobs/127921a0b7890bf89801b30832f7c1d455debb17"
+    },
+    {
+      "path": "Conversion/input",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "76dae684532f6845251af8a20446425844cb1d00",
+      "url": "https://api.github.com/repos/kmaeda16/KinModGPT/git/trees/76dae684532f6845251af8a20446425844cb1d00"
+    },
+    {
+      "path": "Conversion/input/decay",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "6a6a91ecda967553837cc90d75470d828bb149df",
+      "url": "https://api.github.com/repos/kmaeda16/KinModGPT/git/trees/6a6a91ecda967553837cc90d75470d828bb149df"
+    },
+    {
+      "path": "Conversion/input/decay/decay.txt",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "b822165cba27f7d4b6b6290d1ddd2215c21774ab",
+      "size": 53,
+      "url": "https://api.github.com/repos/kmaeda16/KinModGPT/git/blobs/b822165cba27f7d4b6b6290d1ddd2215c21774ab"
+    },
+    {
+      "path": "Conversion/input/heat_shock_response",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "e3679beab265b8b234de992a9676b514a41abfbc",
+      "url": "https://api.github.com/repos/kmaeda16/KinModGPT/git/trees/e3679beab265b8b234de992a9676b514a41abfbc"
+    },
+    {
+      "path": "Conversion/input/heat_shock_response/heat_shock_response-1.txt",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "cdffee02343192eaa1315bf7f426ec404c48dcda",
+      "size": 1155,
+      "url": "https://api.github.com/repos/kmaeda16/KinModGPT/git/blobs/cdffee02343192eaa1315bf7f426ec404c48dcda"
+    },
+    {
+      "path": "Conversion/input/heat_shock_response/heat_shock_response-2.txt",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "bfa10d325488527eeb03f954ab2ae5196b143e21",
+      "size": 560,
+      "url": "https://api.github.com/repos/kmaeda16/KinModGPT/git/blobs/bfa10d325488527eeb03f954ab2ae5196b143e21"
+    },
+    {
+      "path": "Conversion/input/hiv",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "0b9128e974894bcec02ab6afa9d052ce1aa8ebbb",
+      "url": "https://api.github.com/repos/kmaeda16/KinModGPT/git/trees/0b9128e974894bcec02ab6afa9d052ce1aa8ebbb"
+    },
+    {
+      "path": "Conversion/input/hiv/hiv.txt",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "df0fd797480fb49939dc232925c2a7e383929aa1",
+      "size": 376,
+      "url": "https://api.github.com/repos/kmaeda16/KinModGPT/git/blobs/df0fd797480fb49939dc232925c2a7e383929aa1"
+    },
+    {
+      "path": "Conversion/input/three-step",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "71f98c7a59c4dcc80736bbc9c93b8d6285e817e7",
+      "url": "https://api.github.com/repos/kmaeda16/KinModGPT/git/trees/71f98c7a59c4dcc80736bbc9c93b8d6285e817e7"
+    },
+    {
+      "path": "Conversion/input/three-step/three-step.txt",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "f427ff496e1fc2bb76bb189b5c6e80109f7f4038",
+      "size": 396,
+      "url": "https://api.github.com/repos/kmaeda16/KinModGPT/git/blobs/f427ff496e1fc2bb76bb189b5c6e80109f7f4038"
+    },
+    {
+      "path": "LICENSE",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "1c74eab7434fc9ce0c7af0135822709dbed12b49",
+      "size": 1065,
+      "url": "https://api.github.com/repos/kmaeda16/KinModGPT/git/blobs/1c74eab7434fc9ce0c7af0135822709dbed12b49"
+    },
+    {
+      "path": "README.md",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "b41576afaea31774cb0d0033df970db6eea9b150",
+      "size": 430,
+      "url": "https://api.github.com/repos/kmaeda16/KinModGPT/git/blobs/b41576afaea31774cb0d0033df970db6eea9b150"
+    },
+    {
+      "path": "Simulation",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "ccded8b297461bc5d493fc1390ba45d3db0e260a",
+      "url": "https://api.github.com/repos/kmaeda16/KinModGPT/git/trees/ccded8b297461bc5d493fc1390ba45d3db0e260a"
+    },
+    {
+      "path": "Simulation/README.md",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "83ee835422308b6be909957d7ae28c92efb04df1",
+      "size": 776,
+      "url": "https://api.github.com/repos/kmaeda16/KinModGPT/git/blobs/83ee835422308b6be909957d7ae28c92efb04df1"
+    },
+    {
+      "path": "Simulation/decay",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "291131cb7e21b8228b4bd71f94942e876280060e",
+      "url": "https://api.github.com/repos/kmaeda16/KinModGPT/git/trees/291131cb7e21b8228b4bd71f94942e876280060e"
+    },
+    {
+      "path": "Simulation/decay/decay_SBML_result.csv",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "7f901167375e892ce0003b59eac89b3d08962d7e",
+      "size": 2633,
+      "url": "https://api.github.com/repos/kmaeda16/KinModGPT/git/blobs/7f901167375e892ce0003b59eac89b3d08962d7e"
+    },
+    {
+      "path": "Simulation/decay/decay_SBML_result.png",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "2c4e365eda68eb7820b659b8dba8a7f0e79ea2e5",
+      "size": 17658,
+      "url": "https://api.github.com/repos/kmaeda16/KinModGPT/git/blobs/2c4e365eda68eb7820b659b8dba8a7f0e79ea2e5"
+    },
+    {
+      "path": "Simulation/decay/main.py",
+      "mode": "100755",
+      "type": "blob",
+      "sha": "e1d9f1dc6e1a88fffc0b64869b7398394cddebf5",
+      "size": 1795,
+      "url": "https://api.github.com/repos/kmaeda16/KinModGPT/git/blobs/e1d9f1dc6e1a88fffc0b64869b7398394cddebf5"
+    },
+    {
+      "path": "Simulation/decay/stdout.txt",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "cbe007771783dbd0052decc3a07196161a861062",
+      "size": 87,
+      "url": "https://api.github.com/repos/kmaeda16/KinModGPT/git/blobs/cbe007771783dbd0052decc3a07196161a861062"
+    },
+    {
+      "path": "Simulation/heat_shock_response",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "b36dee828612f459facbafd8e1af6d318e43d26d",
+      "url": "https://api.github.com/repos/kmaeda16/KinModGPT/git/trees/b36dee828612f459facbafd8e1af6d318e43d26d"
+    },
+    {
+      "path": "Simulation/heat_shock_response/heat_shock_response_SBML_result.csv",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "96f3efb1338a9f8fdf9e602d7b42b9f0b765b082",
+      "size": 68266,
+      "url": "https://api.github.com/repos/kmaeda16/KinModGPT/git/blobs/96f3efb1338a9f8fdf9e602d7b42b9f0b765b082"
+    },
+    {
+      "path": "Simulation/heat_shock_response/heat_shock_response_SBML_result.png",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "d0bde6fa3b5deaacf3dac5e41e18d9d59b1112a3",
+      "size": 38896,
+      "url": "https://api.github.com/repos/kmaeda16/KinModGPT/git/blobs/d0bde6fa3b5deaacf3dac5e41e18d9d59b1112a3"
+    },
+    {
+      "path": "Simulation/heat_shock_response/main.py",
+      "mode": "100755",
+      "type": "blob",
+      "sha": "4c648f34a9b8f9fe54ef0078b35624d7ae8e4300",
+      "size": 5325,
+      "url": "https://api.github.com/repos/kmaeda16/KinModGPT/git/blobs/4c648f34a9b8f9fe54ef0078b35624d7ae8e4300"
+    },
+    {
+      "path": "Simulation/heat_shock_response/stdout.txt",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "7c37008aac8ace5d0a95a3cb6165c9f78b1539ec",
+      "size": 2339,
+      "url": "https://api.github.com/repos/kmaeda16/KinModGPT/git/blobs/7c37008aac8ace5d0a95a3cb6165c9f78b1539ec"
+    },
+    {
+      "path": "Simulation/hiv",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "7b305ac7b271d3c66d59dfb66bc2095199ac1a14",
+      "url": "https://api.github.com/repos/kmaeda16/KinModGPT/git/trees/7b305ac7b271d3c66d59dfb66bc2095199ac1a14"
+    },
+    {
+      "path": "Simulation/hiv/hiv_SBML_result.csv",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "ee6dd61df3f50e51070ce965f9fae7af9b2a4096",
+      "size": 13157,
+      "url": "https://api.github.com/repos/kmaeda16/KinModGPT/git/blobs/ee6dd61df3f50e51070ce965f9fae7af9b2a4096"
+    },
+    {
+      "path": "Simulation/hiv/hiv_SBML_result.png",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "7dce0434feb62dc8459da8194822597faf4af26c",
+      "size": 28716,
+      "url": "https://api.github.com/repos/kmaeda16/KinModGPT/git/blobs/7dce0434feb62dc8459da8194822597faf4af26c"
+    },
+    {
+      "path": "Simulation/hiv/main.py",
+      "mode": "100755",
+      "type": "blob",
+      "sha": "ebcbcce1a50966ae4401b3fa715f05fefbfcec70",
+      "size": 2206,
+      "url": "https://api.github.com/repos/kmaeda16/KinModGPT/git/blobs/ebcbcce1a50966ae4401b3fa715f05fefbfcec70"
+    },
+    {
+      "path": "Simulation/hiv/stdout.txt",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "86768d24b0e04201f593e2fd45b01f938f9eab2f",
+      "size": 348,
+      "url": "https://api.github.com/repos/kmaeda16/KinModGPT/git/blobs/86768d24b0e04201f593e2fd45b01f938f9eab2f"
+    },
+    {
+      "path": "Simulation/three-step",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "a597afa953a4d5299f04400fc4bcf576d90c4756",
+      "url": "https://api.github.com/repos/kmaeda16/KinModGPT/git/trees/a597afa953a4d5299f04400fc4bcf576d90c4756"
+    },
+    {
+      "path": "Simulation/three-step/main.py",
+      "mode": "100755",
+      "type": "blob",
+      "sha": "34c13224d30d942377e5daf6527c5622673cc003",
+      "size": 1801,
+      "url": "https://api.github.com/repos/kmaeda16/KinModGPT/git/blobs/34c13224d30d942377e5daf6527c5622673cc003"
+    },
+    {
+      "path": "Simulation/three-step/stdout.txt",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "d57d4c6965d9d501fedd9f5c150896e650d618da",
+      "size": 691,
+      "url": "https://api.github.com/repos/kmaeda16/KinModGPT/git/blobs/d57d4c6965d9d501fedd9f5c150896e650d618da"
+    },
+    {
+      "path": "Simulation/three-step/three-step_SBML_result.csv",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "2b412c695c38efd6d4a85a96c0d8573d52f01692",
+      "size": 14476,
+      "url": "https://api.github.com/repos/kmaeda16/KinModGPT/git/blobs/2b412c695c38efd6d4a85a96c0d8573d52f01692"
+    },
+    {
+      "path": "Simulation/three-step/three-step_SBML_result.png",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "3944c69537bf65d8b2796e3da35274cb5f3f46fb",
+      "size": 64368,
+      "url": "https://api.github.com/repos/kmaeda16/KinModGPT/git/blobs/3944c69537bf65d8b2796e3da35274cb5f3f46fb"
+    }
+  ],
+  "truncated": false
+}

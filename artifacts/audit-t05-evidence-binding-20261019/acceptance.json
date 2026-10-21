@@ -1,0 +1,122 @@
+{
+  "task_id": "T05",
+  "status": "accepted",
+  "accepted_at_utc": "2026-10-19T09:36:11.927486+00:00",
+  "implementation_owner": "Codex alone, continuing the latest user-authorized implementation arrangement",
+  "dsh_or_subagents_used": false,
+  "objective": "Versioned source-position and typed target/value/expression binding with bounded deterministic validation",
+  "baseline": {
+    "accepted_full_passed": 926,
+    "previous_acceptance_hashes_match": true,
+    "all_original_tests_unchanged": true,
+    "minimal_failures": 16
+  },
+  "production_files": [
+    "src/biomodel_agent/agent.py",
+    "src/biomodel_agent/agent_tools.py",
+    "src/biomodel_agent/application.py",
+    "src/biomodel_agent/bindings.py",
+    "src/biomodel_agent/evidence.py",
+    "src/biomodel_agent/llm.py",
+    "src/biomodel_agent/reporting.py"
+  ],
+  "new_test_files": [
+    "tests/test_bindings.py",
+    "tests/test_evidence_binding_acceptance.py"
+  ],
+  "new_test_cases": 64,
+  "verification": {
+    "baseline": {
+      "tests": 16,
+      "failures": 16,
+      "errors": 0,
+      "skipped": 0,
+      "time": 3.963
+    },
+    "targeted-01": {
+      "tests": 67,
+      "failures": 1,
+      "errors": 0,
+      "skipped": 0,
+      "time": 18.499
+    },
+    "parser-01": {
+      "tests": 35,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "time": 0.045
+    },
+    "full-01": {
+      "tests": 942,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "time": 187.322
+    },
+    "expanded-01": {
+      "tests": 64,
+      "failures": 1,
+      "errors": 0,
+      "skipped": 0,
+      "time": 8.612
+    },
+    "expanded-02": {
+      "tests": 108,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "time": 12.376
+    },
+    "full-final": {
+      "tests": 990,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "time": 184.844
+    }
+  },
+  "commands": {
+    "baseline": "PYTHONDONTWRITEBYTECODE=1 .venv/bin/python -m pytest -q -p no:cacheprovider tests/test_evidence_binding_acceptance.py --basetemp=/tmp/biomodel-t05-baseline --junitxml=artifacts/audit-t05-evidence-binding-20261019/baseline.xml",
+    "targeted-01": "PYTHONDONTWRITEBYTECODE=1 .venv/bin/python -m pytest -q -p no:cacheprovider tests/test_evidence_binding_acceptance.py tests/test_citation_diagnostics.py tests/test_source_and_citation_regressions.py tests/test_run_verdict_acceptance.py --basetemp=/tmp/biomodel-t05-targeted --junitxml=artifacts/audit-t05-evidence-binding-20261019/targeted-01.xml",
+    "full-01": "PYTHONDONTWRITEBYTECODE=1 .venv/bin/python -m pytest -q -p no:cacheprovider --basetemp=/tmp/biomodel-t05-full-01 --junitxml=artifacts/audit-t05-evidence-binding-20261019/full-01.xml",
+    "parser-01": "PYTHONDONTWRITEBYTECODE=1 .venv/bin/python -m pytest -q -p no:cacheprovider tests/test_bindings.py --basetemp=/tmp/biomodel-t05-parser --junitxml=artifacts/audit-t05-evidence-binding-20261019/parser-01.xml",
+    "expanded-01": "PYTHONDONTWRITEBYTECODE=1 .venv/bin/python -m pytest -q -p no:cacheprovider tests/test_bindings.py tests/test_evidence_binding_acceptance.py --basetemp=/tmp/biomodel-t05-expanded --junitxml=artifacts/audit-t05-evidence-binding-20261019/expanded-01.xml",
+    "expanded-02": "PYTHONDONTWRITEBYTECODE=1 .venv/bin/python -m pytest -q -p no:cacheprovider tests/test_bindings.py tests/test_evidence_binding_acceptance.py tests/test_storage_evidence.py --basetemp=/tmp/biomodel-t05-expanded-02 --junitxml=artifacts/audit-t05-evidence-binding-20261019/expanded-02.xml",
+    "full-final": "PYTHONDONTWRITEBYTECODE=1 .venv/bin/python -m pytest -q -p no:cacheprovider --basetemp=/tmp/biomodel-t05-full-final --junitxml=artifacts/audit-t05-evidence-binding-20261019/full-final.xml",
+    "scientific_evidence": "PYTHONDONTWRITEBYTECODE=1 .venv/bin/python artifacts/audit-t05-evidence-binding-20261019/scientific-evidence.py"
+  },
+  "scientific_evidence": "scientific-results.json",
+  "diff": "changes.patch",
+  "contract": "implementation-contract.md",
+  "execution_plan": "execution-plan.md",
+  "implementation_sha256": "982616572ae1526582b9b63a04ca6c0d007c78725fcd72168f8668f4b4675ae6",
+  "final_hashes": {
+    "src/biomodel_agent/agent.py": "d1bb939d8d4d975a3231ab4ca3f017b9c08d2f2972f252104bc224e6ba0c6dd0",
+    "src/biomodel_agent/agent_tools.py": "af1470e51faaa6fd5abdc86d61af18558ca08afc2814d30cb6b7e982a4399fb6",
+    "src/biomodel_agent/application.py": "30eac70c7728d42056be1333ff0a300e517c5e26d49b14b49649a1c81ca4811f",
+    "src/biomodel_agent/bindings.py": "068c23dc0c4ee4132560d93b9ee5194f83a73a421145c1bd61b7fbae0298fecd",
+    "src/biomodel_agent/evidence.py": "4ff0fdfdf664f59c99a1f4416c45ad43cc95ec584fa7d90ec447b24353fd9d40",
+    "src/biomodel_agent/llm.py": "bc27c145a8224b2b5f7b1be5867f6c3df676b0d95c62000b78f159a8b1183941",
+    "src/biomodel_agent/reporting.py": "aaceecc32c828b7678631f9765873089b2b744218520442f832529f0601acd54",
+    "tests/test_bindings.py": "f116d48bf11200f5fa44ba48ce286eed4d85f772b94441e7e6941d71f3814bbf",
+    "tests/test_evidence_binding_acceptance.py": "9c86479316aeaa1c808616d18d2320f4522fe8e5aed754033e1fce9280fd42f2",
+    "docs/evidence-binding.md": "f4ea4c795b95086b6e5697063048f9e38ef4561ee5e577ccf9f77ac6d426b8ca",
+    "docs/optimization-backlog.md": "45464d71f2083475990a42a1cf2c7d5df606f18891f22a86d503e16cdbcb7f6d",
+    "docs/seven-point-status.md": "0c1b5a7ddd1b5bca3f326ed4c6479b37402574dbbb95db99e653961425eab931"
+  },
+  "compatibility": [
+    "Generic legacy claims remain readable and retain quote-only coverage; typed execution recomputes support.",
+    "No-citation numerical diagnostics retain unverified execution; missing coverage remains unknown.",
+    "Known source conflicts and missing numeric values retain priority; explicit hypotheses retain conjecture authority.",
+    "T03b exact source fingerprints and result adoption, and T04 study deadlines are preserved."
+  ],
+  "limitations": [
+    "Binding matched is not semantic support, unit correctness, reaction stoichiometry or scientific truth; semantic_support stays unknown.",
+    "Only bounded direct ASCII declarations, restricted expressions and explicitly witnessed aliases are recognized.",
+    "Complex language, general equivalences, unit conversion, Chinese/LaTeX/image formulas and cross-page semantics remain unknown.",
+    "Scripted decisions plus real calculations are development evidence, not new model capability or independent holdout scores.",
+    "No external inference, DSH, subagents, dependency changes, independent evalset reads or c13/c18 transmission."
+  ],
+  "next_task": "T06: thin adapter for mature PDF parser outputs with preserved original PDF, parser version and page/block/original offset provenance"
+}

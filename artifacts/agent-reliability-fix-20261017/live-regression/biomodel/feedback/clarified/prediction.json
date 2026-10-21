@@ -1,0 +1,88 @@
+{
+  "state": "completed",
+  "facts": {
+    "s/value": {
+      "value": 1.0,
+      "evidence": [
+        {
+          "source_id": "case",
+          "quote": "Parameter s = 1.0."
+        }
+      ]
+    },
+    "K/value": {
+      "value": 1.0,
+      "evidence": [
+        {
+          "source_id": "case",
+          "quote": "Parameter K = 1.0."
+        }
+      ]
+    },
+    "dr/value": {
+      "value": 0.4,
+      "evidence": [
+        {
+          "source_id": "case",
+          "quote": "Parameter dr = 0.4."
+        }
+      ]
+    },
+    "kp/value": {
+      "value": 0.7,
+      "evidence": [
+        {
+          "source_id": "case",
+          "quote": "Parameter kp = 0.7."
+        }
+      ]
+    },
+    "dp/value": {
+      "value": 0.3,
+      "evidence": [
+        {
+          "source_id": "case",
+          "quote": "Parameter dp = 0.3."
+        }
+      ]
+    },
+    "R/initial": {
+      "value": 0.2,
+      "evidence": [
+        {
+          "source_id": "case",
+          "quote": "Initial R = 0.2."
+        }
+      ]
+    },
+    "P/initial": {
+      "value": 0.1,
+      "evidence": [
+        {
+          "source_id": "case",
+          "quote": "Initial P = 0.1."
+        }
+      ]
+    },
+    "rule:R/expression": {
+      "value": "s/(1+(P/K)**2)-dr*R",
+      "evidence": [
+        {
+          "source_id": "case",
+          "quote": "The author confirms dR/dt = s/(1+(P/K)**2)-dr*R."
+        }
+      ]
+    },
+    "rule:P/expression": {
+      "value": "kp*R-dp*P",
+      "evidence": [
+        {
+          "source_id": "case",
+          "quote": "Equation dP/dt = kp*R-dp*P."
+        }
+      ]
+    }
+  },
+  "proposal_status": "last_attempt_not_necessarily_accepted",
+  "duplicate_targets": []
+}

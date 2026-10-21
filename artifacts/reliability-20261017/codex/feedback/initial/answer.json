@@ -1,0 +1,25 @@
+{
+  "status": "needs_input",
+  "parameters": [
+    {"id": "s", "value": 1.0, "unit": "min^-1"},
+    {"id": "K", "value": 1.0, "unit": "dimensionless"},
+    {"id": "dr", "value": 0.4, "unit": "min^-1"},
+    {"id": "kp", "value": 0.7, "unit": "min^-1"},
+    {"id": "dp", "value": 0.3, "unit": "min^-1"}
+  ],
+  "states": [
+    {"id": "R", "initial": 0.2},
+    {"id": "P", "initial": 0.1}
+  ],
+  "equations": [
+    {"state": "R", "expression": null},
+    {"state": "P", "expression": "kp*R-dp*P"}
+  ],
+  "questions": [
+    "Which equation should be used: dR/dt = s/(1+(P/K)**2)-dr*R or dR/dt = s/(1+(P/K))-dr*R?"
+  ],
+  "limitations": [
+    "The two alternatives for dR/dt are equally authoritative; the source does not select one, so a unique simulation is not justified.",
+    "Parameter units are inferred by dimensional consistency from dimensionless states and time in minutes."
+  ]
+}

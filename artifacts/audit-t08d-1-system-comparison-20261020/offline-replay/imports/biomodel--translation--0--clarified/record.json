@@ -1,0 +1,53 @@
+{
+  "schema_version": 1,
+  "protocol": "native_system_comparison_v1",
+  "manifest_sha256": "6c97c6c6462b4a6598c1580d5a2863fc70e3977466c7693c4cc3112dff99348b",
+  "trial": {
+    "id": "biomodel--translation--0--clarified",
+    "system_id": "biomodel",
+    "runtime": "biomodel_agent",
+    "case_id": "translation",
+    "repeat": 0,
+    "phase": "clarified",
+    "parent_trial_id": "biomodel--translation--0--initial"
+  },
+  "evidence_kind": "scripted_control",
+  "capture_kind": "product_v1_record",
+  "capture_sha256": "ac078d7f0018f8bf3282d4dff84e8845970725a5a5d2cac1a6de722438083c9c",
+  "status": "finished",
+  "session": {
+    "id": "7b41105423a994ba4c5de60290e77cd235083174e99cd90926ece8f7ba4812a4",
+    "mode": "resumed",
+    "parent_record_sha256": "297784740abdf45604a6a7a4b4942ce172345cc637fd8a1bb996652fb2c8419d",
+    "identity_authenticated": false
+  },
+  "observation": {
+    "state": "completed",
+    "completion_claimed": true,
+    "execution_declared": true,
+    "execution_observed": true,
+    "question_texts": [],
+    "final_messages": [],
+    "artifacts": []
+  },
+  "assessment": {
+    "authority": "unreviewed",
+    "numeric": "unknown",
+    "source_support": "unknown",
+    "behavior_labels_reviewed": false
+  },
+  "telemetry": {
+    "elapsed_seconds": 2.963971097000467,
+    "model_calls": 3,
+    "tool_items": 3,
+    "tool_count_kind": "domain_tool_invocations",
+    "input_tokens": null,
+    "output_tokens": null,
+    "cached_input_tokens": null,
+    "reasoning_output_tokens": null,
+    "cumulative_elapsed_seconds": 3.398020909000479
+  },
+  "diagnostics": [
+    "product_v1_observation_attribution_not_identity_authentication"
+  ]
+}

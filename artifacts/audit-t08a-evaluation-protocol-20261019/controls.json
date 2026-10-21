@@ -1,0 +1,869 @@
+{
+  "status": "passed",
+  "control_sets": {
+    "nominal": {
+      "exit_code": 0,
+      "summary": {
+        "fixed_workflow": {
+          "planned_trials": 10,
+          "missing_trials": 0,
+          "invalid_trials": 0,
+          "failure_causes": {
+            "finished": 10
+          },
+          "budget_exceeded_trials": 0,
+          "budget_unknown_trials": 0,
+          "correct_completion": {
+            "numerator": 6,
+            "denominator": 6,
+            "unknown": 0,
+            "rate": 1.0
+          },
+          "within_budget_completion": {
+            "numerator": 6,
+            "denominator": 6,
+            "unknown": 0,
+            "rate": 1.0
+          },
+          "gap_identification": {
+            "numerator": 4,
+            "denominator": 4,
+            "unknown": 0,
+            "rate": 1.0
+          },
+          "targeted_question": {
+            "numerator": 4,
+            "denominator": 4,
+            "unknown": 0,
+            "rate": 1.0
+          },
+          "unsupported_execution": {
+            "numerator": 0,
+            "denominator": 10,
+            "unknown": 0,
+            "rate": 0.0
+          },
+          "unsupported_completion": {
+            "numerator": 0,
+            "denominator": 10,
+            "unknown": 0,
+            "rate": 0.0
+          },
+          "overblocking": {
+            "numerator": 0,
+            "denominator": 6,
+            "unknown": 0,
+            "rate": 0.0
+          },
+          "clarification_recovery": {
+            "numerator": 4,
+            "denominator": 4,
+            "unknown": 0,
+            "rate": 1.0
+          },
+          "model_calls": {
+            "known_trials": 10,
+            "reported_subtotal": 10,
+            "total_if_complete": 10
+          },
+          "tool_calls": {
+            "known_trials": 10,
+            "reported_subtotal": 20,
+            "total_if_complete": 20
+          },
+          "elapsed_seconds": {
+            "known_trials": 10,
+            "reported_subtotal": 10.0,
+            "total_if_complete": 10.0
+          },
+          "human_interventions": {
+            "known_trials": 10,
+            "reported_subtotal": 4,
+            "total_if_complete": 4
+          },
+          "human_seconds": {
+            "known_trials": 10,
+            "reported_subtotal": 20.0,
+            "total_if_complete": 20.0
+          },
+          "input_tokens": {
+            "known_trials": 0,
+            "reported_subtotal": null,
+            "total_if_complete": null
+          },
+          "output_tokens": {
+            "known_trials": 0,
+            "reported_subtotal": null,
+            "total_if_complete": null
+          }
+        },
+        "generic_tool_agent": {
+          "planned_trials": 10,
+          "missing_trials": 0,
+          "invalid_trials": 0,
+          "failure_causes": {
+            "finished": 10
+          },
+          "budget_exceeded_trials": 0,
+          "budget_unknown_trials": 0,
+          "correct_completion": {
+            "numerator": 6,
+            "denominator": 6,
+            "unknown": 0,
+            "rate": 1.0
+          },
+          "within_budget_completion": {
+            "numerator": 6,
+            "denominator": 6,
+            "unknown": 0,
+            "rate": 1.0
+          },
+          "gap_identification": {
+            "numerator": 4,
+            "denominator": 4,
+            "unknown": 0,
+            "rate": 1.0
+          },
+          "targeted_question": {
+            "numerator": 4,
+            "denominator": 4,
+            "unknown": 0,
+            "rate": 1.0
+          },
+          "unsupported_execution": {
+            "numerator": 0,
+            "denominator": 10,
+            "unknown": 0,
+            "rate": 0.0
+          },
+          "unsupported_completion": {
+            "numerator": 0,
+            "denominator": 10,
+            "unknown": 0,
+            "rate": 0.0
+          },
+          "overblocking": {
+            "numerator": 0,
+            "denominator": 6,
+            "unknown": 0,
+            "rate": 0.0
+          },
+          "clarification_recovery": {
+            "numerator": 4,
+            "denominator": 4,
+            "unknown": 0,
+            "rate": 1.0
+          },
+          "model_calls": {
+            "known_trials": 10,
+            "reported_subtotal": 10,
+            "total_if_complete": 10
+          },
+          "tool_calls": {
+            "known_trials": 10,
+            "reported_subtotal": 20,
+            "total_if_complete": 20
+          },
+          "elapsed_seconds": {
+            "known_trials": 10,
+            "reported_subtotal": 10.0,
+            "total_if_complete": 10.0
+          },
+          "human_interventions": {
+            "known_trials": 10,
+            "reported_subtotal": 4,
+            "total_if_complete": 4
+          },
+          "human_seconds": {
+            "known_trials": 10,
+            "reported_subtotal": 20.0,
+            "total_if_complete": 20.0
+          },
+          "input_tokens": {
+            "known_trials": 0,
+            "reported_subtotal": null,
+            "total_if_complete": null
+          },
+          "output_tokens": {
+            "known_trials": 0,
+            "reported_subtotal": null,
+            "total_if_complete": null
+          }
+        },
+        "domain_agent": {
+          "planned_trials": 10,
+          "missing_trials": 0,
+          "invalid_trials": 0,
+          "failure_causes": {
+            "finished": 10
+          },
+          "budget_exceeded_trials": 0,
+          "budget_unknown_trials": 0,
+          "correct_completion": {
+            "numerator": 6,
+            "denominator": 6,
+            "unknown": 0,
+            "rate": 1.0
+          },
+          "within_budget_completion": {
+            "numerator": 6,
+            "denominator": 6,
+            "unknown": 0,
+            "rate": 1.0
+          },
+          "gap_identification": {
+            "numerator": 4,
+            "denominator": 4,
+            "unknown": 0,
+            "rate": 1.0
+          },
+          "targeted_question": {
+            "numerator": 4,
+            "denominator": 4,
+            "unknown": 0,
+            "rate": 1.0
+          },
+          "unsupported_execution": {
+            "numerator": 0,
+            "denominator": 10,
+            "unknown": 0,
+            "rate": 0.0
+          },
+          "unsupported_completion": {
+            "numerator": 0,
+            "denominator": 10,
+            "unknown": 0,
+            "rate": 0.0
+          },
+          "overblocking": {
+            "numerator": 0,
+            "denominator": 6,
+            "unknown": 0,
+            "rate": 0.0
+          },
+          "clarification_recovery": {
+            "numerator": 4,
+            "denominator": 4,
+            "unknown": 0,
+            "rate": 1.0
+          },
+          "model_calls": {
+            "known_trials": 10,
+            "reported_subtotal": 10,
+            "total_if_complete": 10
+          },
+          "tool_calls": {
+            "known_trials": 10,
+            "reported_subtotal": 20,
+            "total_if_complete": 20
+          },
+          "elapsed_seconds": {
+            "known_trials": 10,
+            "reported_subtotal": 10.0,
+            "total_if_complete": 10.0
+          },
+          "human_interventions": {
+            "known_trials": 10,
+            "reported_subtotal": 4,
+            "total_if_complete": 4
+          },
+          "human_seconds": {
+            "known_trials": 10,
+            "reported_subtotal": 20.0,
+            "total_if_complete": 20.0
+          },
+          "input_tokens": {
+            "known_trials": 0,
+            "reported_subtotal": null,
+            "total_if_complete": null
+          },
+          "output_tokens": {
+            "known_trials": 0,
+            "reported_subtotal": null,
+            "total_if_complete": null
+          }
+        }
+      },
+      "label": "Fixture observations and counters only; no real model, tool execution, human work or scientific result."
+    },
+    "adverse": {
+      "exit_code": 1,
+      "summary": {
+        "fixed_workflow": {
+          "planned_trials": 10,
+          "missing_trials": 0,
+          "invalid_trials": 1,
+          "failure_causes": {
+            "provider_error": 1,
+            "finished": 8,
+            "invalid_record": 1
+          },
+          "budget_exceeded_trials": 1,
+          "budget_unknown_trials": 1,
+          "correct_completion": {
+            "numerator": 2,
+            "denominator": 6,
+            "unknown": 0,
+            "rate": 0.3333333333333333
+          },
+          "within_budget_completion": {
+            "numerator": 1,
+            "denominator": 6,
+            "unknown": 0,
+            "rate": 0.16666666666666666
+          },
+          "gap_identification": {
+            "numerator": 3,
+            "denominator": 4,
+            "unknown": 0,
+            "rate": 0.75
+          },
+          "targeted_question": {
+            "numerator": 2,
+            "denominator": 4,
+            "unknown": 0,
+            "rate": 0.5
+          },
+          "unsupported_execution": {
+            "numerator": 1,
+            "denominator": 10,
+            "unknown": 2,
+            "rate": 0.1
+          },
+          "unsupported_completion": {
+            "numerator": 1,
+            "denominator": 10,
+            "unknown": 2,
+            "rate": 0.1
+          },
+          "overblocking": {
+            "numerator": 1,
+            "denominator": 6,
+            "unknown": 0,
+            "rate": 0.16666666666666666
+          },
+          "clarification_recovery": {
+            "numerator": 1,
+            "denominator": 4,
+            "unknown": 0,
+            "rate": 0.25
+          },
+          "model_calls": {
+            "known_trials": 9,
+            "reported_subtotal": 16,
+            "total_if_complete": null
+          },
+          "tool_calls": {
+            "known_trials": 9,
+            "reported_subtotal": 18,
+            "total_if_complete": null
+          },
+          "elapsed_seconds": {
+            "known_trials": 9,
+            "reported_subtotal": 9.0,
+            "total_if_complete": null
+          },
+          "human_interventions": {
+            "known_trials": 9,
+            "reported_subtotal": 3,
+            "total_if_complete": null
+          },
+          "human_seconds": {
+            "known_trials": 9,
+            "reported_subtotal": 15.0,
+            "total_if_complete": null
+          },
+          "input_tokens": {
+            "known_trials": 0,
+            "reported_subtotal": null,
+            "total_if_complete": null
+          },
+          "output_tokens": {
+            "known_trials": 0,
+            "reported_subtotal": null,
+            "total_if_complete": null
+          }
+        },
+        "generic_tool_agent": {
+          "planned_trials": 10,
+          "missing_trials": 0,
+          "invalid_trials": 1,
+          "failure_causes": {
+            "provider_error": 1,
+            "finished": 8,
+            "invalid_record": 1
+          },
+          "budget_exceeded_trials": 1,
+          "budget_unknown_trials": 1,
+          "correct_completion": {
+            "numerator": 2,
+            "denominator": 6,
+            "unknown": 0,
+            "rate": 0.3333333333333333
+          },
+          "within_budget_completion": {
+            "numerator": 1,
+            "denominator": 6,
+            "unknown": 0,
+            "rate": 0.16666666666666666
+          },
+          "gap_identification": {
+            "numerator": 3,
+            "denominator": 4,
+            "unknown": 0,
+            "rate": 0.75
+          },
+          "targeted_question": {
+            "numerator": 2,
+            "denominator": 4,
+            "unknown": 0,
+            "rate": 0.5
+          },
+          "unsupported_execution": {
+            "numerator": 1,
+            "denominator": 10,
+            "unknown": 2,
+            "rate": 0.1
+          },
+          "unsupported_completion": {
+            "numerator": 1,
+            "denominator": 10,
+            "unknown": 2,
+            "rate": 0.1
+          },
+          "overblocking": {
+            "numerator": 1,
+            "denominator": 6,
+            "unknown": 0,
+            "rate": 0.16666666666666666
+          },
+          "clarification_recovery": {
+            "numerator": 1,
+            "denominator": 4,
+            "unknown": 0,
+            "rate": 0.25
+          },
+          "model_calls": {
+            "known_trials": 9,
+            "reported_subtotal": 16,
+            "total_if_complete": null
+          },
+          "tool_calls": {
+            "known_trials": 9,
+            "reported_subtotal": 18,
+            "total_if_complete": null
+          },
+          "elapsed_seconds": {
+            "known_trials": 9,
+            "reported_subtotal": 9.0,
+            "total_if_complete": null
+          },
+          "human_interventions": {
+            "known_trials": 9,
+            "reported_subtotal": 3,
+            "total_if_complete": null
+          },
+          "human_seconds": {
+            "known_trials": 9,
+            "reported_subtotal": 15.0,
+            "total_if_complete": null
+          },
+          "input_tokens": {
+            "known_trials": 0,
+            "reported_subtotal": null,
+            "total_if_complete": null
+          },
+          "output_tokens": {
+            "known_trials": 0,
+            "reported_subtotal": null,
+            "total_if_complete": null
+          }
+        },
+        "domain_agent": {
+          "planned_trials": 10,
+          "missing_trials": 0,
+          "invalid_trials": 1,
+          "failure_causes": {
+            "provider_error": 1,
+            "finished": 8,
+            "invalid_record": 1
+          },
+          "budget_exceeded_trials": 1,
+          "budget_unknown_trials": 1,
+          "correct_completion": {
+            "numerator": 2,
+            "denominator": 6,
+            "unknown": 0,
+            "rate": 0.3333333333333333
+          },
+          "within_budget_completion": {
+            "numerator": 1,
+            "denominator": 6,
+            "unknown": 0,
+            "rate": 0.16666666666666666
+          },
+          "gap_identification": {
+            "numerator": 3,
+            "denominator": 4,
+            "unknown": 0,
+            "rate": 0.75
+          },
+          "targeted_question": {
+            "numerator": 2,
+            "denominator": 4,
+            "unknown": 0,
+            "rate": 0.5
+          },
+          "unsupported_execution": {
+            "numerator": 1,
+            "denominator": 10,
+            "unknown": 2,
+            "rate": 0.1
+          },
+          "unsupported_completion": {
+            "numerator": 1,
+            "denominator": 10,
+            "unknown": 2,
+            "rate": 0.1
+          },
+          "overblocking": {
+            "numerator": 1,
+            "denominator": 6,
+            "unknown": 0,
+            "rate": 0.16666666666666666
+          },
+          "clarification_recovery": {
+            "numerator": 1,
+            "denominator": 4,
+            "unknown": 0,
+            "rate": 0.25
+          },
+          "model_calls": {
+            "known_trials": 9,
+            "reported_subtotal": 16,
+            "total_if_complete": null
+          },
+          "tool_calls": {
+            "known_trials": 9,
+            "reported_subtotal": 18,
+            "total_if_complete": null
+          },
+          "elapsed_seconds": {
+            "known_trials": 9,
+            "reported_subtotal": 9.0,
+            "total_if_complete": null
+          },
+          "human_interventions": {
+            "known_trials": 9,
+            "reported_subtotal": 3,
+            "total_if_complete": null
+          },
+          "human_seconds": {
+            "known_trials": 9,
+            "reported_subtotal": 15.0,
+            "total_if_complete": null
+          },
+          "input_tokens": {
+            "known_trials": 0,
+            "reported_subtotal": null,
+            "total_if_complete": null
+          },
+          "output_tokens": {
+            "known_trials": 0,
+            "reported_subtotal": null,
+            "total_if_complete": null
+          }
+        }
+      },
+      "label": "Fixture observations and counters only; no real model, tool execution, human work or scientific result."
+    },
+    "missing": {
+      "exit_code": 0,
+      "summary": {
+        "fixed_workflow": {
+          "planned_trials": 10,
+          "missing_trials": 10,
+          "invalid_trials": 0,
+          "failure_causes": {
+            "missing": 10
+          },
+          "budget_exceeded_trials": 0,
+          "budget_unknown_trials": 10,
+          "correct_completion": {
+            "numerator": 0,
+            "denominator": 6,
+            "unknown": 0,
+            "rate": 0.0
+          },
+          "within_budget_completion": {
+            "numerator": 0,
+            "denominator": 6,
+            "unknown": 0,
+            "rate": 0.0
+          },
+          "gap_identification": {
+            "numerator": 0,
+            "denominator": 4,
+            "unknown": 0,
+            "rate": 0.0
+          },
+          "targeted_question": {
+            "numerator": 0,
+            "denominator": 4,
+            "unknown": 0,
+            "rate": 0.0
+          },
+          "unsupported_execution": {
+            "numerator": 0,
+            "denominator": 10,
+            "unknown": 10,
+            "rate": 0.0
+          },
+          "unsupported_completion": {
+            "numerator": 0,
+            "denominator": 10,
+            "unknown": 10,
+            "rate": 0.0
+          },
+          "overblocking": {
+            "numerator": 0,
+            "denominator": 6,
+            "unknown": 0,
+            "rate": 0.0
+          },
+          "clarification_recovery": {
+            "numerator": 0,
+            "denominator": 4,
+            "unknown": 0,
+            "rate": 0.0
+          },
+          "model_calls": {
+            "known_trials": 0,
+            "reported_subtotal": null,
+            "total_if_complete": null
+          },
+          "tool_calls": {
+            "known_trials": 0,
+            "reported_subtotal": null,
+            "total_if_complete": null
+          },
+          "elapsed_seconds": {
+            "known_trials": 0,
+            "reported_subtotal": null,
+            "total_if_complete": null
+          },
+          "human_interventions": {
+            "known_trials": 0,
+            "reported_subtotal": null,
+            "total_if_complete": null
+          },
+          "human_seconds": {
+            "known_trials": 0,
+            "reported_subtotal": null,
+            "total_if_complete": null
+          },
+          "input_tokens": {
+            "known_trials": 0,
+            "reported_subtotal": null,
+            "total_if_complete": null
+          },
+          "output_tokens": {
+            "known_trials": 0,
+            "reported_subtotal": null,
+            "total_if_complete": null
+          }
+        },
+        "generic_tool_agent": {
+          "planned_trials": 10,
+          "missing_trials": 10,
+          "invalid_trials": 0,
+          "failure_causes": {
+            "missing": 10
+          },
+          "budget_exceeded_trials": 0,
+          "budget_unknown_trials": 10,
+          "correct_completion": {
+            "numerator": 0,
+            "denominator": 6,
+            "unknown": 0,
+            "rate": 0.0
+          },
+          "within_budget_completion": {
+            "numerator": 0,
+            "denominator": 6,
+            "unknown": 0,
+            "rate": 0.0
+          },
+          "gap_identification": {
+            "numerator": 0,
+            "denominator": 4,
+            "unknown": 0,
+            "rate": 0.0
+          },
+          "targeted_question": {
+            "numerator": 0,
+            "denominator": 4,
+            "unknown": 0,
+            "rate": 0.0
+          },
+          "unsupported_execution": {
+            "numerator": 0,
+            "denominator": 10,
+            "unknown": 10,
+            "rate": 0.0
+          },
+          "unsupported_completion": {
+            "numerator": 0,
+            "denominator": 10,
+            "unknown": 10,
+            "rate": 0.0
+          },
+          "overblocking": {
+            "numerator": 0,
+            "denominator": 6,
+            "unknown": 0,
+            "rate": 0.0
+          },
+          "clarification_recovery": {
+            "numerator": 0,
+            "denominator": 4,
+            "unknown": 0,
+            "rate": 0.0
+          },
+          "model_calls": {
+            "known_trials": 0,
+            "reported_subtotal": null,
+            "total_if_complete": null
+          },
+          "tool_calls": {
+            "known_trials": 0,
+            "reported_subtotal": null,
+            "total_if_complete": null
+          },
+          "elapsed_seconds": {
+            "known_trials": 0,
+            "reported_subtotal": null,
+            "total_if_complete": null
+          },
+          "human_interventions": {
+            "known_trials": 0,
+            "reported_subtotal": null,
+            "total_if_complete": null
+          },
+          "human_seconds": {
+            "known_trials": 0,
+            "reported_subtotal": null,
+            "total_if_complete": null
+          },
+          "input_tokens": {
+            "known_trials": 0,
+            "reported_subtotal": null,
+            "total_if_complete": null
+          },
+          "output_tokens": {
+            "known_trials": 0,
+            "reported_subtotal": null,
+            "total_if_complete": null
+          }
+        },
+        "domain_agent": {
+          "planned_trials": 10,
+          "missing_trials": 10,
+          "invalid_trials": 0,
+          "failure_causes": {
+            "missing": 10
+          },
+          "budget_exceeded_trials": 0,
+          "budget_unknown_trials": 10,
+          "correct_completion": {
+            "numerator": 0,
+            "denominator": 6,
+            "unknown": 0,
+            "rate": 0.0
+          },
+          "within_budget_completion": {
+            "numerator": 0,
+            "denominator": 6,
+            "unknown": 0,
+            "rate": 0.0
+          },
+          "gap_identification": {
+            "numerator": 0,
+            "denominator": 4,
+            "unknown": 0,
+            "rate": 0.0
+          },
+          "targeted_question": {
+            "numerator": 0,
+            "denominator": 4,
+            "unknown": 0,
+            "rate": 0.0
+          },
+          "unsupported_execution": {
+            "numerator": 0,
+            "denominator": 10,
+            "unknown": 10,
+            "rate": 0.0
+          },
+          "unsupported_completion": {
+            "numerator": 0,
+            "denominator": 10,
+            "unknown": 10,
+            "rate": 0.0
+          },
+          "overblocking": {
+            "numerator": 0,
+            "denominator": 6,
+            "unknown": 0,
+            "rate": 0.0
+          },
+          "clarification_recovery": {
+            "numerator": 0,
+            "denominator": 4,
+            "unknown": 0,
+            "rate": 0.0
+          },
+          "model_calls": {
+            "known_trials": 0,
+            "reported_subtotal": null,
+            "total_if_complete": null
+          },
+          "tool_calls": {
+            "known_trials": 0,
+            "reported_subtotal": null,
+            "total_if_complete": null
+          },
+          "elapsed_seconds": {
+            "known_trials": 0,
+            "reported_subtotal": null,
+            "total_if_complete": null
+          },
+          "human_interventions": {
+            "known_trials": 0,
+            "reported_subtotal": null,
+            "total_if_complete": null
+          },
+          "human_seconds": {
+            "known_trials": 0,
+            "reported_subtotal": null,
+            "total_if_complete": null
+          },
+          "input_tokens": {
+            "known_trials": 0,
+            "reported_subtotal": null,
+            "total_if_complete": null
+          },
+          "output_tokens": {
+            "known_trials": 0,
+            "reported_subtotal": null,
+            "total_if_complete": null
+          }
+        }
+      },
+      "label": "Fixture observations and counters only; no real model, tool execution, human work or scientific result."
+    }
+  },
+  "actual_model_calls": 0,
+  "actual_scientific_tool_calls": 0,
+  "actual_human_review_decisions": 0
+}

@@ -1,0 +1,167 @@
+{
+  "task_id": "T06",
+  "status": "accepted",
+  "accepted_at_utc": "2026-10-19T10:14:45.190421+00:00",
+  "implementation_owner": "Codex alone, user explicitly clarified implementation",
+  "dsh_or_subagents_used": false,
+  "objective": "Mature local PDF extraction adapter with exact extracted-text provenance, native block geometry and unverified auxiliary tables",
+  "baseline": {
+    "accepted_full_passed": 990,
+    "t05_all_accepted_hashes_match": true,
+    "all_original_test_files_unchanged": true,
+    "minimum_failures": 13
+  },
+  "production_files": [
+    "src/biomodel_agent/agent.py",
+    "src/biomodel_agent/cli.py",
+    "src/biomodel_agent/evidence.py",
+    "src/biomodel_agent/llm.py",
+    "src/biomodel_agent/pdf_adapter.py"
+  ],
+  "new_test_file": "tests/test_pdf_adapter_acceptance.py",
+  "new_test_cases": 40,
+  "verification": {
+    "baseline": {
+      "tests": 13,
+      "failures": 13,
+      "errors": 0,
+      "skipped": 0,
+      "time": 0.994
+    },
+    "targeted-01": {
+      "tests": 83,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "time": 13.978
+    },
+    "expanded-01": {
+      "tests": 33,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "time": 9.608
+    },
+    "expanded-02": {
+      "tests": 109,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "time": 20.79
+    },
+    "full-01": {
+      "tests": 1003,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "time": 197.463
+    },
+    "native-stdout-baseline": {
+      "tests": 1,
+      "failures": 1,
+      "errors": 0,
+      "skipped": 0,
+      "time": 0.691
+    },
+    "full-final": {
+      "tests": 1029,
+      "failures": 1,
+      "errors": 0,
+      "skipped": 0,
+      "time": 196.148
+    },
+    "expanded-final": {
+      "tests": 40,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "time": 11.258
+    },
+    "full-final-02": {
+      "tests": 1030,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "time": 189.861
+    }
+  },
+  "commands": {
+    "baseline": "PYTHONDONTWRITEBYTECODE=1 .venv/bin/python -m pytest -q -p no:cacheprovider tests/test_pdf_adapter_acceptance.py --basetemp=/tmp/biomodel-t06-baseline --junitxml=artifacts/audit-t06-pdf-adapter-20261019/baseline.xml",
+    "targeted-01": "PYTHONDONTWRITEBYTECODE=1 .venv/bin/python -m pytest -q -p no:cacheprovider tests/test_pdf_adapter_acceptance.py tests/test_storage_evidence.py tests/test_evidence_binding_acceptance.py --basetemp=/tmp/biomodel-t06-targeted --junitxml=artifacts/audit-t06-pdf-adapter-20261019/targeted-01.xml",
+    "expanded-01": "PYTHONDONTWRITEBYTECODE=1 .venv/bin/python -m pytest -q -p no:cacheprovider tests/test_pdf_adapter_acceptance.py --basetemp=/tmp/biomodel-t06-expanded --junitxml=artifacts/audit-t06-pdf-adapter-20261019/expanded-01.xml",
+    "expanded-02": "PYTHONDONTWRITEBYTECODE=1 .venv/bin/python -m pytest -q -p no:cacheprovider tests/test_pdf_adapter_acceptance.py tests/test_storage_evidence.py tests/test_evidence_binding_acceptance.py --basetemp=/tmp/biomodel-t06-expanded-02 --junitxml=artifacts/audit-t06-pdf-adapter-20261019/expanded-02.xml",
+    "full-01": "PYTHONDONTWRITEBYTECODE=1 .venv/bin/python -m pytest -q -p no:cacheprovider --basetemp=/tmp/biomodel-t06-full-01 --junitxml=artifacts/audit-t06-pdf-adapter-20261019/full-01.xml",
+    "native-stdout-baseline": "PYTHONDONTWRITEBYTECODE=1 .venv/bin/python -m pytest -q -p no:cacheprovider tests/test_pdf_adapter_acceptance.py::test_native_stdout_diagnostics_do_not_corrupt_application_stdout --basetemp=/tmp/biomodel-t06-native-stdout-baseline --junitxml=artifacts/audit-t06-pdf-adapter-20261019/native-stdout-baseline.xml",
+    "full-final": "PYTHONDONTWRITEBYTECODE=1 .venv/bin/python -m pytest -q -p no:cacheprovider --basetemp=/tmp/biomodel-t06-full-final --junitxml=artifacts/audit-t06-pdf-adapter-20261019/full-final.xml",
+    "expanded-final": "PYTHONDONTWRITEBYTECODE=1 .venv/bin/python -m pytest -q -p no:cacheprovider tests/test_pdf_adapter_acceptance.py --basetemp=/tmp/biomodel-t06-expanded-final --junitxml=artifacts/audit-t06-pdf-adapter-20261019/expanded-final.xml",
+    "full-final-02": "PYTHONDONTWRITEBYTECODE=1 .venv/bin/python -m pytest -q -p no:cacheprovider --basetemp=/tmp/biomodel-t06-full-final-02 --junitxml=artifacts/audit-t06-pdf-adapter-20261019/full-final-02.xml",
+    "pdf_evidence": "PYTHONDONTWRITEBYTECODE=1 .venv/bin/python artifacts/audit-t06-pdf-adapter-20261019/pdf-evidence.py"
+  },
+  "optional_dependency": {
+    "distribution": "pymupdf",
+    "version": "1.28.2",
+    "location": "/home/riveruning/biologymodel_agent/.venv/lib/python3.12/site-packages",
+    "python_scope": "project .venv only",
+    "requires": null,
+    "license": "Dual Licensed - GNU AFFERO GPL 3.0 or Artifex Commercial License",
+    "installation_source": "official https://pypi.org/simple, wheel only, --no-deps",
+    "command": "PYTHONDONTWRITEBYTECODE=1 .venv/bin/python -m pip install --no-cache-dir --no-deps --only-binary=:all: --index-url https://pypi.org/simple --retries 0 --timeout 20 pymupdf==1.28.2",
+    "sandbox_escalation": "Approved for official PyPI index and project-local installation after sandbox index lookup found no distribution."
+  },
+  "base_dependency_versions_unchanged": {
+    "anyio": "4.15.1",
+    "certifi": "2026.7.22",
+    "h11": "0.16.0",
+    "httpcore": "1.0.9",
+    "httpx": "0.28.1",
+    "idna": "3.20",
+    "iniconfig": "2.3.1",
+    "libroadrunner": "2.10.0",
+    "numpy": "2.5.4",
+    "packaging": "26.3",
+    "pip": "26.2.1",
+    "pluggy": "1.6.0",
+    "Pygments": "2.21.0",
+    "pypdf": "6.20.1",
+    "pytest": "9.1.1",
+    "python-libsbml": "5.21.2",
+    "scipy": "1.18.1",
+    "setuptools": "84.0.0",
+    "typing_extensions": "4.16.0"
+  },
+  "base_lock_unchanged": true,
+  "scientific_evidence": "final-evidence/pdf-results.json",
+  "preview": "final-evidence/synthetic-page-1.png",
+  "contract": "implementation-contract.md",
+  "execution_plan": "execution-plan.md",
+  "diff": "changes.patch",
+  "implementation_sha256": "149e4a7e2d5c300cf8f180a388a99c103b257c03413ac97b60c3605f955f57bf",
+  "final_hashes": {
+    "src/biomodel_agent/agent.py": "58b6f3e7eb2a09aa5720008ce0fbd6e168a232a1457528b552182771f73a3072",
+    "src/biomodel_agent/cli.py": "27a220b6dc22887b7e7c048ef5634d8966bc5f81b244515419fe00e8c520c49e",
+    "src/biomodel_agent/evidence.py": "925c19d2dc97eb9f12e50109e8d9310b807cb6000225e42fbabd3f115e1f2da8",
+    "src/biomodel_agent/llm.py": "04e9fcfd112e6435c4b3f5d52e2734413d539b84c0e2aebad17e31fffd2e2895",
+    "src/biomodel_agent/pdf_adapter.py": "82a7686ee1b97635d67cfd11c5fba2b237f479224cec9e5db4cff1af4d7e8172",
+    "pyproject.toml": "b1ca5e3c6e922083bb97339b81a091b50459dc17c9be8de6d6efef7efb027f18",
+    "requirements-pdf.lock": "59630396ee3c6c256555d99a06d26e6549cd986506583ea15a1b244f14a79fdc",
+    "tests/test_pdf_adapter_acceptance.py": "1ce9ca3b1c51e0236f65570f3e0325eb66ec05f0e586a70477e01251e3168d2d",
+    "docs/pdf-parser-adapter.md": "b69c754ce4465f76fa9abea113c27e812cdad636459a8e7e72406034a356fe8d",
+    "docs/optimization-backlog.md": "b49a4db868fd8ac7560cd33285faf70d92e9233160cd9aa26b8ec888887b9a52",
+    "docs/seven-point-status.md": "e6ad22b573195e50a9293b79e8cf4eeac230bf8d1287d7066d0d49ae68114196"
+  },
+  "compatibility": [
+    "Existing pypdf and UTF-8 ingestion defaults/payloads remain compatible; selecting a new engine creates a new immutable source.",
+    "Only the optional pymupdf backend has the new process deadline and layout/table result.",
+    "Page/source/character offset APIs, source whitelist, T05 binding and T03b exact-version result adoption remain in force.",
+    "No OCR, formula transcription or cloud upload is silently introduced."
+  ],
+  "limitations": [
+    "Offsets address extracted page text, not bytes in the original PDF; locators are block-level native coordinates.",
+    "Native table data and coordinate-sorted reading order remain unverified; no general Agent table-reasoning tool is added.",
+    "OCR and formula recognition are not_run; empty/mixed-image pages and failed tables disclose gaps.",
+    "Time/output bounds are not OS RAM quotas or hard real-time guarantees; legacy pypdf retains its previous execution behavior.",
+    "Actual parser and ODE evidence uses synthetic PDFs and scripted Agent actions, not new model or independent holdout scores.",
+    "Only official dependency packages were downloaded; no project/PDF/independent evaluation/c13/c18 material transmission."
+  ],
+  "next_task": "T07: domain-reviewed retrieval development corpus and annotation protocol; actual paper-disjoint comparison before embedding decisions"
+}

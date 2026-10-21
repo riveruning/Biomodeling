@@ -1,0 +1,28 @@
+{
+  "id": "chatcmpl-49d18a20-6717-4d4a-bb9a-aaad241eb2e0",
+  "created": 1792238455,
+  "model": "qwen3.8-chat",
+  "object": "chat.completion",
+  "choices": [
+    {
+      "finish_reason": "stop",
+      "index": 0,
+      "message": {
+        "content": "{\"action\": \"submit_draft\", \"args\": {\"draft\": {\"id\": \"synthetic_ode_d\", \"states\": [{\"id\": \"D\", \"initial\": 1.0, \"unit\": \"dimensionless\", \"quantity_kind\": \"variable\", \"nonnegative\": false}], \"parameters\": [{\"id\": \"k\", \"value\": 0.3, \"unit\": \"per minute\", \"origin\": \"author_clarification\"}], \"compartment\": {\"id\": \"C\", \"size\": 1, \"unit\": \"dimensionless\"}, \"reactions\": [], \"rate_rules\": [{\"state\": \"D\", \"expression\": \"-k*D\"}], \"derived\": [], \"time_unit\": \"minutes\"}, \"evidence\": [{\"target\": \"D/initial\", \"source_ref\": \"e5a1b58bd9d0b36e7d3dfa9bf75d2da3a8f552b0601e1a2dfeb72e721e15941a\", \"page\": 1, \"quote\": \"Initial D = 1.0.\"}, {\"target\": \"k/value\", \"source_ref\": \"e5a1b58bd9d0b36e7d3dfa9bf75d2da3a8f552b0601e1a2dfeb72e721e15941a\", \"page\": 1, \"quote\": \"The author corrects the table: Parameter k = 0.3 per minute; the per-second label was a typo. Use minutes without conversion.\"}, {\"target\": \"rule:D/expression\", \"source_ref\": \"e5a1b58bd9d0b36e7d3dfa9bf75d2da3a8f552b0601e1a2dfeb72e721e15941a\", \"page\": 1, \"quote\": \"Equation dD/dt = -k*D.\"}, {\"target\": \"time_unit\", \"source_ref\": \"e5a1b58bd9d0b36e7d3dfa9bf75d2da3a8f552b0601e1a2dfeb72e721e15941a\", \"page\": 1, \"quote\": \"Time t is in minutes.\"}, {\"target\": \"C/size\", \"source_ref\": \"e5a1b58bd9d0b36e7d3dfa9bf75d2da3a8f552b0601e1a2dfeb72e721e15941a\", \"page\": 1, \"quote\": \"The fixed compartment has size 1 dimensionless.\"}], \"mechanism\": \"First-order decay of D with rate constant k.\"}, \"reason\": \"Source gives explicit ODE dD/dt=-k*D, initial D=1.0, k=0.3 per minute (author clarification resolves unit conflict), time in minutes, compartment size 1.\"}}",
+        "role": "assistant",
+        "provider_specific_fields": {
+          "refusal": null
+        }
+      },
+      "provider_specific_fields": {}
+    }
+  ],
+  "usage": {
+    "completion_tokens": 694,
+    "prompt_tokens": 1387,
+    "total_tokens": 2081,
+    "prompt_tokens_details": {
+      "cached_tokens": 0
+    }
+  }
+}

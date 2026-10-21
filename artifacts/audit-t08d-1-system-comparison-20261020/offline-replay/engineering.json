@@ -1,0 +1,20 @@
+{
+  "status": "offline_interface_replay_verified",
+  "planned_phases": 30,
+  "old_product_records_imported": 10,
+  "literal_native_event_fixtures_imported": 20,
+  "pending_completion_adjudications": 18,
+  "initial_gap_phases": 12,
+  "actual_old_native_product_resume_relations_verified": [
+    "biomodel--translation--0--clarified",
+    "biomodel--logistic--0--clarified",
+    "biomodel--translation--1--clarified",
+    "biomodel--logistic--1--clarified"
+  ],
+  "literal_Codex_session_resume_relations": 8,
+  "actual_native_Codex_model_runs": 0,
+  "new_comparison_scientific_runs": 0,
+  "online_inference_calls": 0,
+  "actual_independent_review_decisions": 0,
+  "limit": "Native events are deliberately fabricated controls and opaque dummy programs, never model or scientific results. Product scientific effects are historical T08c effects, not new executions."
+}

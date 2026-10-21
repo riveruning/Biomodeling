@@ -1,0 +1,35 @@
+...........F......................F..........                            [100%]
+=================================== FAILURES ===================================
+______________ test_fixtures_and_unreviewed_records_are_distinct _______________
+
+reporting = <module 'evaluation_reporting_test' from '/home/riveruning/biologymodel_agent/benchmarks/development/evaluation_reporting.py'>
+
+    def test_fixtures_and_unreviewed_records_are_distinct(reporting):
+        m, records = controlled(reporting)
+        result = reporting.report(m, records, ROOT)
+        for workflow, s in result['summary'].items():
+            assert s['metrics']['correct_completion']['true'] == 6
+            assert s['metrics']['correct_completion']['rate'] == 1.0
+            # The saved fixed/generic runs were fresh continuations; only domain
+            # runs have actual native original-task resume ancestry.
+>           assert s['metrics']['clarification_recovery']['true'] == (4 if workflow == 'domain_agent' else 0)
+E           assert 0 == 4
+
+tests/test_evaluation_reporting.py:92: AssertionError
+____ test_parent_without_gap_eligibility_cannot_earn_clarification_recovery ____
+
+reporting = <module 'evaluation_reporting_test' from '/home/riveruning/biologymodel_agent/benchmarks/development/evaluation_reporting.py'>
+
+    def test_parent_without_gap_eligibility_cannot_earn_clarification_recovery(reporting):
+        m, records = controlled(reporting)
+        m['cases'][1]['phases'][0]['private_rubric'] = {'execution_expected': True, 'required_gaps': []}
+        stamp(reporting, m, records)
+        child = row(reporting.report(m, records, ROOT), 'domain_agent--translation--0--clarified')
+>       assert child['metrics']['clarification_recovery']['value'] is False
+E       assert None is False
+
+tests/test_evaluation_reporting.py:211: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_evaluation_reporting.py::test_fixtures_and_unreviewed_records_are_distinct
+FAILED tests/test_evaluation_reporting.py::test_parent_without_gap_eligibility_cannot_earn_clarification_recovery
+2 failed, 43 passed in 1.81s

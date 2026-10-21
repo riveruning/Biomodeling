@@ -1,0 +1,1157 @@
+--- /dev/null
++++ final/benchmarks/development/workflow_adapters.py
+@@ -0,0 +1,507 @@
++"""Three executable evaluation adapters with shared tools and audited requests.
++
++The caller supplies a transport; this module never discovers credentials or
++creates an online client. Scripted responses still drive real scientific tools.
++"""
++from __future__ import annotations
++
++from copy import deepcopy
++import importlib.util
++import json
++import multiprocessing as mp
++import os
++from pathlib import Path
++import queue
++import signal
++import time
++
++from biomodel_agent import agent, agent_tools, application, time_units
++from biomodel_agent.domain.contracts import ModelArtifact, SolverConfig
++from biomodel_agent.domain.serialization import from_dict
++from biomodel_agent.domain.contracts import ExperimentSpec
++from biomodel_agent.invocations import InvocationJournal
++from biomodel_agent.llm import ChatProvider, ModelResponseError, ProviderError
++from biomodel_agent.recovery import execution_owner, implementation_fingerprint
++from biomodel_agent.storage import ArtifactStore
++
++_spec = importlib.util.spec_from_file_location('adapter_evaluation_protocol',Path(__file__).with_name('agent_evaluation.py'))
++protocol = importlib.util.module_from_spec(_spec)
++_spec.loader.exec_module(protocol)
++
++ACTIONS = {'inspect_source','submit_draft','run','finish','ask_researcher'}
++CHARGES = {'inspect_source':['source_read'], 'submit_draft':['build_sbml'], 'run':['simulate','validate']}
++TOOL_SCHEMA = (
++    'Return exactly one JSON object {"action":name,"args":object,"reason":optional_string}. '
++    'Tools: inspect_source {source_ref,page,start,end} reads up to 8000 characters; '
++    'submit_draft {draft,evidence}; run {}; finish {}; ask_researcher {question}. '
++    'draft: {id,states:[{id,initial,unit,quantity_kind,nonnegative}],parameters:[{id,value,unit,origin}],'
++    'compartment:{id,size,unit},rate_rules:[{state,expression}],reactions:[],derived:[],time_unit}. '
++    'quantity_kind is variable/amount/concentration; unknown numeric fields are null and unknown units are "unknown". '
++    'Evidence entries: {target,source_ref,page,quote}; target forms include <id>/initial, <id>/value, rule:<id>/expression. '
++    'Tools return errors or results; choose your next step from those results. Ask a question when necessary. '
++    'You have no shell, file access or network tool.'
++)
++
++
++class StopExecution(BaseException):
++    def __init__(self,reason):
++        self.reason=reason
++
++
++def _write(path,value):
++    path=Path(path); temporary=path.with_name(path.name+'.tmp')
++    temporary.write_text(json.dumps(value,ensure_ascii=False,indent=2,allow_nan=False)+'\n',encoding='utf-8')
++    os.replace(temporary,path)
++
++
++def _message(value):
++    return {'role':'user','content':json.dumps(value,ensure_ascii=False,sort_keys=True)}
++
++
++def _experiment(text):
++    def unique(pairs):
++        result={}
++        for key,value in pairs:
++            if key in result: raise ValueError('duplicate experiment JSON key')
++            result[key]=value
++        return result
++    try:
++        value=json.loads(text,object_pairs_hook=unique)
++        protocol.digest(value)
++        return from_dict(ExperimentSpec,value)
++    except (TypeError,ValueError,RecursionError) as exc:
++        raise ValueError('invalid frozen experiment JSON') from exc
++
++
++def validate_projection(p,transport):
++    protocol._fields(p,'trial model_config budget shared_tools task sources')
++    t=p['trial']
++    protocol._fields(t,'id workflow case_id repeat phase parent_trial_id manifest_sha256 toolchain_sha256 evidence_kind')
++    if t['workflow'] not in protocol.WORKFLOWS or t['phase'] not in ('initial','clarified'):
++        raise ValueError('invalid workflow or phase')
++    for k in ('id','case_id'):
++        if not isinstance(t[k],str) or not protocol.ID.fullmatch(t[k]):
++            raise ValueError('invalid trial identifier')
++    protocol._integer(t['repeat'],0,4)
++    expected=f"{t['workflow']}--{t['case_id']}--{t['repeat']}--{t['phase']}"
++    if t['id']!=expected:
++        raise ValueError('trial identity does not match its components')
++    parent=f"{t['workflow']}--{t['case_id']}--{t['repeat']}--initial" if t['phase']=='clarified' else None
++    if t['parent_trial_id']!=parent:
++        raise ValueError('wrong scheduled parent')
++    for k in ('manifest_sha256','toolchain_sha256'):
++        if not isinstance(t[k],str) or not protocol.HASH.fullmatch(t[k]): raise ValueError('invalid frozen digest')
++    if t['toolchain_sha256']!=implementation_fingerprint(): raise ValueError('scientific toolchain changed')
++    if t['evidence_kind'] not in ('scripted_control','live_model'): raise ValueError('invalid evidence kind')
++    config=p['model_config']; protocol._fields(config,'provider model revision temperature top_p max_output_tokens seed')
++    for k in ('provider','model','revision'): protocol._text(config[k],200)
++    protocol._number(config['temperature'],0,2); protocol._number(config['top_p'],.000001,1)
++    protocol._integer(config['max_output_tokens'],1,32000)
++    if config['seed'] is not None: protocol._integer(config['seed'],0,2**32-1)
++    if protocol.digest(transport.model_config)!=protocol.digest(config) or transport.evidence_kind!=t['evidence_kind']:
++        raise ValueError('transport must declare the same frozen configuration and evidence kind')
++    b=p['budget']; protocol._fields(b,'max_model_calls max_tool_calls max_request_chars max_elapsed_seconds')
++    protocol._integer(b['max_model_calls'],1,50); protocol._integer(b['max_tool_calls'],1,500)
++    protocol._integer(b['max_request_chars'],8000,500000); protocol._number(b['max_elapsed_seconds'],.01,3600)
++    if p['shared_tools']!=['source_read','build_sbml','simulate','validate']: raise ValueError('different tool access')
++    protocol._text(p['task'])
++    if not isinstance(p['sources'],list) or len(p['sources'])!=2: raise ValueError('source and experiment required')
++    roles={}
++    for s in p['sources']:
++        protocol._fields(s,'role sha256 text')
++        if s['role'] not in ('source','experiment') or s['role'] in roles: raise ValueError('invalid input role')
++        protocol._text(s['text'],2_000_000)
++        encoded=s['text'].encode()
++        if len(encoded)>2_000_000: raise ValueError('input byte budget exceeded')
++        if s['sha256']!=protocol.hashlib.sha256(encoded).hexdigest(): raise ValueError('input text hash mismatch')
++        roles[s['role']]=s['text']
++    experiment=_experiment(roles['experiment'])
++    if len(roles['source'])>2_000_000: raise ValueError('material too large')
++    return roles['source'],experiment
++
++
++def _transport_identity(transport,p):
++    return {'class':type(transport).__module__+'.'+type(transport).__qualname__,
++            'config_sha256':protocol.digest(p['model_config']), 'evidence_kind':transport.evidence_kind}
++
++
++def _parent(store,ref,p,identity):
++    if ref is None:
++        if p['trial']['parent_trial_id']: raise ValueError('clarified phase requires a persisted parent session')
++        return None
++    if not p['trial']['parent_trial_id']: raise ValueError('initial phase cannot load a parent')
++    record=store.get(ref)
++    if record['kind']!='evaluation_session': raise ValueError('not an evaluation session')
++    state=record['payload']
++    if state['trial']['id']!=p['trial']['parent_trial_id'] or any(state['trial'][k]!=p['trial'][k] for k in
++            ('workflow','case_id','repeat','manifest_sha256','toolchain_sha256','evidence_kind')):
++        raise ValueError('parent belongs to another trial, plan or toolchain')
++    if state['transport_identity']!=identity or state['model_config']!=p['model_config'] or state['budget']!=p['budget']:
++        raise ValueError('parent provider/settings/budget changed')
++    source=next(s['text'] for s in p['sources'] if s['role']=='source')
++    experiment=next(s['text'] for s in p['sources'] if s['role']=='experiment')
++    if not source.startswith(state['initial_source_text']) or experiment!=state['experiment_text']:
++        raise ValueError('clarification changed the original material or experiment')
++    return state
++
++
++class Meter:
++    def __init__(self,p,store,directory,parent):
++        self.p=p; self.store=store; self.directory=Path(directory); self.started=time.monotonic()
++        self.base=deepcopy(parent['meter_totals']) if parent else {'model_calls':0,'tool_calls':0,'run_attempts':0,'elapsed_seconds':0.}
++        self.counts={'model_calls':0,'tool_calls':0,'run_attempts':0}
++        self.request_refs=[]; self.response_refs=[]; self.usage=[]; self.reservations=[]
++        self.provider_status=None; self.stop_reason=None
++        self.snapshot()
++    def elapsed(self): return max(0.,time.monotonic()-self.started)
++    def remaining(self):
++        left=self.p['budget']['max_elapsed_seconds']-self.base['elapsed_seconds']-self.elapsed()
++        if left<=0: raise StopExecution('wall_deadline')
++        return left
++    def totals(self):
++        return {**{k:self.base[k]+self.counts[k] for k in self.counts},
++                'elapsed_seconds':self.base['elapsed_seconds']+self.elapsed()}
++    def snapshot(self):
++        _write(self.directory/'meter.json',{'base':self.base,'counts':self.counts,'request_refs':self.request_refs,
++            'response_refs':self.response_refs,'usage':self.usage,'reservation_refs':self.reservations,
++            'provider_status':self.provider_status,'stop_reason':self.stop_reason,'elapsed_seconds':self.elapsed()})
++    def reserve(self,name):
++        self.remaining(); costs=CHARGES.get(name,[])
++        if name=='respond':
++            if self.base['model_calls']+self.counts['model_calls']>=self.p['budget']['max_model_calls']:
++                raise StopExecution('model_budget_exhausted')
++            delta={'model_calls':1,'tool_calls':0,'run_attempts':0}
++        else:
++            if name not in CHARGES: raise StopExecution('tool_outside_common_set')
++            if self.base['tool_calls']+self.counts['tool_calls']+len(costs)>self.p['budget']['max_tool_calls']:
++                raise StopExecution('tool_budget_exhausted')
++            if name=='run' and self.base['run_attempts']+self.counts['run_attempts']:
++                raise StopExecution('scientific_execution_already_attempted')
++            delta={'model_calls':0,'tool_calls':len(costs),'run_attempts':int(name=='run')}
++        next_counts={k:self.counts[k]+delta[k] for k in self.counts}
++        ref=self.store.put('evaluation_reservation',{'trial_id':self.p['trial']['id'],'operation':name,
++            'charged_tools':costs,'phase_counts':next_counts,'prior_totals':self.base})
++        self.counts=next_counts; self.reservations.append(ref); self.snapshot()
++        return ref
++
++
++class MeteredStore:
++    def __init__(self,store,meter): self.inner=store; self.meter=meter
++    def __getattr__(self,name): return getattr(self.inner,name)
++    def put(self,kind,payload,refs=()):
++        if kind=='agent_invocation' and payload.get('phase')=='reserved' and payload['name']!='respond':
++            self.meter.reserve(payload['name'])
++        return self.inner.put(kind,payload,refs=refs)
++
++
++class MeteredProvider:
++    def __init__(self,p,transport,meter):
++        self.p=p; self.transport=transport; self.meter=meter; self.model=p['model_config']['model']
++        self.max_tokens=p['model_config']['max_output_tokens']; self.timeout_s=p['budget']['max_elapsed_seconds']; self.json_mode=False
++        self.last_usage={}
++    def respond(self,messages):
++        config=self.p['model_config']; packet=deepcopy(messages)
++        if not packet or packet[0].get('role')!='system': raise ModelResponseError('system instructions required')
++        notice='\nEvaluation task: '+self.p['task']+'\nOnly inspect_source, submit_draft, run, finish, ask_researcher are available in this comparison. Memory, retrieval, skills and study tools are disabled.'
++        packet[0]['content']+=notice
++        request={'model':self.model,'messages':packet,'temperature':config['temperature'],'top_p':config['top_p'],
++                 'max_tokens':config['max_output_tokens']}
++        if config['seed'] is not None: request['seed']=config['seed']
++        size=len(json.dumps(packet,ensure_ascii=False,separators=(',',':'),allow_nan=False))
++        if size>self.p['budget']['max_request_chars']: raise StopExecution('context_budget_exhausted')
++        reservation=self.meter.reserve('respond'); self.last_usage={}
++        ref=self.meter.store.put('evaluation_request',{'trial_id':self.p['trial']['id'],'request':request,
++            'message_chars':size,'transport_identity':_transport_identity(self.transport,self.p)},refs=(reservation,))
++        self.meter.request_refs.append(ref); self.meter.usage.append(None); self.meter.snapshot()
++        try: body=self.transport.request(deepcopy(request),self.meter.remaining())
++        except StopExecution: raise
++        except Exception as exc:
++            self.meter.provider_status='timeout' if isinstance(exc,TimeoutError) else 'provider_error'
++            self.meter.snapshot()
++            raise ProviderError('evaluation transport failed: '+type(exc).__name__,kind='transport',retryable=False) from None
++        usage={}
++        if isinstance(body,dict) and isinstance(body.get('usage'),dict):
++            usage={k:v for k,v in body['usage'].items() if k in ('prompt_tokens','completion_tokens','total_tokens') and type(v) is int and v>=0}
++        self.last_usage=usage; self.meter.usage[-1]=usage
++        observed=body.get('model') if isinstance(body,dict) else None
++        try: content=ChatProvider._extract_content(self,body)
++        except ProviderError:
++            self.meter.provider_status='invalid_output'; self.meter.snapshot(); raise
++        if len(content)>1_000_000:
++            self.meter.provider_status='invalid_output'; self.meter.snapshot(); raise ModelResponseError('response text budget exceeded')
++        response=self.meter.store.put('evaluation_response',{'trial_id':self.p['trial']['id'],'content':content,
++            'usage':usage,'returned_model':observed if isinstance(observed,str) and len(observed)<=200 else None},refs=(ref,))
++        self.meter.response_refs.append(response); self.meter.snapshot()
++        if usage.get('completion_tokens',0)>config['max_output_tokens']:
++            raise StopExecution('output_token_budget_exhausted')
++        if observed is not None and observed!=self.model:
++            self.meter.provider_status='invalid_output'; self.meter.snapshot(); raise ModelResponseError('returned model differs from frozen model')
++        self.meter.remaining()
++        try:
++            action=ChatProvider._parse(self,content)
++            if action['action'] not in ACTIONS: raise ModelResponseError('action outside common comparison tools')
++        except ProviderError:
++            self.meter.provider_status='invalid_output'; self.meter.snapshot(); raise
++        return action
++
++
++def _source(store,text,reply_parent=None):
++    blob=store.put_blob(text.encode()); refs=[blob]; extra={}
++    if reply_parent:
++        clarification=store.put('researcher_clarification',{'reply':text,'authority':'researcher_assertion',
++            'respondent':'evaluation prerecorded clarification','semantic_support':'unknown'},refs=(blob,reply_parent))
++        refs.append(clarification); extra={'clarification_ref':clarification,'authority':'researcher_assertion'}
++    return store.put('source',{'blob_ref':blob,'filename':'evaluation-material.txt','url':None,'parser':'utf8',
++        'parser_version':'1','pages':[{'number':1,'text':text}],'warnings':[],**extra},refs=tuple(refs))
++
++
++def _materials(store,sources):
++    return {r:{'pages':[{'page':p['number'],'chars':len(p['text'])} for p in store.get(r)['payload']['pages']]} for r in sources}
++
++
++def _generic(p,provider,store,meter,parent,parent_ref,text,experiment,solver):
++    sources=parent['source_refs'][:] if parent else [_source(store,text)]
++    messages=deepcopy(parent['messages']) if parent else [{'role':'system','content':TOOL_SCHEMA},
++        _message({'task':p['task'],'materials':_materials(store,sources),'experiment':next(s['text'] for s in p['sources'] if s['role']=='experiment')})]
++    if parent:
++        reply=text[len(parent['initial_source_text']):]
++        if not reply.strip() or len(reply)>8000: raise ValueError('clarification must add 1..8000 characters')
++        reply_ref=_source(store,reply,parent_ref); sources.append(reply_ref)
++        messages.append(agent._reply_message(parent['questions'][-1],'evaluation prerecorded clarification',reply_ref,reply))
++    task_ref=parent['task_ref'] if parent else store.put('agent_task',{'evaluation_only':True,'max_calls':p['budget']['max_model_calls']})
++    model_ref=run_ref=draft_ref=None; questions=[]; state='failed'; claimed=False
++    with execution_owner(store,task_ref):
++        journal=InvocationJournal(store,task_ref,calls=meter.base['model_calls'],runs=meter.base['run_attempts'])
++        fixed=p['trial']['workflow']=='fixed_workflow'
++        if fixed:
++            messages[0]['content']=TOOL_SCHEMA+' Fixed extraction stage: respond only with submit_draft or ask_researcher; subsequent build/run/finish are deterministic.'
++            for source in sources:
++                source_text=store.get(source)['payload']['pages'][0]['text']
++                for start in range(0,len(source_text),8000):
++                    args={'source_ref':source,'page':1,'start':start,'end':min(start+8000,len(source_text))}
++                    excerpt=journal.invoke('inspect_source',lambda a=args:store.get(a['source_ref'])['payload']['pages'][0]['text'][a['start']:a['end']],details={'args':args})
++                    messages.append(_message({'tool':'inspect_source','ok':True,**args,'text':excerpt}))
++        while True:
++            response=journal.invoke('respond',lambda:provider.respond(messages),details={'request_messages':messages},summarize=lambda r:r)
++            messages.append({'role':'assistant','content':json.dumps(response,ensure_ascii=False)})
++            name,args=response['action'],response['args']
++            if fixed and name not in ('submit_draft','ask_researcher'): raise ModelResponseError('fixed extraction returned a different stage')
++            if name=='ask_researcher':
++                if set(args)!={'question'}: raise ModelResponseError('question arguments invalid')
++                protocol._text(args['question']); questions.append(args['question']); state='awaiting_input'; break
++            if name=='inspect_source':
++                if set(args)!={'source_ref','page','start','end'} or args['source_ref'] not in sources or any(type(args[k]) is not int for k in ('page','start','end')) or not 0<=args['start']<args['end'] or args['end']-args['start']>8000:
++                    raise ModelResponseError('source read outside authorized task')
++                pages=store.get(args['source_ref'])['payload']['pages']
++                page=journal.invoke(name,lambda:next((v['text'] for v in pages if v['number']==args['page']),None),details={'args':args})
++                valid=page is not None and args['end']<=len(page)
++                messages.append(_message({'tool':name,'ok':valid,**args,'text':page[args['start']:args['end']] if valid else ''})); continue
++            if name=='submit_draft':
++                if run_ref: raise StopExecution('scientific_execution_already_attempted')
++                result=journal.invoke(name,lambda:agent_tools.submit_draft(store,args,sources),details={'args':args},
++                    summarize=lambda r:{k:v for k,v in r.items() if k!='artifact'},result_refs=lambda r:[r[k] for k in ('draft_ref','model_ref','source_review_ref') if r.get(k)])
++                draft_ref=result.get('draft_ref')
++                if result['state']=='ready':
++                    # Product Agent performs this task/clock check after the
++                    # shared builder; apply the same condition to both baselines.
++                    clock=time_units.check_experiment_time(result['artifact'].sbml,experiment.time_unit)
++                    if clock.status=='fail':
++                        result.update(state='invalid',model_ref=None,problems=[clock.message])
++                model_ref=result.get('model_ref'); ready=result['state']=='ready'
++                messages.append(_message({'tool':name,'ok':ready,'state':result['state'],'problems':result['problems']}))
++                if result['state']=='awaiting_input':
++                    questions=['Please resolve: '+'; '.join(result['problems'])]; state='awaiting_input'; break
++                if not ready:
++                    if fixed: break
++                    continue
++                if not fixed: continue
++                name,args='run',{}
++            if name=='run':
++                if args or model_ref is None: raise ModelResponseError('run needs a ready model and empty arguments')
++                artifact=from_dict(ModelArtifact,store.get(model_ref)['payload'])
++                draft_data=store.get(draft_ref)['payload']
++                nonnegative=tuple(s['id'] for s in draft_data['states'] if s.get('nonnegative'))
++                run_ref=journal.invoke('run',lambda:application.run_reproduction(store,artifact,experiment,solver=solver,strict=True,nonnegative=nonnegative),
++                    details={'model_ref':model_ref},summarize=lambda r:{'result_ref':r},result_refs=lambda r:[r])
++                run=store.get(run_ref)['payload']
++                messages.append(_message({'tool':'run','ok':True,'run_ref':run_ref,**agent._run_facts(run)}))
++                if not fixed: continue
++                name,args='finish',{}
++            if name=='finish':
++                if args: raise ModelResponseError('finish arguments must be empty')
++                claimed=True; run=store.get(run_ref)['payload'] if run_ref else {}
++                state='completed' if run.get('status')=='succeeded' and application.derive_scientific_status(run)!='failed' else 'failed'
++                break
++    return {'state':state,'source_refs':sources,'messages':messages,'questions':questions,
++            'task_ref':task_ref,'model_ref':model_ref,'draft_ref':draft_ref,'run_ref':run_ref,'claimed_complete':claimed,'native_agent_run_ref':None}
++
++
++def _execute(p,transport,store_root,directory,parent,parent_ref):
++    raw=ArtifactStore(store_root); meter=Meter(p,raw,directory,parent); store=MeteredStore(raw,meter)
++    provider=MeteredProvider(p,transport,meter)
++    text=next(s['text'] for s in p['sources'] if s['role']=='source')
++    experiment=_experiment(next(s['text'] for s in p['sources'] if s['role']=='experiment'))
++    solver=SolverConfig(timeout_s=min(30.,p['budget']['max_elapsed_seconds']))
++    output={'state':'failed','source_refs':parent['source_refs'][:] if parent else [],'messages':[],
++            'questions':[],'task_ref':None,'model_ref':None,'draft_ref':None,'run_ref':None,'claimed_complete':False,'native_agent_run_ref':None}
++    status='finished'; reason=None
++    try:
++        if parent and parent['state']!='awaiting_input':
++            status='not_run'; reason='parent_not_awaiting_input'
++        elif p['trial']['workflow']=='domain_agent':
++            if parent:
++                reply=text[len(parent['initial_source_text']):]
++                ref=agent.resume_agent(store,provider,parent['native_agent_run_ref'],reply,respondent='evaluation prerecorded clarification')
++            else:
++                source=_source(store,text)
++                ref=agent.run_agent(store,provider,[source],experiment,solver=solver,
++                    max_calls=p['budget']['max_model_calls'],max_repairs=2,max_retries=0,context_max_chars=p['budget']['max_request_chars'])
++            payload=store.get(ref)['payload']
++            prior_events=len(store.get(parent['native_agent_run_ref'])['payload']['events']) if parent else 0
++            phase_events=payload['events'][prior_events:]
++            questions=[e['question'] for e in phase_events if e.get('type')=='awaiting_input']
++            output.update(state=payload['state'] if payload['state'] in ('completed','awaiting_input') else 'failed',
++                source_refs=payload['source_refs'],questions=questions,task_ref=payload['task_ref'],model_ref=payload['model_ref'],
++                draft_ref=store.get(payload['checkpoint_ref'])['payload'].get('draft_ref') if payload.get('checkpoint_ref') else None,
++                run_ref=payload['run_ref'],native_agent_run_ref=ref,
++                claimed_complete=any(e.get('type')=='llm_call' and e.get('response',{}).get('action')=='finish' for e in phase_events))
++            if output['state']=='failed' and meter.totals()['model_calls']>=p['budget']['max_model_calls']:
++                reason='model_budget_exhausted'; status='adapter_error'
++        else:
++            output=_generic(p,provider,store,meter,parent,parent_ref,text,experiment,solver)
++        if status!='not_run': meter.remaining()
++    except StopExecution as exc:
++        reason=exc.reason; status='timeout' if reason=='wall_deadline' else 'adapter_error'
++    except ProviderError:
++        status=meter.provider_status or 'invalid_output'
++    except Exception as exc:
++        status='adapter_error'; reason=type(exc).__name__
++    if meter.provider_status: status=meter.provider_status
++    meter.stop_reason=reason; meter.snapshot()
++    if status!='finished': output['state']='not_run' if status=='not_run' else 'failed'
++    state={**output,'trial':deepcopy(p['trial']),'model_config':deepcopy(p['model_config']),'budget':deepcopy(p['budget']),
++           'transport_identity':_transport_identity(transport,p),'meter_totals':meter.totals(),
++           'initial_source_text':parent['initial_source_text'] if parent else text,
++           'experiment_text':next(s['text'] for s in p['sources'] if s['role']=='experiment')}
++    return state,status,reason
++
++
++def _worker(p,transport,store_root,directory,parent,parent_ref,channel):
++    os.setsid()
++    def interrupt(signum,frame): raise StopExecution('wall_deadline')
++    signal.signal(signal.SIGTERM,interrupt)
++    try:
++        result=_execute(p,transport,store_root,directory,parent,parent_ref)
++        channel.put(result)
++    except BaseException:
++        pass  # Parent preserves durable reservations and reports a worker failure.
++    finally:
++        for child in mp.active_children():
++            if child.is_alive(): child.terminate()
++            child.join(timeout=.5)
++            if child.is_alive(): child.kill(); child.join(timeout=.5)
++
++
++def _stop(proc):
++    if not proc.is_alive(): proc.join(); return
++    try: os.killpg(proc.pid,signal.SIGTERM)
++    except ProcessLookupError: proc.terminate()
++    proc.join(timeout=.75)
++    if proc.is_alive():
++        try: os.killpg(proc.pid,signal.SIGKILL)
++        except ProcessLookupError: proc.kill()
++        proc.join(timeout=.75)
++
++
++def run_trial(p,transport,directory,*,store_root=None,parent_session_ref=None):
++    """Run one projected phase in a supervised POSIX process; never auto-retry."""
++    text,experiment=validate_projection(p,transport)
++    if os.name!='posix' or 'fork' not in mp.get_all_start_methods(): raise ValueError('POSIX fork supervisor required')
++    directory=Path(directory)
++    if directory.exists(): raise ValueError('use a new phase output directory')
++    if parent_session_ref and store_root is None: raise ValueError('parent store is required')
++    store_root=Path(store_root) if store_root is not None else directory/'store'
++    parent_store=ArtifactStore(store_root) if parent_session_ref else None
++    parent=_parent(parent_store,parent_session_ref,p,_transport_identity(transport,p)) if parent_session_ref else None
++    if p['trial']['parent_trial_id'] and parent is None: raise ValueError('persisted parent required; no fresh fallback')
++    # A reservation is never erased after an unknown/partial execution. A new
++    # output path must not replay the same trial and cherry-pick its result.
++    reservation_dir=store_root/'.evaluation-trials'
++    marker=reservation_dir/(p['trial']['id']+'.json')
++    if marker.exists(): raise ValueError('trial already reserved; no implicit retry or duplicate execution')
++    directory.mkdir(parents=True,exist_ok=False); _write(directory/'input.json',p)
++    reservation_dir.mkdir(parents=True,exist_ok=True)
++    try:
++        with marker.open('x',encoding='utf-8') as stream:
++            json.dump({'trial':p['trial'],'projection_sha256':protocol.digest(p),'parent_session_ref':parent_session_ref},stream)
++            stream.flush(); os.fsync(stream.fileno())
++    except FileExistsError:
++        raise ValueError('trial already reserved; no implicit retry or duplicate execution') from None
++    store=parent_store or ArtifactStore(store_root)
++    base_elapsed=parent['meter_totals']['elapsed_seconds'] if parent else 0.
++    remaining=p['budget']['max_elapsed_seconds']-base_elapsed
++    started=time.monotonic(); result=None; timed_out=remaining<=0
++    context=mp.get_context('fork'); channel=context.Queue()
++    proc=None
++    try:
++        if not timed_out:
++            proc=context.Process(target=_worker,args=(p,transport,str(store_root),str(directory),parent,parent_session_ref,channel))
++            proc.start()
++            while True:
++                left=remaining-(time.monotonic()-started)
++                if left<=0: timed_out=True; break
++                try: result=channel.get(timeout=min(.05,left)); break
++                except queue.Empty:
++                    if not proc.is_alive():
++                        try: result=channel.get(timeout=.1)
++                        except queue.Empty: pass
++                        break
++            if result is not None: proc.join(timeout=.5)
++    finally:
++        if proc is not None: _stop(proc)
++        channel.close(); channel.join_thread()
++    elapsed=max(0.,time.monotonic()-started)
++    meter_path=directory/'meter.json'
++    snapshot=protocol._read(meter_path) if meter_path.exists() else {
++        'base':parent['meter_totals'] if parent else {'model_calls':0,'tool_calls':0,'run_attempts':0,'elapsed_seconds':0.},
++        'counts':{'model_calls':0,'tool_calls':0,'run_attempts':0},'request_refs':[],'response_refs':[],
++        'usage':[],'reservation_refs':[],'stop_reason':None,'provider_status':None}
++    if timed_out or result is None:
++        status='timeout' if timed_out else 'adapter_error'; reason='wall_deadline' if timed_out else 'worker_exited_without_result'
++        state={'state':'failed','source_refs':[],'messages':[],'questions':[],'task_ref':None,'model_ref':None,'draft_ref':None,'run_ref':None,
++            'claimed_complete':False,'native_agent_run_ref':None,'trial':deepcopy(p['trial']),
++            'model_config':deepcopy(p['model_config']),'budget':deepcopy(p['budget']),
++            'transport_identity':_transport_identity(transport,p),'initial_source_text':parent['initial_source_text'] if parent else text,
++            'experiment_text':next(s['text'] for s in p['sources'] if s['role']=='experiment')}
++    else: state,status,reason=result
++    state['meter_totals']={**{k:snapshot['base'][k]+snapshot['counts'][k] for k in ('model_calls','tool_calls','run_attempts')},
++                           'elapsed_seconds':base_elapsed+elapsed}
++    state['parent_session_ref']=parent_session_ref
++    session=store.put('evaluation_session',state,refs=tuple(r for r in [parent_session_ref,state['native_agent_run_ref'],state['task_ref'],state['model_ref'],state['draft_ref'],state['run_ref'],*state['source_refs'],*snapshot['reservation_refs'],*snapshot['request_refs'],*snapshot['response_refs']] if r))
++    requests=[store.get(r)['payload'] for r in snapshot['request_refs']]
++    usage=snapshot['usage']; calls=snapshot['counts']['model_calls']
++    def tokens(name):
++        return sum(v[name] for v in usage) if len(usage)==calls and all(isinstance(v,dict) and name in v for v in usage) else None
++    output_counts=[v.get('completion_tokens') if isinstance(v,dict) else None for v in usage]
++    maximum=max(output_counts,default=0) if all(v is not None for v in output_counts) else None
++    resumed=bool(parent and parent['state']=='awaiting_input' and status!='not_run')
++    record={'trial_id':p['trial']['id'],'manifest_sha256':p['trial']['manifest_sha256'],
++        'evidence_kind':p['trial']['evidence_kind'],'model_config':deepcopy(p['model_config']),'toolchain_sha256':p['trial']['toolchain_sha256'],
++        'status':status,'continuation':'resumed' if resumed else 'fresh' if parent else 'none',
++        'parent_trial_id':p['trial']['parent_trial_id'] if resumed else None,
++        'observation':{'state':state['state'],'executed':bool(snapshot['counts']['run_attempts']),
++            'claimed_complete':state['claimed_complete'],'identified_gaps':[],'question_targets':[],'question_texts':state['questions']},
++        'assessment':{'authority':'unreviewed','reviewer':None,'evidence_refs':[],'numeric':'unknown','source_support':'unknown','behavior_labels_reviewed':False},
++        'telemetry':{'model_calls':calls,'tool_calls':snapshot['counts']['tool_calls'],
++            'max_request_chars':max((r['message_chars'] for r in requests),default=0),'max_response_tokens':maximum,
++            'elapsed_seconds':elapsed,'human_interventions':0,'human_seconds':0.,
++            'input_tokens':tokens('prompt_tokens'),'output_tokens':tokens('completion_tokens')}}
++    audit={'supervised':True,'stop_reason':reason,'run_ref':state['run_ref'],'native_agent_run_ref':state['native_agent_run_ref'],
++           'request_refs':snapshot['request_refs'],'response_refs':snapshot['response_refs'],
++           'reservation_refs':snapshot['reservation_refs'],'clarification_origin':'prerecorded_protocol' if resumed else None,
++           'runtime_adapter_sha256':protocol.hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
++           'scientific_support':'unknown','same_returned_model_verified':bool(snapshot['response_refs']) and all(
++               store.get(r)['payload']['returned_model']==p['model_config']['model'] for r in snapshot['response_refs'])}
++    result={'record':record,'session_ref':session,'store_root':str(store_root.resolve()),'audit':audit}
++    _write(directory/'result.json',result)
++    return result
+--- /dev/null
++++ final/benchmarks/development/run_agent_comparison.py
+@@ -0,0 +1,119 @@
++"""Execute a frozen comparison with injected transports; CLI is scripted-only."""
++from __future__ import annotations
++
++import argparse
++from copy import deepcopy
++import importlib.util
++import json
++from pathlib import Path
++
++_spec=importlib.util.spec_from_file_location('comparison_workflow_adapters',Path(__file__).with_name('workflow_adapters.py'))
++adapters=importlib.util.module_from_spec(_spec); _spec.loader.exec_module(adapters)
++protocol=adapters.protocol
++
++
++class ScriptedTransport:
++    """Literal action fixtures; placeholders read only visible request metadata."""
++    evidence_kind='scripted_control'
++    def __init__(self,projection,actions):
++        self.model_config=deepcopy(projection['model_config']); self.actions=deepcopy(actions)
++    def request(self,payload,timeout_s):
++        main=reply=length=None
++        for message in payload['messages']:
++            try: value=json.loads(message['content'])
++            except (TypeError,ValueError): continue
++            if not isinstance(value,dict): continue
++            if main is None and isinstance(value.get('materials'),dict) and value['materials']:
++                main=next(iter(value['materials'])); length=value['materials'][main]['pages'][0]['chars']
++            if value.get('tool')=='researcher_reply': reply=value['source_ref']
++        substitutions={'$main':main,'$reply':reply,'$main_length':length}
++        def resolve(value):
++            if isinstance(value,dict): return {k:resolve(v) for k,v in value.items()}
++            if isinstance(value,list): return [resolve(v) for v in value]
++            if isinstance(value,str) and value in substitutions:
++                if substitutions[value] is None: raise ValueError('fixture references unavailable source metadata')
++                return substitutions[value]
++            return value
++        if not self.actions: raise ValueError('scripted response list exhausted')
++        action=resolve(self.actions.pop(0))
++        return {'model':self.model_config['model'],'choices':[{'message':{'content':json.dumps(action,ensure_ascii=False)}}],
++                'usage':None}
++
++
++def validate_scripts(manifest,scripts):
++    protocol._fields(scripts,'evidence_kind trials')
++    if scripts['evidence_kind']!='scripted_control' or manifest['evidence_kind']!='scripted_control':
++        raise ValueError('CLI accepts explicit scripted controls only; no online client is created')
++    if not isinstance(scripts['trials'],dict) or set(scripts['trials'])!={t['id'] for t in protocol.schedule(manifest)}:
++        raise ValueError('scripted fixture must name every planned trial exactly once')
++    for actions in scripts['trials'].values():
++        if not isinstance(actions,list) or not 1<=len(actions)<=50: raise ValueError('bounded action list required')
++        for action in actions:
++            if not isinstance(action,dict) or set(action)-{'action','args','reason'} or not isinstance(action.get('action'),str) or not isinstance(action.get('args'),dict):
++                raise ValueError('invalid literal scripted action')
++
++
++def run_comparison(manifest,transport_factory,output,*,root=protocol.ROOT):
++    audit=protocol.validate_manifest(manifest,root)
++    plan=protocol.schedule(manifest)
++    # Seal every phase before any execution. Only the current projection is
++    # handed to a workflow or transport; the rubric remains in this driver.
++    inputs=[protocol.trial_input(manifest,t,root) for t in plan]
++    output=Path(output)
++    if output.exists(): raise ValueError('comparison output already exists')
++    output.mkdir(parents=True,exist_ok=False)
++    adapters._write(output/'manifest.json',manifest); adapters._write(output/'schedule.json',plan)
++    adapters._write(output/'implementation.json',{
++        'protocol':protocol.PROTOCOL,'toolchain_sha256':manifest['toolchain_sha256'],
++        'adapter_sha256':protocol.hashlib.sha256(Path(adapters.__file__).read_bytes()).hexdigest(),
++        'scorer_sha256':protocol.hashlib.sha256(Path(protocol.__file__).read_bytes()).hexdigest(),
++        'driver_sha256':protocol.hashlib.sha256(Path(__file__).read_bytes()).hexdigest()})
++    records=[]; sessions={}; receipts=[]
++    try:
++        for p in inputs:
++            t=p['trial']; key=(t['workflow'],t['case_id'],t['repeat']); parent=sessions.get(key)
++            transport=transport_factory(deepcopy(p))
++            result=adapters.run_trial(p,transport,output/'trials'/t['id'],
++                store_root=output/'stores'/f"{t['workflow']}--{t['case_id']}--{t['repeat']}",
++                parent_session_ref=parent['session_ref'] if parent else None)
++            sessions[key]=result; records.append(result['record'])
++            receipts.append({'trial_id':t['id'],'session_ref':result['session_ref'],
++                             'store_root':result['store_root'],'audit':result['audit']})
++            adapters._write(output/'records.json',records); adapters._write(output/'receipts.json',receipts)
++    except Exception as exc:
++        # Keep all paid/partial effects and the original denominator. This
++        # driver never silently rebuilds a task or replays a failed phase.
++        adapters._write(output/'driver-error.json',{'type':type(exc).__name__,'completed_records':len(records)})
++        adapters._write(output/'records.json',records)
++        raise
++    result=protocol.score(manifest,records,root)
++    adapters._write(output/'results.json',result)
++    engineering={'status':'adapter_execution_complete','planned_trials':audit['planned_trials'],
++        'finished_records':len(records),'operational_statuses':dict(protocol.Counter(r['status'] for r in records)),
++        'observed_states':dict(protocol.Counter(r['observation']['state'] for r in records)),
++        'provider_requests':sum(r['telemetry']['model_calls'] for r in records),
++        'online_inference_calls':0 if manifest['evidence_kind']=='scripted_control' else None,
++        'scientific_execution_attempts':sum(r['observation']['executed'] for r in records),
++        'evidence_kind':manifest['evidence_kind'],'scientific_support':'unknown',
++        'note':'Adapter execution evidence; scripted decisions and unreviewed assessments are not model capability scores.'}
++    adapters._write(output/'engineering.json',engineering)
++    return {'engineering':engineering,'results':result,'records':records,'receipts':receipts}
++
++
++def main(argv=None):
++    parser=argparse.ArgumentParser(description=__doc__)
++    parser.add_argument('--manifest',required=True,type=Path)
++    parser.add_argument('--scripts',required=True,type=Path)
++    parser.add_argument('--output',required=True,type=Path)
++    args=parser.parse_args(argv)
++    try:
++        manifest=protocol._read(args.manifest); scripts=protocol._read(args.scripts)
++        protocol.validate_manifest(manifest); validate_scripts(manifest,scripts)
++        result=run_comparison(manifest,lambda p:ScriptedTransport(p,scripts['trials'][p['trial']['id']]),args.output)
++        print(json.dumps(result['engineering'],ensure_ascii=False))
++        return 1 if any(r['status'] not in ('finished','not_run') for r in result['records']) else 0
++    except (ValueError,TypeError,KeyError,OSError) as exc:
++        print(json.dumps({'status':'refused','error_type':type(exc).__name__})); return 2
++
++
++if __name__=='__main__': raise SystemExit(main())
+--- /dev/null
++++ final/tests/test_workflow_adapters.py
+@@ -0,0 +1,375 @@
++"""Scripted decisions with real tools; these are adapter acceptance controls."""
++from copy import deepcopy
++import importlib.util
++import json
++import math
++import multiprocessing
++import os
++from pathlib import Path
++import time
++
++import pytest
++
++from biomodel_agent.domain.contracts import ModelDraft, Parameter, RateRule, Reaction, State
++from biomodel_agent.domain.serialization import to_dict
++from biomodel_agent.storage import ArtifactStore
++
++ROOT = Path(__file__).resolve().parents[1]
++
++
++@pytest.fixture
++def adapters():
++    spec = importlib.util.spec_from_file_location('workflow_adapters_acceptance',ROOT/'benchmarks/development/workflow_adapters.py')
++    module = importlib.util.module_from_spec(spec); spec.loader.exec_module(module)
++    return module
++
++
++def projection(adapters,workflow='domain_agent',case='decay',phase='initial'):
++    m = adapters.protocol.development_manifest(ROOT)
++    t = next(t for t in adapters.protocol.schedule(m) if t['workflow']==workflow and t['case_id']==case and t['phase']==phase)
++    return adapters.protocol.trial_input(m,t,ROOT)
++
++
++def action(name,args=None):
++    return {'action':name,'args':args or {}}
++
++
++class EnvelopeTransport:
++    evidence_kind = 'scripted_control'
++    def __init__(self,p,actions,usage=None,model=None,delay=0):
++        self.model_config=deepcopy(p['model_config']); self.actions=list(actions)
++        self.usage=usage; self.returned_model=model; self.delay=delay
++    def request(self,payload,timeout_s):
++        if self.delay: time.sleep(self.delay)
++        item=self.actions.pop(0)
++        if isinstance(item,Exception): raise item
++        if callable(item): item=item(payload['messages'])
++        return {'model':self.returned_model or self.model_config['model'],
++                'choices':[{'message':{'content':json.dumps(item)}}], 'usage':self.usage}
++
++
++def refs(messages):
++    main=reply=None; length=None
++    for msg in messages:
++        try: data=json.loads(msg['content'])
++        except (ValueError,TypeError): continue
++        if 'materials' in data and main is None:
++            main=next(iter(data['materials'])); length=data['materials'][main]['pages'][0]['chars']
++        if data.get('tool')=='researcher_reply': reply=data['source_ref']
++    return main,reply,length
++
++
++def read_action(messages):
++    main,_,length=refs(messages)
++    return action('inspect_source',{'source_ref':main,'page':1,'start':0,'end':length})
++
++
++def decay_proposal(messages):
++    main,_,_=refs(messages)
++    d=ModelDraft('decay',(State('A',2.),),(Parameter('k',.4),),rate_rules=(RateRule('A','-k*A'),),time_unit='minute')
++    evidence=[{'target':target,'source_ref':main,'page':1,'quote':quote} for target,quote in
++              [('A/initial','Initial A = 2.0.'),('k/value','Parameter k = 0.4.'),('rule:A/expression','Equation dA/dt = -k*A.')]]
++    return action('submit_draft',{'draft':to_dict(d),'evidence':evidence})
++
++
++def translation_proposal(messages):
++    main,reply,_=refs(messages)
++    d=ModelDraft('translation',(State('M',1.),State('P',.2)),
++        tuple(Parameter(k,v) for k,v in [('s',.8),('dm',.4),('kp',.6),('dp',.2)]),
++        rate_rules=(RateRule('M','s-dm*M'),RateRule('P','kp*M-dp*P')),time_unit='minute')
++    quotes=[('M/initial','Initial M = 1.0.'),('s/value','Parameter s = 0.8.'),('dm/value','Parameter dm = 0.4.'),
++            ('kp/value','Parameter kp = 0.6.'),('dp/value','Parameter dp = 0.2.'),
++            ('rule:M/expression','Equation dM/dt = s-dm*M.'),('rule:P/expression','Equation dP/dt = kp*M-dp*P.')]
++    evidence=[{'target':t,'source_ref':main,'page':1,'quote':q} for t,q in quotes]
++    evidence.append({'target':'P/initial','source_ref':reply,'page':1,'quote':'Initial P = 0.2.'})
++    return action('submit_draft',{'draft':to_dict(d),'evidence':evidence})
++
++
++def complete_actions(workflow,proposal=decay_proposal):
++    return [proposal] if workflow=='fixed_workflow' else [read_action,proposal,action('run'),action('finish')]
++
++
++@pytest.mark.parametrize('workflow',['fixed_workflow','generic_tool_agent','domain_agent'])
++def test_each_workflow_runs_real_shared_scientific_backend(adapters,tmp_path,workflow):
++    p=projection(adapters,workflow)
++    result=adapters.run_trial(p,EnvelopeTransport(p,complete_actions(workflow)),tmp_path/'phase')
++    r=result['record']
++    assert r['status']=='finished' and r['observation']['state']=='completed'
++    assert r['observation']['executed'] is True
++    assert r['observation']['claimed_complete'] is True
++    assert r['assessment']['source_support']==r['assessment']['numeric']=='unknown'
++    assert r['telemetry']['tool_calls']==4
++    store=ArtifactStore(result['store_root']); run=store.get(result['audit']['run_ref'])['payload']
++    assert run['status']=='succeeded'
++    assert abs(run['simulation']['values']['A'][-1]-2*math.exp(-4))<1e-6
++    assert run['cached_from'] is None and run['scientific_status']=='not_verified'
++    assert result['audit']['native_agent_run_ref'] is not None if workflow=='domain_agent' else result['audit']['native_agent_run_ref'] is None
++
++
++@pytest.mark.parametrize('workflow',['fixed_workflow','generic_tool_agent','domain_agent'])
++def test_actual_original_task_resumption_uses_new_source_and_remaining_budget(adapters,tmp_path,workflow):
++    first=projection(adapters,workflow,'translation')
++    ask=action('ask_researcher',{'question':'What is the initial P value?'})
++    actions=[ask] if workflow=='fixed_workflow' else [read_action,ask]
++    before=adapters.run_trial(first,EnvelopeTransport(first,actions),tmp_path/'initial')
++    assert before['record']['observation']['state']=='awaiting_input'
++    second=projection(adapters,workflow,'translation','clarified')
++    follow=[translation_proposal] if workflow=='fixed_workflow' else [translation_proposal,action('run'),action('finish')]
++    after=adapters.run_trial(second,EnvelopeTransport(second,follow),tmp_path/'clarified',
++        store_root=before['store_root'],parent_session_ref=before['session_ref'])
++    assert after['record']['status']=='finished' and after['record']['observation']['state']=='completed'
++    assert after['record']['continuation']=='resumed'
++    store=ArtifactStore(after['store_root']); state=store.get(after['session_ref'])['payload']
++    assert state['meter_totals']['model_calls']==before['record']['telemetry']['model_calls']+after['record']['telemetry']['model_calls']
++    assert len(state['source_refs'])==2
++    if workflow=='domain_agent':
++        native=store.get(after['audit']['native_agent_run_ref'])['payload']
++        assert native['parent_run_ref']==before['audit']['native_agent_run_ref']
++
++
++def test_scripted_projection_does_not_leak_rubric_or_later_reply_to_provider(adapters,tmp_path):
++    p=projection(adapters)
++    out=adapters.run_trial(p,EnvelopeTransport(p,complete_actions('domain_agent')),tmp_path/'run')
++    store=ArtifactStore(out['store_root'])
++    requests=[store.get(r)['payload']['request'] for r in out['audit']['request_refs']]
++    assert len(requests)==4
++    assert all(req['model']==p['model_config']['model'] and req['temperature']==0. and req['top_p']==1. and req['seed']==0 and req['max_tokens']==1000 for req in requests)
++    assert 'private_rubric' not in json.dumps(requests) and 'Initial P = 0.2.' not in json.dumps(requests)
++
++
++@pytest.mark.parametrize('workflow',['fixed_workflow','generic_tool_agent','domain_agent'])
++def test_tool_budget_stops_before_scientific_execution(adapters,tmp_path,workflow):
++    p=projection(adapters,workflow); p['budget']['max_tool_calls']=2
++    out=adapters.run_trial(p,EnvelopeTransport(p,complete_actions(workflow)),tmp_path/'run')
++    assert out['record']['observation']['executed'] is False
++    assert out['record']['telemetry']['tool_calls']==2
++    assert not ArtifactStore(out['store_root']).list('run')
++    assert out['audit']['stop_reason']=='tool_budget_exhausted'
++
++
++@pytest.mark.parametrize('workflow',['fixed_workflow','generic_tool_agent','domain_agent'])
++def test_model_call_budget_has_no_unmetered_retry(adapters,tmp_path,workflow):
++    p=projection(adapters,workflow); p['budget']['max_model_calls']=1
++    ask=action('ask_researcher',{'question':'Please clarify the intended task.'})
++    actions=[ask] if workflow=='fixed_workflow' else [read_action,ask]
++    out=adapters.run_trial(p,EnvelopeTransport(p,actions),tmp_path/'run')
++    assert out['record']['telemetry']['model_calls']==1
++    assert out['record']['observation']['executed'] is False
++
++
++@pytest.mark.parametrize('workflow',['fixed_workflow','generic_tool_agent','domain_agent'])
++def test_provider_failure_is_sanitized_and_counted(adapters,tmp_path,workflow):
++    p=projection(adapters,workflow)
++    out=adapters.run_trial(p,EnvelopeTransport(p,[RuntimeError('SECRET-not-for-audit')]),tmp_path/'run')
++    assert out['record']['status']=='provider_error'
++    assert out['record']['telemetry']['model_calls']==1
++    assert out['record']['telemetry']['input_tokens'] is None
++    assert 'SECRET' not in json.dumps(out)
++    for path in Path(out['store_root']).rglob('*.json'):
++        assert 'SECRET' not in path.read_text()
++
++
++def test_reported_token_and_model_identity_mismatches_stop_before_tool_effect(adapters,tmp_path):
++    p=projection(adapters)
++    out=adapters.run_trial(p,EnvelopeTransport(p,[decay_proposal],usage={'prompt_tokens':10,'completion_tokens':1001}),tmp_path/'tokens')
++    assert out['record']['telemetry']['output_tokens']==1001
++    assert out['record']['observation']['executed'] is False
++    assert out['audit']['stop_reason']=='output_token_budget_exhausted'
++    bad=adapters.run_trial(p,EnvelopeTransport(p,[decay_proposal],model='different-model'),tmp_path/'identity')
++    assert bad['record']['status']=='invalid_output'
++    assert bad['record']['observation']['executed'] is False
++
++
++def test_hard_deadline_terminates_slow_provider(adapters,tmp_path):
++    p=projection(adapters); p['budget']['max_elapsed_seconds']=.2
++    start=time.monotonic()
++    out=adapters.run_trial(p,EnvelopeTransport(p,[action('finish')],delay=5),tmp_path/'timeout')
++    assert time.monotonic()-start<3
++    assert out['record']['status']=='timeout'
++    assert out['record']['telemetry']['model_calls']==1
++    assert out['audit']['supervised'] is True
++
++
++def test_unsafe_or_stale_input_refuses_before_output_directory(adapters,tmp_path):
++    p=projection(adapters); p['private_rubric']={'secret':True}
++    with pytest.raises(ValueError): adapters.run_trial(p,EnvelopeTransport(p,[]),tmp_path/'bad')
++    assert not (tmp_path/'bad').exists()
++
++
++def test_fixed_workflow_cannot_turn_into_an_unbounded_tool_agent(adapters,tmp_path):
++    p=projection(adapters,'fixed_workflow')
++    out=adapters.run_trial(p,EnvelopeTransport(p,[read_action]),tmp_path/'run')
++    assert out['record']['status']=='invalid_output'
++    assert out['record']['telemetry']['model_calls']==1
++    assert out['record']['observation']['executed'] is False
++
++
++@pytest.mark.parametrize('workflow',['fixed_workflow','generic_tool_agent','domain_agent'])
++def test_shared_backend_keeps_nonnegative_scientific_failure(adapters,tmp_path,workflow):
++    p=projection(adapters,workflow)
++    text='Initial A = 2.0.\nParameter k = 0.4.\nReaction loss consumes A at constant rate k.'
++    s=next(s for s in p['sources'] if s['role']=='source')
++    s.update(text=text,sha256=adapters.protocol.hashlib.sha256(text.encode()).hexdigest())
++    def negative(messages):
++        main,_,_=refs(messages)
++        d=ModelDraft('negative',(State('A',2.,quantity_kind='amount',nonnegative=True),),
++            (Parameter('k',.4),),reactions=(Reaction('loss',{'A':1.},{},'k'),))
++        return action('submit_draft',{'draft':to_dict(d),'evidence':[
++            {'target':t,'source_ref':main,'page':1,'quote':q} for t,q in zip(
++                ['A/initial','k/value','reaction:loss/rate'],text.splitlines())]})
++    out=adapters.run_trial(p,EnvelopeTransport(p,complete_actions(workflow,negative)),tmp_path/'negative')
++    run=ArtifactStore(out['store_root']).get(out['audit']['run_ref'])['payload']
++    assert run['simulation']['values']['A'][-1]<-1.9
++    assert run['scientific_status']=='failed'
++    assert out['record']['observation']['state']=='failed'
++
++
++def test_duplicate_trial_cannot_replay_with_a_different_output_path(adapters,tmp_path):
++    p=projection(adapters)
++    first=adapters.run_trial(p,EnvelopeTransport(p,[action('ask_researcher',{'question':'Please clarify.'})]),tmp_path/'first')
++    with pytest.raises(ValueError,match='already reserved'):
++        adapters.run_trial(p,EnvelopeTransport(p,complete_actions('domain_agent')),tmp_path/'retry',store_root=first['store_root'])
++    assert not (tmp_path/'retry').exists()
++
++
++@pytest.mark.parametrize('defect',['workflow','model','budget','source','toolchain'])
++def test_parent_identity_and_scope_cannot_change_on_resume(adapters,tmp_path,defect):
++    p=projection(adapters,'domain_agent','translation')
++    first=adapters.run_trial(p,EnvelopeTransport(p,[action('ask_researcher',{'question':'What is initial P?'})]),tmp_path/'parent')
++    second=projection(adapters,'generic_tool_agent' if defect=='workflow' else 'domain_agent','translation','clarified')
++    if defect=='model': second['model_config']['model']='different'
++    elif defect=='budget': second['budget']['max_model_calls']=9
++    elif defect=='toolchain': second['trial']['toolchain_sha256']='f'*64
++    elif defect=='source':
++        s=next(s for s in second['sources'] if s['role']=='source'); text='changed original\n'+s['text']
++        s.update(text=text,sha256=adapters.protocol.hashlib.sha256(text.encode()).hexdigest())
++    with pytest.raises(ValueError):
++        adapters.run_trial(second,EnvelopeTransport(second,[]),tmp_path/'refused',store_root=first['store_root'],parent_session_ref=first['session_ref'])
++    assert not (tmp_path/'refused').exists()
++
++
++def test_crashed_provider_attempt_is_retained_and_not_replayed(adapters,tmp_path):
++    class ExitTransport(EnvelopeTransport):
++        def request(self,payload,timeout_s): os._exit(7)
++    p=projection(adapters)
++    out=adapters.run_trial(p,ExitTransport(p,[]),tmp_path/'crash')
++    assert out['record']['status']=='adapter_error'
++    assert out['record']['telemetry']['model_calls']==1
++    assert out['audit']['stop_reason']=='worker_exited_without_result'
++    assert len(out['audit']['request_refs'])==1
++    assert out['record']['telemetry']['input_tokens'] is None
++
++
++def test_failed_parent_does_not_trigger_a_fresh_paid_task(adapters,tmp_path):
++    p=projection(adapters,'domain_agent','translation')
++    first=adapters.run_trial(p,EnvelopeTransport(p,[RuntimeError('failure')]),tmp_path/'initial')
++    second=projection(adapters,'domain_agent','translation','clarified')
++    out=adapters.run_trial(second,EnvelopeTransport(second,[translation_proposal]),tmp_path/'child',
++        store_root=first['store_root'],parent_session_ref=first['session_ref'])
++    assert out['record']['status']=='not_run' and out['record']['observation']['state']=='not_run'
++    assert out['record']['telemetry']['model_calls']==out['record']['telemetry']['tool_calls']==0
++    assert out['record']['continuation']=='fresh' and out['record']['parent_trial_id'] is None
++
++
++@pytest.mark.parametrize('workflow',['fixed_workflow','generic_tool_agent','domain_agent'])
++def test_hard_deadline_also_bounds_the_scientific_tool(adapters,tmp_path,workflow,monkeypatch):
++    p=projection(adapters,workflow); p['budget']['max_elapsed_seconds']=.6
++    def slow(*args,**kwargs): time.sleep(5)
++    monkeypatch.setattr(adapters.application,'run_reproduction',slow)
++    start=time.monotonic()
++    out=adapters.run_trial(p,EnvelopeTransport(p,complete_actions(workflow)),tmp_path/'scientific-timeout')
++    assert time.monotonic()-start<3
++    assert out['record']['status']=='timeout'
++    assert out['record']['observation']['executed'] is True
++    assert out['record']['telemetry']['tool_calls']==4
++
++
++def test_supervisor_reaps_known_multiprocessing_descendant(adapters,tmp_path):
++    pidfile=tmp_path/'descendant.pid'
++    class Descendant(EnvelopeTransport):
++        def request(self,payload,timeout_s):
++            child=multiprocessing.get_context('fork').Process(target=time.sleep,args=(5,)); child.start()
++            pidfile.write_text(str(child.pid)); time.sleep(5)
++    p=projection(adapters); p['budget']['max_elapsed_seconds']=.4
++    out=adapters.run_trial(p,Descendant(p,[]),tmp_path/'timeout')
++    assert out['record']['status']=='timeout' and pidfile.exists()
++    pid=int(pidfile.read_text())
++    with pytest.raises(ProcessLookupError): os.kill(pid,0)
++
++
++@pytest.mark.parametrize('workflow',['fixed_workflow','generic_tool_agent','domain_agent'])
++def test_shared_context_limit_precedes_provider_request(adapters,tmp_path,workflow):
++    p=projection(adapters,workflow); p['budget']['max_request_chars']=8000; p['task']='T'*7900
++    out=adapters.run_trial(p,EnvelopeTransport(p,complete_actions(workflow)),tmp_path/'context')
++    assert out['record']['telemetry']['model_calls']==0
++    assert out['record']['observation']['executed'] is False
++    assert out['audit']['stop_reason']=='context_budget_exhausted'
++
++
++@pytest.mark.parametrize('workflow',['fixed_workflow','generic_tool_agent','domain_agent'])
++def test_unadvertised_product_tools_cannot_be_used_by_any_arm(adapters,tmp_path,workflow):
++    p=projection(adapters,workflow)
++    out=adapters.run_trial(p,EnvelopeTransport(p,[action('load_skill',{'name':'ode_reproduction'})]),tmp_path/'forbidden')
++    assert out['record']['status']=='invalid_output'
++    assert out['record']['telemetry']['model_calls']==1
++    assert out['record']['observation']['executed'] is False
++
++
++def test_duplicate_experiment_keys_refuse_before_creating_output(adapters,tmp_path):
++    p=projection(adapters); s=next(s for s in p['sources'] if s['role']=='experiment')
++    text='{"times":[0,1],"times":[0,2]}'
++    s.update(text=text,sha256=adapters.protocol.hashlib.sha256(text.encode()).hexdigest())
++    with pytest.raises(ValueError,match='experiment'):
++        adapters.run_trial(p,EnvelopeTransport(p,[]),tmp_path/'bad')
++    assert not (tmp_path/'bad').exists()
++
++
++@pytest.fixture
++def driver():
++    spec=importlib.util.spec_from_file_location('comparison_driver_acceptance',ROOT/'benchmarks/development/run_agent_comparison.py')
++    module=importlib.util.module_from_spec(spec); spec.loader.exec_module(module)
++    return module
++
++
++def test_driver_normalizes_actual_execution_without_awarding_unreviewed_model_scores(driver,tmp_path):
++    m=driver.protocol.development_manifest(ROOT); m['cases']=m['cases'][:1]; m['repeats']=1
++    seen=[]
++    def factory(p):
++        seen.append(p)
++        return EnvelopeTransport(p,complete_actions(p['trial']['workflow']))
++    out=driver.run_comparison(m,factory,tmp_path/'comparison')
++    assert len(out['records'])==3 and len(seen)==3
++    assert all(set(p)=={'trial','model_config','budget','shared_tools','task','sources'} for p in seen)
++    assert out['engineering']['scientific_execution_attempts']==3
++    assert out['engineering']['online_inference_calls']==0
++    assert out['engineering']['provider_requests']==9
++    assert all(s['correct_completion']['numerator']==0 for s in out['results']['summary'].values())
++    for r in out['records']:
++        driver.protocol._validate_record(m,next(t for t in driver.protocol.schedule(m) if t['id']==r['trial_id']),r)
++
++
++def test_driver_cli_refuses_live_manifest_without_creating_client_or_output(driver,tmp_path):
++    m=driver.protocol.development_manifest(ROOT); m['evidence_kind']='live_model'
++    driver.adapters._write(tmp_path/'manifest.json',m)
++    driver.adapters._write(tmp_path/'scripts.json',{'evidence_kind':'scripted_control','trials':{}})
++    assert driver.main(['--manifest',str(tmp_path/'manifest.json'),'--scripts',str(tmp_path/'scripts.json'),
++                        '--output',str(tmp_path/'refused')])==2
++    assert not (tmp_path/'refused').exists()
++
++
++@pytest.mark.parametrize('workflow',['fixed_workflow','generic_tool_agent','domain_agent'])
++@pytest.mark.parametrize('defect',['time_unit','value_binding'])
++def test_each_arm_rejects_explicit_input_mismatch_before_simulation(adapters,tmp_path,workflow,defect):
++    p=projection(adapters,workflow)
++    if defect=='time_unit':
++        s=next(s for s in p['sources'] if s['role']=='experiment')
++        value=json.loads(s['text']); value['time_unit']='second'; text=json.dumps(value)
++        s.update(text=text,sha256=adapters.protocol.hashlib.sha256(text.encode()).hexdigest())
++    def proposal(messages):
++        response=decay_proposal(messages)
++        if defect=='value_binding': response['args']['draft']['parameters'][0]['value']=.9
++        return response
++    out=adapters.run_trial(p,EnvelopeTransport(p,complete_actions(workflow,proposal)),tmp_path/'mismatch')
++    assert out['record']['observation']['executed'] is False
++    assert out['record']['observation']['state']!='completed'
++    assert not ArtifactStore(out['store_root']).list('run')
+--- /dev/null
++++ final/docs/workflow-adapters.md
+@@ -0,0 +1,70 @@
++# T08b：三种工作流执行适配器
++
++本轮完成可执行的固定流程、通用工具 Agent、领域 Agent 适配，以及共用的请求记录、工具预算、进程监督、原任务恢复和 T08a 结果归一。领域组直接调用产品 `agent.run_agent` / `agent.resume_agent`；没有用另一套脚本替代产品 Agent。
++
++适配器位于 `benchmarks/development/workflow_adapters.py`，统一驱动位于 `benchmarks/development/run_agent_comparison.py`。产品源码、旧测试、T08a 协议与历史成绩均保持不变。仍采用单个逻辑 Agent 和确定性科学工具，没有引入产品多 Agent。
++
++## 三组相同与不同的部分
++
++| 工作流 | 控制方式 | 共享后端 |
++|---|---|---|
++| fixed_workflow | 自动读取当前授权材料；一次模型提取或追问；就绪后确定性构建、运行和结束；不转为任意工具循环 | 相同的来源读取边界、`agent_tools.submit_draft`、`application.run_reproduction` 与科学验证 |
++| generic_tool_agent | 通用工具契约和循环；模型选择读取、提交、运行、结束或追问，不附加领域提示指引 | 同上，保留绑定、时间单位、非负性和单次科学执行约束 |
++| domain_agent | 使用产品的领域提示、内部状态机、检查点和原生澄清恢复 | 同上，实际运行现有产品 Agent |
++
++领域提示和编排差异是比较因素。此处通用组并非不受任何科学约束的聊天助手，固定组也包含一次 LLM 提取；三组共用严格工具后端，不能据此评价“领域工具整体相对无工具系统”的增益。产品的 Memory、检索、Skill、study 工具在本轮共同工具集合外；领域提示仍是原产品提示，传输前附加本轮能力边界，调用集合外工具会被拒绝。模块消融尚未进行。
++
++运行阶段预留 simulate 和 validate 两个预算单位，来源读取与构建各一个；科学验证含在同一个产品运行调用中。这是共同操作预算，不等于底层积分器调用数：正常运行另有收敛加严积分，已有报告如实另列。固定流程读取由控制器发起，通用/领域组读取由模型发起；全部计入工具预算。各组可用同一上限，实际调用量可以不同。
++
++## 共同请求、预算和记录
++
++适配器只接收 T08a 的当前阶段投影，不接收 private_rubric 或未来澄清。注入的 transport 提供 `model_config`、`evidence_kind` 和 `request(payload, timeout_s)`。每次实际请求明确传入共同的 model、temperature、top_p、seed（非空时）、max_tokens。三组使用相同的严格动作解析器。
++
++本轮不创建线上客户端，不查找凭证、读取 DSH 配置或选择服务地址。CLI 只接受显式 scripted_control；库接口可注入之后经授权的传输实现，实际同底层模型的在线对照尚未开展。返回的 model 标识不一致会在执行动作前拒绝；未返回标识只保留未核验状态，自报标识相同不构成提供方模型身份认证。
++
++预留记录在请求或工具副作用之前保存，失败不退款。产品 Agent 的工具调用通过持久调用日志预留点计入同一外层预算，没有修改或临时替换产品函数。调用量、工具量、活动耗时在澄清前后累计，最多尝试一次科学执行；新输出路径不能在同一存储中重复执行同一 trial_id，未知/部分执行不自动重试。
++
++实际发送的完整请求、合法响应文本、原生 usage、声明/返回模型和操作预留作为不可变产物保存。wrapper 附加的评价提示也包含在实际请求审计中，不能只用产品内部未附加提示的历史代替实际请求。异常仅记录类型及受控错误说明，不保存凭证、HTTP 头或原始传输异常。
++
++上下文按实际发送的消息 JSON 字符限制，不是完整 HTTP 字节数或 token 计量。单次 max_tokens 作为请求约束；若服务报告超限，停止后续动作。未报告输出 token 时保持未知，不能声称实际 token 上限已经独立验证。缺失 usage 仍为 null，没有基于字符估算费用。所有缺跑、错误和暂停记录进入 T08a 固定分母。
++
++## 总期限与失败恢复
++
++每阶段在 POSIX fork 工作进程中执行，外层监督剩余累计活动期限；超时终止进程组，并回收已知 multiprocessing 子进程。该实现针对当前 Linux 环境，不是通用跨平台执行器，也不承诺任何任意外部进程都能完整回收。科学后端保留其自身的子进程超时。
++
++中断后保留来源、预留、请求、已有结果和失败收据。executed 字段表示已预留并尝试进入科学执行，不保证得到完整轨迹；具体结果及完成情况另见 run_ref。只有确有结果时才记录成功或相应科学状态，不根据模型宣称生成模拟产物。进程创建和清理计入阶段实际耗时，工作期限结束后的有限清理时间也会如实反映在遥测中。
++
++恢复要求内容寻址的父会话记录，同一计划、工作流、案例、重复号、提供方类/声明配置、预算、工具指纹和原材料前缀均须一致。领域组使用原生 `resume_agent`，其他两组保存并继续原有对话、来源、任务和预算；新来源保留 research assertion 归属。父任务失败或已结束时，澄清阶段记为 not_run，不新开一个付费任务冒充恢复。恢复路径失败时也不退回 fresh 重建。
++
++本轮澄清是冻结协议的预录文本，并非真人现场回复，人工介入和等待时间均为 0；实际追加来源与原生父任务关系单独保存。对任何 awaiting_input 都按计划提供该预录回复，不自动判定问题语义是否适当；针对性追问和成功恢复的评价仍需归属审核。
++
++Python transport 与适配器属于受信任的执行代码。当前输入投影防止正常调用把参考标签传给模型，不是阻止恶意 Python 回调读取任意本地文件的操作系统沙箱。
++
++## 实际离线演练及限制
++
++复用 T08a 的完整 decay、缺初值 translation、公式歧义 logistic，三组各两次重复，共 30 条阶段记录。模型决策来自明确标注的字面脚本，所有构建、SBML、求解和产品验证实际执行；**脚本决策不是模型能力证据**。
++
++- 58 次脚本 transport 调用，线上模型调用 0；30 条记录全部保存。
++- 12 个阶段完成实际严格模拟，另有 12 次收敛加严积分；无缓存复用。decay、translation 各 6 次，跨工作流和重复的轨迹最大差异为 0。
++- 12 个初始缺口阶段按脚本追问。6 个 logistic 澄清阶段继续等待：原文 “The author confirms the intended equation is …” 不在现有绑定声明语法内，三组均返回 binding unknown。没有重写材料或放宽产品规则隐藏这一共同限制。
++- 所有 T08a assessment 保持 unreviewed，数值/来源判断和行为标注不自动填 pass。因此技术完成不能直接成为已审核的正确完成或模型成绩。
++
++实际轨迹对解析解的误差完整记录在[数值诊断](../artifacts/audit-t08b-workflow-adapters-20261019/scientific-results.json)。最初临时设定的绝对 2e-6 诊断断言在 translation 上失败，原始输出保留于 scientific-results-first.log；没有换一个更宽阈值宣布该精度通过，也没有更改求解设置或轨迹。已有有限性/收敛判据与全局绝对误差是不同证据，不对任意 ODE 承诺全局误差小于求解器局部容差。原始与加严积分误差均列出，科学状态仍为 not_verified、semantic_support 为 unknown。
++
++首轮新增 20 项通过。扩大科学一致性检查后，复现并修复了基线组漏传非负约束、领域组误读完成事件两处问题；中间实现错误与修复日志保留。最终定向 97 项通过（新增适配检查 50 项，加原 T08a 47 项），完整 **1172 项通过**（278.90 秒），源码差异见[工程验收](../artifacts/audit-t08b-workflow-adapters-20261019/acceptance.json)。
++
++## 重跑
++
++```bash
++PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=src .venv/bin/python \
++  benchmarks/development/run_agent_comparison.py \
++  --manifest artifacts/audit-t08b-workflow-adapters-20261019/control-inputs/manifest.json \
++  --scripts artifacts/audit-t08b-workflow-adapters-20261019/control-inputs/scripts.json \
++  --output /tmp/agent-comparison-new-run
++```
++
++输出目录须不存在。脚本输入必须恰好覆盖计划条目，字面动作里的 `$main`、`$reply`、`$main_length` 只从实际请求可见的来源元数据解析；没有内置从参考答案生成响应的逻辑。准备脚本是单独标注的开发控制作者代码，不是产品 Agent。
++
++驱动逐阶段保存 records 和 receipts。意外前置条件错误会保留已有产物并停止，原计划中未执行项仍可用 T08a 工具按固定分母汇总，不自动删掉失败或重跑。CLI 成功退出只表示驱动结束，应检查操作状态、技术状态、预算未知和未审核字段。
++
++T08 整体仍缺实际同模型对照、独立审核任务及模块消融。接下来先登记和单独修复共同绑定句式边界，再在适用授权范围内接入同一线上 transport，冻结材料、模型和预算后开展真实模型开发对照。T07 的独立审核/真实论文证据仍待补；本轮没有新增论文、读取独立评测集、访问 c13/c18 或重试被拒绝的 USTC 外发。
+--- before/docs/agent-evaluation-protocol.md
++++ final/docs/agent-evaluation-protocol.md
+@@ -1,6 +1,8 @@
+ # T08a：统一 Agent 评价清单与离线评分
+ 
+ 本轮完成冻结清单、按阶段输入投影、记录协议和统一评分器，位于 `benchmarks/development/agent_evaluation.py`。它只准备输入和读取结果文件，不执行模型请求、工作流或科学计算。T08 整体仍未完成，不能从本轮控制数据比较系统能力。
++
++后续 [T08b 执行适配器](workflow-adapters.md)已接入三种工作流，领域组运行实际产品 Agent，完成脚本决策与真实科学工具的30阶段演练。本文保留 T08a 阶段的协议与验收边界；执行监督、共同工具、恢复及新发现的绑定句式限制以 T08b 文档为准。真实模型对照仍未开展。
+ 
+ T07 另有独立领域审核和真实论文检索对照待补。已有 18 例的 Codex 预审及一处条件标签修订候选已留档；按用户要求仍不增加新论文。T08a 的离线工程准备不依赖这些外部证据全部到位。
+ 
+--- before/docs/optimization-backlog.md
++++ final/docs/optimization-backlog.md
+@@ -1,6 +1,6 @@
+ # 架构审计后的优化任务队列
+ 
+-更新：2026-10-19。默认由 Codex 安排任务、监督 DSH 实现并独立验收；DSH 超时后，T03b 经用户授权由 Codex 接手，之后 T04 至 T08a 延续用户要求的 Codex 独立实现方式。一次推进一项，验收后更新本表，不以执行方回复“完成”代替验收。
++更新：2026-10-19。默认由 Codex 安排任务、监督 DSH 实现并独立验收；DSH 超时后，T03b 经用户授权由 Codex 接手，之后 T04 至 T08b 延续用户要求的 Codex 独立实现方式。一次推进一项，验收后更新本表，不以执行方回复“完成”代替验收。
+ 
+ 审计原始证据已从临时目录归档到 [architecture-audit-20261019](../artifacts/architecture-audit-20261019/audit.md)。基线完整 Python 回归 715 项通过，同时存在下列已复现问题；测试数量不代表真实模型科研能力。
+ 
+@@ -14,7 +14,8 @@
+ | T05 | 引文中的数值可错绑目标，公式可不对应草稿 | **已验收**：[结果与限制](evidence-binding.md) | Codex独立实现；版本化目标/数值/表达式/原文位置记录、显式映射见证、实际SBML重检；基线16失败，扩展108通过，完整990通过；语义支持仍unknown |
+ | T06 | PDF 只有 pypdf 逐页文本，尚未接入成熟解析结果 | **已验收**：[结果与限制](pdf-parser-adapter.md) | 可选本地PyMuPDF薄适配、原PDF/版本/不可变产物/块坐标、辅助表格和失败诊断；40例专项通过，完整1030通过；OCR/公式识别仍not_run |
+ | T07 | 检索目前只有待独立审核的合成开发对照 | **T07a工程准备已验收；T07b已做Codex预审，待独立领域审核，整体未结项**：[审核包与协议](retrieval-review.md) | 不加新论文；18例中17项建议保留、1项条件标签建议修订，另存候选包；人工决定仍全部pending，原包/代码不改；1075为此前完整回归 |
+-| T08 | 缺同底层模型、近预算的真实 Agent 公平评价 | **T08a离线协议已验收；T08b真实适配待做，整体未结项**：[协议与限制](agent-evaluation-protocol.md) | 冻结模型/预算/材料/工具指纹及30条计划；固定分母、归属评判、累计预算、续跑/新建区分、调用/耗时/人工介入和未知usage；没有真实模型比较 |
++| T08 | 缺同底层模型、近预算的真实 Agent 公平评价 | **T08a已验收；T08b执行适配已验收；真实模型对照仍待做，整体未结项**：[执行与限制](workflow-adapters.md) | 三种实际工作流、共同后端/请求/预算、总期限和原任务恢复；30阶段演练含12次实际模拟和6处共同语法阻断，脚本响应不算模型表现 |
++| T08b-F1 | 共同绑定工具不支持 “the intended equation is …” 澄清句式 | **待有限语法改进**：[实际六条记录](../artifacts/audit-t08b-workflow-adapters-20261019/scientific-results.json) | 先建完整句/位置及不确定、否定、条件作用域负控制，再扩展支持子集；保留未知边界，不改材料伪造检索或完成提升 |
+ | T09 | Memory 候选审核、Skill 科研流程、失效传播和规模性能 | 待真实任务证据 | T05/T08；候选不自动成为事实，技能有案例/失败条件，以消融检验收益，测量后优化索引 |
+ 
+ 保留单 Agent、模块化单体、SBML 权威执行载荷、不可变产物及冻结研究协议。暂缓多 Agent、通用 PDE、开放机制搜索及没有规模测量支撑的基础设施迁移。
+@@ -43,7 +44,11 @@
+ 
+ 按用户检查T07剩余项后转下一任务的意图，保留T07的独立审核/真实论文证据缺口，推进不依赖外发的T08a。新增统一离线清单与评分器，复用3个已见合成案例、一个模板家庭、5个阶段、3种工作流、2次重复，合计30条计划。最终专项47项、完整1122项通过；现有产品源码、原测试和历史评测器未修改；三套显式控制不执行模型或科学工具，不表示完成真实Agent对照。新增专项检查、完整回归与补丁见[工程验收](../artifacts/audit-t08a-evaluation-protocol-20261019/acceptance.json)。
+ 
+-下一步T08b实现固定流程、通用工具Agent和领域Agent的真实适配器，校验共同工具、预算和输入边界；先完成离线适配验收，再准备适用授权内的实际调用。独立领域审核、未见科学任务、真实同模型对照及Memory/RAG/Skill消融仍待完成。本轮没有扩展论文范围或读取独立评测集。
++T08b已验收固定流程、通用工具Agent和产品领域Agent的执行适配，最终定向97项、完整1172项通过。共同后端补齐时间单位与非负性参数一致性，预留后执行、累计预算、单次科学执行、重复条目拒绝、POSIX进程组期限、不可变会话与原生恢复已覆盖。产品源码、原测试和T08a代码保持不变；实际源码差异、测试与中间失败见[验收记录](../artifacts/audit-t08b-workflow-adapters-20261019/acceptance.json)。
++
++实际30阶段离线演练使用58次脚本transport响应，线上模型调用0；12次实际严格模拟及12次收敛加严积分，跨三组/重复轨迹一致。12个初始缺口阶段追问，6个logistic澄清阶段因共同绑定句式不支持继续等待；没有改写源文或放宽产品门槛。T08a判断均为unreviewed，技术完成不提升为模型正确率。解析误差和临时2e-6绝对检查失败如实保留，不事后更换精度门槛；详见数值诊断。
++
++下一步先单独处理T08b-F1，再接入共同线上transport，在适用授权内冻结材料、底层模型、预算后开展真实模型开发对照。独立领域审核、未见科学任务、真实同模型对照及Memory/RAG/Skill消融仍待完成。本轮没有扩展论文范围、读取独立评测集或重试USTC被拒绝的材料外发。
+ 
+ 任务不涉及 c13/c18 材料、独立评测材料、密钥或外部模型评价。此前四次 USTC 外发审批拒绝仍有效，不重试或改道。
+ 
+--- before/docs/seven-point-status.md
++++ final/docs/seven-point-status.md
+@@ -10,7 +10,7 @@
+ | Tool Use | 材料读取/检索、可选本地PyMuPDF页块/表格解析与引用定位、记忆召回、技能读取、有界目标/数值/公式绑定、模拟，以及冻结的训练拟合/留出比较 | 解析与绑定不能证明语义支持；OCR/公式识别未运行，表格和复杂阅读顺序待审核；复杂语言/单位换算仍unknown，拟合仍限已验证的profile |
+ | 工作流 | 追问、归属回复、暂停/恢复、版本与预算冻结、一次研究执行、持久调用记录、受控故障恢复/结果认领及本地所有者；统一研究入口与科学总期限 | 任意崩溃点自动恢复、跨分支全局费用/执行限额、较复杂的研究修改与失效传播仍有限；科学工具总期限不包含此前LLM讨论或研究者等待 |
+ | Skill | 固定版本的 ODE 复现、澄清复核、受约束研究指引；目录随任务模式冻结，不改变权限或科学判据 | 仍为少量内置流程；可增加有独立科学案例验收的技能，不急于通用插件市场 |
+-| Evaluation | 完整数值/故障回归、解析解、恢复演练、上下文消融；T08a新增共同冻结清单、按阶段输入投影、固定分母评分、累计预算与续跑检查 | T08a是离线记录协议；三种真实适配器、专家审核的未见任务、相同底层模型对照和真实模块消融仍待完成。脚本控制不能替代这些证据 |
++| Evaluation | 完整数值/故障回归、解析解、恢复演练；T08a共同清单/固定分母评分；T08b三种执行适配、共同工具和预算、进程期限、实际产品Agent原任务恢复 | 当前仅脚本响应驱动真实工具；共同绑定句式限制已登记，专家审核的未见任务、同模型在线对照、真实模块消融仍待完成 |
+ 
+ 本轮选择补 Memory 的工作上下文与 Evaluation，因为之前只有持久化与续跑，而每次请求仍可能携带不断增长的全部历史。详见 [上下文预算](context-budget.md)；前两轮能力见 [记忆与检索](memory-and-retrieval.md) 和 [受约束研究工具](agent-study-tool.md)。
+ 
+@@ -25,3 +25,5 @@
+ 随后按用户要求完成[T07b的Codex预审](../artifacts/audit-t07-codex-pre-review-20261019/REVIEW.md)：17例建议保留，1例条件A/B标签建议修订；21段引用位置匹配，另存候选包，原包不改。候选开发复算仍为10/21与19/21，冲突类别更正为1/2与2/2，这不代表检索提升。预审属于Codex开发自查，不替代独立领域审核，正式决定仍全部pending；本轮未改代码/测试、未新增论文或重跑完整回归。
+ 
+ T07的独立审核与真实论文对照继续待补，按用户后续任务安排推进[T08a离线评价协议](agent-evaluation-protocol.md)。复用已见的完整/缺初值/公式歧义三种合成任务，冻结三工作流共同模型配置、预算、材料哈希、科学工具指纹与30条计划；缺跑、服务失败和非法记录保留分母，未知usage不填零，fresh重建不算原任务恢复。三套控制都是显式预设记录，真实模型、科学工具调用及人工审核决定均为0；T08仍缺真实适配器和实际对照。本轮产品源码及原测试不变，验收结果见[记录](../artifacts/audit-t08a-evaluation-protocol-20261019/acceptance.json)。
++
++随后[T08b工作流适配](workflow-adapters.md)接入实际产品Agent和两种共用后端的基线编排，完成30阶段脚本决策演练：58次脚本transport响应、12次实际严格模拟及12次加严积分、线上模型调用0，轨迹跨三组一致。6个澄清阶段因共同绑定语法继续等待，已登记T08b-F1；原文、规则和未知状态保留。判断均未独立审核，不构成模型成功率或优势结论。产品源码、原测试和T08a源码未改，完整验收见[记录](../artifacts/audit-t08b-workflow-adapters-20261019/acceptance.json)。
+--- /dev/null
++++ final/tasks/audit-t08b-workflow-adapters.json
+@@ -0,0 +1,10 @@
++{
++  "task_id": "T08b",
++  "owner": "Codex alone",
++  "objective": "Execute fixed, generic tool and actual product Agent workflows through shared scientific backends and metered provider requests; preserve phase state and produce T08a records.",
++  "read_scope": ["src/biomodel_agent", "benchmarks/development/agent_evaluation.py", "benchmarks/inputs/reliability/decay", "benchmarks/inputs/reliability/translation", "benchmarks/inputs/reliability/logistic", "tests", "docs"],
++  "write_scope": ["benchmarks/development/workflow_adapters.py", "benchmarks/development/run_agent_comparison.py", "tests/test_workflow_adapters.py", "docs/workflow-adapters.md", "docs/agent-evaluation-protocol.md", "docs/optimization-backlog.md", "docs/seven-point-status.md", "artifacts/audit-t08b-workflow-adapters-20261019"],
++  "constraints": ["Existing product source, tests and T08a protocol remain unchanged", "No DSH or subagents", "No real model calls, material transmission, new papers, independent evalset reads or c13/c18 access", "Use actual product Agent for domain arm", "Scientific backend and budgets shared across arms; disclose control-flow differences", "Unreviewed numerical/source/behavior assessments remain unknown"],
++  "acceptance": ["Actual build/SBML/simulation/validation through same backend", "Shared exact provider payload settings, request/output audits and usage handling", "Persisted reservations before effects, cumulative phase budgets and one execution", "Hard supervised wall deadline and child cleanup", "Actual original-task resume; no implicit fresh fallback", "No evaluator rubric or future clarification reaches workflow/transport", "Provider, tool, budget, crash and wrong-parent negative controls", "Full appropriate regression, actual numerical controls, final snapshots and patch"],
++  "remaining_after_T08b": ["Authorized same-model live runs", "Independent task/annotation review and actual comparative results", "Memory/RAG/Skill ablation"]
++}

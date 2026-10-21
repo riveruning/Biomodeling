@@ -1,0 +1,25 @@
+{
+  "schema_version": "1",
+  "id": "v01-04-storage",
+  "objective": "实现不可变内容寻址研究产物、SQLite索引及可定位材料证据。",
+  "context": "模块化Python单体，JSON schema_version=1。已有to_dict/from_dict处理dataclasses。禁止shell/todo_write/glob/联网。Codex验收。",
+  "read_files": [
+    "src/biomodel_agent/domain/serialization.py"
+  ],
+  "write_files": [
+    "src/biomodel_agent/storage.py",
+    "src/biomodel_agent/evidence.py",
+    "tests/test_storage_evidence.py"
+  ],
+  "expected_files": [
+    "src/biomodel_agent/storage.py",
+    "src/biomodel_agent/evidence.py",
+    "tests/test_storage_evidence.py"
+  ],
+  "instructions": "storage.ArtifactStore(root)：root/objects/<sha256>.json、root/blobs/<sha256>、SQLite root/index.sqlite。put(kind,payload,refs=())->str，内容envelope={schema_version:'1',kind,payload,refs:list}，规范JSON排序key/compact/ensure_ascii=False/allow_nan=False，hash精确UTF8。refs必须存在并读校验（可对象或blob），拒绝unknown；kind非空字符串；不允许mutable overwrite，返回existing必须重新verify。原子写临时file+os.replace仅单写者声明，close DB每操作或context管理。get(ref)->dict verifyhash thenread，不返回缓存mutable object。ref只能^[0-9a-f]{64}$阻止traversal。put_blob(data:bytes)->str及get_blob(ref)verify。put对象事务indexkind/id time，本体已落地再索引；recover()扫描objects/*.json verifyfilenamehash/schema/refs，重建丢失index、报告损坏或孤儿而不自动丢弃/覆盖。list(kind=None)->list refs。相同payload不同refs→不同hash。封装JSON-safe数值失败明确，不把NaN转换0。运行cache用kind='run'实现后续application，不做SQLite跨模块schema。\nevidence.ingest_source(store,path,source_url=None)->str：只读原始bytes,max20MB；.txt/.md UTF8处理，.pdf用pypdf按页文本提取（pdf扫描无文字返回warning）；原文存blob不可覆盖；source object payload {blob_ref,filename,url,parser,parser_version,pages:[{number:1,text}],warnings:[]} refs含blob_ref。未知后缀拒绝，PDF不允embeddedinstructions执行。\nevidence.add_claim(store,source_ref,page,start,end,statement,claim_type='paper_assumption',relation='reported_as',review_status='unverified')->str：核对sourcekind/page/start/end有效[int]且非空，quote从保存text切片，不接收外部任意quote；payload含source_ref,page,start,end,quote,statement,claim_type,relation,review_status。类型限制experimental_observation/paper_assumption/mathematical_definition/model_inference/system_conjecture/human_convention；relation reported_as/supports/opposes/derived_from；review_status unverified/source_checked/disputed/accepted_for_analysis（sourcechecked仅忠实引用不保证事实）。claim不可由代码拟合升级type。evidence.validate_links(store,element_map,required_targets)->dict {status,missing,invalid,coverage}：target映射str或tuple[str]claimrefs，校验claim存在sourcequote范围真有效，无ref给missing；没有任何link也不能coverage1；可核对source_refs不匹配? get校验。Coverage来源存在不等于claim真支持target，返回semantic_support:'unknown'。\n测试：hash稳定refs差异、rawbytes保留、tamper get拒绝、非法ref和unknownref拒绝、index删除或缺行后recover重建、mutate get不改变store、claims精确位置含多页、invalidclaimtype拒绝、引用coverage不能假冒semanticpassed。只文件工具最后文字回复。",
+  "acceptance": [
+    "原始文件及对象不能静默覆盖",
+    "引用、哈希、位置可验证"
+  ],
+  "verification_commands": []
+}

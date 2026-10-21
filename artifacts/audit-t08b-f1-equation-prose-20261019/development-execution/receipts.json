@@ -1,0 +1,892 @@
+[
+  {
+    "trial_id": "fixed_workflow--decay--0--initial",
+    "session_ref": "9df2c31a42c6d01d8a2c8cd8090d655cb8311aaa2b6f2a9d0d25c87be0ea2f0e",
+    "store_root": "/home/riveruning/biologymodel_agent/artifacts/audit-t08b-f1-equation-prose-20261019/development-execution/stores/fixed_workflow--decay--0",
+    "audit": {
+      "supervised": true,
+      "stop_reason": null,
+      "run_ref": "fa07007746e53c428c47276a08a7a5406824aeee1c4a76b078656922a22f5807",
+      "native_agent_run_ref": null,
+      "request_refs": [
+        "73994dd6e57287829ad9a0ea967f0e7c9cd90ec725bcb871ea4a1495eefcf04e"
+      ],
+      "response_refs": [
+        "2c662222f72fd9f8791bcf1cfcda155a92abe669bbb1f5ef137646b71c2b05f5"
+      ],
+      "reservation_refs": [
+        "5f91b343c60b6e391e264546eb461a7900b653ffce2611be87243881c7a55ab9",
+        "a7ea065d5bced6177f317e37b70b6339788b14c51f64d928b1e890f71c1360c0",
+        "314be6b7bae8fdc91e823493a394b15f0feece33e4d56930c669d36085f60dad",
+        "ef4ae0f1231b515b4c43192e938e562ca299a35bc3dce73fce9c9ff14326d6fe"
+      ],
+      "clarification_origin": null,
+      "runtime_adapter_sha256": "bc5684016fa4131bfc91e8db16386adacdbedc644e7e9b4bd68763a66722e1b4",
+      "scientific_support": "unknown",
+      "same_returned_model_verified": true
+    }
+  },
+  {
+    "trial_id": "fixed_workflow--translation--0--initial",
+    "session_ref": "853276ee675d3f078b58178e564a89ee27a3292cb410fcf965e644d0ba0c2e82",
+    "store_root": "/home/riveruning/biologymodel_agent/artifacts/audit-t08b-f1-equation-prose-20261019/development-execution/stores/fixed_workflow--translation--0",
+    "audit": {
+      "supervised": true,
+      "stop_reason": null,
+      "run_ref": null,
+      "native_agent_run_ref": null,
+      "request_refs": [
+        "7a8eec7182c952590683a8cb96e62e7612d454a2466e68a7f5e732f9ff2e5447"
+      ],
+      "response_refs": [
+        "7922cd5367210450b8730d454e54063947956cf55cb907840a95a601ef376f19"
+      ],
+      "reservation_refs": [
+        "0c8d0bd048721d1a86421e1b8b779bc95adc17d3641309011c382c5794d36a68",
+        "37e48f67d70da4019796436baffd24fd67482390c358fbc59ca04206e44d9f49"
+      ],
+      "clarification_origin": null,
+      "runtime_adapter_sha256": "bc5684016fa4131bfc91e8db16386adacdbedc644e7e9b4bd68763a66722e1b4",
+      "scientific_support": "unknown",
+      "same_returned_model_verified": true
+    }
+  },
+  {
+    "trial_id": "fixed_workflow--translation--0--clarified",
+    "session_ref": "5b222eecace0ff98b9786ba495580adbeff8fd1e1872b665540c08bdd38ea008",
+    "store_root": "/home/riveruning/biologymodel_agent/artifacts/audit-t08b-f1-equation-prose-20261019/development-execution/stores/fixed_workflow--translation--0",
+    "audit": {
+      "supervised": true,
+      "stop_reason": null,
+      "run_ref": "8db78f09859f73aeda6d56e0964ac67b20ce5ea660ce0eb5f261029dd34f33c0",
+      "native_agent_run_ref": null,
+      "request_refs": [
+        "08f4aac237d9bb9691d905b138104b225d8ff825bbb45736c7b16fbf147f6176"
+      ],
+      "response_refs": [
+        "1acd23ffe0529dd427c38a880293a8895f34afc512c5d7c2697f6458f4e5e3a7"
+      ],
+      "reservation_refs": [
+        "ba434cc1453f479040358cd558213f3bc428ee92b9382806e9d64fe13147a395",
+        "2ddb32557eba114e387df41f0591cdd3ced82875a46bc3061ca05aee06e97b2b",
+        "fe887a3b7ce7540335b8d17af59a36fe02bca677f48d04cb518b339df36ba3c0",
+        "3b4698db5a56476c7fed9db0789dbf4eccbb59a7ea8346e298486b4e8c35fb0b",
+        "f8684e842fad145e10681c5b4f664274db97ff09f49672024f3319e300351a95"
+      ],
+      "clarification_origin": "prerecorded_protocol",
+      "runtime_adapter_sha256": "bc5684016fa4131bfc91e8db16386adacdbedc644e7e9b4bd68763a66722e1b4",
+      "scientific_support": "unknown",
+      "same_returned_model_verified": true
+    }
+  },
+  {
+    "trial_id": "fixed_workflow--logistic--0--initial",
+    "session_ref": "14e4f47c4f1171e0056de38a003341f06f000249f105a308a308ea224cc05f96",
+    "store_root": "/home/riveruning/biologymodel_agent/artifacts/audit-t08b-f1-equation-prose-20261019/development-execution/stores/fixed_workflow--logistic--0",
+    "audit": {
+      "supervised": true,
+      "stop_reason": null,
+      "run_ref": null,
+      "native_agent_run_ref": null,
+      "request_refs": [
+        "5ded611d77c44dfbc6c8b17ffa4baec27a9f8f4e1793e21083ec64c7a9bd6948"
+      ],
+      "response_refs": [
+        "e360dfd40c98a08518e9d0430a1a6d604cc5497ace331cb2793e3fec9e5981d7"
+      ],
+      "reservation_refs": [
+        "cba48783b24620ac2f8bead0148216d0058af7c041d3dfe49ef601431da8d436",
+        "3cf633f59752ff7c4e1f680934543eac0d9cb5607a1bcfd209eedb05cb7cbe7e"
+      ],
+      "clarification_origin": null,
+      "runtime_adapter_sha256": "bc5684016fa4131bfc91e8db16386adacdbedc644e7e9b4bd68763a66722e1b4",
+      "scientific_support": "unknown",
+      "same_returned_model_verified": true
+    }
+  },
+  {
+    "trial_id": "fixed_workflow--logistic--0--clarified",
+    "session_ref": "3c106fb1dbb65d6cb0b939a4c8cfb94bf33ae1e1248b6cd31708890504edb4f9",
+    "store_root": "/home/riveruning/biologymodel_agent/artifacts/audit-t08b-f1-equation-prose-20261019/development-execution/stores/fixed_workflow--logistic--0",
+    "audit": {
+      "supervised": true,
+      "stop_reason": null,
+      "run_ref": "71b13ae5f1ed37e4361deac25ea1c663d9002529ee7217d533e3ff2d1faa0f33",
+      "native_agent_run_ref": null,
+      "request_refs": [
+        "2f258cec7ce361d05de1f242993aeb8c3207bdddbfccd891bfa109fe27fe5738"
+      ],
+      "response_refs": [
+        "5dc2edb8f0a6b5973dcb8892782340e84447ea1f5f79b8b58541992ef5a7ac7c"
+      ],
+      "reservation_refs": [
+        "5f766c9cd06f4fe0d1c6be9de3b8a6b09e16acd1cd6694c40d61908d2b2ca876",
+        "845c4fea2764d07d9709287e0eac6441854095e0938bbeaa54663d0b8b1cb25c",
+        "31e819539296d1f8e149938d0504e44b6bc14137f1fa2a0a3f3a47b15f8a22ab",
+        "462f39445ac940b3e83bb3f55609e9f5e3bff2f68def15ec6e5864689fee6331",
+        "e8d9f8c42daeefd12221a7ffa569584957ee4bf6eb051bc92b9f6e886f6a6137"
+      ],
+      "clarification_origin": "prerecorded_protocol",
+      "runtime_adapter_sha256": "bc5684016fa4131bfc91e8db16386adacdbedc644e7e9b4bd68763a66722e1b4",
+      "scientific_support": "unknown",
+      "same_returned_model_verified": true
+    }
+  },
+  {
+    "trial_id": "fixed_workflow--decay--1--initial",
+    "session_ref": "cec4de90f488beb68a880fca32ccc9d1c5a9aec58822f3fc5eadb7f42b098b26",
+    "store_root": "/home/riveruning/biologymodel_agent/artifacts/audit-t08b-f1-equation-prose-20261019/development-execution/stores/fixed_workflow--decay--1",
+    "audit": {
+      "supervised": true,
+      "stop_reason": null,
+      "run_ref": "bdbc967c863f491e68abf30daafdbd784882011d996d1ba856d7f004afb04d6f",
+      "native_agent_run_ref": null,
+      "request_refs": [
+        "11749aa10a06013890c5bc4972b0ca5df3aed47ab5db01a1dde845e9fbdf6128"
+      ],
+      "response_refs": [
+        "4a3af29d82f0018cf054cffe6df737901126095a8dbf1d281a594d31ea79b322"
+      ],
+      "reservation_refs": [
+        "7da79e993bf2dc622dab923c15dd3bf27597877e4953d97957565180c6378780",
+        "f41f9a8a8f8d9de5e2ab89a751420c86496cfc10d218521f0a56069cb485aa85",
+        "0d372b670875fab60524fe43219ee8e18ab98d83a9676cdee4e606d332c017e8",
+        "d5bcf50c17e131117b4bcd3dfc84d32bdc28ad39e7cd5fc8bf4e3863bee890f9"
+      ],
+      "clarification_origin": null,
+      "runtime_adapter_sha256": "bc5684016fa4131bfc91e8db16386adacdbedc644e7e9b4bd68763a66722e1b4",
+      "scientific_support": "unknown",
+      "same_returned_model_verified": true
+    }
+  },
+  {
+    "trial_id": "fixed_workflow--translation--1--initial",
+    "session_ref": "a2dd9365d18d5a054888674c9e2382403760b1f1e35ecacedf2fd9155878f962",
+    "store_root": "/home/riveruning/biologymodel_agent/artifacts/audit-t08b-f1-equation-prose-20261019/development-execution/stores/fixed_workflow--translation--1",
+    "audit": {
+      "supervised": true,
+      "stop_reason": null,
+      "run_ref": null,
+      "native_agent_run_ref": null,
+      "request_refs": [
+        "cc2a33a6fdd50859483cd1ed44271d2bd5b0842a1edef4969ce26a9a15bae588"
+      ],
+      "response_refs": [
+        "c7df3e073163ea2e2d97c69375644ee7129aeacd0eaed84e1a22cf37e966778b"
+      ],
+      "reservation_refs": [
+        "a090e2e4c7c6c0637322c3f695318aa78d6a7ba96b32860c9014296ad94b76a0",
+        "4caf7a14f30a962f9c053402283382b5a5df923705e1fb77801a11c14a11a226"
+      ],
+      "clarification_origin": null,
+      "runtime_adapter_sha256": "bc5684016fa4131bfc91e8db16386adacdbedc644e7e9b4bd68763a66722e1b4",
+      "scientific_support": "unknown",
+      "same_returned_model_verified": true
+    }
+  },
+  {
+    "trial_id": "fixed_workflow--translation--1--clarified",
+    "session_ref": "3923172b00cbef9a904c8aa62faf07effc4a23e89c9dae09c2e026d7d185aed8",
+    "store_root": "/home/riveruning/biologymodel_agent/artifacts/audit-t08b-f1-equation-prose-20261019/development-execution/stores/fixed_workflow--translation--1",
+    "audit": {
+      "supervised": true,
+      "stop_reason": null,
+      "run_ref": "d9a4c8fb0c64a7e3acf777a8555ad834459fcea97a536c3297c1ea5344806186",
+      "native_agent_run_ref": null,
+      "request_refs": [
+        "3178ba3d6de1c07dd521992a35ac07be5aeb566bd09d38070857c306c0925833"
+      ],
+      "response_refs": [
+        "27f6e98d71c0d23ecc273a1cbd68f21bb55ef7c296735b19c227889e4e437995"
+      ],
+      "reservation_refs": [
+        "d6cf5488268c39a0a8f4da03cc45912bb1c2ecab6a53b095addcefdd8e9fd126",
+        "70d1a379ec09418c28a666d4b8e411329416a15ce670d34b13a149ee306bc6fa",
+        "bdcd6ec1ecfde0b47ae577abcf127184e26ae4260c581eab8fe301324c3ef531",
+        "2902330d1860e425757deb28daa98b1bfa06d0d84945264d35f22599ed899937",
+        "b72964a69bdb718ae2868a99bb97a584e5db7f5a0cf2654e60b4e585689ba172"
+      ],
+      "clarification_origin": "prerecorded_protocol",
+      "runtime_adapter_sha256": "bc5684016fa4131bfc91e8db16386adacdbedc644e7e9b4bd68763a66722e1b4",
+      "scientific_support": "unknown",
+      "same_returned_model_verified": true
+    }
+  },
+  {
+    "trial_id": "fixed_workflow--logistic--1--initial",
+    "session_ref": "4f6ab575302b09e0ea5bd3ca5c68eb6068316ddf4f0ffb6559635b6d705fc904",
+    "store_root": "/home/riveruning/biologymodel_agent/artifacts/audit-t08b-f1-equation-prose-20261019/development-execution/stores/fixed_workflow--logistic--1",
+    "audit": {
+      "supervised": true,
+      "stop_reason": null,
+      "run_ref": null,
+      "native_agent_run_ref": null,
+      "request_refs": [
+        "1b3679d0fb7316cc75a88526e38290796bc2a8925c19e5462a24a693e401be10"
+      ],
+      "response_refs": [
+        "e7ffc9094c7d5b9003142ef0f02fa0953e6aafe4e9c394547e87ae5ce2266a86"
+      ],
+      "reservation_refs": [
+        "e20e532f351de609aff2eb92a01b6a0909a566e2685344a040f46a10efd0f3a4",
+        "d06be7d7ac5f2969c681d07a34e6dfea34da38956df86d6d3babdb6120ea6bf2"
+      ],
+      "clarification_origin": null,
+      "runtime_adapter_sha256": "bc5684016fa4131bfc91e8db16386adacdbedc644e7e9b4bd68763a66722e1b4",
+      "scientific_support": "unknown",
+      "same_returned_model_verified": true
+    }
+  },
+  {
+    "trial_id": "fixed_workflow--logistic--1--clarified",
+    "session_ref": "6d1658ec6304f2d0c227f55e0528cd709a4825bec732cb5d14a8081eb2259cc1",
+    "store_root": "/home/riveruning/biologymodel_agent/artifacts/audit-t08b-f1-equation-prose-20261019/development-execution/stores/fixed_workflow--logistic--1",
+    "audit": {
+      "supervised": true,
+      "stop_reason": null,
+      "run_ref": "ec3f5d23b617f985dfabb297580b2caee31d3415b7df1e5341ce032a23a8fc7b",
+      "native_agent_run_ref": null,
+      "request_refs": [
+        "3a926ca62694f6bdd8e0ca7cdb498f312d996c9985b9e1f333b8b8b97c4c13e6"
+      ],
+      "response_refs": [
+        "8a9fc98df5c27d61cdb2ee09d73f29529b4a480ad2a2b5a8ba0321a3c63d0f9f"
+      ],
+      "reservation_refs": [
+        "89011290cd214fae3d4ca50b2e4db279defd63aa13ef9fa8f69e75891a77e493",
+        "6f968c8095892b76c1854f2dc760365b3cae6a8bcd3793c47b84ae6365a26c51",
+        "80941a37d6b006d23218c656e203a3a8c3caa64b2ed4366e4a54e7d7d9e9d04f",
+        "ff86ec30ef1bcd0a4749533369434e37dd7d30daeeba4c3cbeef2e5b8d194aa3",
+        "0c1bdd2efdd0195f4ba25db370c2ac178b9f474d51db0d4e1fe3dd909e5a4ee5"
+      ],
+      "clarification_origin": "prerecorded_protocol",
+      "runtime_adapter_sha256": "bc5684016fa4131bfc91e8db16386adacdbedc644e7e9b4bd68763a66722e1b4",
+      "scientific_support": "unknown",
+      "same_returned_model_verified": true
+    }
+  },
+  {
+    "trial_id": "generic_tool_agent--decay--0--initial",
+    "session_ref": "201f5f32a27b31b1c130f076fcb1854348dd1263454c65156b4e6dbf19d4c0a7",
+    "store_root": "/home/riveruning/biologymodel_agent/artifacts/audit-t08b-f1-equation-prose-20261019/development-execution/stores/generic_tool_agent--decay--0",
+    "audit": {
+      "supervised": true,
+      "stop_reason": null,
+      "run_ref": "9ea921e80ec75a3e3e2cd6d382f1e8ee559ea8251087279b416f839bca35e114",
+      "native_agent_run_ref": null,
+      "request_refs": [
+        "df69b350febc91a43e40a58eabb8f939cc8a929e1c039426eadc62ce1f3726c0",
+        "79248e0e8dee5e93b28d1e1012937889a9cd0bdcba13794e994f5ba59129d987",
+        "e7b2ea4b3319aa7c7b9cfa757db4a5d59457e9de9483d2d3bb836f129a6da431",
+        "404904272a8e682431702dc1985e8c7d0ea8dac5e3ab0afd8e42568c0d716b80"
+      ],
+      "response_refs": [
+        "a3cafbd36c443ccc60b1e706d62b0e1972bcacd92effaba642ff74bf1e452acd",
+        "e2b59a29e79c7a834e3f173e0140a04dc6eb86a2d93c647a29b42baeb96b0fce",
+        "2436d7529aa755cd95ba2b537c520ec2403528e1e6bab77b4dd0ac3b51e3f379",
+        "dee21829371224633b4777e1ca998760f6a120b5f9b527a743a119f12dac5dab"
+      ],
+      "reservation_refs": [
+        "35585491b6efdb62887a3e9c3a1ce487c129111ef2109bbefedfb965a9452847",
+        "8fd4a790f2d66ad425899c397db8e04fd5242195614841b050e0ad9ca43b08ab",
+        "75c2122603cde6684abfa2b1b7f73763f028ea994905be2e744083efe85217b3",
+        "7f66b1a391adb5cbfd1b8127eecaffee6ded99a0b53486b11761b4ea4e5c3cff",
+        "9ada109b2b17e13899a12a6cc00ca09308886af5f20f88790fe55a2f27ec9038",
+        "c628fab5ecaf57371e686d52058d12f6b5387cbe3d32941ba1ccba5a1411668e",
+        "ecde493e7a36b59692d9e98bc68d7b307a32818c4cd91a99346b21d17c23a236"
+      ],
+      "clarification_origin": null,
+      "runtime_adapter_sha256": "bc5684016fa4131bfc91e8db16386adacdbedc644e7e9b4bd68763a66722e1b4",
+      "scientific_support": "unknown",
+      "same_returned_model_verified": true
+    }
+  },
+  {
+    "trial_id": "generic_tool_agent--translation--0--initial",
+    "session_ref": "238a78efd1b6c84448a20ef6c708eccbbabc98c312115ae5a1581dc3b0c8ac7e",
+    "store_root": "/home/riveruning/biologymodel_agent/artifacts/audit-t08b-f1-equation-prose-20261019/development-execution/stores/generic_tool_agent--translation--0",
+    "audit": {
+      "supervised": true,
+      "stop_reason": null,
+      "run_ref": null,
+      "native_agent_run_ref": null,
+      "request_refs": [
+        "5ce7c56ab3f44ef973cd8f302916e3237e28b5689c5a259e3f57f4c61c5ecaa4",
+        "eb18961e9ad77b2d2ba43029dc77e1392db1b285b9952ec3c098d9f03ad3da47"
+      ],
+      "response_refs": [
+        "1f7c5da40fda2467c2a3e773ce08e2e015ebf94cfaff36aedebe2ceef4cb63f5",
+        "2e4ac9d6d1555407d5285b5c0a9fd49c3fb8ca19998ceb91251ccab00053336f"
+      ],
+      "reservation_refs": [
+        "f6ea423fedcc9f549b9c8a1cf419f0019b84f43ae45583e9cb6aec445e6ea0d9",
+        "90f3ee33617b5f8eb6f5f9188f73de1bdf1bceed7a6959cace17b6800ac54e20",
+        "9ced677d442e6e8f75ca9dd573f18466d0eff6e6151d32254a679e63fe810b2c"
+      ],
+      "clarification_origin": null,
+      "runtime_adapter_sha256": "bc5684016fa4131bfc91e8db16386adacdbedc644e7e9b4bd68763a66722e1b4",
+      "scientific_support": "unknown",
+      "same_returned_model_verified": true
+    }
+  },
+  {
+    "trial_id": "generic_tool_agent--translation--0--clarified",
+    "session_ref": "6cf9a5e467d1c21a2564316702619f0c9187f7f7cf599f3f74b6dab933e9494a",
+    "store_root": "/home/riveruning/biologymodel_agent/artifacts/audit-t08b-f1-equation-prose-20261019/development-execution/stores/generic_tool_agent--translation--0",
+    "audit": {
+      "supervised": true,
+      "stop_reason": null,
+      "run_ref": "ce753a64aa7d7565c078087f0d093d842db574edf33d6deb743ebe5a891701e5",
+      "native_agent_run_ref": null,
+      "request_refs": [
+        "1244c509228138f9c492e9073a90af3374afcd8592792823bf7f3eea5d04db41",
+        "a55845de82a4c0ca2ada1a9b1f07b2f148208ac30981108bae4a97f49b7d9a2b",
+        "85474fc50cac07273850e0e6782787e0c28b942378d645a5a1e043abd95aa816"
+      ],
+      "response_refs": [
+        "4e6eded4df734d3c43034ff5faec1469c14bfb41bcb0e5d81627d0c1a19969fb",
+        "dc73a59dfb1328a709d664aaf81e66b998f1e9c530081da9b63546706c2b59d2",
+        "628dbe811f39b0506b78eca76a5d768012542526231fd3a76fe8162ad8bc0117"
+      ],
+      "reservation_refs": [
+        "cbf91d89a75d4c0d006de5d2f3c0e56e5b182ba9de936a4d112b8650db681a99",
+        "abb63bf51f18166f2f45a1d1d4959361411206e16d9f3b1596bfea9cc263a004",
+        "bdb143c760a526139b54b4c39f07bd6dc2f646887e84c8ee0d36d0ed94f9a9aa",
+        "c8bea83225dd7838acf6f6d36f136cafaddd53266192ca0fb7480be930924d99",
+        "47d08c987ec90d920539f00837d79dbffba0e6b02356082c598f5e9d79cf987a"
+      ],
+      "clarification_origin": "prerecorded_protocol",
+      "runtime_adapter_sha256": "bc5684016fa4131bfc91e8db16386adacdbedc644e7e9b4bd68763a66722e1b4",
+      "scientific_support": "unknown",
+      "same_returned_model_verified": true
+    }
+  },
+  {
+    "trial_id": "generic_tool_agent--logistic--0--initial",
+    "session_ref": "c240e3742cb31af4b63bd0d6b47d99576ce9b32543bfcbae3f4d8a4f60111276",
+    "store_root": "/home/riveruning/biologymodel_agent/artifacts/audit-t08b-f1-equation-prose-20261019/development-execution/stores/generic_tool_agent--logistic--0",
+    "audit": {
+      "supervised": true,
+      "stop_reason": null,
+      "run_ref": null,
+      "native_agent_run_ref": null,
+      "request_refs": [
+        "3375b5d009501d84fffbab167eab8d6ef902a0d30b2aaca0373746279e49b947",
+        "61f8d50a13a06c310be6681f82fa3dd0608d07170e5617b3071f8736394858e8"
+      ],
+      "response_refs": [
+        "e0226166229d45cfb40571203d037d15d1060c41ad810fded31a9092064ff216",
+        "87d53d7e6b55becfcbf7ea6152a8bf011e0b426944d8bc35615b0b0ba0c918a9"
+      ],
+      "reservation_refs": [
+        "68b1a3d5fb6bf4f207c06af8320890c2e41735e3247769ed1a357e24ed9f977a",
+        "9a5080075c32f5ce48c7c68a7d4dd2840a77b02ccb337cdfff4a28a21849e09e",
+        "155bdbe129e218ca0ca054478739ecaabd91423a071c53897c09074a5b07d865"
+      ],
+      "clarification_origin": null,
+      "runtime_adapter_sha256": "bc5684016fa4131bfc91e8db16386adacdbedc644e7e9b4bd68763a66722e1b4",
+      "scientific_support": "unknown",
+      "same_returned_model_verified": true
+    }
+  },
+  {
+    "trial_id": "generic_tool_agent--logistic--0--clarified",
+    "session_ref": "79cb224ddc7a797a68b65ee56b8636d04b99de4bfb58bc9fb953bb0fbf911c1d",
+    "store_root": "/home/riveruning/biologymodel_agent/artifacts/audit-t08b-f1-equation-prose-20261019/development-execution/stores/generic_tool_agent--logistic--0",
+    "audit": {
+      "supervised": true,
+      "stop_reason": null,
+      "run_ref": "950b513a63a6833def4de126e996aeed622602e1bb30d7bae8cdb0413327e59a",
+      "native_agent_run_ref": null,
+      "request_refs": [
+        "a3a0dc22aad550d8b8d95945389c2ee83e8968ac8ff35b727b4de66333bb0bcc",
+        "aa37da3942cf5bb1bc61e141e8eb3f4a7c440307073731ee755b0814dab7e57f",
+        "4d2f213fe9ad2b831c7d705ab1b57621e93ea02e680d764802280c277b666d67"
+      ],
+      "response_refs": [
+        "2d477ef4e8efa53b0d2dfc38ff8e674692604ec89e4af7ad5bc6c6f697872c1b",
+        "57f699aef76be67c57c40eac5b009a3992fe924a60a4b907fe96eca40ff9d73a",
+        "f13c7b72c61df6695021ea67c9444d794b189636af693da9f65282cdd5dddc8b"
+      ],
+      "reservation_refs": [
+        "f84ca0b33e2d5b4296d063b5cefc613d08a23671cecdb2959363bbb47b842bdd",
+        "fdd03501db618e48bd594a96df5c815efcf857334d5c04de798f37078ccb6e1e",
+        "a6de16bc9c97300249fd9a5f571e94f5be60c4a3f2dc222b172dcb0835549469",
+        "c64859014eeb1414869574edc71043c47ac993f9cb0e1fa045808ea28b866cde",
+        "c99566c3175b53700673fc7e52bd967c641eae81be0a8b5cd9b4ffce0d2ee9fa"
+      ],
+      "clarification_origin": "prerecorded_protocol",
+      "runtime_adapter_sha256": "bc5684016fa4131bfc91e8db16386adacdbedc644e7e9b4bd68763a66722e1b4",
+      "scientific_support": "unknown",
+      "same_returned_model_verified": true
+    }
+  },
+  {
+    "trial_id": "generic_tool_agent--decay--1--initial",
+    "session_ref": "c177a7740882bea152b6f90b50e46f5c52464132fca00dafbd3d5297006cce9d",
+    "store_root": "/home/riveruning/biologymodel_agent/artifacts/audit-t08b-f1-equation-prose-20261019/development-execution/stores/generic_tool_agent--decay--1",
+    "audit": {
+      "supervised": true,
+      "stop_reason": null,
+      "run_ref": "53a48c2bebb13ae81db4870ed9b53368aed3a50a6c6a4b05cb4c2756afcea6bd",
+      "native_agent_run_ref": null,
+      "request_refs": [
+        "fb014f11af797814b4e6a8faf3ea01407e36251c4db292250cc8b55cd82c18d2",
+        "1dbb4895704dbaadbf1325a25bb92e3ea0e79fe5db6e4d19df0c8b413f8bc8a1",
+        "617707fb01dbdd81895c9b1e09464e0d45381702a211e9c3de4f9386a943da7c",
+        "3dea1a398a9622d27515bacb4d38a000ccaf8cb8aadab7fa23e4998df85170bf"
+      ],
+      "response_refs": [
+        "05e553fea48263ee789df169e67b6ed5583e338ef634df415c44f256e5c3587c",
+        "5ef1f89864381aa9fda0f550280d9c4c31741d18006f018c3d13fc63cd2f7968",
+        "600a6a9612795295e6d36f6703037731c139932af6eb12d5b65bd46708c71beb",
+        "b6761f0bbf10f4ebcd075b3a05133b0d300423ef15b509afed5bd6c561c64602"
+      ],
+      "reservation_refs": [
+        "22b7dc01cf3be1ec832188eca76fcfdf0bcf6fafcc4621523132954437b00d10",
+        "9abd6ea1cbc5cf8e45b0b4d489a31f0991088fb6ac96d449a5cce5e9fc54ddde",
+        "da0087fabb0f1e0bf0b5f0a97d883198706952cde4d8aacc80860f9ea217d93a",
+        "c27f8d8f4361d4613b55a85dd7cd272587211ec564ddb5b7c85df44346dbdbc4",
+        "a4fe6d3c852dc55b25825e53be65f7583f51bc855f583d63c97a0d881d539a92",
+        "ecc1442cb4f284b9f58d4e4e440c77b686e010fb1eba69aef6e402c88b7897ef",
+        "2204eebcdfc67d7dcab4ab3b54a59c473606aecae6e377820c3508a61242f7e6"
+      ],
+      "clarification_origin": null,
+      "runtime_adapter_sha256": "bc5684016fa4131bfc91e8db16386adacdbedc644e7e9b4bd68763a66722e1b4",
+      "scientific_support": "unknown",
+      "same_returned_model_verified": true
+    }
+  },
+  {
+    "trial_id": "generic_tool_agent--translation--1--initial",
+    "session_ref": "dd4266814f55b7ccdbf8e31e6dec4dd5a6e6f0a9f126bb39777c80f13e5eb757",
+    "store_root": "/home/riveruning/biologymodel_agent/artifacts/audit-t08b-f1-equation-prose-20261019/development-execution/stores/generic_tool_agent--translation--1",
+    "audit": {
+      "supervised": true,
+      "stop_reason": null,
+      "run_ref": null,
+      "native_agent_run_ref": null,
+      "request_refs": [
+        "c3c555ba829da4de064b84a5fe4aed753c38517324901d36677cc941c94d0487",
+        "26482bde32322d62ad19fcb29fe972d9a1dee1035b20d0095c775e8f3216a259"
+      ],
+      "response_refs": [
+        "439169afdd006b948caf7ba95901bb713a96e531183be6392f460731660b9291",
+        "d58fe9426f69c8d1d00d3b7bf6dca63ffb840e4feda58eac4dd256a4e50d38d8"
+      ],
+      "reservation_refs": [
+        "4a85af70bcb5a3d49a82e13d3c353f629c3964105287bbfdbe21cc85f1b86429",
+        "6c1dab9bc90c73a6e2cfeba11c8ea7bc34f219e4e8291de6527d7fe18c0cf38a",
+        "2d967544a8583aa131e8c4ec5e4c4ebfddc31e02bb5631e2a382615dc9189c04"
+      ],
+      "clarification_origin": null,
+      "runtime_adapter_sha256": "bc5684016fa4131bfc91e8db16386adacdbedc644e7e9b4bd68763a66722e1b4",
+      "scientific_support": "unknown",
+      "same_returned_model_verified": true
+    }
+  },
+  {
+    "trial_id": "generic_tool_agent--translation--1--clarified",
+    "session_ref": "14226657a69ba2236287d46f024f2e27fb8dc24dcda1f345047163a11451fddb",
+    "store_root": "/home/riveruning/biologymodel_agent/artifacts/audit-t08b-f1-equation-prose-20261019/development-execution/stores/generic_tool_agent--translation--1",
+    "audit": {
+      "supervised": true,
+      "stop_reason": null,
+      "run_ref": "35b7b0d57acb22e3a77b1ae43ea09bf6e7de61357e38a6c8272f1d1d8ab84f59",
+      "native_agent_run_ref": null,
+      "request_refs": [
+        "38f4f29dac7681d1690962c612c393ebb929febecb8ad5a70cc6d577fec208a1",
+        "15bdf56ce5675d472338ce7fddbcdb9640b697a335261a15ad0509ff12173b8d",
+        "4e300cfd556bde1df83ed2f8bf9e810e4f164fc56746f4d6174be34f62ce1cc5"
+      ],
+      "response_refs": [
+        "634edb5dfcaeb5bba511f1458ad965982e97c530ced99fb78c235891a4ab3d17",
+        "ce7d439cb921f83630c513eceff44f6b036eb0114a121cf6d79499657f8b37f4",
+        "7085d8e770f2d491a8fabde0c96e62292376ba9933f45e5dcae6417aa566e986"
+      ],
+      "reservation_refs": [
+        "c830e72cee26bb40cd2f89a4617ac0f9064338dac986771869dec5a58be2ce44",
+        "d4bcf5db326e00a7372af6cce66aec799894d637ec9939471ca99be3d11b02bb",
+        "cc2b4a241a3ed7491a245b4b8482a6f474d01a1207c92726bcfacdcf01faabcb",
+        "cb1fa6988d61ad1ca059af11f152d16a63bbece4ffac4f092b9289eb2a381daa",
+        "1e2cff23bd8d0938f415f999c62a8ed89655eae41532c0de0985f4aa2c98d747"
+      ],
+      "clarification_origin": "prerecorded_protocol",
+      "runtime_adapter_sha256": "bc5684016fa4131bfc91e8db16386adacdbedc644e7e9b4bd68763a66722e1b4",
+      "scientific_support": "unknown",
+      "same_returned_model_verified": true
+    }
+  },
+  {
+    "trial_id": "generic_tool_agent--logistic--1--initial",
+    "session_ref": "dfcb8dc776ee65a229ff21a6af815e9545aaee34820264c4bd7862ce4960970a",
+    "store_root": "/home/riveruning/biologymodel_agent/artifacts/audit-t08b-f1-equation-prose-20261019/development-execution/stores/generic_tool_agent--logistic--1",
+    "audit": {
+      "supervised": true,
+      "stop_reason": null,
+      "run_ref": null,
+      "native_agent_run_ref": null,
+      "request_refs": [
+        "2f5e02ffe6cbd9ec06ba4191ee8d62f8661afb1ed5697740158ab0bb4f470573",
+        "9462e74013d3977d88d71bb09d794eed40badeed2c81be08b933248c19e927a8"
+      ],
+      "response_refs": [
+        "4df4554c066b463ad83f79bd5e8bf6b1a2347dc38924cc02c59b5077ae7aec04",
+        "820600284b3e2173a6b99540eaf74548887bb328941e6d3bb3ab441e2a7c0663"
+      ],
+      "reservation_refs": [
+        "e6a3ce28029cb98ce3b853f983599dc56311420d11bdb4e4682c4e2c3cbfa2d2",
+        "abaec8876f7cd5a4c79d6936af5fe7901e779e10e892ff878871d0cf896b459f",
+        "cc106900953a7afb29726bc8fa57527088ad31efcc2afbe93ba8681f98045fe5"
+      ],
+      "clarification_origin": null,
+      "runtime_adapter_sha256": "bc5684016fa4131bfc91e8db16386adacdbedc644e7e9b4bd68763a66722e1b4",
+      "scientific_support": "unknown",
+      "same_returned_model_verified": true
+    }
+  },
+  {
+    "trial_id": "generic_tool_agent--logistic--1--clarified",
+    "session_ref": "179e84e147bbfedc63c746b8699a2f0cf7b9064e7159f25245ea10eb5d6bf428",
+    "store_root": "/home/riveruning/biologymodel_agent/artifacts/audit-t08b-f1-equation-prose-20261019/development-execution/stores/generic_tool_agent--logistic--1",
+    "audit": {
+      "supervised": true,
+      "stop_reason": null,
+      "run_ref": "f29c5659f4ce955feab5b3b83ce9fc5b785ff8cc632fbf03c3145843d961a49c",
+      "native_agent_run_ref": null,
+      "request_refs": [
+        "97f1ea18305ef403467dcefecee2eaa1162036cad81e38761b1fb7372111ed05",
+        "9561a53548193d04e82ada5911f507d6d3a122c269636cb0a1280849c56444d7",
+        "0636c2389b6eba50f3aa5c8ce27a20621d9bdf885ac24a7be3ebaa30fb51ddce"
+      ],
+      "response_refs": [
+        "930b3b6029732f702748355420e1d0ab47deaf15971d5aec9f963bf20ba65bc3",
+        "e3503080aece748c599da2c3c893b32610d64d87b3e97046f2f70b2c83e6f829",
+        "765cf656b420c5791fc18aa2a6aae6b0eb7dc7d98d3d79bbef93144428e0f81a"
+      ],
+      "reservation_refs": [
+        "1df1f169010d8bc3e2c25d43e5b707913c32410574120ab0460414e9658e0bf4",
+        "c371b68e4db5ae90fd86eb57187f5953001cfebcb015bf4eb2c594ceead8558a",
+        "1e48f8c82d59cc224ee720449b6c7b8a5ff72abf154f348950e68dbdd06e5d35",
+        "4b99908a4a6b206208739b59b9f9d299b83dffc7f977b726728e02d0ea88aeaa",
+        "d4ee5d5583f1ee2258430b7579e3b74df10c2d5475982a1c3c9b52f7f84df1d6"
+      ],
+      "clarification_origin": "prerecorded_protocol",
+      "runtime_adapter_sha256": "bc5684016fa4131bfc91e8db16386adacdbedc644e7e9b4bd68763a66722e1b4",
+      "scientific_support": "unknown",
+      "same_returned_model_verified": true
+    }
+  },
+  {
+    "trial_id": "domain_agent--decay--0--initial",
+    "session_ref": "1e319f9073d6c324d2d86dc0cc6a33344cfc5bfe122ab811760eb85e86856c34",
+    "store_root": "/home/riveruning/biologymodel_agent/artifacts/audit-t08b-f1-equation-prose-20261019/development-execution/stores/domain_agent--decay--0",
+    "audit": {
+      "supervised": true,
+      "stop_reason": null,
+      "run_ref": "ca7926d2cba3a75bf104f223164d72db71ad15b9688a9ea19cc89b0d1255aaa3",
+      "native_agent_run_ref": "03dc54cfd696d718c90538f2e00c42ad332d75e256829b677a8d5c12e4437d58",
+      "request_refs": [
+        "c03ee5b284b7cbe0c5bf384e0eaa1fda595f93b25b65a6000a51f179ec2fedc0",
+        "0412f192bebdcaeefc0ee28d56d6dc1e3f161afa2f343ff2284ab28b6d0b09f4",
+        "74ba0d148b6aed4aa917406b6ff2df99c137b5ee8425eb4478ba7eeb07bbfbdc",
+        "66d43f3251824e7b903f8322a059760909399b3b7066cbf0d413c339318b357e"
+      ],
+      "response_refs": [
+        "1a962c2edd75c44e164ff4d40184a06ddeca55b20b9fa00110b0b06a60c8846d",
+        "46e86bed95c58b7f1544603a25c7def6a8954ff4eb945f39dd7fbb6c9d7de7e4",
+        "f9a818ab85265dcb8c83935895c6bdc3932d8510c59eb8dca215a9cca9ed1fd8",
+        "bb550ecc7694039673282efbd6b26b3fc8da4e756da14f28495b91fc9a4334f7"
+      ],
+      "reservation_refs": [
+        "be66e442a46e9e02644cbeab91c09bbaf021dc9725bb7f562d6970722b11df88",
+        "b95c729bf5445342d5bdc0956950bae4ec7e09928548576d2f059f0722396ba1",
+        "b9c9b35780a305dacc8fb30f948a3587d5786d94b16b1961ae8b371015146bb5",
+        "7fd3a53b0a856a79b6122afd32d2eace16c865c492384018c4f0399682aae83d",
+        "ebafb4f836f5ef1e16b0552d6d9f21b0528a38c5783f3b389a1c71f659a3d3a6",
+        "7e107c916235539cc2f73f7e819e52ead0169e0431f71ba5255523bcdcc6d094",
+        "171a9af38d766cdfbf2fd03f4d1cd34a7737b3ff951621c87d5beeb8141c2741"
+      ],
+      "clarification_origin": null,
+      "runtime_adapter_sha256": "bc5684016fa4131bfc91e8db16386adacdbedc644e7e9b4bd68763a66722e1b4",
+      "scientific_support": "unknown",
+      "same_returned_model_verified": true
+    }
+  },
+  {
+    "trial_id": "domain_agent--translation--0--initial",
+    "session_ref": "eccb1b366e42b444d086b65e5e2e7bd89b1b73c7bb091deeff442b35fde82951",
+    "store_root": "/home/riveruning/biologymodel_agent/artifacts/audit-t08b-f1-equation-prose-20261019/development-execution/stores/domain_agent--translation--0",
+    "audit": {
+      "supervised": true,
+      "stop_reason": null,
+      "run_ref": null,
+      "native_agent_run_ref": "f79ed7212e4480bed31df492c5f131437ede08a8686beb37cf79c4579f3ee31a",
+      "request_refs": [
+        "0ca9e5e999310e5276c173cfc3b1f407a2af0408c1e4b36511b6e41ef5c80748",
+        "a3d97decb83962f5a82011f79c250d369c56f9c9c6fa511720b35d69cb1d2149"
+      ],
+      "response_refs": [
+        "ee1ed5451a3ac728bec423df4074cd51a9a10bcabd0df06ce96fd9d2d6719f02",
+        "10287e894851eddad04d30db9d5d647239c2423fc4c5120468db3d8454009a01"
+      ],
+      "reservation_refs": [
+        "11726736ec3ca18a8e2c7b678f5bb47c3e1f5fa71783697c812e59f5d06617bd",
+        "31e661145e9201f49f8f6b498f137005d9ee3683bc1eb0cb808260b3e85493b3",
+        "5a3d99c35e293cccffa64665b2a7b7d0174abc495602437fa27da4bf2b20ffbe"
+      ],
+      "clarification_origin": null,
+      "runtime_adapter_sha256": "bc5684016fa4131bfc91e8db16386adacdbedc644e7e9b4bd68763a66722e1b4",
+      "scientific_support": "unknown",
+      "same_returned_model_verified": true
+    }
+  },
+  {
+    "trial_id": "domain_agent--translation--0--clarified",
+    "session_ref": "b39dbec272e3b18a46d5556de69280fdaa304a0bfa1df0e401ebf83c40267d5c",
+    "store_root": "/home/riveruning/biologymodel_agent/artifacts/audit-t08b-f1-equation-prose-20261019/development-execution/stores/domain_agent--translation--0",
+    "audit": {
+      "supervised": true,
+      "stop_reason": null,
+      "run_ref": "824aa5dbd25c9d4691a57cce4a57c7b699dab59aef3a03b736d57a3da62b2837",
+      "native_agent_run_ref": "4b8803656f3298d6acb6c15d226f8726eddadb448d8445616f5692a0e57adee4",
+      "request_refs": [
+        "249c18416f04ea4da0dd7df186713ec221c56bb085e9812df70e21096bcfc14e",
+        "75f8d468b66e9f1a0f562a5e826ce0a60f60ffa5fdb1eacb9a38f5b1b34030b0",
+        "203730f0a8bd17becd55a78f3932b1206ddd874a5912d1a3b34f88b079751df3"
+      ],
+      "response_refs": [
+        "3fa3b800b7317f630589eee7ba75845264637d0399d625d589975b61ea4cc27a",
+        "605d2da4657cb2c7eabf56ae32959389498cd32b474c47c9338b110c80ef61aa",
+        "4b92eed319fc905399fc2c0d5826f98fc8c90c12cd0517b601625630402f9d1d"
+      ],
+      "reservation_refs": [
+        "ee7a258da1b6163817b9cbbfebf7bfa64cad0ed1cbe2ec9c298ac3c96a78cd64",
+        "0f679778c2b8e1a715af689ce0485f620caec7ea161e54f14bd926810eb3e250",
+        "bd280b6f2b2dc1e5affbf00dc77d2745a269acfb56d7838527c40fd24ae32c17",
+        "bac34213d2821bc4a3129dc2670a2992ceab05abba2ceb77021dac76ca3f3dd9",
+        "3b72a35b8b3603ef350b28fe11df49bae5335f06dcec82e2f8841b2744b2bf85"
+      ],
+      "clarification_origin": "prerecorded_protocol",
+      "runtime_adapter_sha256": "bc5684016fa4131bfc91e8db16386adacdbedc644e7e9b4bd68763a66722e1b4",
+      "scientific_support": "unknown",
+      "same_returned_model_verified": true
+    }
+  },
+  {
+    "trial_id": "domain_agent--logistic--0--initial",
+    "session_ref": "ac4026fe0e2da57ac36dfaf5d124feb71638e69a13cef980ddc8f9eb46ebe377",
+    "store_root": "/home/riveruning/biologymodel_agent/artifacts/audit-t08b-f1-equation-prose-20261019/development-execution/stores/domain_agent--logistic--0",
+    "audit": {
+      "supervised": true,
+      "stop_reason": null,
+      "run_ref": null,
+      "native_agent_run_ref": "cd08a2a8869279bba77285e8b0dedb65d0e01cb84601cb9b97cd7aaed65a9320",
+      "request_refs": [
+        "8a57002dd3c7c2e7b43ffb7bb7d71fa85064a53bfa7bd8f8aeb4636c5eafc48e",
+        "268ce93c95010b118e4872355efadbbf074c5799737d590f8a8299156e246173"
+      ],
+      "response_refs": [
+        "3a5eaf077e912bfcf623ce6ef8c54bf38aa59faf102cbd1ed9325ee24920838e",
+        "39150c17239073f7519c85367e44d7c2523f9541527a29946050860e81ca0430"
+      ],
+      "reservation_refs": [
+        "e71722ff3c969473fa9a477aaecb9199efabefaf9f498d6822a98b606d04a8eb",
+        "3f947fe6eab3e05af1abf5407c3155c10dae83bd06be7afb8600c7cafe81e0cf",
+        "d2a040c47a6f78f93de668c76d143c01cb4981dad96d9fa0b7a37fd054f87ca9"
+      ],
+      "clarification_origin": null,
+      "runtime_adapter_sha256": "bc5684016fa4131bfc91e8db16386adacdbedc644e7e9b4bd68763a66722e1b4",
+      "scientific_support": "unknown",
+      "same_returned_model_verified": true
+    }
+  },
+  {
+    "trial_id": "domain_agent--logistic--0--clarified",
+    "session_ref": "3dab4dbe4c98da1329ef60160035b975aab771e6ef3e918d296f666ced862174",
+    "store_root": "/home/riveruning/biologymodel_agent/artifacts/audit-t08b-f1-equation-prose-20261019/development-execution/stores/domain_agent--logistic--0",
+    "audit": {
+      "supervised": true,
+      "stop_reason": null,
+      "run_ref": "cf0d35793dac59369a40fe7c596905c4774564a7c51f5a59c94e21993705d75e",
+      "native_agent_run_ref": "817f8fe3547e08dcca0c2973eb6496254a3732ebbfc72208cdec3d6db2d5b0a0",
+      "request_refs": [
+        "08d16751332e9a323fbf9eb7e1f4b0254e4e006e9daad692862ccda412ae8e65",
+        "3f0889bedbf751e3498c618c66fa56d3b0dfebeee296217470f100176f64d5d0",
+        "f2aaa44168773bf5b4c17c496631cf1150c0e8b44823e97c8168ccb26ad2ce6d"
+      ],
+      "response_refs": [
+        "c7f31de4a0bfdc4c6e35cd666e89f231ddc7d272d24c87d7e6a8ccd1e93c1f32",
+        "9c4b07e8feb035e37bc9a4a5d5a8a3ce2dbdefd312122410d84e0bb6630cb74f",
+        "24d4232a4f0220d779a92c5093ef20c040b0ecd0a86d1517be34bb7236c724e3"
+      ],
+      "reservation_refs": [
+        "b9cd4da8e3eb8290f07da561ed27aa83e8885534bf801b9c114fa3737333ed76",
+        "50ca33d479ab14e7e32b43cacd5e1b73aaa35ad7925c933e2e6b985776755ab2",
+        "1f2b89b4dcb0be44897c6e84c1ec9ced7589b4b31dea9b7c55894677294c4a0e",
+        "c3c6e70ce085ddf3cb934e7920487489805bae48a91a24251fe031c49cd064da",
+        "dcbc2992e73edb8c94ef5d0184c65f9ef465490d83341c2b44a8cb66ebe0cef2"
+      ],
+      "clarification_origin": "prerecorded_protocol",
+      "runtime_adapter_sha256": "bc5684016fa4131bfc91e8db16386adacdbedc644e7e9b4bd68763a66722e1b4",
+      "scientific_support": "unknown",
+      "same_returned_model_verified": true
+    }
+  },
+  {
+    "trial_id": "domain_agent--decay--1--initial",
+    "session_ref": "bb9dfc8fbc61d3cc981c236d495c27cf26904f110818353d7e3e3ca8959f2a44",
+    "store_root": "/home/riveruning/biologymodel_agent/artifacts/audit-t08b-f1-equation-prose-20261019/development-execution/stores/domain_agent--decay--1",
+    "audit": {
+      "supervised": true,
+      "stop_reason": null,
+      "run_ref": "e863f4364d78887a97b29601f16083b25ba6a910077dafd5530d43e7448fdc1c",
+      "native_agent_run_ref": "9cdfa38fc96359dbf57971fabe5bc933ad3630f06ac9218a063da4e4c1468e42",
+      "request_refs": [
+        "27e5df0b61a869dd21f9aa298dbf588cb961a82554882496cc37a663c49c39cb",
+        "a55b9fe6219d3937012476af8116c953fb4d51d8e1eda23b8fde1feffdbb3eee",
+        "813221d4c9e90c21d557dad157160bad62969056de11f742fa2b99f4c319dca2",
+        "1d7ef3c9b278f1fe7d0ace586aaaa07971a6c2946b7566a41258f630cd6420df"
+      ],
+      "response_refs": [
+        "f27f4a6075b894f3739cdaa9975d1ff7d283b24d9a0535ce2a0cdb732b29e56e",
+        "45e76eb3545700a7a74bf1ed55d1f01d53c2f2fceb6e2f830d42cdcafcf71e6a",
+        "d6b9a5553c6c4a62496eb1587975e0ee0f8e12467026cb4bb0ae7fb51233a708",
+        "7158e97d95df6637532ec339c49159ee8bd9527ecbf6f7dafe3dae5b3666a229"
+      ],
+      "reservation_refs": [
+        "674ea02988034ef4688b39266ef5aded556250e67b0981e5acddbf7aa8b7c909",
+        "8bfc60bc43ecd309ad775ce4464dfc1f39a441ed19ac6d27318822d6aa262559",
+        "ab455aca926c66aa2bc3ecbe9b2fae8451d8d281783a3df54e99cfce90bb7cf5",
+        "79a2d7871c3bb12b7f1349211773e57cf6848bbb58991aecf388cbabd00f07a7",
+        "e2590501f3e9f162b47b58c716c1dd057ac5314bf4b181e3919ba190b5f72542",
+        "1619eb107c7476a1f90b7eb8373900c71a7b540ac6ef2f4603991b80c744ad56",
+        "d613a3074b98f274899aa88b38202de49347265f5f8673555ea885f2382bc77a"
+      ],
+      "clarification_origin": null,
+      "runtime_adapter_sha256": "bc5684016fa4131bfc91e8db16386adacdbedc644e7e9b4bd68763a66722e1b4",
+      "scientific_support": "unknown",
+      "same_returned_model_verified": true
+    }
+  },
+  {
+    "trial_id": "domain_agent--translation--1--initial",
+    "session_ref": "b1b1d18a6d69c0247fa05a3bc0ed345b31bfd4c4eb725ae5c62a6772d0fe8ce4",
+    "store_root": "/home/riveruning/biologymodel_agent/artifacts/audit-t08b-f1-equation-prose-20261019/development-execution/stores/domain_agent--translation--1",
+    "audit": {
+      "supervised": true,
+      "stop_reason": null,
+      "run_ref": null,
+      "native_agent_run_ref": "18c85d661c0d802298b6027554cb0327887bf92137305d76e0a464bbd3126460",
+      "request_refs": [
+        "a41d5ee7e1913e9fc0d81a84c1a183659044bc7b7e2e58327fe72ee3d4c262bf",
+        "bee0f0fa13386f418c041ae9b4296625722fd99b2c1550810ed130b14368dc2a"
+      ],
+      "response_refs": [
+        "cba421ff8d34122ecb37c5bab6c7fe138800391e6af06d73541a908253bba664",
+        "89e83518b3d0cb1e175ebfc0b3520e30f8a0d54ac749710feb817d3d35bc783f"
+      ],
+      "reservation_refs": [
+        "bb3953820f72f33e70fd48ea55a488c84baac2bf3bc20ff309e28e9e6df1ae2d",
+        "4b01a392736493867d18c6606ff4ee79c6a0e6ad5bb81e6d6f174432507d2106",
+        "eb235fa2d6994933937afe9a96b5cd55273080d15aac5e11ac0af4252c3a3a50"
+      ],
+      "clarification_origin": null,
+      "runtime_adapter_sha256": "bc5684016fa4131bfc91e8db16386adacdbedc644e7e9b4bd68763a66722e1b4",
+      "scientific_support": "unknown",
+      "same_returned_model_verified": true
+    }
+  },
+  {
+    "trial_id": "domain_agent--translation--1--clarified",
+    "session_ref": "030cf336c74d90f5d123e234aff8207bcf17917b6be8fd5eadd9e26f25bbe343",
+    "store_root": "/home/riveruning/biologymodel_agent/artifacts/audit-t08b-f1-equation-prose-20261019/development-execution/stores/domain_agent--translation--1",
+    "audit": {
+      "supervised": true,
+      "stop_reason": null,
+      "run_ref": "50d53807a8b86a54c92910c28b1524ddeb787506fda9a8052697bc0dfe20995b",
+      "native_agent_run_ref": "b45a943bc18f943dae007b1cf7c959efeea74e07790a28d2b99849c0c9f9f9f4",
+      "request_refs": [
+        "991a64d7ef0fc46ced0c0ba05ab5adfb1dca40691580ad6a43f9d1fb8343e0e6",
+        "c90b57a46d66bedc75f675ae4b1361d9ddceb66ab637371fe3d3b10920597170",
+        "83efb970cddb5fd65d95814c269668141e25393c0a234eb24ab27ddc642675b3"
+      ],
+      "response_refs": [
+        "b0595c1a2ef8b365c3a33675fc8827524abdbddd613290f2012ae1cebb93bf52",
+        "293405944abbad880257a04150a45d4dbf2a6bbbcbda2aa59fc2f1f7cd7e29ea",
+        "71b80d901abf1a96af6b47a11c1b3d0383f2d54b359d65351fcc5fc91071210e"
+      ],
+      "reservation_refs": [
+        "de503e087a8b4481f9061d690261a95c5c46cb582ba46f0c3a870fb02d051bb1",
+        "2b4c532110be8954e855395b02efbded7962bcd51a740d30e657c2a6e0ff241b",
+        "cfec658ac0a26de2bcfa4b1e5f71920cd29028beda76f90a9da2c0b31de09d01",
+        "be23bd78c3139a8e869ba64f652214a720f99996afa59164cc68ae2df4d276d9",
+        "8e0ce5d4237a72190f119fba78b3dfdefd9c4e8689b1fc85ca0e9e1a174f7d02"
+      ],
+      "clarification_origin": "prerecorded_protocol",
+      "runtime_adapter_sha256": "bc5684016fa4131bfc91e8db16386adacdbedc644e7e9b4bd68763a66722e1b4",
+      "scientific_support": "unknown",
+      "same_returned_model_verified": true
+    }
+  },
+  {
+    "trial_id": "domain_agent--logistic--1--initial",
+    "session_ref": "36ca22d9906f7823cd9f89328e4f947615b53faf0905981df5f12a885cb38a3e",
+    "store_root": "/home/riveruning/biologymodel_agent/artifacts/audit-t08b-f1-equation-prose-20261019/development-execution/stores/domain_agent--logistic--1",
+    "audit": {
+      "supervised": true,
+      "stop_reason": null,
+      "run_ref": null,
+      "native_agent_run_ref": "cc108b296b2d1b49d139fd00dfc954527ec2c0d080322f99ed603cbe06e2d80c",
+      "request_refs": [
+        "70fe78703bbed85b7a09b9b37ad3edb24dd6b4196127cc12bc40c63853349bd8",
+        "41e79295777a48b1e37d7dda2359987d3c5262c278ad585fe3a3d6cca32a44cd"
+      ],
+      "response_refs": [
+        "03bc80cc3517639d86dd628310e6619f6587f7f740d1df3a125a98e21a2418ee",
+        "9a5510f726f560a49a04edac60892fc2ee24a48257812b8eadb22b4aced5bb5d"
+      ],
+      "reservation_refs": [
+        "b376ff579a2bdf4583344c98c78b8b0347617d439a1dda3fc13b26b8d7e71c2a",
+        "80bcbc351a34419a90bb23a70030417f116030681fa4207996444bfaf09b2dd9",
+        "41fdcf22d4cb0b35bde648f29783c6e5b86d749d752c7f9018bd20f10ccac52f"
+      ],
+      "clarification_origin": null,
+      "runtime_adapter_sha256": "bc5684016fa4131bfc91e8db16386adacdbedc644e7e9b4bd68763a66722e1b4",
+      "scientific_support": "unknown",
+      "same_returned_model_verified": true
+    }
+  },
+  {
+    "trial_id": "domain_agent--logistic--1--clarified",
+    "session_ref": "216dbd95fc46794bfe87034a525882a3535de185cec383b7d0da81a4cd32e200",
+    "store_root": "/home/riveruning/biologymodel_agent/artifacts/audit-t08b-f1-equation-prose-20261019/development-execution/stores/domain_agent--logistic--1",
+    "audit": {
+      "supervised": true,
+      "stop_reason": null,
+      "run_ref": "360efa79e3dad6a97ab0fdd9884121dabb8f58a3e51673ef119119353646272e",
+      "native_agent_run_ref": "f4ce7666de5c2e4bd0d9e84bee436c0d262b822d2a0f1824654fed1730517c7f",
+      "request_refs": [
+        "2653c95b0917c4072b807c921a924b463cc1e786af8ab62db2e2793558d3fff0",
+        "72e0ab66e569f3294b217420fdae5fb9ba09a36348aa43205cfc6015f7bcf01f",
+        "c9cdab27f74e2a676977177afc18d68c9241a008ae5c6cf3325b220ffcf7336d"
+      ],
+      "response_refs": [
+        "4f7e455a11e8053e0e94a3d60cd413b3017188e47c8815ac1efc67dc1a11934d",
+        "edb215eeed3a19520ba62c4e390ebd2f6f07d53b4bbc20e4e6bb38172e5e024d",
+        "defc0e14cec9c913f9740b5e29c6dff179ca1fb321bd34a8d19721965b852018"
+      ],
+      "reservation_refs": [
+        "56545da1cd3ccc6b59615b78878551c3a98ae3ea9cce8f41d82df2f2d8d5122b",
+        "2f359f38feaf57132f532e5a2adc809f58394340632a2b99fe99cb73bf1b721e",
+        "cf81749464e463dfb923ef1df9aacf879fd91613d92ff0cdcd5a2a3747b3e82e",
+        "568619d41be4400e7abdd066f4febe616d7d685455e4456a891b75dda4ee9e86",
+        "17b3b5e5e9acbf87860a8ad2f61160daea7be4546ac195b63c44528667b10d18"
+      ],
+      "clarification_origin": "prerecorded_protocol",
+      "runtime_adapter_sha256": "bc5684016fa4131bfc91e8db16386adacdbedc644e7e9b4bd68763a66722e1b4",
+      "scientific_support": "unknown",
+      "same_returned_model_verified": true
+    }
+  }
+]

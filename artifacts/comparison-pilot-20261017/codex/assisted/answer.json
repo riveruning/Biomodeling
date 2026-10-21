@@ -1,0 +1,89 @@
+{
+  "status": "needs_input",
+  "parameters": [
+    {
+      "id": "k1",
+      "value": 1.0,
+      "quote": "e021: k1 = 1.0; k3 = 1.0; k5 = 1.0."
+    },
+    {
+      "id": "k2",
+      "value": 0.1,
+      "quote": "e022: k2 = 0.1; k4 = 0.1; k6 = 0.1."
+    },
+    {
+      "id": "k3",
+      "value": 1.0,
+      "quote": "e021: k1 = 1.0; k3 = 1.0; k5 = 1.0."
+    },
+    {
+      "id": "k4",
+      "value": 0.1,
+      "quote": "e022: k2 = 0.1; k4 = 0.1; k6 = 0.1."
+    },
+    {
+      "id": "k5",
+      "value": 1.0,
+      "quote": "e021: k1 = 1.0; k3 = 1.0; k5 = 1.0."
+    },
+    {
+      "id": "k6",
+      "value": 0.1,
+      "quote": "e022: k2 = 0.1; k4 = 0.1; k6 = 0.1."
+    },
+    {
+      "id": "Ki",
+      "value": 1.0,
+      "quote": "e023: Ki = 1.0."
+    },
+    {
+      "id": "n",
+      "value": 10,
+      "quote": "e024: n = 10."
+    }
+  ],
+  "states": [
+    {
+      "id": "X",
+      "initial": null,
+      "quote": "Initial X, Y, Z values are not specified in the selected section and caption."
+    },
+    {
+      "id": "Y",
+      "initial": null,
+      "quote": "Initial X, Y, Z values are not specified in the selected section and caption."
+    },
+    {
+      "id": "Z",
+      "initial": null,
+      "quote": "Initial X, Y, Z values are not specified in the selected section and caption."
+    }
+  ],
+  "equations": [
+    {
+      "state": "X",
+      "expression": "k1*Ki**n/(Ki**n + Z**n) - k2*X",
+      "quote": "Equation (1), image e004:\ndX/dt = k1*Ki^n/(Ki^n + Z^n) - k2*X."
+    },
+    {
+      "state": "Y",
+      "expression": "k3*X - k4*Y",
+      "quote": "Equation (2), image e005:\ndY/dt = k3*X - k4*Y."
+    },
+    {
+      "state": "Z",
+      "expression": "k5*Y - k6*Z",
+      "quote": "Equation (3), image e006:\ndZ/dt = k5*Y - k6*Z."
+    }
+  ],
+  "questions": [
+    "What are X(0), Y(0), and Z(0)? For a strict Figure 2B replay, provide the original initial conditions and their source; for exploration, provide explicitly analyst-specified initial conditions."
+  ],
+  "limitations": [
+    "All equations and parameter values are available in the supplied transcription, which is described as pending independent human review; no image files were inspected.",
+    "Neither source.txt nor experiment.json supplies initial values, so a unique numerical trajectory cannot be computed.",
+    "experiment.json specifies sampling times from 0 to 120 in increments of 2. These are requested experiment conditions, not established original-paper simulation conditions.",
+    "The source gives arbitrary units and an approximate period of 40 a.u.; no physical unit conversion is supported."
+  ],
+  "initial_origin": "Unspecified: no original-paper initial values are supplied, and no analyst-specified exploration initial values are supplied. All three remain null."
+}

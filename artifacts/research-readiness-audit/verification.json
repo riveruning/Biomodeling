@@ -1,0 +1,35 @@
+{
+  "status": "accepted_evidence_integrity_verified",
+  "scope": "Current code, acceptance records, saved numeric results and historical report summaries. No independent evalset or denied c13/c18 materials opened.",
+  "checks": {
+    "current_delivery": {
+      "checked": 9,
+      "mismatches": []
+    },
+    "archived_delivery": {
+      "checked": 1375,
+      "mismatches": []
+    },
+    "older_artifacts": {
+      "checked": 2425,
+      "mismatches": []
+    },
+    "unchanged_baseline": {
+      "checked": 212,
+      "mismatches": []
+    }
+  },
+  "product_toolchain_sha256": "abad7db107b62cb942b96ec88df701d47c8eb236275d0cf17216f37da6686252",
+  "archived_full_regression": {
+    "tests": 1309,
+    "errors": 0,
+    "failures": 0,
+    "skipped": 0
+  },
+  "fresh_full_regression_run": false,
+  "numeric_verification": "Recomputed analytic errors from 18 saved executions and checked 66 HTTP receipts plus 4 native resume relations; no new solver executions.",
+  "metric_probe": "metric-probe.json",
+  "new_online_inference_calls": 0,
+  "real_credentials_read": 0,
+  "limits": "Integrity is not independent scientific validation. Focused pytest results are recorded separately. This is a bounded audit, not an exhaustive security or correctness proof."
+}

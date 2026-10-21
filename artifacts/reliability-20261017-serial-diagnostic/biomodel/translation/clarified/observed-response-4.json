@@ -1,0 +1,28 @@
+{
+  "id": "chatcmpl-1ca5e58c-a49f-469f-a139-1f67d0c46aa4",
+  "created": 1792203538,
+  "model": "qwen3.8-chat",
+  "object": "chat.completion",
+  "choices": [
+    {
+      "finish_reason": "stop",
+      "index": 0,
+      "message": {
+        "content": "{\"action\": \"submit_draft\", \"args\": {\"draft\": {\"compartment\": {\"id\": \"c\", \"size\": 1, \"unit\": \"dimensionless\"}, \"derived\": [], \"id\": \"ff71e00473153e250b83990d2345c445d334136570770507391813e9fef16fa3\", \"parameters\": [{\"id\": \"s\", \"origin\": \"source\", \"unit\": \"dimensionless\", \"value\": 0.8}, {\"id\": \"dm\", \"origin\": \"source\", \"unit\": \"dimensionless\", \"value\": 0.4}, {\"id\": \"kp\", \"origin\": \"source\", \"unit\": \"dimensionless\", \"value\": 0.6}, {\"id\": \"dp\", \"origin\": \"source\", \"unit\": \"dimensionless\", \"value\": 0.2}], \"rate_rules\": [{\"expression\": \"s-dm*M\", \"state\": \"M\"}, {\"expression\": \"kp*M-dp*P\", \"state\": \"P\"}], \"reactions\": [], \"states\": [{\"id\": \"M\", \"initial\": 1.0, \"nonnegative\": false, \"quantity_kind\": \"variable\", \"unit\": \"dimensionless\"}, {\"id\": \"P\", \"initial\": 0.2, \"nonnegative\": false, \"quantity_kind\": \"variable\", \"unit\": \"dimensionless\"}], \"time_unit\": \"minutes\"}, \"evidence\": [{\"page\": 1, \"quote\": \"Initial M = 1.0.\", \"source_ref\": \"ff71e00473153e250b83990d2345c445d334136570770507391813e9fef16fa3\", \"target\": \"M/initial\"}, {\"page\": 1, \"quote\": \"Initial P = 0.2.\", \"source_ref\": \"ff71e00473153e250b83990d2345c445d334136570770507391813e9fef16fa3\", \"target\": \"P/initial\"}, {\"page\": 1, \"quote\": \"Parameter s = 0.8.\", \"source_ref\": \"ff71e00473153e250b83990d2345c445d334136570770507391813e9fef16fa3\", \"target\": \"s/value\"}, {\"page\": 1, \"quote\": \"Parameter dm = 0.4.\", \"source_ref\": \"ff71e00473153e250b83990d2345c445d334136570770507391813e9fef16fa3\", \"target\": \"dm/value\"}, {\"page\": 1, \"quote\": \"Parameter kp = 0.6.\", \"source_ref\": \"ff71e00473153e250b83990d2345c445d334136570770507391813e9fef16fa3\", \"target\": \"kp/value\"}, {\"page\": 1, \"quote\": \"Parameter dp = 0.2.\", \"source_ref\": \"ff71e00473153e250b83990d2345c445d334136570770507391813e9fef16fa3\", \"target\": \"dp/value\"}, {\"page\": 1, \"quote\": \"Equation dM/dt = s-dm*M.\", \"source_ref\": \"ff71e00473153e250b83990d2345c445d334136570770507391813e9fef16fa3\", \"target\": \"rule:M/expression\"}, {\"page\": 1, \"quote\": \"Equation dP/dt = kp*M-dp*P.\", \"source_ref\": \"ff71e00473153e250b83990d2345c445d334136570770507391813e9fef16fa3\", \"target\": \"rule:P/expression\"}, {\"page\": 1, \"quote\": \"Time t is in minutes.\", \"source_ref\": \"ff71e00473153e250b83990d2345c445d334136570770507391813e9fef16fa3\", \"target\": \"time_unit\"}, {\"page\": 1, \"quote\": \"The fixed compartment has size 1 dimensionless.\", \"source_ref\": \"ff71e00473153e250b83990d2345c445d334136570770507391813e9fef16fa3\", \"target\": \"c/size\"}, {\"page\": 1, \"quote\": \"States are dimensionless abstract activities.\", \"source_ref\": \"ff71e00473153e250b83990d2345c445d334136570770507391813e9fef16fa3\", \"target\": \"M/unit\"}], \"mechanism\": \"Two-state linear ODE: M produced at constant rate s and degraded at dm*M; P produced from M at kp*M and degraded at dp*P.\"}}",
+        "role": "assistant",
+        "provider_specific_fields": {
+          "refusal": null
+        }
+      },
+      "provider_specific_fields": {}
+    }
+  ],
+  "usage": {
+    "completion_tokens": 1398,
+    "prompt_tokens": 4010,
+    "total_tokens": 5408,
+    "prompt_tokens_details": {
+      "cached_tokens": 0
+    }
+  }
+}

@@ -1,0 +1,6 @@
+{
+  "gpt-4": false,
+  "gpt-3.5-turbo": false,
+  "gpt-4o-mini": false,
+  "qwen3.8-chat": true
+}

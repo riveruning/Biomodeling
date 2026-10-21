@@ -1,0 +1,8 @@
+{
+  "task_id": "T08c",
+  "owner": "Codex alone",
+  "objective": "Add one shared HTTP comparison transport and an offline, reviewable material/endpoint/model preparation bundle; validate with actual in-memory HTTP and scientific tools, without external inference.",
+  "write_scope": ["benchmarks/development/comparison_transport.py", "benchmarks/development/workflow_adapters.py", "tests/test_comparison_transport.py", "docs/comparison-transport.md", "docs/workflow-adapters.md", "docs/agent-evaluation-protocol.md", "docs/optimization-backlog.md", "docs/seven-point-status.md", "tasks/audit-t08c-http-transport.json", "artifacts/audit-t08c-http-transport-20261019"],
+  "constraints": ["No product source or original tests changed", "No T08a scorer, scripted driver, source material or decision script changes", "No subagents or DSH", "No online inference, real credential reads, new papers, independent evalset or c13/c18 access", "Mock HTTP remains scripted_control", "No silent retries, parameter fallbacks, redirects, environment proxies or version bypass", "Preparation is not external transmission authorization", "Prior artifacts remain immutable"],
+  "acceptance": ["Missing-capability baseline", "Shared exact request values and settings through HTTP", "Bounded strict response decoding and completion/refusal guards", "Timeout/error/usage/no-retry controls and structured sanitized receipts", "Endpoint and transport settings frozen across actual original-task resume", "Offline material and implementation hashes with stale-preparation rejection", "Thirty-phase HTTP mock replay with actual scientific tools", "Appropriate full regression, scope/hash verification, final patch and raw results"]
+}

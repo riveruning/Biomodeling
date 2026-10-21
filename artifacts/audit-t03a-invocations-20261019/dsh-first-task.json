@@ -1,0 +1,33 @@
+{
+  "schema_version": "1",
+  "id": "audit-t03a-invocations",
+  "objective": "给Agent增加持久调用预留/返回/错误/中断记录，统一LLM与科学工具的预算边界，不实现自动恢复。",
+  "context": "用户明确继续T03a，T02完整回归811通过且源码一致。Codex已写独立故障注入和模块测试。新invocations.py已创建为空文件，主体代码由DSH实现。只涉及两个生产文件，具体API、字段与集成点已冻结在契约中。",
+  "read_files": [
+    "artifacts/audit-t03a-invocations-20261019/implementation-contract.md",
+    "src/biomodel_agent/storage.py"
+  ],
+  "write_files": [
+    "src/biomodel_agent/invocations.py",
+    "src/biomodel_agent/agent.py"
+  ],
+  "expected_files": [
+    "src/biomodel_agent/invocations.py",
+    "src/biomodel_agent/agent.py"
+  ],
+  "instructions": "先读implementation-contract、invocations.py、storage.py和agent.py。按固定API先实现Journal，再在列明调用点小步集成；平坦refs避免深度上限，保存先于副作用，returned先于反馈，旧events与消息协议保留。不改测试；Codex独立验证。只允许明确文件read/edit/write，不用shell/目录扫描/网络/子Agent，不改任务卡或监督程序。遇到阻塞指出精确位置，不反复探索。最后简述接口和限制。",
+  "acceptance": [
+    "预算预留在provider/科学工具执行前持久化",
+    "返回/报错/中断有稳定操作ID且不重复执行",
+    "检查点/最终记录引用可导出，深度不随操作数增长",
+    "恢复继承计数且分支区分，原科学/权限/预算/模型消息不变"
+  ],
+  "verification_commands": [],
+  "budget": {
+    "first_activity_ms": 120000,
+    "idle_ms": 180000,
+    "first_write_ms": 240000,
+    "write_idle_ms": 240000,
+    "total_ms": 600000
+  }
+}

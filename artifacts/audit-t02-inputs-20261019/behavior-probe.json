@@ -1,0 +1,68 @@
+[
+  {
+    "case": "boolean_parameter",
+    "python": {
+      "accepted": false,
+      "exception": "ValueError",
+      "message": "parameter k value must be an int or float, got bool"
+    },
+    "json_codec": {
+      "accepted": false,
+      "exception": "SchemaError",
+      "message": "Parameter.value: True does not match any of float | None"
+    }
+  },
+  {
+    "case": "string_parameter",
+    "python": {
+      "accepted": false,
+      "exception": "ValueError",
+      "message": "parameter k value must be an int or float, got str"
+    },
+    "json_codec": {
+      "accepted": false,
+      "exception": "SchemaError",
+      "message": "Parameter.value: '0.4' does not match any of float | None"
+    }
+  },
+  {
+    "case": "boolean_steps",
+    "python": {
+      "accepted": false,
+      "exception": "ValueError",
+      "message": "max_steps must be a positive integer"
+    },
+    "json_codec": {
+      "accepted": false,
+      "exception": "SchemaError",
+      "message": "SolverConfig.max_steps: expected int, got bool"
+    }
+  },
+  {
+    "case": "boolean_trajectory",
+    "python": {
+      "accepted": false,
+      "exception": "ValueError",
+      "message": "SimulationResult.values['x'] must contain int or float, got bool"
+    },
+    "json_codec": {
+      "accepted": false,
+      "exception": "SchemaError",
+      "message": "SimulationResult: SimulationResult.values['x'] must contain int or float, got bool"
+    }
+  },
+  {
+    "case": "nonfinite_output_diagnostic",
+    "value_preserved": "inf",
+    "validation": {
+      "checks": [
+        {
+          "code": "finite",
+          "status": "fail",
+          "message": "values['x'] must contain finite numbers (not booleans or strings)",
+          "severity": "blocking"
+        }
+      ]
+    }
+  }
+]

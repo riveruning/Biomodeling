@@ -1,0 +1,17 @@
+{
+  "status": "awaiting_input",
+  "calls": 3,
+  "tokens": 3830,
+  "questions": [
+    "The source gives two equally authoritative alternatives for dR/dt: s/(1+(P/K)**2)-dr*R OR s/(1+(P/K))-dr*R, and does not specify which was used. Which one should the model use?"
+  ],
+  "problems": [],
+  "model_ref": null,
+  "run_ref": null,
+  "agent_ref": "7766a65b7109deb5c405d217d79b3b845d43605655e0356cd48b9adc7af6717c",
+  "product_modules_sha256": "6576b32fccfcdeb47f6de998db003859c0ba3f9c9da831e42eb3155fbbe54775",
+  "system": "biomodel",
+  "case": "feedback",
+  "phase": "initial",
+  "elapsed_seconds": 24.777102723001008
+}

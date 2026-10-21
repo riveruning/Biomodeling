@@ -1,0 +1,19 @@
+...........F................................                             [100%]
+=================================== FAILURES ===================================
+______________ test_fixtures_and_unreviewed_records_are_distinct _______________
+
+reporting = <module 'evaluation_reporting_test' from '/home/riveruning/biologymodel_agent/benchmarks/development/evaluation_reporting.py'>
+
+    def test_fixtures_and_unreviewed_records_are_distinct(reporting):
+        m, records = controlled(reporting)
+        result = reporting.report(m, records, ROOT)
+        for s in result['summary'].values():
+            assert s['metrics']['correct_completion']['true'] == 6
+            assert s['metrics']['correct_completion']['rate'] == 1.0
+>           assert s['metrics']['clarification_recovery']['true'] == 4
+E           assert 0 == 4
+
+tests/test_evaluation_reporting.py:90: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_evaluation_reporting.py::test_fixtures_and_unreviewed_records_are_distinct
+1 failed, 43 passed in 1.79s

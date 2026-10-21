@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="4" failures="0" skipped="0" tests="4" time="0.092" timestamp="2026-10-19T21:06:09.316530+08:00" hostname="LAPTOP-2QUP5P60"><testcase classname="tests.test_workflow_adapters" name="test_each_workflow_runs_real_shared_scientific_backend[fixed_workflow]" time="0.001"><error message="failed on setup with &quot;FileNotFoundError: [Errno 2] No such file or directory: '/home/riveruning/biologymodel_agent/benchmarks/development/workflow_adapters.py'&quot;">@pytest.fixture
+    def adapters():
+        spec = importlib.util.spec_from_file_location('workflow_adapters_acceptance',ROOT/'benchmarks/development/workflow_adapters.py')
+&gt;       module = importlib.util.module_from_spec(spec); spec.loader.exec_module(module)
+                                                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_workflow_adapters.py:21: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+&lt;frozen importlib._bootstrap_external&gt;:991: in exec_module
+    ???
+&lt;frozen importlib._bootstrap_external&gt;:1128: in get_code
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;_frozen_importlib_external.SourceFileLoader object at 0x7c71a15c56d0&gt;
+path = '/home/riveruning/biologymodel_agent/benchmarks/development/workflow_adapters.py'
+
+&gt;   ???
+E   FileNotFoundError: [Errno 2] No such file or directory: '/home/riveruning/biologymodel_agent/benchmarks/development/workflow_adapters.py'
+
+&lt;frozen importlib._bootstrap_external&gt;:1186: FileNotFoundError</error></testcase><testcase classname="tests.test_workflow_adapters" name="test_each_workflow_runs_real_shared_scientific_backend[generic_tool_agent]" time="0.001"><error message="failed on setup with &quot;FileNotFoundError: [Errno 2] No such file or directory: '/home/riveruning/biologymodel_agent/benchmarks/development/workflow_adapters.py'&quot;">@pytest.fixture
+    def adapters():
+        spec = importlib.util.spec_from_file_location('workflow_adapters_acceptance',ROOT/'benchmarks/development/workflow_adapters.py')
+&gt;       module = importlib.util.module_from_spec(spec); spec.loader.exec_module(module)
+                                                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_workflow_adapters.py:21: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+&lt;frozen importlib._bootstrap_external&gt;:991: in exec_module
+    ???
+&lt;frozen importlib._bootstrap_external&gt;:1128: in get_code
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;_frozen_importlib_external.SourceFileLoader object at 0x7c71a15c4110&gt;
+path = '/home/riveruning/biologymodel_agent/benchmarks/development/workflow_adapters.py'
+
+&gt;   ???
+E   FileNotFoundError: [Errno 2] No such file or directory: '/home/riveruning/biologymodel_agent/benchmarks/development/workflow_adapters.py'
+
+&lt;frozen importlib._bootstrap_external&gt;:1186: FileNotFoundError</error></testcase><testcase classname="tests.test_workflow_adapters" name="test_each_workflow_runs_real_shared_scientific_backend[domain_agent]" time="0.000"><error message="failed on setup with &quot;FileNotFoundError: [Errno 2] No such file or directory: '/home/riveruning/biologymodel_agent/benchmarks/development/workflow_adapters.py'&quot;">@pytest.fixture
+    def adapters():
+        spec = importlib.util.spec_from_file_location('workflow_adapters_acceptance',ROOT/'benchmarks/development/workflow_adapters.py')
+&gt;       module = importlib.util.module_from_spec(spec); spec.loader.exec_module(module)
+                                                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_workflow_adapters.py:21: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+&lt;frozen importlib._bootstrap_external&gt;:991: in exec_module
+    ???
+&lt;frozen importlib._bootstrap_external&gt;:1128: in get_code
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;_frozen_importlib_external.SourceFileLoader object at 0x7c71a15c6690&gt;
+path = '/home/riveruning/biologymodel_agent/benchmarks/development/workflow_adapters.py'
+
+&gt;   ???
+E   FileNotFoundError: [Errno 2] No such file or directory: '/home/riveruning/biologymodel_agent/benchmarks/development/workflow_adapters.py'
+
+&lt;frozen importlib._bootstrap_external&gt;:1186: FileNotFoundError</error></testcase><testcase classname="tests.test_workflow_adapters" name="test_hard_deadline_terminates_slow_provider" time="0.000"><error message="failed on setup with &quot;FileNotFoundError: [Errno 2] No such file or directory: '/home/riveruning/biologymodel_agent/benchmarks/development/workflow_adapters.py'&quot;">@pytest.fixture
+    def adapters():
+        spec = importlib.util.spec_from_file_location('workflow_adapters_acceptance',ROOT/'benchmarks/development/workflow_adapters.py')
+&gt;       module = importlib.util.module_from_spec(spec); spec.loader.exec_module(module)
+                                                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_workflow_adapters.py:21: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+&lt;frozen importlib._bootstrap_external&gt;:991: in exec_module
+    ???
+&lt;frozen importlib._bootstrap_external&gt;:1128: in get_code
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;_frozen_importlib_external.SourceFileLoader object at 0x7c71a15c7920&gt;
+path = '/home/riveruning/biologymodel_agent/benchmarks/development/workflow_adapters.py'
+
+&gt;   ???
+E   FileNotFoundError: [Errno 2] No such file or directory: '/home/riveruning/biologymodel_agent/benchmarks/development/workflow_adapters.py'
+
+&lt;frozen importlib._bootstrap_external&gt;:1186: FileNotFoundError</error></testcase></testsuite></testsuites>

@@ -1,0 +1,15 @@
+{
+  "status": "completed",
+  "calls": 4,
+  "tokens": 8995,
+  "questions": [],
+  "problems": [],
+  "model_ref": "904e59c141e347cfb2240901bc9f93768caab942f27ddb423f0ed40bf04c4d4d",
+  "run_ref": "1b2c74ff26d3e45b6b06ce23a80a384af6c1b931ef42c56caae8bb3150d8808b",
+  "agent_ref": "b6f07a72cc14a98df797920084059a13e6922bbce2566240f23cdb567a056c20",
+  "product_modules_sha256": "3223ecf97ad97509bffb78ca21f44c9c525a139ca5c56bdcb4d13b1870ef0ccc",
+  "system": "biomodel",
+  "case": "binding",
+  "phase": "clarified",
+  "elapsed_seconds": 68.82179839699893
+}

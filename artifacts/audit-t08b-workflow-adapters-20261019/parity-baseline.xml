@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="3" skipped="0" tests="6" time="8.659" timestamp="2026-10-19T21:11:13.346137+08:00" hostname="LAPTOP-2QUP5P60"><testcase classname="tests.test_workflow_adapters" name="test_each_workflow_runs_real_shared_scientific_backend[fixed_workflow]" time="2.350" /><testcase classname="tests.test_workflow_adapters" name="test_each_workflow_runs_real_shared_scientific_backend[generic_tool_agent]" time="1.175" /><testcase classname="tests.test_workflow_adapters" name="test_each_workflow_runs_real_shared_scientific_backend[domain_agent]" time="1.286"><failure message="assert False is True">adapters = &lt;module 'workflow_adapters_acceptance' from '/home/riveruning/biologymodel_agent/benchmarks/development/workflow_adapters.py'&gt;
+tmp_path = PosixPath('/tmp/biomodel-t08b-parity-baseline/test_each_workflow_runs_real_s2')
+workflow = 'domain_agent'
+
+    @pytest.mark.parametrize('workflow',['fixed_workflow','generic_tool_agent','domain_agent'])
+    def test_each_workflow_runs_real_shared_scientific_backend(adapters,tmp_path,workflow):
+        p=projection(adapters,workflow)
+        result=adapters.run_trial(p,EnvelopeTransport(p,complete_actions(workflow)),tmp_path/'phase')
+        r=result['record']
+        assert r['status']=='finished' and r['observation']['state']=='completed'
+        assert r['observation']['executed'] is True
+&gt;       assert r['observation']['claimed_complete'] is True
+E       assert False is True
+
+tests/test_workflow_adapters.py:97: AssertionError</failure></testcase><testcase classname="tests.test_workflow_adapters" name="test_shared_backend_keeps_nonnegative_scientific_failure[fixed_workflow]" time="1.120"><failure message="AssertionError: assert 'not_verified' == 'failed'&#10;  &#10;  - failed&#10;  + not_verified">adapters = &lt;module 'workflow_adapters_acceptance' from '/home/riveruning/biologymodel_agent/benchmarks/development/workflow_adapters.py'&gt;
+tmp_path = PosixPath('/tmp/biomodel-t08b-parity-baseline/test_shared_backend_keeps_nonn0')
+workflow = 'fixed_workflow'
+
+    @pytest.mark.parametrize('workflow',['fixed_workflow','generic_tool_agent','domain_agent'])
+    def test_shared_backend_keeps_nonnegative_scientific_failure(adapters,tmp_path,workflow):
+        p=projection(adapters,workflow)
+        text='Initial A = 2.0.\nParameter k = 0.4.\nReaction loss consumes A at constant rate k.'
+        s=next(s for s in p['sources'] if s['role']=='source')
+        s.update(text=text,sha256=adapters.protocol.hashlib.sha256(text.encode()).hexdigest())
+        def negative(messages):
+            main,_,_=refs(messages)
+            d=ModelDraft('negative',(State('A',2.,quantity_kind='amount',nonnegative=True),),
+                (Parameter('k',.4),),reactions=(Reaction('loss',{'A':1.},{},'k'),))
+            return action('submit_draft',{'draft':to_dict(d),'evidence':[
+                {'target':t,'source_ref':main,'page':1,'quote':q} for t,q in zip(
+                    ['A/initial','k/value','reaction:loss/rate'],text.splitlines())]})
+        out=adapters.run_trial(p,EnvelopeTransport(p,complete_actions(workflow,negative)),tmp_path/'negative')
+        run=ArtifactStore(out['store_root']).get(out['audit']['run_ref'])['payload']
+        assert run['simulation']['values']['A'][-1]&lt;-1.9
+&gt;       assert run['scientific_status']=='failed'
+E       AssertionError: assert 'not_verified' == 'failed'
+E         
+E         - failed
+E         + not_verified
+
+tests/test_workflow_adapters.py:221: AssertionError</failure></testcase><testcase classname="tests.test_workflow_adapters" name="test_shared_backend_keeps_nonnegative_scientific_failure[generic_tool_agent]" time="1.291"><failure message="AssertionError: assert 'not_verified' == 'failed'&#10;  &#10;  - failed&#10;  + not_verified">adapters = &lt;module 'workflow_adapters_acceptance' from '/home/riveruning/biologymodel_agent/benchmarks/development/workflow_adapters.py'&gt;
+tmp_path = PosixPath('/tmp/biomodel-t08b-parity-baseline/test_shared_backend_keeps_nonn1')
+workflow = 'generic_tool_agent'
+
+    @pytest.mark.parametrize('workflow',['fixed_workflow','generic_tool_agent','domain_agent'])
+    def test_shared_backend_keeps_nonnegative_scientific_failure(adapters,tmp_path,workflow):
+        p=projection(adapters,workflow)
+        text='Initial A = 2.0.\nParameter k = 0.4.\nReaction loss consumes A at constant rate k.'
+        s=next(s for s in p['sources'] if s['role']=='source')
+        s.update(text=text,sha256=adapters.protocol.hashlib.sha256(text.encode()).hexdigest())
+        def negative(messages):
+            main,_,_=refs(messages)
+            d=ModelDraft('negative',(State('A',2.,quantity_kind='amount',nonnegative=True),),
+                (Parameter('k',.4),),reactions=(Reaction('loss',{'A':1.},{},'k'),))
+            return action('submit_draft',{'draft':to_dict(d),'evidence':[
+                {'target':t,'source_ref':main,'page':1,'quote':q} for t,q in zip(
+                    ['A/initial','k/value','reaction:loss/rate'],text.splitlines())]})
+        out=adapters.run_trial(p,EnvelopeTransport(p,complete_actions(workflow,negative)),tmp_path/'negative')
+        run=ArtifactStore(out['store_root']).get(out['audit']['run_ref'])['payload']
+        assert run['simulation']['values']['A'][-1]&lt;-1.9
+&gt;       assert run['scientific_status']=='failed'
+E       AssertionError: assert 'not_verified' == 'failed'
+E         
+E         - failed
+E         + not_verified
+
+tests/test_workflow_adapters.py:221: AssertionError</failure></testcase><testcase classname="tests.test_workflow_adapters" name="test_shared_backend_keeps_nonnegative_scientific_failure[domain_agent]" time="1.331" /></testsuite></testsuites>

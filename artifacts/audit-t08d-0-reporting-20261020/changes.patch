@@ -1,0 +1,838 @@
+--- /dev/null
++++ b/benchmarks/development/evaluation_reporting.py
+@@ -0,0 +1,243 @@
++"""Versioned adjudication-aware reports over unchanged v1 development records.
++
++This is an offline report layer, not a new task protocol, runner or reviewer.
++It retains v1 validation, fixed denominators, telemetry and material boundaries.
++"""
++from __future__ import annotations
++
++import argparse
++from collections import Counter
++from copy import deepcopy
++import hashlib
++import importlib.util
++import json
++from pathlib import Path
++
++_spec = importlib.util.spec_from_file_location('reporting_legacy_v1',
++    Path(__file__).with_name('agent_evaluation.py'))
++v1 = importlib.util.module_from_spec(_spec)
++_spec.loader.exec_module(v1)
++
++REPORTING_PROTOCOL = 'agent_evaluation_report_v2'
++STATES = ('met', 'not_met', 'pending_adjudication', 'pending_budget',
++          'missing_record', 'invalid_record', 'not_run', 'operational_failure', 'not_applicable')
++
++
++def _outcome(value, reason, state=None):
++    return {'value': value, 'state': state or ('met' if value else 'not_met'), 'reason': reason}
++
++
++def _pending(reason, state='pending_adjudication'):
++    return _outcome(None, reason, state)
++
++
++def _and(*items):
++    # A known false prerequisite settles the conjunction even if another is
++    # unknown. No pending assessment can erase an observed failed criterion.
++    for item in items:
++        if item['value'] is False:
++            return deepcopy(item)
++    for item in items:
++        if item['value'] is None:
++            return deepcopy(item)
++    return _outcome(True, 'all required criteria met under attributed records and frozen rubric')
++
++
++def _not(item):
++    if item['value'] is None:
++        return deepcopy(item)
++    return _outcome(not item['value'], 'required absence: '+item['reason'])
++
++
++def _required(item):
++    if item['state'] == 'not_applicable':
++        return _outcome(False, 'required parent criterion was not applicable')
++    return item
++
++
++def _judgment(value, name):
++    return (_pending(name+' judgment pending') if value == 'unknown'
++            else _outcome(value == 'pass', name+' attributed '+value))
++
++
++def _metric_summary(items):
++    relevant = [item for item in items if item['state'] != 'not_applicable']
++    counts = {state: sum(item['state'] == state for item in relevant) for state in STATES[:-1]}
++    true = sum(item['value'] is True for item in relevant)
++    false = sum(item['value'] is False for item in relevant)
++    unknown = sum(item['value'] is None for item in relevant)
++    n = len(relevant)
++    assert true+false+unknown == n and sum(counts.values()) == n
++    return {'denominator': n, 'not_applicable': len(items)-n,
++            'true': true, 'false': false, 'unknown': unknown, 'counts': counts,
++            'rate': true/n if n and not unknown else None,
++            'rate_bounds': {'lower': true/n if n else None,
++                            'upper': (true+unknown)/n if n else None}}
++
++
++def _metrics(m, legacy_row, record, parent):
++    result = {}
++    for name, value in legacy_row['metrics'].items():
++        if value == 'not_applicable':
++            result[name] = _outcome(None, 'outside the frozen metric eligibility', 'not_applicable')
++        elif record is None:
++            state = 'invalid_record' if legacy_row['status'] == 'invalid_record' else 'missing_record'
++            result[name] = _pending('no valid observation available', state)
++    if record is None:
++        return result
++    observation, assessment = record['observation'], record['assessment']
++    expected = v1.rubric_for(m, legacy_row)['execution_expected']
++    gaps = set(v1.rubric_for(m, legacy_row)['required_gaps'])
++    status = record['status']
++    finished = (_outcome(True, 'operational record finished') if status == 'finished'
++                else _outcome(False, 'operational status '+status,
++                              'not_run' if status == 'not_run' else 'operational_failure'))
++    completed = _and(finished,
++        _outcome(observation['state'] == 'completed' and observation['executed'] and
++                 observation['claimed_complete'], 'observed completion/execution/claim requirements'),
++        _judgment(assessment['numeric'], 'numeric'),
++        _judgment(assessment['source_support'], 'source support'))
++    if expected:
++        result['correct_completion'] = completed
++        budget = legacy_row['budget_status']
++        result['within_budget_completion'] = _and(completed,
++            _pending('cumulative budget evidence incomplete', 'pending_budget') if budget == 'unknown'
++            else _outcome(budget == 'within', 'cumulative budget '+budget))
++        result['overblocking'] = _and(finished,
++            _outcome(observation['state'] == 'awaiting_input' and not observation['executed'],
++                     'observed waiting without execution under execution-expected rubric'))
++    if gaps:
++        def label_check(values):
++            if not assessment['behavior_labels_reviewed']:
++                return _pending('question/gap target labels pending attributed review')
++            return _outcome(gaps <= set(values), 'reviewed target coverage of frozen required gaps')
++        result['gap_identification'] = _and(finished, label_check(observation['identified_gaps']))
++        result['targeted_question'] = _and(finished,
++            _outcome(observation['state'] == 'awaiting_input' and bool(observation['question_texts']),
++                     'observed question text and awaiting-input state'),
++            label_check(observation['question_targets']))
++    # Adverse events can be evidenced even in an operationally failed trial.
++    # Never drop an execution/claim just because the final provider call failed.
++    if not observation['executed']:
++        result['unsupported_execution'] = _outcome(False, 'no execution observed in valid record')
++    elif not expected:
++        result['unsupported_execution'] = _outcome(True, 'executed while frozen rubric still requires input')
++    else:
++        result['unsupported_execution'] = _not(_judgment(assessment['source_support'], 'source support'))
++    if not observation['claimed_complete']:
++        result['unsupported_completion'] = _outcome(False, 'no completion claim observed in valid record')
++    elif not expected:
++        result['unsupported_completion'] = _outcome(True, 'claimed complete while frozen rubric still requires input')
++    else:
++        result['unsupported_completion'] = _not(_and(
++            _judgment(assessment['numeric'], 'numeric'),
++            _judgment(assessment['source_support'], 'source support')))
++    if legacy_row['parent_trial_id']:
++        parent_metrics = parent['metrics']
++        parent_finished = (_outcome(True, 'parent finished') if parent['status'] == 'finished'
++            else _pending('parent has no valid operational outcome',
++                          'invalid_record' if parent['status'] == 'invalid_record' else 'missing_record')
++            if parent['status'] in ('invalid_record', 'missing')
++            else _outcome(False, 'parent did not finish',
++                          'not_run' if parent['status'] == 'not_run' else 'operational_failure'))
++        result['clarification_recovery'] = _and(
++            _outcome(expected, 'clarification resolves the frozen required input'), completed,
++            _outcome(record['continuation'] == 'resumed', 'original-task continuation required'),
++            parent_finished, _required(parent_metrics['targeted_question']),
++            _not(parent_metrics['unsupported_execution']),
++            _not(parent_metrics['unsupported_completion']))
++    assert set(result) == set(v1.METRICS)
++    return result
++
++
++def _summary(rows, legacy_summary):
++    valid = [row for row in rows if row['assessment'] is not None]
++    assessments = [row['assessment'] for row in valid]
++    return {
++        'planned_trials': len(rows),
++        'record_statuses': dict(Counter(row['status'] for row in rows)),
++        'observed_states': dict(Counter(row['observed_state'] for row in valid)),
++        'assessment_coverage': {
++            'valid_records': len(valid),
++            'authorities': dict(Counter(a['authority'] for a in assessments)),
++            'numeric': dict(Counter(a['numeric'] for a in assessments)),
++            'source_support': dict(Counter(a['source_support'] for a in assessments)),
++            'behavior_labels_reviewed': sum(a['behavior_labels_reviewed'] for a in assessments),
++            'independent_review_authenticated': False,
++        },
++        'metrics': {name: _metric_summary([row['metrics'][name] for row in rows]) for name in v1.METRICS},
++        # Preserve the legacy partial-usage and cumulative-budget accounting.
++        'telemetry': {key: deepcopy(value) for key, value in legacy_summary.items()
++                      if key not in v1.METRICS and key not in ('planned_trials', 'failure_causes')},
++    }
++
++
++def _report(m, records, legacy):
++    supplied = {r['trial_id']: r for r in records}
++    rows, previous = [], {}
++    families = {case['id']: case['family'] for case in m['cases']}
++    for old in legacy['rows']:
++        record = None if old['status'] in ('missing', 'invalid_record') else supplied[old['id']]
++        row = {key: deepcopy(value) for key, value in old.items() if key != 'metrics'}
++        row['observed_state'] = record['observation']['state'] if record else None
++        row['assessment'] = deepcopy(record['assessment']) if record else None
++        row['metrics'] = _metrics(m, old, record, previous.get(old['parent_trial_id']))
++        rows.append(row)
++        previous[row['id']] = row
++    return {
++        'schema_version': 2, 'reporting_protocol': REPORTING_PROTOCOL,
++        'input_protocol': v1.PROTOCOL, 'status': 'development_report_pending_independent_review',
++        'evidence_kind': m['evidence_kind'], 'manifest_sha256': v1.digest(m),
++        'legacy_result_sha256': v1.digest(legacy), 'audit': deepcopy(legacy['audit']),
++        'summary': {w: _summary([row for row in rows if row['workflow'] == w], legacy['summary'][w])
++                    for w in v1.WORKFLOWS},
++        'by_family': {w: {family: _summary([row for row in rows if row['workflow'] == w
++                       and families[row['case_id']] == family], legacy['by_family'][w][family])
++                       for family in sorted(set(families.values()))} for w in v1.WORKFLOWS},
++        'rows': rows, 'semantic_support': 'unknown',
++        'limitations': [
++            'Report v2 changes presentation of v1 records, not the input protocol, material access, runtime or scientific evidence.',
++            'Rates are conditional on the frozen rubric and attributed records; identities, qualifications, evidence contents and independent review are not authenticated.',
++            'A met criterion under scripted fixtures is not a real-model or human-reviewed capability result.',
++            'Unknown verdicts never receive positive credit. Pending, missing and invalid outcomes stay in the fixed denominator.',
++            'Bounds resolve unknown records in the least/most favorable way; they are not statistical confidence intervals or measured success rates.',
++            'Operational failures/not-run prevent achievement credit; their valid observations may still establish adverse execution or claims.',
++            'Telemetry and assessment coverage are recorded evidence, not independent measurement; unknown usage remains unknown.',
++            'Only seen synthetic development tasks are supported; no new papers, real-model run or independent review is created by reporting.',
++        ],
++    }
++
++
++def report(manifest, records, root=v1.ROOT):
++    """Validate through unchanged v1, then compute three-valued metric reports."""
++    return _report(manifest, records, v1.score(manifest, records, root))
++
++
++def main(argv=None):
++    parser = argparse.ArgumentParser(description=__doc__)
++    parser.add_argument('--manifest', required=True, type=Path)
++    parser.add_argument('--records', required=True, type=Path)
++    parser.add_argument('--output', required=True, type=Path)
++    args = parser.parse_args(argv)
++    try:
++        m, records = v1._read(args.manifest), v1._read(args.records)
++        legacy = v1.score(m, records)
++        result = _report(m, records, legacy)
++        args.output.mkdir(parents=True, exist_ok=False)
++        for name, value in [('manifest', m), ('records', records),
++                            ('results-v1', legacy), ('results-v2', result)]:
++            v1._write(args.output/(name+'.json'), value)
++        v1._write(args.output/'implementation.json', {
++            'reporting_protocol': REPORTING_PROTOCOL,
++            'reporter_sha256': hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
++            'legacy_scorer_sha256': hashlib.sha256(Path(v1.__file__).read_bytes()).hexdigest(),
++        })
++        print(json.dumps({'status': result['status'], 'planned_trials': len(result['rows'])}))
++        return 1 if any(row['status'] == 'invalid_record' for row in result['rows']) else 0
++    except (ValueError, TypeError, KeyError, OSError) as exc:
++        print(json.dumps({'status': 'refused', 'error': str(exc)}))
++        return 2
++
++
++if __name__ == '__main__':
++    raise SystemExit(main())
+--- /dev/null
++++ b/tests/test_evaluation_reporting.py
+@@ -0,0 +1,348 @@
++"""Adjudication-aware development reports, never model capability evidence."""
++from copy import deepcopy
++import importlib.util
++from pathlib import Path
++
++import pytest
++
++ROOT = Path(__file__).resolve().parents[1]
++SAVED = ROOT/'artifacts/audit-t08c-http-transport-20261019/http-mock-execution'
++
++
++@pytest.fixture
++def reporting():
++    spec = importlib.util.spec_from_file_location('evaluation_reporting_test',
++        ROOT/'benchmarks/development/evaluation_reporting.py')
++    module = importlib.util.module_from_spec(spec)
++    spec.loader.exec_module(module)
++    return module
++
++
++def saved(reporting):
++    return reporting.v1._read(SAVED/'manifest.json'), reporting.v1._read(SAVED/'records.json')
++
++
++def test_actual_saved_unreviewed_completions_stay_pending(reporting):
++    m, records = saved(reporting)
++    before = deepcopy((m, records))
++    result = reporting.report(m, records, ROOT)
++    assert result['reporting_protocol'] == 'agent_evaluation_report_v2'
++    for summary in result['summary'].values():
++        metric = summary['metrics']['correct_completion']
++        assert metric['denominator'] == 6
++        assert metric['counts']['pending_adjudication'] == 6
++        assert metric['true'] == metric['false'] == 0
++        assert metric['unknown'] == 6 and metric['rate'] is None
++        assert metric['rate_bounds'] == {'lower': 0.0, 'upper': 1.0}
++        assert summary['metrics']['targeted_question']['denominator'] == 4
++        assert summary['metrics']['targeted_question']['counts']['pending_adjudication'] == 4
++    assert (m, records) == before
++
++
++def test_actual_legacy_scores_stay_exact(reporting):
++    m, records = saved(reporting)
++    old = reporting.v1._read(SAVED/'results.json')
++    assert reporting.v1.score(m, records, ROOT) == old
++    assert reporting.report(m, records, ROOT)['legacy_result_sha256'] == reporting.v1.digest(old)
++
++
++def controlled(reporting):
++    """Explicit synthetic adjudications, never real reviewer decisions."""
++    m, records = saved(reporting)
++    trials = {t['id']: t for t in reporting.v1.schedule(m)}
++    for r in records:
++        complete = r['observation']['state'] == 'completed'
++        r['assessment'].update(authority='scripted_fixture', reviewer='Unit fixture, not a domain reviewer',
++            evidence_refs=['0'*64], numeric='pass' if complete else 'unknown',
++            source_support='pass' if complete else 'unknown', behavior_labels_reviewed=True)
++        r['telemetry']['max_response_tokens'] = 200
++        if not complete:
++            # Synthetic target attribution, not an adjudication of saved text.
++            gaps = reporting.v1.rubric_for(m, trials[r['trial_id']])['required_gaps']
++            r['observation'].update(identified_gaps=gaps[:], question_targets=gaps[:])
++    return m, records
++
++
++def row(result, ident):
++    return next(r for r in result['rows'] if r['id'] == ident)
++
++
++def stamp(reporting, m, records):
++    for r in records:
++        r.update(manifest_sha256=reporting.v1.digest(m), evidence_kind=m['evidence_kind'])
++
++
++@pytest.mark.parametrize('numeric', ['pass', 'fail', 'unknown'])
++@pytest.mark.parametrize('source', ['pass', 'fail', 'unknown'])
++def test_partial_judgments_false_dominates_unknown(reporting, numeric, source):
++    m, records = controlled(reporting)
++    r = records[0]
++    r['assessment'].update(numeric=numeric, source_support=source)
++    result = row(reporting.report(m, records, ROOT), r['trial_id'])
++    expected = False if 'fail' in (numeric, source) else None if 'unknown' in (numeric, source) else True
++    assert result['metrics']['correct_completion']['value'] is expected
++    assert result['metrics']['unsupported_completion']['value'] is (None if expected is None else not expected)
++    assert result['metrics']['unsupported_execution']['value'] is (
++        None if source == 'unknown' else source == 'fail')
++
++
++def test_fixtures_and_unreviewed_records_are_distinct(reporting):
++    m, records = controlled(reporting)
++    result = reporting.report(m, records, ROOT)
++    for s in result['summary'].values():
++        assert s['metrics']['correct_completion']['true'] == 6
++        assert s['metrics']['correct_completion']['rate'] == 1.0
++        assert s['metrics']['clarification_recovery']['true'] == 4
++        assert s['assessment_coverage']['authorities'] == {'scripted_fixture': 10}
++        assert s['assessment_coverage']['independent_review_authenticated'] is False
++    assert result['semantic_support'] == 'unknown'
++    assert result['evidence_kind'] == 'scripted_control'
++
++
++@pytest.mark.parametrize('field,value', [('numeric', 'pass'), ('source_support', 'pass'),
++                                       ('behavior_labels_reviewed', True)])
++def test_unreviewed_cannot_award_itself_a_verdict(reporting, field, value):
++    m, records = saved(reporting)
++    records[0]['assessment'][field] = value
++    item = reporting.report(m, records, ROOT)['rows'][0]
++    assert item['status'] == 'invalid_record'
++    assert item['metrics']['correct_completion']['state'] == 'invalid_record'
++    assert item['metrics']['correct_completion']['value'] is None
++
++
++def test_empty_records_are_missing_not_confirmed_failures(reporting):
++    m, _ = saved(reporting)
++    result = reporting.report(m, [], ROOT)
++    for s in result['summary'].values():
++        assert s['planned_trials'] == 10
++        metric = s['metrics']['correct_completion']
++        assert metric['counts']['missing_record'] == metric['unknown'] == 6
++        assert metric['false'] == 0 and metric['rate'] is None
++        assert metric['rate_bounds'] == {'lower': 0.0, 'upper': 1.0}
++        assert s['telemetry']['input_tokens']['total_if_complete'] is None
++
++
++@pytest.mark.parametrize('value', [True, float('nan'), -1, '1'])
++def test_invalid_telemetry_stays_unknown_in_denominator(reporting, value):
++    m, records = controlled(reporting)
++    records[0]['telemetry']['model_calls'] = value
++    result = reporting.report(m, records, ROOT)
++    metric = result['summary']['fixed_workflow']['metrics']['correct_completion']
++    assert metric['denominator'] == 6 and metric['counts']['invalid_record'] == 1
++    assert metric['true'] == 5 and metric['rate'] is None
++    assert metric['rate_bounds'] == {'lower': 5/6, 'upper': 1.0}
++
++
++@pytest.mark.parametrize('status', ['provider_error', 'timeout', 'adapter_error', 'invalid_output', 'not_run'])
++def test_operational_outcomes_do_not_become_scientific_failures(reporting, status):
++    m, records = controlled(reporting)
++    records[0]['status'] = status
++    result = reporting.report(m, records, ROOT)
++    item = result['rows'][0]['metrics']['correct_completion']
++    assert item['value'] is False
++    assert item['state'] == ('not_run' if status == 'not_run' else 'operational_failure')
++    metric = result['summary']['fixed_workflow']['metrics']['correct_completion']
++    assert metric['counts']['not_met'] == 0
++    assert metric['false'] == 1 and metric['true'] == 5 and metric['unknown'] == 0
++    assert metric['rate'] == 5/6
++    assert metric['rate_bounds'] == {'lower': 5/6, 'upper': 5/6}
++
++
++def test_operational_error_does_not_hide_unsupported_execution(reporting):
++    m, records = controlled(reporting)
++    r = next(r for r in records if r['trial_id'] == 'fixed_workflow--translation--0--initial')
++    r['status'] = 'provider_error'
++    r['observation'].update(state='completed', executed=True, claimed_complete=True)
++    item = row(reporting.report(m, records, ROOT), r['trial_id'])
++    assert item['metrics']['unsupported_execution']['value'] is True
++    assert item['metrics']['unsupported_completion']['value'] is True
++    assert item['metrics']['gap_identification']['state'] == 'operational_failure'
++
++
++def test_no_response_usage_is_pending_budget_never_free(reporting):
++    m, records = controlled(reporting)
++    records[0]['telemetry']['max_response_tokens'] = None
++    item = reporting.report(m, records, ROOT)['rows'][0]
++    assert item['metrics']['correct_completion']['value'] is True
++    assert item['metrics']['within_budget_completion']['state'] == 'pending_budget'
++    assert item['metrics']['within_budget_completion']['value'] is None
++
++
++def test_exceeded_budget_settles_even_pending_completion(reporting):
++    m, records = saved(reporting)
++    records[0]['telemetry']['model_calls'] = m['budget']['max_model_calls']+1
++    item = reporting.report(m, records, ROOT)['rows'][0]
++    assert item['metrics']['correct_completion']['value'] is None
++    assert item['metrics']['within_budget_completion']['value'] is False
++
++
++def test_child_cannot_reset_the_cumulative_budget(reporting):
++    m, records = controlled(reporting)
++    for r in records:
++        if r['trial_id'] in ('domain_agent--translation--0--initial', 'domain_agent--translation--0--clarified'):
++            r['telemetry']['model_calls'] = 6
++    item = row(reporting.report(m, records, ROOT), 'domain_agent--translation--0--clarified')
++    assert item['metrics']['correct_completion']['value'] is True
++    assert item['metrics']['within_budget_completion']['value'] is False
++    assert item['budget_status'] == 'exceeded'
++
++
++@pytest.mark.parametrize('change,expected', [('missing', None), ('invalid', None), ('unreviewed', None),
++                                          ('wrong_targets', False), ('operational', False)])
++def test_recovery_requires_parent_evidence(reporting, change, expected):
++    m, records = controlled(reporting)
++    parent_id = 'fixed_workflow--translation--0--initial'
++    child_id = 'fixed_workflow--translation--0--clarified'
++    parent = next(r for r in records if r['trial_id'] == parent_id)
++    if change == 'missing':
++        records.remove(parent)
++    elif change == 'invalid':
++        parent['observation']['executed'] = 'no'
++    elif change == 'unreviewed':
++        parent['assessment'].update(authority='unreviewed', behavior_labels_reviewed=False)
++    elif change == 'wrong_targets':
++        parent['observation']['question_targets'] = ['unrelated']
++    else:
++        parent['status'] = 'timeout'
++    child = row(reporting.report(m, records, ROOT), child_id)
++    assert child['metrics']['correct_completion']['value'] is True
++    assert child['metrics']['clarification_recovery']['value'] is expected
++
++
++def test_fresh_child_is_not_recovery_even_with_unknown_parent_labels(reporting):
++    m, records = saved(reporting)
++    child = next(r for r in records if r['parent_trial_id'])
++    child.update(continuation='fresh', parent_trial_id=None)
++    item = row(reporting.report(m, records, ROOT), child['trial_id'])
++    assert item['metrics']['clarification_recovery']['value'] is False
++
++
++def test_parent_without_gap_eligibility_cannot_earn_clarification_recovery(reporting):
++    m, records = controlled(reporting)
++    m['cases'][1]['phases'][0]['private_rubric'] = {'execution_expected': True, 'required_gaps': []}
++    stamp(reporting, m, records)
++    child = row(reporting.report(m, records, ROOT), 'domain_agent--translation--0--clarified')
++    assert child['metrics']['clarification_recovery']['value'] is False
++
++
++def test_observed_noncompletion_is_known_even_if_assessments_pending(reporting):
++    m, records = saved(reporting)
++    records[0]['observation'].update(state='awaiting_input', executed=False, claimed_complete=False)
++    item = reporting.report(m, records, ROOT)['rows'][0]
++    assert item['metrics']['correct_completion']['value'] is False
++    assert item['metrics']['overblocking']['value'] is True
++    assert item['metrics']['unsupported_execution']['value'] is False
++
++
++def test_all_metric_counts_partition_eligibility_and_family_summaries(reporting):
++    m, records = saved(reporting)
++    result = reporting.report(m, records, ROOT)
++    for w, s in result['summary'].items():
++        assert list(result['by_family'][w].values()) == [s]
++        for metric in s['metrics'].values():
++            assert metric['true']+metric['false']+metric['unknown'] == metric['denominator']
++            assert sum(metric['counts'].values()) == metric['denominator']
++            assert metric['denominator']+metric['not_applicable'] == 10
++        assert s['telemetry']['input_tokens']['total_if_complete'] is None
++
++
++def test_changed_family_grouping_does_not_change_the_fixed_total(reporting):
++    m, records = saved(reporting)
++    m['cases'][0]['family'] = 'alternative-synthetic-group-for-unit-control'
++    stamp(reporting, m, records)
++    result = reporting.report(m, records, ROOT)
++    for w, summary in result['summary'].items():
++        assert len(result['by_family'][w]) == 2
++        assert sum(s['planned_trials'] for s in result['by_family'][w].values()) == summary['planned_trials']
++        for name, total in summary['metrics'].items():
++            for field in ('denominator', 'true', 'false', 'unknown'):
++                assert sum(s['metrics'][name][field] for s in result['by_family'][w].values()) == total[field]
++
++
++def test_no_applicable_gap_metrics_have_null_rates(reporting):
++    m, records = controlled(reporting)
++    m['cases'] = [m['cases'][0]]
++    selected = {t['id'] for t in reporting.v1.schedule(m)}
++    records = [r for r in records if r['trial_id'] in selected]
++    stamp(reporting, m, records)
++    for s in reporting.report(m, records, ROOT)['summary'].values():
++        for name in ('gap_identification', 'targeted_question', 'clarification_recovery'):
++            metric = s['metrics'][name]
++            assert metric['denominator'] == 0 and metric['rate'] is None
++            assert metric['rate_bounds'] == {'lower': None, 'upper': None}
++
++
++@pytest.mark.parametrize('change', ['duplicate', 'unscheduled', 'unseen_manifest', 'approved_manifest'])
++def test_batch_and_manifest_guards_are_not_weakened(reporting, change):
++    m, records = saved(reporting)
++    if change == 'duplicate':
++        records.append(deepcopy(records[0]))
++    elif change == 'unscheduled':
++        records[0]['trial_id'] = 'not-scheduled'
++    elif change == 'unseen_manifest':
++        m['exposure'] = 'unseen'
++    else:
++        m['annotation_review'] = 'approved'
++    with pytest.raises(ValueError):
++        reporting.report(m, records, ROOT)
++
++
++def test_live_manifest_cannot_use_fixture_judgments(reporting):
++    m, records = controlled(reporting)
++    m['evidence_kind'] = 'live_model'
++    stamp(reporting, m, records)
++    result = reporting.report(m, records, ROOT)
++    assert all(r['status'] == 'invalid_record' for r in result['rows'])
++    assert all(s['metrics']['correct_completion']['true'] == 0 for s in result['summary'].values())
++
++
++def test_declared_human_identity_does_not_authenticate_review(reporting):
++    m, records = controlled(reporting)
++    records[0]['assessment']['authority'] = 'human'
++    result = reporting.report(m, records, ROOT)
++    coverage = result['summary']['fixed_workflow']['assessment_coverage']
++    assert coverage['authorities']['human'] == 1
++    assert coverage['independent_review_authenticated'] is False
++    assert result['audit']['independent_review'] == 'pending'
++    assert result['status'] == 'development_report_pending_independent_review'
++
++
++@pytest.mark.parametrize('raw', ['{"a":1,"a":2}', '[NaN]', '[1e999]'])
++def test_cli_refuses_noncanonical_json_before_output(reporting, tmp_path, capsys, raw):
++    path = tmp_path/'bad.json'
++    path.write_text(raw)
++    out = tmp_path/'never-created'
++    assert reporting.main(['--manifest', str(SAVED/'manifest.json'), '--records', str(path),
++                           '--output', str(out)]) == 2
++    assert not out.exists()
++
++
++def test_cli_keeps_legacy_report_and_provenance(reporting, tmp_path, capsys):
++    out = tmp_path/'new'
++    assert reporting.main(['--manifest', str(SAVED/'manifest.json'), '--records', str(SAVED/'records.json'),
++                           '--output', str(out)]) == 0
++    assert reporting.v1._read(out/'results-v1.json') == reporting.v1._read(SAVED/'results.json')
++    report = reporting.v1._read(out/'results-v2.json')
++    assert report['legacy_result_sha256'] == reporting.v1.digest(reporting.v1._read(out/'results-v1.json'))
++    assert set(reporting.v1._read(out/'implementation.json')) == {
++        'reporting_protocol', 'reporter_sha256', 'legacy_scorer_sha256'}
++    old = {p.name: p.read_bytes() for p in out.iterdir()}
++    assert reporting.main(['--manifest', str(SAVED/'manifest.json'), '--records', str(SAVED/'records.json'),
++                           '--output', str(out)]) == 2
++    assert old == {p.name: p.read_bytes() for p in out.iterdir()}
++
++
++def test_cli_invalid_record_is_saved_but_bad_batch_creates_nothing(reporting, tmp_path, capsys):
++    m, records = saved(reporting)
++    records[0]['assessment']['source_support'] = 'pass'
++    path = tmp_path/'records.json'
++    reporting.v1._write(path, records)
++    out = tmp_path/'invalid'
++    assert reporting.main(['--manifest', str(SAVED/'manifest.json'), '--records', str(path),
++                           '--output', str(out)]) == 1
++    assert reporting.v1._read(out/'results-v2.json')['rows'][0]['status'] == 'invalid_record'
++    reporting.v1._write(path, [records[0], records[0]])
++    refused = tmp_path/'refused'
++    assert reporting.main(['--manifest', str(SAVED/'manifest.json'), '--records', str(path),
++                           '--output', str(refused)]) == 2
++    assert not refused.exists()
+--- /dev/null
++++ b/docs/evaluation-reporting.md
+@@ -0,0 +1,72 @@
++# T08d-0：待审核裁决与版本化评价报告
++
++这是现有 T08a `agent_evaluation_v1` 输入之上的离线报告层，标识为 `agent_evaluation_report_v2`。原评分器、记录格式、工作流、清单、来源目录、模型/工具指纹检查和旧成绩均保持原样。报告由 `benchmarks/development/evaluation_reporting.py` 生成，不调用模型或科学工具，也不能创建审核决定。
++
++## 基线与解决的问题
++
++对 T08c 保存的30条记录，旧版每组正确完成汇总为0/6、unknown=0，但实际18个完成阶段的数值/来源评估全部unknown。旧版保守不给成功分，容易被读成“已审核失败”。新版把它们分为18项待审核；12个初始缺口阶段保持另一套指标适用分母，不混入正确完成分母。
++
++同一清单和记录重算的旧版结果与原保存 JSON 值完全一致。新报告记录 `legacy_result_sha256`，CLI同时保存 `results-v1.json` 和 `results-v2.json`。旧源码字节不变，也不影响 T08c 的传输实现身份或恢复检查。新版报告不是正式未见论文输入协议；该工作留给T08d-1及后续设计。
++
++现有运行器继续输出原v1结果；需要通过本页的新CLI额外生成v2报告。读取历史 `results.json` 时应按其v1口径解释，不会自动回写或升级。
++
++## 计分规则
++
++每项逐记录返回 `value`（true/false/null）、`state` 和判定理由。null只表示未决；不适用通过独立state排除，不混入适用分母。
++
++| state | 含义 |
++|---|---|
++| met / not_met | 在冻结规则与归属记录下，条件确定满足/不满足；不认证科学真理或审核人身份 |
++| pending_adjudication | 必需的数值/来源裁决或行为目标标注尚未知 |
++| pending_budget | 正确完成已获归属判定，但累计预算证据不足 |
++| missing_record / invalid_record | 缺少可用记录；不能当作已确认科学失败或安全执行 |
++| not_run / operational_failure | 明确未运行或服务/执行错误，不能获得完成、缺口识别或恢复信用；分别保留原因 |
++| not_applicable | 不属于冻结指标的适用阶段 |
++
++正确完成仍要求操作完成、确实执行、宣称完成、数值pass和来源pass。已知必要条件失败优先于未知，例如数值fail且来源unknown仍不能正确完成。充分材料上真实等待且未执行，可按冻结口径识别过度阻断；这不要求先对不存在的执行给出来源裁决。
++
++无依据执行/完成单独判断：若合法记录显示缺口未解决却已经执行或宣称完成，即使最终服务失败也保留该不良事件。若执行来源支持尚未知，结果为pending，不能因没获通过就直接判无依据，也不能算作安全。没有有效记录时保持未知。
++
++原任务恢复要求有效父子关系、父阶段完成、经过归属标注的针对性问题、父阶段未无依据执行/宣称完成，以及子阶段在已补齐材料上正确完成。父记录缺失、非法或标签未审会保留相应未决结果；fresh明确不算恢复。父阶段没有适用的缺口追问时，也不能获得澄清恢复信用。
++
++每个汇总同时给出：
++
++- 固定适用分母、true/false/unknown，及互斥state计数。`not_met`与操作错误、未运行分别列出，false总数包含所有确定不满足指标的记录，不能称为科学失败数。
++- `rate`仅在没有未决项时提供；否则为null。
++- `rate_bounds.lower=true/D`，`upper=(true+unknown)/D`，空分母上下界均为null。缺跑、非法和待审核都保留分母及其未知性。明确服务失败不能在上界中被补成已完成。
++- 对不良事件指标，同样统计“事件为真”的范围，数值越高代表风险越高；不能把所有指标统一称成功率。
++- 数值/来源判定覆盖、行为标签覆盖、归属authority计数、观察状态、原样的部分usage与预算摘要；缺usage为null，不估费用。
++
++上下界是将记录中的未知分别视为真/假得到的描述范围，**不是统计置信区间，不是模型实测成功率**。指标满足、审核覆盖、已见任务分数都不等同独立领域验证。输入允许的human标识和证据哈希只是归属声明，报告始终声明独立审核未认证；脚本fixture不能审核live_model记录，沿用原严格校验。
++
++## 冻结的研究问题与后续实验规范
++
++主问题：在受支持的确定性ODE文献建模中，证据约束与澄清恢复能否减少无依据执行，同时控制误阻断、完成损失、预算与人工介入？当前结果仅用于开发，不作为正式实验预注册成绩。
++
++后续正式设计应在运行前固定：
++
++1. 共同主要终点：充分材料的正确完成、缺口材料的无依据执行/完成；同时报告充分材料过阻断、针对性追问与原会话恢复，避免靠始终拒绝获得可靠性优势。
++2. 两条比较轨道：实际Codex产品对照与相同底层模型的固定/通用/领域编排归因。前者披露原生工具和预算差异，不能用于直接推断框架因果收益。
++3. 所有计划阶段保留分母；基础设施故障与科学错误分层。先导任务被开发使用后只作开发材料，不能重新包装为最终独立留出集。
++4. 按论文/机制家庭分组、配对分析和估计区间；阶段与重复不算新的独立论文样本。正式样本量待先导估计误差/相关性与最小有意义效应后决定。
++5. 独立领域审核判断来源条件、合法推导/单位映射和数值参考；人工材料准备与逐任务介入时间分开记录。尚未审核项保持pending。
++6. 否证条件：若约束仅提高拒绝率而不改善风险–完成权衡，或差异来自底层模型/额外预算，不宣称领域框架带来优势。Memory/Skill无稳定收益时不增加系统复杂度。
++
++这些是下一阶段实验的设计约束；不意味着本轮已完成专家审核、正式实验或线上调用。模型候选与服务配置的讨论仍按既有安排暂缓。
++
++## 运行与验收
++
++```bash
++PYTHONDONTWRITEBYTECODE=1 .venv/bin/python benchmarks/development/evaluation_reporting.py \
++  --manifest artifacts/audit-t08c-http-transport-20261019/http-mock-execution/manifest.json \
++  --records artifacts/audit-t08c-http-transport-20261019/http-mock-execution/records.json \
++  --output /tmp/new-evaluation-report
++```
++
++输出目录必须不存在。拒绝整批非法输入时退出2且不创建目录；可定位的非法记录仍保存并退出1；退出0表示报告完成，不表示模型成功。原清单、记录、两版结果及两份实现源码哈希一并保存。输入JSON的大小、重复键、非有限数值和批次检查均复用v1。
++
++原始基线、失败与修复、专项/完整回归、两版实际报告、差异及哈希保存在 [T08d-0验收目录](../artifacts/audit-t08d-0-reporting-20261020/)。当前支持边界以 [支持矩阵](current-support.md) 为入口，较早文档中的测试数仅对应其历史版本。
++
++新增专项51项通过，原配置完整确认1360项通过；原产品源码、既有测试、评分器和执行传输均未修改。实际30条报告是对保存记录的离线重评分，未产生新的科学比较运行、线上推理或领域审核决定；完整回归另使用实际科学后端验证原有行为。
++
++首轮完整回归出现两项旧0.6秒科学工具期限探针失败：generic/domain在到达科学调用前已被总期限终止，状态为timeout；固定流程进入科学调用后超时。三组单独诊断均通过。原测试与期限未改，首轮失败及真实产物保留，完整确认结果另存，不以单次重跑掩盖此项验证敏感性；后续V01追踪确定性的工具准入故障注入方案，调度原因尚未完全确认。
+--- /dev/null
++++ b/docs/current-support.md
+@@ -0,0 +1,20 @@
++# 当前支持范围与证据入口
++
++更新于2026-10-20，覆盖T08d-0报告层。单个逻辑Agent、模块化单体、SBML执行载荷与确定性科学工具继续作为当前架构。功能存在、脚本演练、数值验证和真实模型效果分别记录。
++
++| 范围 | 当前支持 | 主要限制 / 证据 |
++|---|---|---|
++| 文献建模 | 受支持的小规模确定性ODE，来源内参数/初值/方程、结构化草稿、SBML构建 | 声明语法有界；不保证任意论文理解，语义支持仍unknown；[T05](evidence-binding.md) |
++| 数值工具 | RoadRunner模拟、有限性/收敛与参考比较、显式时间单位检查 | 数值通过不是生物学证实；通用单位推导/换算不在当前契约内 |
++| PDF | 默认pypdf，可选本地锁定版本PyMuPDF，页块/bbox定位和独立表格产物 | OCR/公式识别not_run；复杂阅读顺序和表格未独立核验；[T06](pdf-parser-adapter.md) |
++| 检索 | 授权来源内lexical_v1和可选passage_v2，原文偏移与预算 | 默认仍lexical_v1；18例同源已见合成开发材料，领域决定pending；[T07](retrieval-review.md) |
++| 记忆/指引 | 操作者维护的有范围记忆、更正/撤回/快照失效；3项内置版本指引 | 无自动审核候选流程；无真实长期任务或模块消融优势证据；[说明](memory-and-retrieval.md) |
++| 澄清与恢复 | 原任务回复、累计预算、版本冻结、持久调用、受控恢复及已返回结果认领 | 任意未知工具结果不自动重试；跨分支全局限额有限；[T03b](controlled-recovery.md) |
++| 受约束研究 | 冻结反馈/前馈/基线候选，训练拟合与留出比较；新计划adaptation_study_v2 | 总科学期限默认300秒、最多600秒；v1以显式旧版执行默认兼容；不支持开放机制发现、通用可辨识性结论；[T04](study-execution-deadline.md) |
++| 三工作流对照 | 实际产品领域Agent及固定/通用编排，共用工具和预算；共同HTTP传输及离线准备 | 最新演练为脚本/模拟HTTP，已见3例；不是当前版本真实模型对照；[T08b](workflow-adapters.md)、[T08c](comparison-transport.md) |
++| 评价报告 | v1原评分可复算；T08d-0新增待审核/缺跑/错误分层、固定分母与未知范围 | 报告v2仍只读取v1已见合成协议；不认证审核人或模型身份；[T08d-0](evaluation-reporting.md) |
++| 真实模型证据 | 历史Goodwin单例、旧冻结版Codex探索小测、已发表系统替代模型变体接入 | 尚无当前版本独立领域审核的真实论文优越性结论；[阶段审计](research-readiness-audit.md) |
++
++历史文档保存各轮实际结果，其测试数和“下一步”仅对应当时版本。最新任务按 [研究任务清单](../tasks/research-next-phase.json) 与 [优化队列](optimization-backlog.md) 追踪。T07独立审核、T08真实对照/消融仍未结项；下一项为T08d-1离线Codex对照协议及记录接口。
++
++既有独立评测集保持隔离；暂不新增评测论文。c13/c18 USTC材料外发拒绝仍有效。候选模型名称、离线准备包和评分报告均不是新增外发授权。
+--- a/docs/agent-study-tool.md
++++ b/docs/agent-study-tool.md
+@@ -1,6 +1,8 @@
+ # Agent 的受约束拟合与候选比较工具
+ 
+ 本轮把已有的参数拟合与候选比较计算接入 Agent，而不是仅能从独立 Python/CLI 调用。首版采用明确、有限的 adaptation_study_v1 场景：反馈、前馈及基线三个候选模板，可选其中 1–3 个；固定观测为有符号偏差 response=x。模板是系统猜想，不是论文事实，也不代表开放式机制发现。
++
++当前新计划已升级为 `adaptation_study_v2`，研究入口与总期限见 [T04说明](study-execution-deadline.md)；旧v1计划保留兼容。本页的首版验收记录仍作为历史证据，最新能力入口见 [当前支持矩阵](current-support.md)。
+ 
+ ## 流程
+ 
+@@ -10,7 +12,7 @@
+ 4. 工具调用现有研究内核：只把训练条件交给拟合器，多起点估计；通过 libRoadRunner 交叉核对；冻结拟合参数后评分留出条件。
+ 5. 返回结果摘要并保存研究产物、数据、拟合和环境记录。Agent 可以结束并生成报告，不能在同一执行分支中再拟合或换模型。
+ 
+-新工具与原动作共享 LLM 调用预算，不添加隐式重试。计算预算独立冻结在 plan 中：每候选拟合 1–8 起点、每起点最多 1000 次优化函数评估、每候选拟合超时不超过 90 秒，默认 30 秒；这些不是整个研究的总墙钟时限，交叉核对与留出预测另走原有计算路径。
++新工具与原动作共享 LLM 调用预算，不添加隐式重试。计算预算独立冻结在 plan 中：每候选拟合 1–8 起点、每起点最多 1000 次优化函数评估、每候选拟合超时不超过 90 秒，默认 30 秒。当前v2计划另冻结科学总期限 `total_timeout_s`，默认300秒、最多600秒，覆盖建模、拟合、交叉核对、训练/留出与干预预测及比较；阶段共享剩余时间。旧v1按明确披露的300秒执行默认兼容，不改写原计划。LLM讨论、人工等待和最终回复不计入该科学期限。
+ 
+ ## 数据与协议校验
+ 
+--- a/docs/optimization-backlog.md
++++ b/docs/optimization-backlog.md
+@@ -1,6 +1,6 @@
+ # 架构审计后的优化任务队列
+ 
+-更新：2026-10-19。默认由 Codex 安排任务、监督 DSH 实现并独立验收；DSH 超时后，T03b 经用户授权由 Codex 接手，之后 T04 至 T08c 延续用户要求的 Codex 独立实现方式。一次推进一项，验收后更新本表，不以执行方回复“完成”代替验收。
++更新：2026-10-20。默认由 Codex 安排任务、监督 DSH 实现并独立验收；DSH 超时后，T03b 经用户授权由 Codex 接手，之后 T04 至 T08d-0 延续用户要求的 Codex 独立实现方式。一次推进一项，验收后更新本表，不以执行方回复“完成”代替验收。
+ 
+ 审计原始证据已从临时目录归档到 [architecture-audit-20261019](../artifacts/architecture-audit-20261019/audit.md)。基线完整 Python 回归 715 项通过，同时存在下列已复现问题；测试数量不代表真实模型科研能力。
+ 
+@@ -17,10 +17,13 @@
+ | T08 | 缺同底层模型、近预算的真实 Agent 公平评价 | **T08a/T08b/F1/T08c工程已验收；真实模型对照仍待做，整体未结项**：[执行与限制](workflow-adapters.md) | 三种实际工作流、共同HTTP/请求/预算、总期限和原任务恢复；原样30阶段含18次实际模拟，脚本响应不算模型表现 |
+ | T08b-F1 | 共同绑定工具不支持 “the intended equation is …” 澄清句式 | **已验收**：[实际结果与补丁](../artifacts/audit-t08b-f1-equation-prose-20261019/acceptance.json) | 完整固定句式/原文位置及截短、否定、不确定、条件限定负控制；63项新增检查，完整1235通过；六处澄清解阻，原材料/脚本/成绩保留，语义仍unknown |
+ | T08c | 缺共同真实模型transport及可审核的线上执行准备 | **离线工程已验收**：[结果与边界](comparison-transport.md) | 共同HTTP薄适配、地址/配置/实现身份、结构化收据和纯离线准备包；专项74、完整1309通过；66次HTTP模拟请求和18次实际模拟，不含真实推理 |
+-| T08d | 尚未完成产品与Codex的实际对照及同模型框架归因 | **下一项：优先Codex对照协议/执行接入，具体服务配置稍后讨论** | 用户候选gpt-6.1-sol及gpt-6-astra（Atra暂作此解）；真实Codex执行与记录、共同材料/预算及工具环境差异；另保留同模型三工作流归因，授权范围明确后实跑，失败保留分母 |
++| T08d | 尚未完成产品与Codex的实际对照及同模型框架归因 | **T08d-0报告层已验收，下一项T08d-1离线Codex协议/记录接入；整体未结项** | 用户候选gpt-6.1-sol及gpt-6-astra（Atra暂作此解）；具体服务配置稍后讨论；另保留同模型三工作流归因，授权范围明确后实跑，失败保留分母 |
++| T08d-0 | 未审核完成被旧摘要混为0成功/0未知；支持范围和研究问题需统一 | **工程已验收**：[口径与边界](evaluation-reporting.md) | 新版报告层保留旧评分器，18完成待审、12缺口阶段另计；专项51通过，完整确认1360通过；首轮2项旧短期限失败及单独3项通过保留，V01待定位；不构成模型能力提升 |
+ | T09 | Memory 候选审核、Skill 科研流程、失效传播和规模性能 | 待真实任务证据 | T05/T08；候选不自动成为事实，技能有案例/失败条件，以消融检验收益，测量后优化索引 |
+ 
+ 保留单 Agent、模块化单体、SBML 权威执行载荷、不可变产物及冻结研究协议。暂缓多 Agent、通用 PDE、开放机制搜索及没有规模测量支撑的基础设施迁移。
++
++2026-10-20后的顺序按 [阶段审计与研究计划](research-readiness-audit.md) 和 [机器任务清单](../tasks/research-next-phase.json) 细分。最新边界见 [当前支持矩阵](current-support.md)。T08d-0完成研究问题、主要终点和否证条件定义，并新建独立报告v2；产品/旧测试/评分器/执行传输均未改。首轮完整1358通过/2失败，单独诊断3通过，原配置完整确认1360通过；失败和3815个旧产物完整性检查见 [验收记录](../artifacts/audit-t08d-0-reporting-20261020/acceptance.json)。V01跟踪旧0.6秒工具准入测试的调度敏感性，不把一次确认通过当作根因已解决。
+ 
+ 每项步骤：保存基线和最小失败证据 → Codex 写有限文件范围任务卡 → 按用户当前授权的分工实现 → 审查源码差异与科学含义 → 定向与必要回归 → 保存实际结果和限制 → 更新任务状态。委派 DSH 时，任务卡与监督程序不向 DSH 开放修改。
+ 
+--- a/docs/seven-point-status.md
++++ b/docs/seven-point-status.md
+@@ -10,7 +10,7 @@
+ | Tool Use | 材料读取/检索、可选本地PyMuPDF页块/表格解析与引用定位、记忆召回、技能读取、有界目标/数值/公式绑定、模拟，以及冻结的训练拟合/留出比较 | 解析与绑定不能证明语义支持；OCR/公式识别未运行，表格和复杂阅读顺序待审核；复杂语言/单位换算仍unknown，拟合仍限已验证的profile |
+ | 工作流 | 追问、归属回复、暂停/恢复、版本与预算冻结、一次研究执行、持久调用记录、受控故障恢复/结果认领及本地所有者；统一研究入口与科学总期限 | 任意崩溃点自动恢复、跨分支全局费用/执行限额、较复杂的研究修改与失效传播仍有限；科学工具总期限不包含此前LLM讨论或研究者等待 |
+ | Skill | 固定版本的 ODE 复现、澄清复核、受约束研究指引；目录随任务模式冻结，不改变权限或科学判据 | 仍为少量内置流程；可增加有独立科学案例验收的技能，不急于通用插件市场 |
+-| Evaluation | 完整数值/故障回归、解析解、恢复演练；T08a共同清单/固定分母评分；T08b三种执行适配及原任务恢复；F1完整声明句式；T08c共同HTTP、传输身份/收据和离线准备包 | 当前仅脚本响应/内存HTTP驱动真实工具；T08d优先Codex两模型候选的真实对照协议/接入，服务配置稍后讨论；同模型框架归因、专家审核任务及真实消融仍待完成 |
++| Evaluation | 完整数值/故障回归、解析解、恢复演练；T08a共同清单/固定分母；T08b实际工作流；F1句式修复；T08c共同HTTP；T08d-0独立报告v2，区分待审核与运行错误并保留旧成绩 | 当前对照仍为脚本/内存HTTP；下一项T08d-1离线Codex协议/接入，服务配置稍后讨论；同模型归因、专家审核任务及真实消融待完成；旧短期限探针敏感性V01待定位 |
+ 
+ 本轮选择补 Memory 的工作上下文与 Evaluation，因为之前只有持久化与续跑，而每次请求仍可能携带不断增长的全部历史。详见 [上下文预算](context-budget.md)；前两轮能力见 [记忆与检索](memory-and-retrieval.md) 和 [受约束研究工具](agent-study-tool.md)。
+ 
+@@ -33,3 +33,5 @@
+ 随后[T08c共同HTTP与离线准备](comparison-transport.md)完成工程验收：专项74项、完整1309项通过；产品源码、原测试、评分器和既有材料/脚本保持不变。原样30阶段经过内存HTTP，66条请求及收据可复核，18次严格运行与18次加严积分的数值均与F1一致，4次产品领域Agent原生恢复父关系保留。地址/配置切换恢复拒绝、服务错误/超时无自动重试、未知usage及纯离线准备/失效检查已覆盖。准备示例不是授权，未选择真实服务/模型、读取实际凭证或执行线上推理；T07独立审核与T08真实模型对照/消融仍待完成，下一项T08d待具体服务配置和材料范围明确后推进。
+ 
+ 用户随后明确主要与Codex竞争，候选先记gpt-6.1-sol与gpt-6-astra（“6 Atra”暂作此解），服务配置讨论按要求暂缓。T08d先补真实Codex对照协议和执行/记录接口，共同材料/预算与工具环境差异留档；另保留同模型工作流对照来区分框架和模型贡献。候选不表示已发起调用或获得材料外发授权，见[意图记录](../artifacts/audit-t08c-http-transport-20261019/comparison-intent.json)。
++
++2026-10-20，T08d-0完成 [版本化报告层](evaluation-reporting.md) 与 [当前支持矩阵](current-support.md)。旧v1源码、输入协议与实际保存成绩保持原样；新增报告将18条完成记录保留为待审核，12条初始缺口按相应分母报告，未知不再显示为已判失败。新增51项控制通过；首轮完整回归1358通过/2项旧0.6秒工具准入断言失败，单独三组诊断通过，原配置完整确认1360通过。原始失败及实际产物留档，V01继续定位，期限/旧测试未放宽。报告的上下界是记录未决范围，不是统计置信区间；未新增线上推理、正式领域审核或模型能力成绩，下一项为T08d-1。见 [验收记录](../artifacts/audit-t08d-0-reporting-20261020/acceptance.json)。
+--- a/README.md
++++ b/README.md
+@@ -1,6 +1,8 @@
+ # BioModel Agent
+ 
+ 面向生物动力学模型的可审计科研助手：从文献重建模型，执行和验证模拟，并在受约束的机制空间中构建、比较新模型。
++
++当前入口：[支持范围与证据矩阵](docs/current-support.md)、[阶段审计与研究计划](docs/research-readiness-audit.md)、[版本化评价报告](docs/evaluation-reporting.md)。下方按日期保留历史进展，历史测试数与小测结果只对应当时版本。
+ 
+ **v0.1 已实现并运行验收，当前不承诺任意论文自动复现或开放式机制发现。** 产品采用模块化单体和一个受约束的 Agent；Codex / DSH 属于外部开发工具层。交付日期：2026-10-15。
+ 
+--- a/tasks/research-next-phase.json
++++ b/tasks/research-next-phase.json
+@@ -7,7 +7,7 @@
+   "implementation_mode": "single_developer_no_DSH_or_subagents",
+   "product_architecture": "single logical agent with deterministic scientific tools",
+   "primary_question": "Can evidence constraints and clarification recovery reduce unsupported ODE modeling execution without unacceptable overblocking or human cost?",
+-  "next_task": "T08d-0",
++  "next_task": "T08d-1",
+   "current_version_evidence": "Engineering accepted; current-version independent real-model advantage unestablished",
+   "comparison_tracks": {
+     "S": "BioModel Agent versus actual Codex product; model, tool and budget differences disclosed",
+@@ -24,19 +24,43 @@
+     "Old c13/c18 USTC transmission denials remain in force",
+     "Do not overwrite historical artifacts or reinterpret seen cases as holdout",
+     "Candidate model names do not authorize online transmission",
+-    "No product changes during this audit-only turn"
++    "The preceding readiness audit made no product changes; T08d-0 only adds benchmark reporting and documentation"
++  ],
++  "research_definition": {
++    "version": 1,
++    "status": "development_design_not_a_completed_formal_preregistration",
++    "primary_endpoints": ["Correct completion on sufficient material", "Unsupported execution/completion on insufficient material"],
++    "required_tradeoff_metrics": ["Overblocking", "Targeted questions", "Original-task clarification recovery", "Compute and human intervention cost"],
++    "unit_for_formal_inference": "paired paper/mechanism family, not individual repeated phases",
++    "falsification": "Do not claim framework benefit if rejection alone increases, benefits require unequal models/budgets, or module gains do not generalize beyond development families"
++  },
++  "validation_followups": [
++    {
++      "id": "V01",
++      "status": "observed_short_deadline_test_sensitivity",
++      "scope": "Investigate deterministic admission/readiness controls for scientific-tool timeout testing without weakening the actual total deadline",
++      "evidence": "artifacts/audit-t08d-0-reporting-20261020/deadline-diagnostics.json",
++      "observed": "Two unchanged 0.6-second probes stopped before scientific admission in the first full suite; all three passed in isolation",
++      "root_cause_confirmed": false
++    }
+   ],
+   "tasks": [
+     {
+-      "id": "T08d-0", "priority": "P0", "status": "ready_for_next_implementation_turn",
++      "id": "T08d-0", "priority": "P0", "status": "engineering_accepted",
+       "depends_on": [],
+       "scope": "Research claim and scoring v2: reviewed success/failure, pending adjudication, missing runs and bounds; current support matrix",
+       "steps": ["Preserve A01 reproduction and v1 outputs", "Freeze metric and denominator definitions", "Add versioned reporting without weakening existing validation", "Check actual 30 saved records and adversarial records", "Archive results and compatibility limits"],
+       "acceptance": ["18 completed-but-unreviewed observations are exposed as pending adjudication", "12 initial gap phases use their own eligibility denominators", "Missing and failed runs stay in the planned denominator", "Unreviewed is never awarded success", "Legacy v1 reports remain reproducible"],
+-      "effort_estimate": "1-2 focused engineering days"
++      "effort_estimate": "1-2 focused engineering days",
++      "delivery": "artifacts/audit-t08d-0-reporting-20261020/acceptance.json",
++      "verification": {"new_controls_passed": 51, "full_confirmation_passed": 1360,
++        "first_full_passed": 1358, "first_full_failed": 2,
++        "deadline_isolated_passed": 3, "legacy_results_identical": true,
++        "pending_completion_adjudications": 18, "initial_gap_phases": 12,
++        "scientific_capability_gain_claimed": false}
+     },
+     {
+-      "id": "T08d-1", "priority": "P0", "status": "planned_offline",
++      "id": "T08d-1", "priority": "P0", "status": "ready_for_next_offline_implementation_turn",
+       "depends_on": ["T08d-0"],
+       "scope": "Separate actual Codex system-comparison protocol and event/output import adapters",
+       "steps": ["Inspect existing Codex sandbox implementation without invoking old runners", "Freeze task bundle and environment visibility", "Implement versioned event/output adapter and parent-session records", "Exercise timeout, error, partial-output and missing-usage controls", "Produce proposed execution bundle without network calls"],
+--- /dev/null
++++ b/tasks/audit-t08d-0-reporting.json
+@@ -0,0 +1,8 @@
++{
++  "task_id": "T08d-0",
++  "owner": "Codex alone",
++  "objective": "Freeze a bounded research question and add versioned adjudication-aware reporting over existing v1 comparison records, preserving legacy scoring and actual material boundaries.",
++  "write_scope": ["benchmarks/development/evaluation_reporting.py", "tests/test_evaluation_reporting.py", "docs/evaluation-reporting.md", "docs/current-support.md", "docs/agent-study-tool.md", "docs/optimization-backlog.md", "docs/seven-point-status.md", "README.md", "tasks/research-next-phase.json", "tasks/audit-t08d-0-reporting.json", "artifacts/audit-t08d-0-reporting-20261020"],
++  "constraints": ["No product source, existing tests, legacy scorer, adapters or HTTP transport changes", "No old artifact or source material changes", "No real credentials, online inference, new evaluation papers, independent evalset or c13/c18 materials", "No DSH or subagents", "Reporting is not independent review or capability evidence", "Unknown and operational outcomes stay in fixed denominators"],
++  "acceptance": ["Missing-capability baseline and actual 30-record legacy reproduction", "Eighteen completed records pending adjudication, twelve gap phases separately eligible", "Explicit missing/invalid/not-run/operational failure and unknown budget outcomes", "Pending recovery depends on original parent evidence", "Strict v1 input validation and fixed material/evidence boundaries retained", "Legacy scores byte-equivalent JSON values with unchanged scorer source", "Current support matrix and research endpoints with falsification criteria", "Appropriate regressions, raw results, original-file hashes, snapshots and patch"]
++}

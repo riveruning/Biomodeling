@@ -1,0 +1,6 @@
+Synthetic, analyst-specified biochemical ODE model; not a published paper.
+Time t is in minutes. States are dimensionless abstract activities. The fixed compartment has size 1 dimensionless.
+Initial M = 0.5.
+Parameter s = 1.2.
+Parameter d = 0.3.
+Equation dM/dt = s-d*M.

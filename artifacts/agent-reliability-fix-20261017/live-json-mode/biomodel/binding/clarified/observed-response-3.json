@@ -1,0 +1,28 @@
+{
+  "id": "chatcmpl-e4cfca07-8d38-47ff-872b-dce4fb2c5a79",
+  "created": 1792238816,
+  "model": "qwen3.8-chat",
+  "object": "chat.completion",
+  "choices": [
+    {
+      "finish_reason": "stop",
+      "index": 0,
+      "message": {
+        "content": "{\"action\": \"run\", \"args\": {}, \"reason\": \"Draft validated; run the ODE simulation over the requested time points.\"}",
+        "role": "assistant",
+        "provider_specific_fields": {
+          "refusal": null
+        }
+      },
+      "provider_specific_fields": {}
+    }
+  ],
+  "usage": {
+    "completion_tokens": 30,
+    "prompt_tokens": 2674,
+    "total_tokens": 2704,
+    "prompt_tokens_details": {
+      "cached_tokens": 0
+    }
+  }
+}

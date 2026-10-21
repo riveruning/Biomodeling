@@ -1,0 +1,52 @@
+EE                                                                       [100%]
+==================================== ERRORS ====================================
+_________ ERROR at setup of test_empty_records_keep_fixed_denominator __________
+
+    @pytest.fixture
+    def ev():
+        spec = importlib.util.spec_from_file_location('agent_evaluation_tool', ROOT/'benchmarks/development/agent_evaluation.py')
+        module = importlib.util.module_from_spec(spec)
+>       spec.loader.exec_module(module)
+
+tests/test_agent_evaluation_protocol.py:15: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+<frozen importlib._bootstrap_external>:991: in exec_module
+    ???
+<frozen importlib._bootstrap_external>:1128: in get_code
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <_frozen_importlib_external.SourceFileLoader object at 0x7c881f907b30>
+path = '/home/riveruning/biologymodel_agent/benchmarks/development/agent_evaluation.py'
+
+>   ???
+E   FileNotFoundError: [Errno 2] No such file or directory: '/home/riveruning/biologymodel_agent/benchmarks/development/agent_evaluation.py'
+
+<frozen importlib._bootstrap_external>:1186: FileNotFoundError
+_____________ ERROR at setup of test_provider_failure_is_retained ______________
+
+    @pytest.fixture
+    def ev():
+        spec = importlib.util.spec_from_file_location('agent_evaluation_tool', ROOT/'benchmarks/development/agent_evaluation.py')
+        module = importlib.util.module_from_spec(spec)
+>       spec.loader.exec_module(module)
+
+tests/test_agent_evaluation_protocol.py:15: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+<frozen importlib._bootstrap_external>:991: in exec_module
+    ???
+<frozen importlib._bootstrap_external>:1128: in get_code
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <_frozen_importlib_external.SourceFileLoader object at 0x7c881f904890>
+path = '/home/riveruning/biologymodel_agent/benchmarks/development/agent_evaluation.py'
+
+>   ???
+E   FileNotFoundError: [Errno 2] No such file or directory: '/home/riveruning/biologymodel_agent/benchmarks/development/agent_evaluation.py'
+
+<frozen importlib._bootstrap_external>:1186: FileNotFoundError
+=========================== short test summary info ============================
+ERROR tests/test_agent_evaluation_protocol.py::test_empty_records_keep_fixed_denominator
+ERROR tests/test_agent_evaluation_protocol.py::test_provider_failure_is_retained
+2 errors in 0.06s

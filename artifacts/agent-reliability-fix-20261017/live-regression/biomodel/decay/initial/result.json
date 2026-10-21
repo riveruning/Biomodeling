@@ -1,0 +1,15 @@
+{
+  "status": "completed",
+  "calls": 7,
+  "tokens": 13281,
+  "questions": [],
+  "problems": [],
+  "model_ref": "2be2461957e88fcc75d5194bbafc76c857c94d43ce790aa6c48b261f016302e8",
+  "run_ref": "8cf48cdcde1f80fb3f2c767714f791ab9797af840bcf2b7561629a719027f29e",
+  "agent_ref": "7211d3e51dc93bee2cfbbd28cf74df13afb579704176b000b5e9c9da6e2d1263",
+  "product_modules_sha256": "3223ecf97ad97509bffb78ca21f44c9c525a139ca5c56bdcb4d13b1870ef0ccc",
+  "system": "biomodel",
+  "case": "decay",
+  "phase": "initial",
+  "elapsed_seconds": 96.62243609199868
+}

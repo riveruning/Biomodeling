@@ -1,0 +1,19 @@
+{
+  "schema_version": "1",
+  "id": "workflow-smoke",
+  "objective": "验证 DSH 能通过文件工具提交一个极小产物，并验证 Codex 监督与交付流程。",
+  "context": "这是开发协作烟雾测试，与 BioModel Agent 业务实现无关。不要阅读架构文档，不编写业务代码。",
+  "read_files": [],
+  "write_files": ["artifacts/development/dsh-smoke.txt"],
+  "expected_files": ["artifacts/development/dsh-smoke.txt"],
+  "instructions": "只用 write 文件工具创建指定文件，内容精确为 DSH_WORKFLOW_READY 加一个换行。不要调用 bash、glob、测试、安装或联网工具。写入后简短列出产物路径，不输出长篇计划。",
+  "acceptance": ["指定文件存在且内容精确为 DSH_WORKFLOW_READY 加换行", "提交不被误报为业务代码或科学验收通过"],
+  "verification_commands": [],
+  "budget": {
+    "first_activity_ms": 120000,
+    "idle_ms": 120000,
+    "first_write_ms": 180000,
+    "write_idle_ms": 180000,
+    "total_ms": 240000
+  }
+}

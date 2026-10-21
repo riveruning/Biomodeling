@@ -1,0 +1,55 @@
+{
+  "schema_version": 1,
+  "protocol": "native_system_comparison_v1",
+  "manifest_sha256": "6c97c6c6462b4a6598c1580d5a2863fc70e3977466c7693c4cc3112dff99348b",
+  "trial": {
+    "id": "biomodel--logistic--0--initial",
+    "system_id": "biomodel",
+    "runtime": "biomodel_agent",
+    "case_id": "logistic",
+    "repeat": 0,
+    "phase": "initial",
+    "parent_trial_id": null
+  },
+  "evidence_kind": "scripted_control",
+  "capture_kind": "product_v1_record",
+  "capture_sha256": "60e407de8a7f3265cfcef3cb450d552722e903f0122ba3df4f1e67277bc72b26",
+  "status": "finished",
+  "session": {
+    "id": "80e8acb2445857e0c6e796cd03ed7e1995c4700633df247ee1b40ee8166f067c",
+    "mode": "none",
+    "parent_record_sha256": null,
+    "identity_authenticated": false
+  },
+  "observation": {
+    "state": "awaiting_input",
+    "completion_claimed": false,
+    "execution_declared": false,
+    "execution_observed": false,
+    "question_texts": [
+      "Which reported dX/dt alternative was actually used?"
+    ],
+    "final_messages": [],
+    "artifacts": []
+  },
+  "assessment": {
+    "authority": "unreviewed",
+    "numeric": "unknown",
+    "source_support": "unknown",
+    "behavior_labels_reviewed": false
+  },
+  "telemetry": {
+    "elapsed_seconds": 0.4882958360030898,
+    "model_calls": 2,
+    "tool_items": 1,
+    "tool_count_kind": "domain_tool_invocations",
+    "input_tokens": null,
+    "output_tokens": null,
+    "cached_input_tokens": null,
+    "reasoning_output_tokens": null,
+    "cumulative_elapsed_seconds": 0.4882958360030898
+  },
+  "diagnostics": [
+    "product_v1_observation_attribution_not_identity_authentication"
+  ]
+}

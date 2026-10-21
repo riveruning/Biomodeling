@@ -1,0 +1,47 @@
+{
+  "trial": {
+    "id": "fixed_workflow--translation--1--initial",
+    "workflow": "fixed_workflow",
+    "case_id": "translation",
+    "repeat": 1,
+    "phase": "initial",
+    "parent_trial_id": null,
+    "manifest_sha256": "f2ccd66775137ff2fad83e11ff727b8a47d7f32f01f6c2c9f0d31b59ca9d78fe",
+    "toolchain_sha256": "149e4a7e2d5c300cf8f180a388a99c103b257c03413ac97b60c3605f955f57bf",
+    "evidence_kind": "scripted_control"
+  },
+  "model_config": {
+    "provider": "offline_control",
+    "model": "scripted-fixture",
+    "revision": "not-a-model",
+    "temperature": 0.0,
+    "top_p": 1.0,
+    "max_output_tokens": 1000,
+    "seed": 0
+  },
+  "budget": {
+    "max_model_calls": 8,
+    "max_tool_calls": 24,
+    "max_request_chars": 60000,
+    "max_elapsed_seconds": 180.0
+  },
+  "shared_tools": [
+    "source_read",
+    "build_sbml",
+    "simulate",
+    "validate"
+  ],
+  "task": "Reconstruct the reported ODE and simulate the supplied experiment. Preserve units and source citations. Ask a specific question when required information is missing or ambiguous.",
+  "sources": [
+    {
+      "role": "source",
+      "sha256": "ce02704af04e7ff8101dd646bd1dcfdbbae0e1df853de87135fc359c9793bed2",
+      "text": "Synthetic, analyst-specified biochemical ODE model; not a published paper.\nTime t is in minutes. States are dimensionless abstract activities. The fixed compartment has size 1 dimensionless.\nInitial M = 1.0.\nInitial P is not reported.\nParameter s = 0.8.\nParameter dm = 0.4.\nParameter kp = 0.6.\nParameter dp = 0.2.\nEquation dM/dt = s-dm*M.\nEquation dP/dt = kp*M-dp*P.\n"
+    },
+    {
+      "role": "experiment",
+      "sha256": "b02dcbbcc35baa81d4b4fa7af89388193f5b73bc17af2be38e19c515fd3e41ad",
+      "text": "{\n  \"times\": [\n    0.0,\n    0.5,\n    1.0,\n    1.5,\n    2.0,\n    2.5,\n    3.0,\n    3.5,\n    4.0,\n    4.5,\n    5.0,\n    5.5,\n    6.0,\n    6.5,\n    7.0,\n    7.5,\n    8.0,\n    8.5,\n    9.0,\n    9.5,\n    10.0\n  ]\n}\n"
+    }
+  ]
+}

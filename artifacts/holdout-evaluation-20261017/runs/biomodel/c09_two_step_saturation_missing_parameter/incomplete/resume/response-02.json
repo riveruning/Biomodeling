@@ -1,0 +1,28 @@
+{
+  "id": "chatcmpl-06edc380-a8a8-4470-920f-c177d6a52719",
+  "created": 1792252809,
+  "model": "qwen3.8-chat",
+  "object": "chat.completion",
+  "choices": [
+    {
+      "finish_reason": "stop",
+      "index": 0,
+      "message": {
+        "content": "{\"action\": \"submit_draft\", \"args\": {\"draft\": {\"compartment\": {\"id\": \"C\", \"size\": 1, \"unit\": \"dimensionless\"}, \"derived\": [], \"id\": \"c09_two_step_saturation_missing_parameter\", \"parameters\": [{\"id\": \"Vmax\", \"origin\": \"source\", \"unit\": \"a.u. per minute\", \"value\": 0.9}, {\"id\": \"Km\", \"origin\": \"source\", \"unit\": \"a.u.\", \"value\": 1.5}, {\"id\": \"KI\", \"origin\": \"researcher\", \"unit\": \"a.u.\", \"value\": 0.8}], \"rate_rules\": [{\"expression\": \"-Vmax*S/(Km + S + S^2/KI)\", \"state\": \"S\"}], \"reactions\": [], \"states\": [{\"id\": \"S\", \"initial\": 1.0, \"nonnegative\": false, \"quantity_kind\": \"variable\", \"unit\": \"a.u.\"}], \"time_unit\": \"minute\"}, \"evidence\": [{\"page\": 1, \"quote\": \"S(0) = 1.0 a.u.\", \"source_ref\": \"f8eda69ad5e3b55749afabc90e4a65a96df0d3f9c284789d2f0f53b325eab984\", \"target\": \"S/initial\"}, {\"page\": 1, \"quote\": \"Vmax = 0.9 a.u. per minute\", \"source_ref\": \"f8eda69ad5e3b55749afabc90e4a65a96df0d3f9c284789d2f0f53b325eab984\", \"target\": \"Vmax/value\"}, {\"page\": 1, \"quote\": \"Km = 1.5 a.u.\", \"source_ref\": \"f8eda69ad5e3b55749afabc90e4a65a96df0d3f9c284789d2f0f53b325eab984\", \"target\": \"Km/value\"}, {\"page\": 1, \"quote\": \"The inhibition constant KI = 0.8 a.u.\", \"source_ref\": \"0eec20fb903813fcdf9958659dea7bc3520ee635682b1b333a01bb5dad7ac514\", \"target\": \"KI/value\"}, {\"page\": 1, \"quote\": \"dS/dt = -Vmax*S/(Km + S + S^2/KI).\", \"source_ref\": \"f8eda69ad5e3b55749afabc90e4a65a96df0d3f9c284789d2f0f53b325eab984\", \"target\": \"rule:S/expression\"}, {\"page\": 1, \"quote\": \"single well-mixed compartment of size 1 (dimensionless)\", \"source_ref\": \"f8eda69ad5e3b55749afabc90e4a65a96df0d3f9c284789d2f0f53b325eab984\", \"target\": \"C/size\"}, {\"page\": 1, \"quote\": \"Vmax = 0.9 a.u. per minute\", \"source_ref\": \"f8eda69ad5e3b55749afabc90e4a65a96df0d3f9c284789d2f0f53b325eab984\", \"target\": \"time_unit\"}], \"mechanism\": \"Substrate S degraded by a single enzyme with substrate inhibition; rate law dS/dt = -Vmax*S/(Km + S + S^2/KI).\"}}",
+        "role": "assistant",
+        "provider_specific_fields": {
+          "refusal": null
+        }
+      },
+      "provider_specific_fields": {}
+    }
+  ],
+  "usage": {
+    "completion_tokens": 914,
+    "prompt_tokens": 3018,
+    "total_tokens": 3932,
+    "prompt_tokens_details": {
+      "cached_tokens": 768
+    }
+  }
+}

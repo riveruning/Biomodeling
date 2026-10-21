@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "protocol": "native_system_comparison_v1",
+  "status": "prepared_only_no_authorization",
+  "manifest_sha256": "6c97c6c6462b4a6598c1580d5a2863fc70e3977466c7693c4cc3112dff99348b",
+  "trial": {
+    "id": "codex-astra--logistic--1--clarified",
+    "system_id": "codex-astra",
+    "runtime": "codex_cli",
+    "case_id": "logistic",
+    "repeat": 1,
+    "phase": "clarified",
+    "parent_trial_id": "codex-astra--logistic--1--initial"
+  },
+  "continuation": "resumed",
+  "parent_record_sha256": "606dac82f38eae6e103656ecea4f8c83ee1f9ded975c5f204357c27a3943a5e3",
+  "remaining_elapsed_seconds": 179.99,
+  "runtime_files": {
+    "source.txt": "7d01cf55cb1e23f355a026303a12e8350767dcb7c61a88500bd50289e7497ed8",
+    "experiment.json": "b02dcbbcc35baa81d4b4fa7af89388193f5b73bc17af2be38e19c515fd3e41ad",
+    "TASK.md": "308aaabcebecd10fc90ace4bb352b949d1a25a462e934c07d2ade683ede46e33"
+  },
+  "isolation_status": "bundle_projection_only_not_an_OS_sandbox",
+  "service_configuration": "deferred",
+  "online_calls": 0
+}

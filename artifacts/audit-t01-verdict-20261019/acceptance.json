@@ -1,0 +1,171 @@
+{
+  "task": "T01",
+  "status": "accepted",
+  "date": "2026-10-19",
+  "objective": "Explicit run validation failures outrank unknown evidence across execution, cache, Agent and CLI",
+  "implementation": "DSH primary implementation and one bounded review revision; Codex independent acceptance and localized corrections",
+  "baseline_tests": {
+    "passed": 715,
+    "source": "../architecture-audit-20261019/pytest.xml"
+  },
+  "red_baseline": {
+    "tests": "8",
+    "failures": "7",
+    "errors": "0",
+    "skipped": "0",
+    "time": "6.999"
+  },
+  "first_dsh_independent": {
+    "tests": "11",
+    "failures": "3",
+    "errors": "0",
+    "skipped": "0",
+    "time": "9.763"
+  },
+  "first_dsh_tests": {
+    "tests": "15",
+    "failures": "3",
+    "errors": "0",
+    "skipped": "0",
+    "time": "7.511"
+  },
+  "review_independent": {
+    "tests": "17",
+    "failures": "6",
+    "errors": "0",
+    "skipped": "0",
+    "time": "9.211"
+  },
+  "review_dsh_tests": {
+    "tests": "16",
+    "failures": "1",
+    "errors": "0",
+    "skipped": "0",
+    "time": "6.930"
+  },
+  "targeted": {
+    "tests": "45",
+    "failures": "0",
+    "errors": "0",
+    "skipped": "0",
+    "time": "25.022"
+  },
+  "full": {
+    "tests": "748",
+    "failures": "0",
+    "errors": "0",
+    "skipped": "0",
+    "time": "122.117"
+  },
+  "supervisor_tests_passed": 15,
+  "runtime_tests_passed": 3,
+  "scope_check": {
+    "changed_preexisting_files": [
+      "src/biomodel_agent/agent.py",
+      "src/biomodel_agent/application.py",
+      "src/biomodel_agent/cli.py",
+      "docs/seven-point-status.md"
+    ],
+    "unexpected_changes": [],
+    "original_tests_preserved": true
+  },
+  "negative_regression": {
+    "evidence_type": "scripted_offline_real_solver_regression_not_model_capability",
+    "agent_ref": "fd414934fc0a6800b57415139d5da648b603520605da5de03edc5ed33b34eb50",
+    "run_ref": "2f51852c97e2f039427be632c1359608f6775029691bb92b1a11f94559150fed",
+    "agent_state": "incomplete",
+    "calls": 3,
+    "execution_status": "succeeded",
+    "scientific_status": "failed",
+    "x": [
+      1.0,
+      0.1999999999999993,
+      -0.6000000000000008
+    ],
+    "numeric_checks": [
+      {
+        "code": "finite",
+        "message": "all output values are finite",
+        "severity": "blocking",
+        "status": "pass"
+      },
+      {
+        "code": "nonnegative",
+        "message": "'x' reached -0.6000000000000008 < -1e-09",
+        "severity": "blocking",
+        "status": "fail"
+      },
+      {
+        "code": "conservation",
+        "message": "conservation/mass-balance checking is not implemented; not a pass",
+        "severity": "informational",
+        "status": "not_run"
+      },
+      {
+        "code": "convergence",
+        "message": "solver refinement (rtol/atol / 10): 2.220446049250313e-16 vs threshold 0.001",
+        "severity": "blocking",
+        "status": "pass"
+      }
+    ]
+  },
+  "source_hashes": {
+    "src/biomodel_agent/application.py": "2273357d317ff80c07795881df482b141f1fa0a5965f1c88cae1d40bab0863cd",
+    "src/biomodel_agent/agent.py": "ca7f25acd316ba4d6dce366e936a98ee0ef8b40b4c4260159ee0c3d496a3d1b7",
+    "src/biomodel_agent/cli.py": "158d679bb9932c33ae559b960ae9e66ee658ebe283f0ce39a3d1c8d38acdb821",
+    "tests/test_run_verdict.py": "ab256279f7727f74eb3ca1ac91666a673d8d079663113f4a25648d66631940f2",
+    "tests/test_run_verdict_acceptance.py": "3e5adf2cba6f0ea78fa3a044f1d29d8a828561cf158fc708db9699fb9248030a",
+    "docs/run-verdict.md": "514b8149f826e1388d2f669013a8b6a646901199b88bf2ca747dff842aa239d9",
+    "docs/optimization-backlog.md": "af9283754e8b2a0728d26a028bec0685203b0a1062efd01bde5318fdc729912f",
+    "docs/seven-point-status.md": "f2d3e4382e854a231be77e688aa851108cfa17dffc2e69a27076ce61ffa66f0c",
+    "tasks/audit-t01-verdict.json": "4af13e21015a9bf8a6bac0ec84efa9f122740ee1ae7b65c8999184f9ce1b153f",
+    "tasks/audit-t01-review-fix.json": "b579226f849426818367a8069ab6f87984af3c1949d1820385abcf2c215e334e"
+  },
+  "development_provider_calls": "DSH used the existing authorized USTC development runtime; exact provider usage unavailable",
+  "product_model_evaluation_calls": 0,
+  "c13_c18_materials_sent": false,
+  "new_dependencies": [],
+  "dsh_runs": [
+    {
+      "path": ".workflow/runs/audit-t01-verdict-1792376028580-c083c7f6",
+      "outcome": "sandbox bridge connection closed"
+    },
+    {
+      "path": ".workflow/runs/audit-t01-verdict-1792376087057-cbd3603b",
+      "outcome": "scope pause before writes; storage.py added as read dependency"
+    },
+    {
+      "path": ".workflow/runs/audit-t01-verdict-1792376258456-7357fef8",
+      "outcome": "deadline with files delivered; not accepted"
+    },
+    {
+      "path": ".workflow/runs/audit-t01-review-fix-1792377012723-774f6332",
+      "outcome": "provider stream idle timeout after partial revision; not accepted automatically"
+    }
+  ],
+  "codex_corrections": [
+    "require known mode and finite/convergence in both modes",
+    "all duplicate required checks pass; unresolved blocking checks remain unverified",
+    "strict units_unknown must be explicitly false",
+    "shared effective verdict in CLI output; preserve stored label separately",
+    "fix invalid test import and require real Agent run/finish path; remove unused malformed SBML constants",
+    "promote 17 independent checks to permanent regressions"
+  ],
+  "limitations": [
+    "Deterministic and scripted regression evidence, not improved model capability",
+    "Evidence binding, crash recovery and strict scalar input mismatch remain queued",
+    "No new human semantic review workflow",
+    "Immutable older records are interpreted conservatively, not overwritten"
+  ],
+  "next_task": "T02: strict primitive input consistency",
+  "artifacts": [
+    "before/",
+    "dsh-first-delivery/",
+    "dsh-revised-delivery/",
+    "after/",
+    "changes.patch",
+    "codex-review-fixes.patch",
+    "verified-negative-store/",
+    "verified-negative-result.json"
+  ]
+}

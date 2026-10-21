@@ -1,0 +1,341 @@
+{
+  "cache_key": "7d6ed0b70a45fa754ed0d2d7e933803ee4cd1e0e42f845e0fbd5413e9d2988cf",
+  "cached_from": null,
+  "comparison": {
+    "reason": "no reference result: self-comparison is not a reproduction",
+    "status": "not_run"
+  },
+  "convergence": {
+    "coarse_maxabs": {
+      "M": 5.0
+    },
+    "comparison": {
+      "columns": [
+        "M"
+      ],
+      "max_scaled_error": 4.0123589468699094e-07,
+      "scales": {
+        "M": 5.0
+      },
+      "status": "pass",
+      "threshold": 0.001,
+      "worst": "M[13]"
+    },
+    "declaration": "scales are a numerical-stability scale, not the paper's reference scale",
+    "fine_status": "succeeded",
+    "protocol": "numerical_stability_not_paper_baseline",
+    "requested": {
+      "atol": 1.0000000000000001e-11,
+      "rtol": 1e-08
+    },
+    "scales_source": "coarse_maxabs_per_variable",
+    "status": "pass"
+  },
+  "convergence_ref": "70e1f55da7a1dccd4c9fba9822ee533f41855fe620d3a5eac206e8bc68fb9b61",
+  "environment": {
+    "implementation": "CPython",
+    "machine": "x86_64",
+    "modules": {
+      "__init__.py": "3ebbb4065141012142168ecc70776886d2a452d80c3c3c1b19fc94665136fd5c",
+      "__main__.py": "11e716d1f66f25a0dd6ee566cb9bff3452624a3f47b8e009c3631ab2a9b01630",
+      "agent.py": "76aa935db5dd9118169da66650bf5961ed731247fe403aea98504b8c2ef79975",
+      "agent_tools.py": "d2b42bc44c2cfcb4e80e2d317f582e183a7da128d7b8acae6775a80140975aa3",
+      "application.py": "1da1d5fbab5d7c5281fc55449723c95b335ca144e0cbc57ab2440ff7316490a9",
+      "bundles.py": "e3d710814a0205fc84fd66e5699ed5335a3bbe4d1910fc3c7f688d7ad6a49acd",
+      "cli.py": "d150ca828e5c829ff6f8acb827e196ad907662f654a421b02df6974881d3b8f0",
+      "domain/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "domain/contracts.py": "0c9711fb6500a00cbb4c5be748db77b7b4a8a32a0f54d76d04fc80be424f8366",
+      "domain/serialization.py": "35cd7eac8aa83a8bb7e41e0ea7f568abe34a570d38b8484c017ccf9b37d7e395",
+      "evidence.py": "020c4e0653bdbd9e06734ed060b89984dda013a9e7810ec132b51d5bf794b79f",
+      "expressions.py": "972ce61a74b747af2fcb92893b6c98bf9371408ff9737f68f22fe36e043fc8ea",
+      "fitting.py": "099546d69f8735c6b6357d23e9b4618025fc59f5ac8f655406e52db1325291b1",
+      "hypotheses.py": "22fcc3ecb93e6845b8aa484e396885bf2b56b6eb8d64e47fed7519e717f828b7",
+      "literature_scoring.py": "3e2c20e568de9203dd8e12095627f76046ab6d68b62944e3952dad61a4f70499",
+      "llm.py": "bdeae49bf8045859ec661158186675d1ccf380c19e2bd090947bb925c77a7452",
+      "modeling.py": "69cafa82bffe977ee4a0b1e3b77c29c1bb48fd0e48d58f4644fcd045eb43c44e",
+      "reporting.py": "cbd032b08b2398f71cdeebef9ce466a075d066a9c8d4ac05f64c0388aa3ab506",
+      "simulation.py": "5ce58365e6adb77e801719a519aef488a938654bc50ca34c9dd6c2189e509f18",
+      "source_review.py": "bbf085e42b374bb1270bd697bd15e6fdbee0bd321391bd80ee87aa92dd1ba1bb",
+      "storage.py": "8fdfff97a2477666515664e71e2122eb2a4885d79f16c8fbb1a04735461a3062",
+      "validation.py": "a358aa2ecf7c460f3f263fbf5eb08188068f493f21f4a2a69bb1afe90faebb86"
+    },
+    "modules_sha256": "a655be082c925d26a967a01f5e3fa74cd39676226f7c04b6954281b3e0776110",
+    "packages": {
+      "biomodel-agent": "0.1.0",
+      "libroadrunner": "2.10.0",
+      "libsbml": "absent",
+      "numpy": "2.5.4",
+      "pypdf": "6.20.1",
+      "python-libsbml": "5.21.2",
+      "roadrunner": "absent",
+      "scipy": "1.18.1"
+    },
+    "platform": "Linux-6.6.87.2-microsoft-standard-WSL2-x86_64-with-glibc2.39",
+    "provenance": "content_hash_of_src_biomodel_agent_py (no git metadata available)",
+    "python": "3.12.3",
+    "python_full": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]"
+  },
+  "input_ref": "7d6ed0b70a45fa754ed0d2d7e933803ee4cd1e0e42f845e0fbd5413e9d2988cf",
+  "mode": "strict_reproduction",
+  "numeric_validation": {
+    "checks": [
+      {
+        "code": "finite",
+        "message": "all output values are finite",
+        "severity": "blocking",
+        "status": "pass"
+      },
+      {
+        "code": "nonnegative",
+        "message": "no nonnegative variables requested",
+        "severity": "informational",
+        "status": "not_applicable"
+      },
+      {
+        "code": "conservation",
+        "message": "conservation/mass-balance checking is not implemented; not a pass",
+        "severity": "informational",
+        "status": "not_run"
+      },
+      {
+        "code": "convergence",
+        "message": "solver refinement (rtol/atol / 10): 4.0123589468699094e-07 vs threshold 0.001",
+        "severity": "blocking",
+        "status": "pass"
+      }
+    ]
+  },
+  "replay_of": null,
+  "run_id": "5f412e26-badb-47a6-a077-88e2ef656fb2",
+  "scientific_status": "not_verified",
+  "simulation": {
+    "backend": "libRoadRunner/cvode",
+    "checks": {
+      "checks": [
+        {
+          "code": "finite",
+          "message": "all output values are finite",
+          "severity": "blocking",
+          "status": "pass"
+        }
+      ]
+    },
+    "diagnostics": [
+      "backend=libRoadRunner/cvode",
+      "roadrunner=2.10.0",
+      "rtol=1e-07 atol=1e-10 max_steps=100000"
+    ],
+    "elapsed_s": 0.35084359999927983,
+    "status": "succeeded",
+    "times": [
+      0.0,
+      0.25,
+      0.5,
+      0.75,
+      1.0,
+      1.25,
+      1.5,
+      1.75,
+      2.0,
+      2.25,
+      2.5,
+      2.75,
+      3.0,
+      3.25,
+      3.5,
+      3.75,
+      4.0,
+      4.25,
+      4.5,
+      4.75,
+      5.0,
+      5.25,
+      5.5,
+      5.75,
+      6.0,
+      6.25,
+      6.5,
+      6.75,
+      7.0,
+      7.25,
+      7.5,
+      7.75,
+      8.0
+    ],
+    "values": {
+      "M": [
+        5.0,
+        4.638716986857209,
+        4.303539056831523,
+        3.9925799453055646,
+        3.704089682734869,
+        3.4364447464289527,
+        3.188138923931237,
+        2.957774836580098,
+        2.74405607554858,
+        2.545779906107183,
+        2.3618304990518264,
+        2.191172651205826,
+        2.0328459596570805,
+        1.885959416945068,
+        1.749686396781281,
+        1.6232600020844623,
+        1.5059687491510114,
+        1.397152563672577,
+        1.296199066067815,
+        1.2025401252234442,
+        1.1156486612502767,
+        1.0350356792612323,
+        0.960247517478473,
+        0.8908632941829707,
+        0.8264925391388223,
+        0.7667729961627997,
+        0.7113685844727553,
+        0.6599675073420675,
+        0.6122804974162905,
+        0.5680391888172657,
+        0.5269946068734475,
+        0.4889157669771994,
+        0.45358837468389035
+      ]
+    }
+  },
+  "source_validation": {
+    "claims_review_status": {
+      "0e17132bbf3d2e7ec7b1bac8835cdf7b5f7717df314b3ce8af2dc8e70e3aff17": "unverified",
+      "33a2379a420cea356604e94944acba694e09cdf99bf092b74839c795b252d675": "unverified",
+      "3b3cf8d46cbbdd85aea60b1129a0bf38b12e222de82b841be86dc7f56086041a": "unverified",
+      "cb6f9490b523b45d3141abf28ccfef733e79c0e3815153a4da9da523e065c9ae": "unverified",
+      "dfc47f9579a5abe44dcb4e1670d21d9e9649c4e85d7ce3f81fca61cf847e73b2": "unverified",
+      "e8f28067918af1fbdab976a8b73af5384c7cd15e96157cf4c68046708861bdc6": "unverified",
+      "f7559be1b2586e993316769450366aacf42e28f7bf7c52faf4b16bdc5066952d": "unverified"
+    },
+    "coverage": 0.6666666666666666,
+    "human_review_present": false,
+    "invalid": [],
+    "missing": [
+      "rule:v_f/expression",
+      "rule:v_g/expression"
+    ],
+    "note": "source_checked means the quote is faithful to the source text; it does not establish that the quoted claim supports the equation. Unknown units are not assumed dimensionless, so no math-level pass is claimed.",
+    "required_targets": [
+      "M/initial",
+      "kf/value",
+      "kg/value",
+      "rule:M/expression",
+      "rule:v_f/expression",
+      "rule:v_g/expression"
+    ],
+    "semantic_support": "unknown",
+    "source_review": {
+      "issues": [],
+      "limitations": [
+        "bounded explicit English declaration checks, not arbitrary-language or paper understanding",
+        "author corrections and researcher clarifications are assertions for analysis, not independent verification",
+        "no detected conflict does not establish semantic support"
+      ],
+      "resolutions": [
+        {
+          "evidence": {
+            "end": 1717,
+            "page": 1,
+            "quote": "The legend's 'per hour' annotation for kf is a typographical error. All three figures describe one physical rate: kf = 0.18 per minute = 10.8 per hour = 0.003 per second. kg = 0.12 per minute as printed. Use the per-minute values directly with the minute timetable; total rate kf + kg = 0.30 per minute.",
+            "source_ref": "0b4e9c2bdc0bb4696dfa3b52d891a0f037068c925ad7a2dc7ce85017d3ba19b3",
+            "start": 1414,
+            "unit": "per minute",
+            "value": 0.18
+          },
+          "target": "kf/unit"
+        },
+        {
+          "evidence": {
+            "end": 1717,
+            "page": 1,
+            "quote": "The legend's 'per hour' annotation for kf is a typographical error. All three figures describe one physical rate: kf = 0.18 per minute = 10.8 per hour = 0.003 per second. kg = 0.12 per minute as printed. Use the per-minute values directly with the minute timetable; total rate kf + kg = 0.30 per minute.",
+            "source_ref": "0b4e9c2bdc0bb4696dfa3b52d891a0f037068c925ad7a2dc7ce85017d3ba19b3",
+            "start": 1414,
+            "unit": "per minute",
+            "value": 0.18
+          },
+          "target": "kf/value"
+        },
+        {
+          "evidence": {
+            "end": 1717,
+            "page": 1,
+            "quote": "The legend's 'per hour' annotation for kf is a typographical error. All three figures describe one physical rate: kf = 0.18 per minute = 10.8 per hour = 0.003 per second. kg = 0.12 per minute as printed. Use the per-minute values directly with the minute timetable; total rate kf + kg = 0.30 per minute.",
+            "source_ref": "0b4e9c2bdc0bb4696dfa3b52d891a0f037068c925ad7a2dc7ce85017d3ba19b3",
+            "start": 1414,
+            "unit": "per minute",
+            "value": 0.12
+          },
+          "target": "kg/unit"
+        },
+        {
+          "evidence": {
+            "end": 1717,
+            "page": 1,
+            "quote": "The legend's 'per hour' annotation for kf is a typographical error. All three figures describe one physical rate: kf = 0.18 per minute = 10.8 per hour = 0.003 per second. kg = 0.12 per minute as printed. Use the per-minute values directly with the minute timetable; total rate kf + kg = 0.30 per minute.",
+            "source_ref": "0b4e9c2bdc0bb4696dfa3b52d891a0f037068c925ad7a2dc7ce85017d3ba19b3",
+            "start": 1414,
+            "unit": "per minute",
+            "value": 0.12
+          },
+          "target": "kg/value"
+        }
+      ],
+      "semantic_support": "unknown",
+      "status": "no_explicit_conflict_detected"
+    },
+    "status": "incomplete",
+    "units_status": "unknown",
+    "units_unknown": true,
+    "units_unknown_for": [
+      "parameter 'M'",
+      "parameter 'kf'",
+      "parameter 'kg'"
+    ]
+  },
+  "static_validation": {
+    "can_execute": true,
+    "checks": [
+      {
+        "code": "units_consistency",
+        "message": "libSBML reported unit diagnostics; dimensional correctness is not claimed: In situations where a mathematical expression refers to a compartment, species or parameter, it is necessary to know the units of the object to establish unit consistency. In models where the units of an object have not been declared, libSBML does not yet have the functionality to accurately verify the consistency of the units in mathematical expressions referring to that object. \n The units of the <parameter> 'kf' cannot be fully checked. Unit consistency reported as either no errors or further unit errors related to this object may not be accurate.\n | If the attribute 'units' on a given Parameter object has not been set, then the unit of measurement associated with that parameter's value is undefined.\nReference: L3V2 Section 4.7.3\n The <parameter> with id 'kf' does not have a 'units' attribute.\n | In situations where a mathematical expression refers to a compartment, species or parameter, it is necessary to know the units of the object to establish unit consistency. In models where the units of an object have not been declared, libSBML does not yet have the functionality to accurately verify the consistency of the units in mathematical expressions referring to that object. \n The units of the <parameter> 'kg' cannot be fully checked. Unit consistency reported as either no errors or further unit errors related to this object may not be accurate.\n | If the attribute 'units' on a given Parameter object has not been set, then the unit of measurement associated with that parameter's value is undefined.\nReference: L3V2 Section 4.7.3\n The <parameter> with id 'kg' does not have a 'units' attribute.\n | In situations where a mathematical expression refers to a compartment, species or parameter, it is necessary to know the units of the object to establish unit consistency. In models where the units of an object have not been declared, libSBML does not yet have the functionality to accurately verify the consistency of the units in mathematical expressions referring to that object. \n The units of the <parameter> 'M' cannot be fully checked. Unit consistency reported as either no errors or further unit errors related to this object may not be accurate.\n | If the attribute 'units' on a given Parameter object has not been set, then the unit of measurement associated with that parameter's value is undefined.\nReference: L3V2 Section 4.7.3\n The <parameter> with id 'M' does not have a 'units' attribute.\n | In situations where a mathematical expression refers to a compartment, species or parameter, it is necessary to know the units of the object to establish unit consistency. In models where the units of an object have not been declared, libSBML does not yet have the functionality to accurately verify the consistency of the units in mathematical expressions referring to that object. \n The units of the <parameter> 'v_f' cannot be fully checked. Unit consistency reported as either no errors or further unit errors related to this object may not be accurate.\n | If the attribute 'units' on a given Parameter object has not been set, then the unit of measurement associated with that parameter's value is undefined.\nReference: L3V2 Section 4.7.3\n The <parameter> with id 'v_f' does not have a 'units' attribute.\n | In situations where a mathematical expression refers to a compartment, species or parameter, it is necessary to know the units of the object to establish unit consistency. In models where the units of an object have not been declared, libSBML does not yet have the functionality to accurately verify the consistency of the units in mathematical expressions referring to that object. \n The units of the <parameter> 'v_g' cannot be fully checked. Unit consistency reported as either no errors or further unit errors related to this object may not be accurate.\n | If the attribute 'units' on a given Parameter object has not been set, then the unit of measurement associated with that parameter's value is undefined.\nReference: L3V2 Section 4.7.3\n The <parameter> with id 'v_g' does not have a 'units' attribute.\n | In situations where a mathematical expression contains literal numbers or parameters whose units have not been declared, it is not possible to verify accurately the consistency of the units in the expression. \n The units of the <assignmentRule> <math> expression 'kf * M' cannot be fully checked. Unit consistency reported as either no errors or further unit errors related to this object may not be accurate.\n | In situations where a mathematical expression contains literal numbers or parameters whose units have not been declared, it is not possible to verify accurately the consistency of the units in the expression. \n The units of the <assignmentRule> <math> expression 'kg * M' cannot be fully checked. Unit consistency reported as either no errors or further unit errors related to this object may not be accurate.\n | In situations where a mathematical expression contains literal numbers or parameters whose units have not been declared, it is not possible to verify accurately the consistency of the units in the expression. \n The units of the <rateRule> <math> expression '-(kf + kg) * M' cannot be fully checked. Unit consistency reported as either no errors or further unit errors related to this object may not be accurate.\n",
+        "severity": "warning",
+        "status": "unknown"
+      },
+      {
+        "code": "sbml_parse",
+        "message": "document parsed",
+        "severity": "blocking",
+        "status": "pass"
+      },
+      {
+        "code": "sbml_structure",
+        "message": "no structural errors at or above ERROR",
+        "severity": "blocking",
+        "status": "pass"
+      },
+      {
+        "code": "units_consistency",
+        "message": "libSBML reported unit diagnostics; dimensional correctness is not claimed: In situations where a mathematical expression refers to a compartment, species or parameter, it is necessary to know the units of the object to establish unit consistency. In models where the units of an object have not been declared, libSBML does not yet have the functionality to accurately verify the consistency of the units in mathematical expressions referring to that object. \n The units of the <parameter> 'kf' cannot be fully checked. Unit consistency reported as either no errors or further unit errors related to this object may not be accurate.\n | If the attribute 'units' on a given Parameter object has not been set, then the unit of measurement associated with that parameter's value is undefined.\nReference: L3V2 Section 4.7.3\n The <parameter> with id 'kf' does not have a 'units' attribute.\n | In situations where a mathematical expression refers to a compartment, species or parameter, it is necessary to know the units of the object to establish unit consistency. In models where the units of an object have not been declared, libSBML does not yet have the functionality to accurately verify the consistency of the units in mathematical expressions referring to that object. \n The units of the <parameter> 'kg' cannot be fully checked. Unit consistency reported as either no errors or further unit errors related to this object may not be accurate.\n | If the attribute 'units' on a given Parameter object has not been set, then the unit of measurement associated with that parameter's value is undefined.\nReference: L3V2 Section 4.7.3\n The <parameter> with id 'kg' does not have a 'units' attribute.\n | In situations where a mathematical expression refers to a compartment, species or parameter, it is necessary to know the units of the object to establish unit consistency. In models where the units of an object have not been declared, libSBML does not yet have the functionality to accurately verify the consistency of the units in mathematical expressions referring to that object. \n The units of the <parameter> 'M' cannot be fully checked. Unit consistency reported as either no errors or further unit errors related to this object may not be accurate.\n | If the attribute 'units' on a given Parameter object has not been set, then the unit of measurement associated with that parameter's value is undefined.\nReference: L3V2 Section 4.7.3\n The <parameter> with id 'M' does not have a 'units' attribute.\n | In situations where a mathematical expression refers to a compartment, species or parameter, it is necessary to know the units of the object to establish unit consistency. In models where the units of an object have not been declared, libSBML does not yet have the functionality to accurately verify the consistency of the units in mathematical expressions referring to that object. \n The units of the <parameter> 'v_f' cannot be fully checked. Unit consistency reported as either no errors or further unit errors related to this object may not be accurate.\n | If the attribute 'units' on a given Parameter object has not been set, then the unit of measurement associated with that parameter's value is undefined.\nReference: L3V2 Section 4.7.3\n The <parameter> with id 'v_f' does not have a 'units' attribute.\n | In situations where a mathematical expression refers to a compartment, species or parameter, it is necessary to know the units of the object to establish unit consistency. In models where the units of an object have not been declared, libSBML does not yet have the functionality to accurately verify the consistency of the units in mathematical expressions referring to that object. \n The units of the <parameter> 'v_g' cannot be fully checked. Unit consistency reported as either no errors or further unit errors related to this object may not be accurate.\n | If the attribute 'units' on a given Parameter object has not been set, then the unit of measurement associated with that parameter's value is undefined.\nReference: L3V2 Section 4.7.3\n The <parameter> with id 'v_g' does not have a 'units' attribute.\n | In situations where a mathematical expression contains literal numbers or parameters whose units have not been declared, it is not possible to verify accurately the consistency of the units in the expression. \n The units of the <assignmentRule> <math> expression 'kf * M' cannot be fully checked. Unit consistency reported as either no errors or further unit errors related to this object may not be accurate.\n | In situations where a mathematical expression contains literal numbers or parameters whose units have not been declared, it is not possible to verify accurately the consistency of the units in the expression. \n The units of the <assignmentRule> <math> expression 'kg * M' cannot be fully checked. Unit consistency reported as either no errors or further unit errors related to this object may not be accurate.\n | In situations where a mathematical expression contains literal numbers or parameters whose units have not been declared, it is not possible to verify accurately the consistency of the units in the expression. \n The units of the <rateRule> <math> expression '-(kf + kg) * M' cannot be fully checked. Unit consistency reported as either no errors or further unit errors related to this object may not be accurate.\n",
+        "severity": "warning",
+        "status": "unknown"
+      },
+      {
+        "code": "units_missing",
+        "message": "units not declared for: parameter 'kf', parameter 'kg', parameter 'M', parameter 'v_f', parameter 'v_g' (unknown, not assumed dimensionless)",
+        "severity": "warning",
+        "status": "unknown"
+      },
+      {
+        "code": "artifact_valid",
+        "message": "artifact is a supported ODE/SBML model",
+        "severity": "blocking",
+        "status": "pass"
+      }
+    ]
+  },
+  "status": "succeeded"
+}

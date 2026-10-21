@@ -1,0 +1,18 @@
+{
+  "status": "ready",
+  "parameters": [
+    {"id": "r", "value": 0.8, "unit": "min^-1"},
+    {"id": "K", "value": 2.0, "unit": "dimensionless"}
+  ],
+  "states": [
+    {"id": "X", "initial": 0.2}
+  ],
+  "equations": [
+    {"state": "X", "expression": "r*X*(1-X/K)"}
+  ],
+  "questions": [],
+  "limitations": [
+    "The author clarification explicitly selects the logistic equation and rejects the alternative.",
+    "The unit of r is inferred by dimensional consistency from time in minutes and dimensionless X and K."
+  ]
+}

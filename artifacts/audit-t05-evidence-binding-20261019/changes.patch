@@ -1,0 +1,1006 @@
+--- a/src/biomodel_agent/agent.py
++++ b/src/biomodel_agent/agent.py
+@@ -670,6 +670,7 @@
+             events.append({"type": "tool_result", "call": calls, "tool": action,
+                            "state": result["state"], "problems": list(result["problems"]),
+                            "citation_diagnostics": result.get("citation_diagnostics", []),
++                           "binding_diagnostics": result.get("binding_diagnostics", []),
+                            "checks": result["checks"], "source_review": result.get("source_review"), "artifact_refs":[result.get(k) for k in ("draft_ref","model_ref","hypothesis_ref","source_review_ref")]})
+             if result["state"] == "ready":
+                 artifact = result["artifact"]
+@@ -685,7 +686,8 @@
+                 repairs += 1
+                 messages.append(_user(_json({"tool": action, "ok": False, "state": "invalid",
+                                              "problems": list(result["problems"]),
+-                                             "citation_diagnostics": result.get("citation_diagnostics", [])})))
++                                             "citation_diagnostics": result.get("citation_diagnostics", []),
++                                             "binding_diagnostics": result.get("binding_diagnostics", [])})))
+                 if repairs > max_repairs:
+                     state = "incomplete"
+                     break
+--- a/src/biomodel_agent/agent_tools.py
++++ b/src/biomodel_agent/agent_tools.py
+@@ -4,7 +4,7 @@
+ import re
+ from .domain.contracts import FrozenMap, ModelDraft
+ from .domain.serialization import from_dict, to_dict
+-from . import evidence, modeling
++from . import bindings, evidence, modeling
+ from .source_review import review_sources
+ 
+ NUMBER = re.compile(r'(?<![\w.])[+-]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][+-]?\d+)?(?!\w|\.\d)')
+@@ -32,7 +32,7 @@
+ 
+ 
+ def submit_draft(store,args,source_refs,mode='reproduction',allowed_mechanisms=()):
+-    result = dict(state='invalid',artifact=None,model_ref=None,draft_ref=None,hypothesis_ref=None,checks=[],problems=[],source_review=None,source_review_ref=None,citation_diagnostics=[])
++    result = dict(state='invalid',artifact=None,model_ref=None,draft_ref=None,hypothesis_ref=None,checks=[],problems=[],source_review=None,source_review_ref=None,citation_diagnostics=[],binding_diagnostics=[])
+     try:
+         if mode not in {'reproduction','hypothesis'}:
+             raise ValueError('unknown research mode')
+@@ -41,11 +41,8 @@
+         if args['draft'].get('element_map') or args['draft'].get('hypothesis_refs') or args['draft'].get('parent_ref'):
+             raise ValueError('lineage and evidence refs are assigned by tools')
+         draft = from_dict(ModelDraft,args['draft'])
+-        required = {p.id+'/value':p.value for p in draft.parameters}
+-        required.update({s.id+'/initial':s.initial for s in draft.states})
+-        required.update({'rule:'+r.state+'/expression':'expression' for r in draft.rate_rules})
+-        required.update({'reaction:'+r.id+'/rate':'expression' for r in draft.reactions})
+-        required.update({'derived:'+d.id+'/expression':'expression' for d in draft.derived})
++        required = bindings.draft_targets(draft)
++        names = bindings.draft_symbols(draft)
+         review = review_sources(store, source_refs, required)
+         review_ref = store.put('source_review', review, refs=tuple(source_refs))
+         result.update(source_review=review, source_review_ref=review_ref)
+@@ -64,7 +61,7 @@
+             raise ValueError('evidence must be a list')
+         normalized = []
+         for item in items:
+-            if not isinstance(item,dict) or set(item)-{'target','source_ref','page','start','end','quote','claim_type'}:
++            if not isinstance(item,dict) or set(item)-{'target','source_ref','page','start','end','quote','claim_type','symbol_map'}:
+                 raise ValueError('unknown citation arguments')
+             if item['source_ref'] not in source_refs:
+                 raise ValueError('citation source outside authorized task')
+@@ -111,8 +108,25 @@
+             normalized.append((item, claim_type))
+         if result['problems']:
+             return result
++        for item, _ in normalized:
++            if item['target'] in required:
++                text = evidence._source_page_text(store, item['source_ref'], item['page'])
++                result['binding_diagnostics'].append(bindings.check(
++                    text, item['source_ref'], item['page'], item['start'], item['end'],
++                    item['target'], required[item['target']], names, item.get('symbol_map')))
++        if mode == 'reproduction':
++            bad = [d for d in result['binding_diagnostics'] if d['status'] != 'matched']
++            missing_citations = [k+': citation missing' for k in required if not any(i['target'] == k for i, _ in normalized)]
++            if bad or missing_citations:
++                state = ('awaiting_input' if any(v is None for v in required.values()) else
++                         'invalid' if missing_citations or any(d['status'] == 'mismatch' for d in bad) else 'awaiting_input')
++                result.update(state=state, problems=missing_citations+[d['target']+': binding '+d['status']+': '+d['reason'] for d in bad],
++                              draft_ref=store.put('model_draft', to_dict(draft), refs=(review_ref,)))
++                return result
+         for item,claim_type in normalized:
+-            ref = evidence.add_claim(store,item['source_ref'],item['page'],item['start'],item['end'],item['target'],claim_type)
++            ref = evidence.add_claim(store,item['source_ref'],item['page'],item['start'],item['end'],item['target'],claim_type,
++                                     expected=required.get(item['target']), allowed_symbols=names,
++                                     symbol_map=item.get('symbol_map'))
+             links.setdefault(item['target'],[]).append(ref)
+             quotes.setdefault(item['target'],[]).append(store.get(ref)['payload']['quote'])
+         hypothesis = None
+@@ -134,8 +148,6 @@
+                 q = quotes.get(target,[])
+                 if not q:
+                     citation_problems.append(target+': citation missing')
+-                elif isinstance(value,(int,float)) and not any(any(math.isclose(float(m.group()),value,rel_tol=1e-12,abs_tol=0.) for m in NUMBER.finditer(text)) for text in q):
+-                    citation_problems.append(target+': numeric value not present in cited text')
+         if mode == 'reproduction':
+             for resolution in review['resolutions']:
+                 target, fact = resolution['target'], resolution['evidence']
+@@ -163,7 +175,7 @@
+             return result
+         artifact = modeling.build_model(draft)
+         result.update(state='ready',artifact=artifact,model_ref=store.put('model',to_dict(artifact),refs=(result['draft_ref'],)))
+-        result['checks'].append(dict(code='semantic_support',status='unknown',severity='warning',message='Exact quote existence and numeric match do not prove semantic support.'))
++        result['checks'].append(dict(code='semantic_support',status='unknown',severity='warning',message='Bounded target binding does not establish semantic support, units, or scientific truth.'))
+     except (ValueError,KeyError,TypeError) as exc:
+         result['problems'].append(str(exc))
+     return result
+--- a/src/biomodel_agent/application.py
++++ b/src/biomodel_agent/application.py
+@@ -434,7 +434,8 @@
+         if rule.isAlgebraic():
+             unit_notes.append(f"algebraic rule for {rule.getVariable()!r}")
+             continue
+-        targets.append(f"rule:{rule.getVariable()}/expression")
++        prefix = 'derived:' if rule.isAssignment() else 'rule:'
++        targets.append(f"{prefix}{rule.getVariable()}/expression")
+     for i in range(model.getNumReactions()):
+         targets.append(f"reaction:{model.getReaction(i).getId()}/rate")
+     for i in range(model.getNumCompartments()):
+@@ -447,8 +448,11 @@
+ 
+ 
+ def _source_validation(store, artifact) -> dict:
++    from . import bindings
+     targets, unit_notes = _sbml_targets(artifact.sbml)
+     links = evidence.validate_links(store, dict(artifact.element_map), targets)
++    expected, names = bindings.sbml_targets(artifact.sbml)
++    bound = evidence.validate_bindings(store, dict(artifact.element_map), expected, names)
+     claims_review: dict[str, str] = {}
+     source_refs = []
+     disputed = []
+@@ -478,6 +482,7 @@
+         status in ("source_checked", "accepted_for_analysis") for status in claims_review.values()
+     )
+     return {
++        **bound,
+         "status": links["status"],
+         "required_targets": targets,
+         "coverage": links["coverage"],
+@@ -528,6 +533,9 @@
+     if strict and source_preflight['source_review']['issues']:
+         raise ValueError('Unresolved source conflicts: ' + '; '.join(
+             item['question'] for item in source_preflight['source_review']['issues']))
++    if strict and any(d['status'] != 'matched' for d in source_preflight['binding_diagnostics']):
++        raise ValueError('Unresolved source binding: ' + '; '.join(
++            d['target']+': '+d['reason'] for d in source_preflight['binding_diagnostics'] if d['status'] != 'matched'))
+ 
+     payload = _input_payload(artifact, experiment, observations, solver, reference,
+                              scales, threshold, strict, nonnegative)
+--- /dev/null
++++ b/src/biomodel_agent/bindings.py
+@@ -0,0 +1,318 @@
++"""Bounded, deterministic text-to-target checks, not scientific endorsement.
++
++Only direct declarations and restricted expressions are recognized. Everything
++else remains unknown. No execution, numeric probing, or language model is used.
++"""
++from __future__ import annotations
++
++import ast
++from fractions import Fraction
++import math
++import re
++
++from . import expressions
++
++VERSION = 1
++IDENT = r'[A-Za-z_][A-Za-z0-9_]*'
++NUMBER = r'[+-]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][+-]?\d+)?'
++MAX_TERMS = 128
++MAX_BITS = 4096
++MAX_POWER = 8
++MAX_DEGREE = 64
++
++
++def draft_targets(draft):
++    result = {p.id+'/value': p.value for p in draft.parameters}
++    result.update({s.id+'/initial': s.initial for s in draft.states})
++    result.update({'rule:'+r.state+'/expression': r.expression for r in draft.rate_rules})
++    result.update({'reaction:'+r.id+'/rate': r.rate for r in draft.reactions})
++    result.update({'derived:'+d.id+'/expression': d.expression for d in draft.derived})
++    return result
++
++
++def draft_symbols(draft):
++    return {v.id for group in (draft.states, draft.parameters, draft.derived) for v in group} | {draft.compartment.id, 'time'}
++
++
++def sbml_targets(sbml):
++    """Read expected values from executable SBML, never from claimed bindings."""
++    import libsbml
++    document = libsbml.readSBMLFromString(sbml)
++    model = document.getModel()
++    if model is None:
++        return {}, set()
++    assignments = {r.getVariable() for r in model.getListOfRules() if r.isAssignment()}
++    rates = {r.getVariable() for r in model.getListOfRules() if r.isRate()}
++    result = {}
++    names = {'time'}
++    for sp in model.getListOfSpecies():
++        names.add(sp.getId())
++        result[sp.getId()+'/initial'] = (sp.getInitialAmount() if sp.isSetInitialAmount()
++                                       else sp.getInitialConcentration() if sp.isSetInitialConcentration() else None)
++    for p in model.getListOfParameters():
++        names.add(p.getId())
++        if p.getId() not in assignments:
++            kind = '/initial' if not p.getConstant() or p.getId() in rates else '/value'
++            result[p.getId()+kind] = p.getValue() if p.isSetValue() else None
++    for c in model.getListOfCompartments():
++        names.add(c.getId())
++    for rule in model.getListOfRules():
++        if not rule.isAlgebraic():
++            prefix = 'derived:' if rule.isAssignment() else 'rule:'
++            result[prefix+rule.getVariable()+'/expression'] = libsbml.formulaToL3String(rule.getMath())
++    for reaction in model.getListOfReactions():
++        kinetic = reaction.getKineticLaw()
++        result['reaction:'+reaction.getId()+'/rate'] = (libsbml.formulaToL3String(kinetic.getMath()) if kinetic else None)
++    return result, names
++
++
++def _bounded(poly):
++    poly = {key: value for key, value in poly.items() if value}
++    if len(poly) > MAX_TERMS or any(max(v.numerator.bit_length(), v.denominator.bit_length()) > MAX_BITS for v in poly.values()):
++        raise ValueError('polynomial normalization budget exceeded')
++    return poly
++
++
++def _sum(a, b, sign=1):
++    out = dict(a)
++    for key, value in b.items():
++        out[key] = out.get(key, Fraction(0)) + sign*value
++    return _bounded(out)
++
++
++def _mul(a, b):
++    if len(a)*len(b) > MAX_TERMS*MAX_TERMS:
++        raise ValueError('polynomial multiplication budget exceeded')
++    out = {}
++    for left, av in a.items():
++        for right, bv in b.items():
++            if len(left)+len(right) > MAX_DEGREE:
++                raise ValueError('polynomial degree budget exceeded')
++            key = tuple(sorted(left+right))
++            out[key] = out.get(key, Fraction(0)) + av*bv
++            if len(out) > MAX_TERMS:
++                raise ValueError('polynomial normalization budget exceeded')
++    return _bounded(out)
++
++
++def _polynomial(node):
++    if isinstance(node, ast.Constant):
++        return _bounded({(): node._binding_fraction})
++    if isinstance(node, ast.Name):
++        return {(node.id,): Fraction(1)}
++    if isinstance(node, ast.UnaryOp):
++        p = _polynomial(node.operand)
++        return p if isinstance(node.op, ast.UAdd) else {k: -v for k, v in p.items()}
++    if isinstance(node, ast.BinOp):
++        left, right = _polynomial(node.left), _polynomial(node.right)
++        if isinstance(node.op, ast.Add):
++            return _sum(left, right)
++        if isinstance(node.op, ast.Sub):
++            return _sum(left, right, -1)
++        if isinstance(node.op, ast.Mult):
++            return _mul(left, right)
++        if isinstance(node.op, ast.Div) and set(right) == {()} and right[()]:
++            return _bounded({k: v/right[()] for k, v in left.items()})
++        if isinstance(node.op, ast.Pow) and (not right or set(right) == {()}):
++            power = right.get((), Fraction(0))
++            if power.denominator == 1 and 0 <= power <= MAX_POWER:
++                out = {(): Fraction(1)}
++                for _ in range(int(power)):
++                    out = _mul(out, left)
++                return out
++    raise ValueError('outside bounded polynomial grammar')
++
++
++def _signature(text, names, symbol_map=None):
++    tree = expressions.parse_expression(text, None)
++    candidate = text.replace('^', '**')
++    # Python AST numbers are floats. Preserve the literal's exact decimal value
++    # so rounding/underflow cannot manufacture an equivalence proof.
++    for node in ast.walk(tree):
++        if isinstance(node, ast.Constant):
++            literal = ast.get_source_segment(candidate, node)
++            if not literal or not re.fullmatch(NUMBER, literal) or len(literal) > 256:
++                raise ValueError('unsupported numeric literal')
++            exponent = re.search(r'[eE]([+-]?\d+)$', literal)
++            if exponent and (len(exponent[1]) > 5 or abs(int(exponent[1])) > 1000):
++                raise ValueError('numeric literal budget exceeded')
++            node._binding_fraction = Fraction(literal)
++            node.value = str(node._binding_fraction)
++    mapping = symbol_map or {}
++    source_names = expressions.symbols(text)
++    if len({mapping.get(n, n) for n in source_names}) != len(source_names):
++        raise ValueError('symbol mapping collapses distinct source symbols')
++    class Rename(ast.NodeTransformer):
++        def visit_Call(self, node):
++            node.func.id = 'ln' if node.func.id in ('log', 'ln') else node.func.id
++            node.args = [self.visit(a) for a in node.args]
++            if node.func.id == 'pow' and len(node.args) == 2:
++                return ast.BinOp(left=node.args[0], op=ast.Pow(), right=node.args[1])
++            return node
++
++        def visit_Name(self, node):
++            name = mapping.get(node.id, node.id)
++            if name not in names:
++                raise ValueError('undeclared or unmapped source symbol: '+node.id)
++            return ast.copy_location(ast.Name(id=name, ctx=ast.Load()), node)
++    tree = Rename().visit(tree)
++    try:
++        poly = _polynomial(tree.body)
++        return {'kind': 'polynomial', 'terms': [[list(k), str(v)] for k, v in sorted(poly.items())]}
++    except ValueError:
++        return {'kind': 'syntax', 'tree': ast.dump(tree, include_attributes=False)}
++
++
++def _clauses(text, start, end):
++    """Bounded outside context prevents a selected substring hiding operators."""
++    left, right = max(0, start-256), min(len(text), end+256)
++    chunk = text[left:right]
++    cursor = 0
++    for sep in list(re.finditer(r'[;\n]|\.(?=\s|$)', chunk))+[None]:
++        stop = sep.start() if sep else len(chunk)
++        raw = chunk[cursor:stop]
++        a = left+cursor+len(raw)-len(raw.lstrip())
++        b = left+stop-(len(raw)-len(raw.rstrip()))
++        if a < end and b > start:
++            complete = not ((cursor == 0 and left > 0 and text[left-1] not in ';\n') or
++                            (sep is None and right < len(text)))
++            yield a, b, text[a:b], complete
++        cursor = sep.end() if sep else stop
++
++
++def _declaration(raw):
++    # These labels are context only; arbitrary prose/uncertainty is not stripped.
++    label = re.match(r'(?i)(?:(?:Earlier|Confirmed) table:\s*|Author clarification:\s*|The author confirms\s+)', raw)
++    skip = label.end() if label else 0
++    body = raw[skip:]
++    patterns = [
++        ('initial', rf'(?i:Initial)\s+({IDENT})\s*(?:=|(?i:is))\s*(.+)'),
++        ('initial', rf'({IDENT})\s+(?i:initial)\s*(?:=|(?i:is))?\s*(.+)'),
++        ('initial', rf'({IDENT})\s*\(\s*0\s*\)\s*=\s*(.+)'),
++        ('rule', rf'(?:(?i:Equation)\s+)?d\s*({IDENT})\s*/\s*dt\s*=\s*(.+)'),
++        ('reaction', rf'(?i:Reaction)\s+({IDENT})\s+(?i:consumes)\s+{IDENT}\s+(?i:at constant rate)\s+(.+)'),
++        ('reaction', rf'(?i:Reaction)\s+({IDENT})\s+(?i:rate)\s*=\s*(.+)'),
++        ('derived', rf'(?i:Derived)\s+({IDENT})\s*=\s*(.+)'),
++        ('value', rf'(?:(?i:Parameter|Buffer)\s+)?({IDENT})\s*(?:=|(?i:is)|(?i:value))\s*(.+)'),
++    ]
++    for kind, pattern in patterns:
++        match = re.fullmatch(pattern, body)
++        if match:
++            return {'kind': kind, 'symbol': match[1], 'rhs': match[2].strip(), 'skip': skip}
++    return None
++
++
++def check(text, source_ref, page, start, end, target, expected, names, symbol_map=None):
++    """Build a reproducible binding record from original page offsets.
++
++    A match concerns only the stated target/value/expression in this grammar.
++    It leaves meaning, units, reaction stoichiometry and scientific truth unknown.
++    """
++    out = {'version': VERSION, 'target': target,
++           'source': {'source_ref': source_ref, 'page': page, 'start': start, 'end': end},
++           'status': 'unknown', 'reason': 'unsupported declaration; researcher review required',
++           'symbol_map': {}, 'mapping_evidence': [], 'declarations': [],
++           'proposed': None, 'semantic_support': 'unknown'}
++    def done(status, reason):
++        out.update(status=status, reason=reason)
++        return out
++    if (any(type(v) is not int for v in (page, start, end)) or page < 1 or
++            not 0 <= start < end <= len(text) or end-start > 8000):
++        return done('unknown', 'invalid or over-budget citation range')
++    mapping = {} if symbol_map is None else symbol_map
++    reserved = set(expressions.ALLOWED_FUNCTIONS) | {'time'}
++    if (not isinstance(mapping, dict) or len(mapping) > 32 or
++            any(not isinstance(a, str) or not re.fullmatch(IDENT, a) or a in reserved or
++                not isinstance(b, str) or b not in names or b in reserved for a, b in mapping.items()) or
++            len(set(mapping.values())) != len(mapping)):
++        return done('unknown', 'invalid or over-budget symbol map')
++    out['symbol_map'] = dict(sorted(mapping.items()))
++    clauses = list(_clauses(text, start, end))
++    if len(clauses) > 64:
++        return done('unknown', 'declaration count budget exceeded')
++    for a, b in mapping.items():
++        witnesses = []
++        for lo, hi, raw, complete in clauses:
++            declared = re.fullmatch(rf'(?i:Symbol)\s+{re.escape(a)}\s+(?i:maps to)\s+({IDENT})', raw)
++            if complete and start <= lo and hi <= end and declared and declared[1] != b:
++                return done('unknown', 'conflicting cited symbol mappings for '+a)
++            if complete and start <= lo and hi <= end and re.fullmatch(rf'(?i:Symbol)\s+{re.escape(a)}\s+(?i:maps to)\s+{re.escape(b)}', raw):
++                witnesses.append({'start': lo, 'end': hi, 'source_symbol': a, 'model_symbol': b})
++        if not witnesses:
++            return done('unknown', 'symbol map requires an explicit cited declaration for '+a)
++        out['mapping_evidence'].append(witnesses[0])
++    if target.startswith(('rule:', 'reaction:', 'derived:')):
++        kind, ident = target.split(':', 1)
++        ident = ident.split('/')[0]
++    elif target.endswith(('/initial', '/value')):
++        ident, kind = target.rsplit('/', 1)
++    else:
++        return out
++    numeric = kind in ('initial', 'value')
++    try:
++        if numeric:
++            if isinstance(expected, bool) or not isinstance(expected, (float, int)) or not math.isfinite(expected):
++                return done('unknown', 'target value is unknown')
++            out['proposed'] = {'kind': kind, 'value': str(Fraction(str(expected)))}
++        else:
++            out['proposed'] = _signature(expected, names)
++    except (ValueError, TypeError, RecursionError, OverflowError):
++        return done('unknown', 'target expression is outside the supported grammar or budget')
++    relevant, wrong, matched, uncertain = False, False, False, False
++    for lo, hi, raw, complete in clauses:
++        decl = _declaration(raw)
++        if not decl:
++            if not re.fullmatch(rf'(?i:Symbol)\s+{IDENT}\s+(?i:maps to)\s+{IDENT}', raw):
++                uncertain = True
++            continue
++        lo += decl.pop('skip')
++        decl.update(start=lo, end=hi)
++        out['declarations'].append(decl)
++        if complete and not start <= lo < hi <= end:
++            return done('mismatch', 'citation truncates a declaration; cite the complete statement')
++        if not complete:
++            uncertain = True
++            continue
++        mapped = mapping.get(decl['symbol'], decl['symbol'])
++        # A bare assignment is a supported derived definition only when explicitly
++        # cited as that target; it cannot stand in for a differential equation.
++        dk = 'derived' if kind == 'derived' and decl['kind'] == 'value' else decl['kind']
++        if mapped != ident or dk != kind:
++            wrong = True
++            continue
++        relevant = True
++        rhs = decl['rhs']
++        if numeric:
++            match = re.fullmatch(NUMBER, rhs)
++            if not match:
++                uncertain = True
++                continue
++            try:
++                exponent = re.search(r'[eE]([+-]?\d+)$', rhs)
++                if len(rhs) > 256 or (exponent and (len(exponent[1]) > 5 or abs(int(exponent[1])) > 1000)):
++                    raise ValueError('numeric declaration budget exceeded')
++                equal = Fraction(rhs) == Fraction(str(expected))
++            except (ValueError, OverflowError):
++                uncertain = True
++                continue
++        else:
++            try:
++                actual = _signature(rhs, names, mapping)
++            except (ValueError, TypeError, RecursionError, OverflowError):
++                uncertain = True
++                continue
++            decl['normalized'] = actual
++            equal = actual == out['proposed']
++            if not equal and (actual['kind'] != 'polynomial' or out['proposed']['kind'] != 'polynomial'):
++                uncertain = True
++                continue
++        if not equal:
++            return done('mismatch', 'declared value or expression differs from this target')
++        matched = True
++    if uncertain:
++        return done('unknown', 'unsupported or incomplete declaration context; cite a complete direct declaration')
++    if matched:
++        return done('matched', 'direct declaration matches target within the bounded grammar')
++    if wrong and not relevant:
++        return done('mismatch', 'citation declares another target or declaration type')
++    return out
+--- a/src/biomodel_agent/evidence.py
++++ b/src/biomodel_agent/evidence.py
+@@ -179,6 +179,10 @@
+     claim_type: str = "paper_assumption",
+     relation: str = "reported_as",
+     review_status: str = "unverified",
++    *,
++    expected=None,
++    allowed_symbols=None,
++    symbol_map=None,
+ ) -> str:
+     """Record a claim anchored to an exact slice of stored source text.
+ 
+@@ -226,7 +230,46 @@
+         "relation": relation,
+         "review_status": review_status,
+     }
++    if allowed_symbols is not None:
++        from . import bindings
++        payload['binding'] = bindings.check(text, source_ref, page, start, end,
++                                            statement, expected, set(allowed_symbols), symbol_map)
+     return store.put(CLAIM_KIND, payload, refs=[source_ref])
++
++
++def validate_bindings(store, element_map, expected, allowed_symbols):
++    """Recompute typed support from executable targets and immutable source text.
++
++    Generic legacy claims remain readable, but gain no support from their
++    statement or review flag. Stored binding records are checked, never trusted.
++    """
++    from . import bindings
++    diagnostics = []
++    covered = 0
++    for target, value in expected.items():
++        refs = element_map.get(target, ())
++        refs = refs if isinstance(refs, (tuple, list)) else (refs,)
++        matched = False
++        for ref in refs:
++            if not _claim_exists_quoted(store, ref):
++                diagnostics.append({'target': target, 'claim_ref': ref, 'status': 'unknown', 'reason': 'invalid source citation'})
++                continue
++            claim = store.get(ref)['payload']
++            stored = claim.get('binding')
++            mapping = stored.get('symbol_map') if isinstance(stored, dict) else None
++            text = _source_page_text(store, claim['source_ref'], claim['page'])
++            fresh = bindings.check(text, claim['source_ref'], claim['page'], claim['start'], claim['end'],
++                                   target, value, allowed_symbols, mapping)
++            if stored is not None and stored != fresh:
++                fresh.update(status='mismatch', reason='stored binding differs from executable target or recomputed source binding')
++            diagnostics.append(dict(fresh, claim_ref=ref))
++            matched |= fresh['status'] == 'matched'
++        covered += matched
++    # Every provided claim must be checked, even if another citation matched.
++    status = ('mismatch' if any(d['status'] == 'mismatch' for d in diagnostics) else
++              'unknown' if any(d['status'] == 'unknown' for d in diagnostics) or covered < len(expected) else 'matched')
++    return {'binding_status': status, 'binding_coverage': covered/len(expected) if expected else 0.,
++            'binding_diagnostics': diagnostics}
+ 
+ 
+ def validate_links(
+@@ -325,4 +368,4 @@
+         return False
+     if end > len(text):
+         return False
+-    return text[start:end] == quote+    return text[start:end] == quote
+--- a/src/biomodel_agent/llm.py
++++ b/src/biomodel_agent/llm.py
+@@ -45,7 +45,7 @@
+     "  inspect_source: {source_ref: str, page: int, start: int, end: int} "
+     "(page >= 1; 0 <= start < end; at most 8000 chars per read)\n"
+     "  submit_draft: {draft: {...}, evidence: [{target, source_ref, page, "
+-    "quote: '<exact unique substring copied from source>', claim_type?}], mechanism?: str}\n"
++    "quote: '<exact unique substring copied from source>', claim_type?, symbol_map?}], mechanism?: str}\n"
+     "Use literal exact quotes with sufficient context. The tool computes verified offsets; "
+     "do not calculate character indices yourself. Explicit start/end instead of quote is also supported.\n"
+     "claim_type may be omitted. If used, allowed values are experimental_observation, "
+@@ -70,8 +70,12 @@
+     "Do not supply element_map, hypothesis_refs or parent_ref; lineage is assigned by tools.\n"
+     "Tools are the ONLY capability you have: no shell, no files, no network, "
+     "no code execution, no direct final answers. Each parameter value / state "
+-    "initial you supply must appear literally in a quoted source range you "
+-    "cite in evidence.\n"
++    "initial you supply must be directly assigned to that exact target in the cited text. "
++    "A matching number elsewhere is insufficient. Cite complete declarations and equations, "
++    "including the left side and full expression. A symbol_map maps source symbols to draft "
++    "symbols; each pair needs an explicit cited declaration 'Symbol X maps to x'. "
++    "Bindings outside the deterministic grammar remain unknown and need researcher clarification. "
++    "Matched text binding does not prove scientific or semantic support.\n"
+     "If source facts conflict (including units or alternative formulas), ask_researcher "
+     "with the exact unresolved target before proposing or running a model. A citation "
+     "does not resolve contradictory facts. Choose neither alternative on your own. "
+--- a/src/biomodel_agent/reporting.py
++++ b/src/biomodel_agent/reporting.py
+@@ -52,6 +52,9 @@
+                 message = check['message'].replace('\n',' ')[:700]
+                 lines.append(f'- **{check["status"]}** ({check["severity"]}) `{check["code"]}`: {message}')
+         source = p['source_validation']
++        lines.extend(['', f'Target binding: **{source.get("binding_status", "unknown")}**',
++                      f'Binding coverage: {source.get("binding_coverage", "unknown")}',
++                      'A matched binding verifies only a declaration in the supported grammar. Scientific and semantic support remain separate.'])
+         lines.extend(['','## Evidence and limits','',f'Citation coverage: {source["coverage"]}',f'Semantic support: **{source["semantic_support"]}**',f'Missing targets: `{json.dumps(source["missing"])}`',f'Invalid refs: `{json.dumps(source["invalid"])}`',f'Units: **{source["units_status"]}**','- A matching trajectory does not establish paper fidelity or biological truth.','- Citation presence is not a semantic support proof.','- Unrequested biological invariants are not assumed; conservation checking is not_run.','- passed_structured_reference denotes numerical agreement on the frozen execution benchmark only.'])
+         lines.extend(['','## Environment','',f'Python: `{p["environment"]["python"]}`',f'Source hash: `{p["environment"]["code_sha256"]}`' if 'code_sha256' in p['environment'] else f'Environment: `{json.dumps(p["environment"].get("packages",{}),sort_keys=True)}`'])
+     elif record['kind']=='hypothesis_study':
+--- /dev/null
++++ b/tests/test_bindings.py
+@@ -0,0 +1,79 @@
++"""Adversarial text/identity checks for the bounded binding grammar."""
++import pytest
++
++from biomodel_agent import bindings
++
++
++def checked(text, expected='-k*x', target='rule:x/expression', **kwargs):
++    return bindings.check(text, 'a'*64, 1, 0, len(text), target, expected, {'x', 'k', 'q', 'time'}, **kwargs)
++
++
++@pytest.mark.parametrize('rhs,expected', [
++    ('-x*k', '-k*x'), ('-(k*x)', '-k*x'),
++    ('k*(x+1)', 'k*x+k'), ('x^2', 'x*x'),
++    ('x/2', '0.5*x'), ('1e-2*x', '0.01*x'), ('pow(x, 2)', 'x*x'),
++    ('exp(-k*x)', 'exp(-k*x)'), ('log(x)', 'ln(x)'),
++])
++def test_provable_identities(rhs, expected):
++    result = checked('Equation dx/dt = '+rhs+'.', expected)
++    assert result['status'] == 'matched'
++    assert result['semantic_support'] == 'unknown'
++    for decl in result['declarations']:
++        assert decl['start'] == 0 and decl['end'] == len('Equation dx/dt = '+rhs)
++
++
++@pytest.mark.parametrize('rhs,expected,status', [
++    ('k*x*x', 'k*x', 'mismatch'), ('-k*x', 'k*x', 'mismatch'),
++    ('sin(x)^2+cos(x)^2', '1', 'unknown'),
++    ('x/(x+1)', '1-1/(x+1)', 'unknown'),
++    ('(x+1)^1000000', 'x', 'unknown'),
++    ('1e-400*x', '0', 'mismatch'),
++    ('0.100000000000000005*x', '0.1*x', 'mismatch'),
++    ('exp(0.100000000000000005)', 'exp(0.1)', 'unknown'),
++    ('__import__("os").system("echo forbidden")', '1', 'unknown'),
++])
++def test_unproved_expressions_never_match(rhs, expected, status):
++    assert checked('Equation dx/dt = '+rhs+'.', expected)['status'] == status
++
++
++@pytest.mark.parametrize('text,status', [
++    ('Parameter k = 4e-1.', 'matched'), ('Parameter K = 0.4.', 'mismatch'),
++    ('Initial k = 0.4.', 'mismatch'), ('Parameter k = 0.4/2.', 'unknown'),
++    ('Parameter k = 0.4 or 7.', 'unknown'), ('Maybe Parameter k = 0.4.', 'unknown'),
++    ('Parameter k = 0.4 per second.', 'unknown'), ('Parameter k = 1e999999999.', 'unknown'),
++])
++def test_numeric_scope_and_unknowns(text, status):
++    assert checked(text, .4, 'k/value')['status'] == status
++
++
++@pytest.mark.parametrize('mapping', [[], {'X': 'missing'}, {'X': 'x', 'Y': 'x'},
++    {'time': 'x'}, {'X': 'time'}, {'sin': 'x'}, {'X': True}, {'bad-name': 'x'}])
++def test_invalid_mapping_cannot_assert_support(mapping):
++    result = checked('Equation dx/dt = -k*x.', symbol_map=mapping)
++    assert result['status'] == 'unknown'
++
++
++def test_large_clause_and_expression_inputs_are_bounded():
++    text = ';'.join('Symbol X maps to x' for _ in range(65))
++    assert 'count budget' in checked(text)['reason']
++    assert checked('x'*8001)['status'] == 'unknown'
++    assert checked('Equation dx/dt = '+('+'.join('x' for _ in range(600))))['status'] == 'unknown'
++    nested = 'x'
++    for _ in range(25):
++        nested = '('+nested+')^8'
++    assert checked('Equation dx/dt = '+nested, 'x')['status'] == 'unknown'
++
++
++def test_outside_context_does_not_invent_a_boundary():
++    text = 'a'*300+' Parameter k = 0.4.'
++    start = text.index('Parameter')
++    result = bindings.check(text, 'a'*64, 1, start, len(text), 'k/value', .4, {'k'})
++    assert result['status'] == 'unknown'
++
++
++@pytest.mark.parametrize('text', [
++    'Symbol X maps to x; Symbol X maps to q; Equation dX/dt = -k*X.',
++    'Symbol X maps to x; Equation dX/dt = X-x.',
++])
++def test_ambiguous_mapping_cannot_prove_equality(text):
++    assert checked(text, '0', symbol_map={'X': 'x'})['status'] == 'unknown'
+--- /dev/null
++++ b/tests/test_evidence_binding_acceptance.py
+@@ -0,0 +1,236 @@
++"""Independent T05 controls: target support is not keyword/number presence."""
++from copy import deepcopy
++import json
++import math
++
++import pytest
++
++from biomodel_agent import agent, agent_tools, application, evidence, modeling
++from biomodel_agent.domain.contracts import ExperimentSpec, FrozenMap, ModelDraft, Parameter, RateRule, State
++from biomodel_agent.domain.serialization import to_dict
++from biomodel_agent.storage import ArtifactStore
++from test_invocation_acceptance import Scripted, act
++
++
++def setup_case(tmp_path, *, value=.4, expression='-k*x', parameter_quote='Parameter k = 0.4.',
++               equation_quote='Equation dx/dt = -k*x.', extra='', initial_quote='Initial x = 1.'):
++    store = ArtifactStore(tmp_path / 'store')
++    text = '\n'.join([initial_quote, parameter_quote, equation_quote, extra])
++    source = store.put('source', {'pages': [{'number': 1, 'text': text}]})
++    draft = ModelDraft('decay', (State('x', 1.),), (Parameter('k', value),),
++                       rate_rules=(RateRule('x', expression),))
++    proposal = {'draft': to_dict(draft), 'evidence': [
++        {'target': target, 'source_ref': source, 'page': 1, 'quote': quote}
++        for target, quote in [('x/initial', initial_quote), ('k/value', parameter_quote),
++                              ('rule:x/expression', equation_quote)]]}
++    return store, source, proposal
++
++
++@pytest.mark.parametrize('parameter_quote', ['Buffer pH = 0.4.', 'Parameter q = 0.4.',
++    'Parameter k = 7; buffer pH = 0.4.', 'Initial k = 0.4.'])
++def test_same_number_in_another_target_does_not_support_parameter(tmp_path, parameter_quote):
++    store, source, proposal = setup_case(tmp_path, parameter_quote=parameter_quote)
++    result = agent_tools.submit_draft(store, proposal, [source])
++    assert result['state'] == 'invalid'
++    assert not store.list('model') and not store.list('claim')
++
++
++@pytest.mark.parametrize('quote,expression', [('Equation dx/dt = -k*x*x.', '-k*x'),
++    ('Equation dx/dt = k*x.', '-k*x'), ('Equation dy/dt = -k*x.', '-k*x')])
++def test_formula_or_lhs_mismatch_cannot_become_a_ready_draft(tmp_path, quote, expression):
++    store, source, proposal = setup_case(tmp_path, equation_quote=quote, expression=expression)
++    result = agent_tools.submit_draft(store, proposal, [source])
++    assert result['state'] == 'invalid' and not store.list('model') and not store.list('claim')
++
++
++@pytest.mark.parametrize('page_text,quote', [('Total a + k = 0.4.', 'k = 0.4'),
++    ('Parameter k = 0.4/2.', 'Parameter k = 0.4'),
++    ('Maybe Parameter k = 0.4.', 'Parameter k = 0.4')])
++def test_cropped_quote_cannot_hide_arithmetic_or_uncertainty(tmp_path, page_text, quote):
++    store, source, proposal = setup_case(tmp_path, parameter_quote=page_text)
++    proposal['evidence'][1]['quote'] = quote
++    result = agent_tools.submit_draft(store, proposal, [source])
++    assert result['state'] != 'ready' and result['artifact'] is None
++    assert not store.list('model') and not store.list('claim')
++
++
++def test_formula_prefix_cannot_hide_an_extra_factor(tmp_path):
++    store, source, proposal = setup_case(tmp_path, equation_quote='Equation dx/dt = -k*x*x.')
++    proposal['evidence'][2]['quote'] = 'Equation dx/dt = -k*x'
++    result = agent_tools.submit_draft(store, proposal, [source])
++    assert result['state'] != 'ready' and not store.list('model')
++
++
++def test_unsupported_wording_stays_unknown_and_requires_clarification(tmp_path):
++    store, source, proposal = setup_case(tmp_path, equation_quote='The response relaxes according to the displayed figure.')
++    result = agent_tools.submit_draft(store, proposal, [source])
++    assert result['state'] == 'awaiting_input' and not store.list('model')
++    assert any(d.get('status') == 'unknown' for d in result['binding_diagnostics'])
++
++
++def test_valid_direct_bindings_preserve_source_positions_without_semantic_promotion(tmp_path):
++    store, source, proposal = setup_case(tmp_path)
++    result = agent_tools.submit_draft(store, proposal, [source])
++    assert result['state'] == 'ready'
++    for ref in store.list('claim'):
++        claim = store.get(ref)['payload']
++        binding = claim['binding']
++        assert binding['version'] == 1 and binding['status'] == 'matched'
++        assert binding['target'] == claim['statement']
++        assert binding['source'] == {'source_ref': source, 'page': 1, 'start': claim['start'], 'end': claim['end']}
++        assert claim['review_status'] == 'unverified'
++    run = store.get(application.run_reproduction(store, result['artifact'], ExperimentSpec((0., 1.)), strict=True))['payload']
++    assert run['source_validation']['binding_status'] == 'matched'
++    assert run['source_validation']['semantic_support'] == 'unknown' and run['scientific_status'] == 'not_verified'
++    assert run['simulation']['values']['x'][-1] == pytest.approx(math.exp(-.4), abs=1e-6)
++
++
++def test_explicit_symbol_mapping_is_checked_against_cited_declarations(tmp_path):
++    quote = 'Symbol X maps to x; Symbol a maps to k; Equation dX/dt = -a*X.'
++    store, source, proposal = setup_case(tmp_path, equation_quote=quote)
++    proposal['evidence'][2]['symbol_map'] = {'X': 'x', 'a': 'k'}
++    result = agent_tools.submit_draft(store, proposal, [source])
++    assert result['state'] == 'ready'
++    claim = next(store.get(r)['payload'] for r in store.list('claim') if store.get(r)['payload']['statement'].startswith('rule:'))
++    assert claim['binding']['symbol_map'] == {'X': 'x', 'a': 'k'}
++    assert len(claim['binding']['mapping_evidence']) == 2
++
++
++def test_asserted_mapping_without_source_witness_is_not_trusted(tmp_path):
++    store, source, proposal = setup_case(tmp_path, equation_quote='Equation dX/dt = -a*X.')
++    proposal['evidence'][2]['symbol_map'] = {'X': 'x', 'a': 'k'}
++    result = agent_tools.submit_draft(store, proposal, [source])
++    assert result['state'] == 'awaiting_input' and not store.list('model') and not store.list('claim')
++
++
++def test_manually_built_model_cannot_bypass_wrong_binding_or_populate_cache(tmp_path):
++    store, source, proposal = setup_case(tmp_path, parameter_quote='Buffer pH = 0.4.')
++    text = store.get(source)['payload']['pages'][0]['text']
++    links = {}
++    for item in proposal['evidence']:
++        start = text.index(item['quote'])
++        links[item['target']] = (evidence.add_claim(store, source, 1, start, start+len(item['quote']), item['target']),)
++    from dataclasses import replace
++    from biomodel_agent.domain.serialization import from_dict
++    draft = replace(from_dict(ModelDraft, proposal['draft']), element_map=FrozenMap(links))
++    with pytest.raises(ValueError, match='binding'):
++        application.run_reproduction(store, modeling.build_model(draft), ExperimentSpec((0., 1.)), strict=True)
++    assert not store.list('run') and not store.list('simulation_input')
++
++
++def test_targeted_feedback_repairs_formula_within_original_budget(tmp_path):
++    store, source, good = setup_case(tmp_path)
++    bad = deepcopy(good)
++    bad['draft']['rate_rules'][0]['expression'] = '-k*x*x'
++    provider = Scripted([{'action': 'submit_draft', 'args': bad},
++                         {'action': 'submit_draft', 'args': good}, act('run'), act('finish')])
++    root = agent.run_agent(store, provider, [source], ExperimentSpec((0., 1.)), max_repairs=1)
++    result = store.get(root)['payload']
++    assert result['state'] == 'completed' and result['repair_count'] == 1 and result['call_count'] == 4
++    feedback = json.loads(provider.calls[1][-1]['content'])
++    diagnostic = next(d for d in feedback['binding_diagnostics'] if d['target'] == 'rule:x/expression')
++    assert diagnostic['status'] == 'mismatch' and diagnostic['source']['source_ref'] == source
++    run = store.get(result['run_ref'])['payload']
++    assert run['simulation']['values']['x'][-1] == pytest.approx(math.exp(-.4), abs=1e-6)
++    assert run['source_validation']['binding_status'] == 'matched' and run['scientific_status'] == 'not_verified'
++    from biomodel_agent import bundles
++    manifest = bundles.export_bundle(store, root, tmp_path/'bundle')
++    reopened = ArtifactStore(tmp_path/'bundle')
++    assert source in manifest['objects_and_blobs']
++    for ref in store.list('claim'):
++        assert reopened.get(ref) == store.get(ref)
++
++
++def test_unknown_binding_pauses_and_researcher_formula_restores_execution(tmp_path):
++    from test_agent_resume import Scripted as Flexible
++    store, source, proposal = setup_case(tmp_path, equation_quote='The response relaxes according to the displayed figure.')
++    parent = agent.run_agent(store, Flexible([{'action': 'submit_draft', 'args': proposal}]), [source], ExperimentSpec((0., 1.)))
++    assert store.get(parent)['payload']['state'] == 'awaiting_input' and not store.list('claim')
++    def clarified(messages):
++        info = json.loads(messages[-1]['content'])
++        fixed = deepcopy(proposal)
++        fixed['evidence'][2].update(source_ref=info['source_ref'], quote='Equation dx/dt = -k*x.')
++        return {'action': 'submit_draft', 'args': fixed}
++    result = store.get(agent.resume_agent(store, Flexible([clarified, act('run'), act('finish')]), parent,
++                                         'Equation dx/dt = -k*x.', respondent='Researcher A'))['payload']
++    assert result['state'] == 'completed' and result['call_count'] == 4
++    formula = next(store.get(r)['payload'] for r in store.list('claim') if store.get(r)['payload']['statement'].startswith('rule:'))
++    assert formula['claim_type'] == 'human_convention' and formula['binding']['status'] == 'matched'
++    assert store.get(result['run_ref'])['payload']['scientific_status'] == 'not_verified'
++
++
++@pytest.mark.parametrize('defect', ['actual_value_changed', 'wrong_target_reuse', 'unsupported_binding_version', 'asserted_status'])
++def test_stored_binding_is_not_authority_over_source_or_executable_model(tmp_path, defect):
++    from dataclasses import replace
++    from biomodel_agent.domain.serialization import from_dict
++    store, source, proposal = setup_case(tmp_path)
++    result = agent_tools.submit_draft(store, proposal, [source])
++    draft = from_dict(ModelDraft, proposal['draft'])
++    links = dict(result['artifact'].element_map)
++    if defect == 'actual_value_changed':
++        draft = replace(draft, parameters=(Parameter('k', .6),))
++    elif defect == 'wrong_target_reuse':
++        links['k/value'] = links['x/initial']
++    else:
++        ref = links['k/value'][0]
++        claim = deepcopy(store.get(ref)['payload'])
++        claim['binding']['version' if defect == 'unsupported_binding_version' else 'reason'] = 999 if defect == 'unsupported_binding_version' else 'approved by caller'
++        links['k/value'] = (store.put('claim', claim, refs=(source,)),)
++    artifact = modeling.build_model(replace(draft, element_map=FrozenMap(links)))
++    with pytest.raises(ValueError, match='binding'):
++        application.run_reproduction(store, artifact, ExperimentSpec((0., 1.)), strict=True)
++    assert not store.list('run') and not store.list('simulation_input')
++
++
++def test_binding_gate_runs_before_cache_lookup_even_with_prior_numeric_result(tmp_path, monkeypatch):
++    from dataclasses import replace
++    from biomodel_agent.domain.serialization import from_dict
++    store, source, proposal = setup_case(tmp_path, parameter_quote='Buffer pH = 0.4.')
++    text = evidence._source_page_text(store, source, 1)
++    links = {}
++    for item in proposal['evidence']:
++        start = text.index(item['quote'])
++        links[item['target']] = (evidence.add_claim(store, source, 1, start, start+len(item['quote']), item['target']),)
++    artifact = modeling.build_model(replace(from_dict(ModelDraft, proposal['draft']), element_map=FrozenMap(links)))
++    first = store.get(application.run_reproduction(store, artifact, ExperimentSpec((0., 1.))))['payload']
++    assert first['source_validation']['binding_status'] == 'mismatch'
++    assert first['scientific_status'] == 'not_verified'
++    old_inputs = store.list('simulation_input')
++    list_objects = store.list
++    def no_cache(kind=None):
++        assert kind != 'run', 'cache inspected before checking typed source binding'
++        return list_objects(kind)
++    monkeypatch.setattr(store, 'list', no_cache)
++    with pytest.raises(ValueError, match='binding'):
++        application.run_reproduction(store, artifact, ExperimentSpec((0., 1.)), strict=True)
++    assert store.list('simulation_input') == old_inputs
++
++
++def test_recovery_adopts_bound_claims_without_creating_claims_or_repeating_solver(tmp_path, monkeypatch):
++    from test_recovery_acceptance import post_result_crash
++    store, source, proposal = setup_case(tmp_path)
++    _, execution = post_result_crash(store, source, proposal, monkeypatch)
++    claims = store.list('claim')
++    run_refs = store.list('run')
++    monkeypatch.setattr(application, 'run_reproduction', lambda *a, **k: pytest.fail('solver repeated'))
++    monkeypatch.setattr(agent_tools, 'submit_draft', lambda *a, **k: pytest.fail('claim submission repeated'))
++    result = store.get(agent.recover_agent(store, Scripted([act('finish')]), execution))['payload']
++    assert result['state'] == 'completed' and store.list('claim') == claims and store.list('run') == run_refs
++    assert store.get(result['run_ref'])['payload']['source_validation']['binding_status'] == 'matched'
++
++
++@pytest.mark.parametrize('expression', ['-pow(x,2)*k', '-k*x'])
++def test_actual_sbml_binding_includes_derived_assignments_and_normalized_formulas(tmp_path, expression):
++    from biomodel_agent.domain.contracts import Derived
++    from biomodel_agent import reporting
++    store, source, proposal = setup_case(tmp_path, expression=expression, equation_quote='Equation dx/dt = '+expression+'.',
++                                         extra='Derived y = 2*x.')
++    proposal['draft']['derived'] = [to_dict(Derived('y', 'x+x'))]
++    proposal['evidence'].append({'target': 'derived:y/expression', 'source_ref': source, 'page': 1, 'quote': 'Derived y = 2*x.'})
++    result = agent_tools.submit_draft(store, proposal, [source])
++    assert result['state'] == 'ready'
++    ref = application.run_reproduction(store, result['artifact'], ExperimentSpec((0., 1.)), strict=True)
++    facts = store.get(ref)['payload']['source_validation']
++    assert facts['binding_status'] == 'matched' and facts['binding_coverage'] == 1.
++    assert 'derived:y/expression' in facts['required_targets']
++    assert 'Target binding: **matched**' in reporting.render_report(store, ref)
+--- /dev/null
++++ b/docs/evidence-binding.md
+@@ -0,0 +1,51 @@
++# T05：结构化证据目标绑定
++
++T05 修复了“引文中存在同一个数值，却属于其他目标”和“公式引文与模型表达式不同仍被接受”的缺口。新增有界的确定性检查；不改变单 Agent、SBML 权威执行载荷和不可变来源记录。
++
++## 支持范围
++
++参数、初值、ODE 右侧、反应速率和派生赋值分别建立绑定。例如 `Parameter k = 0.4` 只能支持 `k/value`，`Initial k = 0.4` 不支持参数值；`Equation dx/dt = -k*x*x` 不支持 `rule:x/expression = -k*x`。
++
++首版识别直接声明，包括 `Initial x = 1`、`x initial 1`、`x(0) = 1`、`Parameter k = 0.4`、`k value 0.4`、`dx/dt = -k*x`、`Derived y = 2*x` 和具名反应速率。反应绑定只检查速率目标和表达式，不验证化学计量或生物学解释。
++
++数字按原始十进制字面量精确比较；公式复用受限 AST 解析器，以有界多项式规范化证明简单等价，例如 `-x*k` 与 `-k*x`、`k*(x+1)` 与 `k*x+k`。不会用数值采样证明公式等价。相同的受支持函数语法可以匹配；无法证明的一般恒等式保留 unknown。
++
++可选 `symbol_map` 的方向为“来源符号 → 草稿符号”。每一项都需要同一引文内的显式声明，例如：
++
++```text
++Symbol X maps to x; Symbol a maps to k; Equation dX/dt = -a*X.
++```
++
++仅在请求中填写 `{"X":"x","a":"k"}` 不构成证据。重复目标、冲突映射、保留符号和合并不同来源符号均不能制造匹配。映射文本本身也不是研究者批准或独立事实核验。
++
++## 记录和执行边界
++
++新增 claim 内嵌 `binding.version = 1`，保存目标、规范化拟议值/表达式、解析出的声明类型/符号/右侧、原文偏移、映射见证、状态和原因。原始 source/page/start/end 与 quote 保留。绑定状态与 `review_status` 独立，工具不自动升级人工审核状态。
++
++| 结果 | Agent 行为 |
++|---|---|
++| matched | 所有必需目标均满足时允许继续静态校验 |
++| mismatch | 返回具体目标与原文位置，在原修复预算内要求模型修正 |
++| unknown | 暂停并请求澄清；不会将不支持的语法当成匹配 |
++
++草稿缺少数值和来源冲突仍优先走原有追问流程。引文歧义仍返回原有限位置候选。必需绑定预检失败时不创建部分 claim 或模型。研究者补充的公式通过原暂停恢复流程进入独立的归属来源，claim 类型仍为 human_convention。
++
++执行入口从实际 SBML 重新读取参数、初值和公式，重新解析真实来源并比较保存的绑定；严格模式在写 simulation_input、查询缓存或调用求解器之前拒绝不匹配或未知的已提供必需证据。手工拼装模型、跨目标复用绑定、修改状态或版本均不能绕过。
++
++旧的通用 claim 仍可读取，普通 `validate_links` 仍只报告引文覆盖。进入类型化执行检查时会重新计算其支持关系。无引文的底层数值诊断保持原有行为，缺失的绑定覆盖保持 unknown，不能因此获得论文复现通过。新绑定在导出包中随 claim 保留，T03b 结果认领不重复创建 claim 或求解。
++
++## 预算与限制
++
++每条引文最多 8000 字符，前后各最多检查 256 字符的声明上下文；最多 64 段声明、32 个映射。窗口截断了声明边界时保留 unknown，不能仅靠截短引文隐藏前后运算。公式仍受现有 4096 字符/512 AST 节点限制；规范化最多 128 项、64 次总次数、单次整数幂 8、系数 4096 位。数值字面量限长，避免巨大指数和嵌套幂造成无界展开。
++
++这是直接文本声明的有界检查。复杂自然语言、一般公式变换、单位换算、中文/LaTeX 公式、跨页解释和图像公式尚未支持；遇到这些情况可能需要人工澄清。声明之外的否定、限定及跨句语义不构成已验证范围。
++
++**matched 不会把 semantic_support 从 unknown 升级，也不证明单位正确、原文真实、模型忠实于整篇论文或生物学结论成立。** 科学运行仍单独记录数值验证和 scientific_status。
++
++## 实测与留档
++
++原 16 个负例/正控制在修改前全部失败；实现后通过。首轮完整回归 942 项通过；扩展检查 108 项通过，包含通用旧 claim 的兼容验证。最终完整回归 **990 项通过**，耗时 184.86 秒；新增 64 例开发回归，原有测试文件保持不变。源码哈希、原始日志及补丁见 [T05 验收记录](../artifacts/audit-t05-evidence-binding-20261019/acceptance.json)。
++
++[实际科学工具证据](../artifacts/audit-t05-evidence-binding-20261019/scientific-results.json)包含公式修复后求解、未知公式澄清后恢复、手工错绑拦截、导出一致性和中断后的结果认领。决策由脚本提供，ODE 使用实际本地工具计算；不计作新的真实模型能力成绩，也不称为独立留出集。未调用外部模型、读取独立评测材料、安装依赖或重试 c13/c18 外发。
++
++后续 T06 依赖此位置契约接入成熟 PDF 解析结果。应先冻结解析输出格式和失败案例，再做薄适配、版本/页块到原文位置的映射和回归，避免自行重建一套 PDF 引擎。
+--- a/docs/optimization-backlog.md
++++ b/docs/optimization-backlog.md
+@@ -1,6 +1,6 @@
+ # 架构审计后的优化任务队列
+ 
+-更新：2026-10-19。用户授权 Codex 安排任务、监督 DSH 实现；Codex 独立审查、运行验证并决定验收。一次只派发一项，验收后更新本表，不以 DSH 回复“完成”代替验收。
++更新：2026-10-19。默认由 Codex 安排任务、监督 DSH 实现并独立验收；DSH 超时后，T03b 经用户授权由 Codex 接手，T04/T05 延续用户要求的 Codex 独立实现方式。一次推进一项，验收后更新本表，不以执行方回复“完成”代替验收。
+ 
+ 审计原始证据已从临时目录归档到 [architecture-audit-20261019](../artifacts/architecture-audit-20261019/audit.md)。基线完整 Python 回归 715 项通过，同时存在下列已复现问题；测试数量不代表真实模型科研能力。
+ 
+@@ -11,15 +11,15 @@
+ | T03a | 工具调用与调用预算缺少一致的持久化边界 | **已验收**：[结果与限制](invocation-journal.md) | 版本化预留/返回/错误/中断、平坦引用及继承计数；定向233通过，完整849通过；尚无自动恢复 |
+ | T03b | 受控中断恢复、结果认领、执行所有者与重试分类 | **已验收**：[结果与限制](controlled-recovery.md) | 只读诊断、冻结初态/源码版本、返回值认领、进程所有者与恢复收据；定向113通过，完整895通过；未知外部/部分计算结果及异常路径保守阻断 |
+ | T04 | 旧 hypothesis / study-run / Agent 研究入口不同，预测不受统一期限控制 | **已验收**：[结果与限制](study-execution-deadline.md) | Codex独立实现；相同冻结计划/裁决、科学总期限、受限预测与v1兼容；首轮111、扩展31、完整926通过，T03b超时结果认领保留 |
+-| T05 | 引文中的数值可错绑目标，公式可不对应草稿 | **下一项** | T01；新增结构化证据记录，先覆盖直接赋值、简单公式和符号映射；未知语法待审核 |
+-| T06 | PDF 只有 pypdf 逐页文本，尚未接入成熟解析结果 | 待实施 | T05 位置契约；薄适配成熟解析输出，保留原 PDF、版本和页/块定位，失败不伪造内容 |
++| T05 | 引文中的数值可错绑目标，公式可不对应草稿 | **已验收**：[结果与限制](evidence-binding.md) | Codex独立实现；版本化目标/数值/表达式/原文位置记录、显式映射见证、实际SBML重检；基线16失败，扩展108通过，完整990通过；语义支持仍unknown |
++| T06 | PDF 只有 pypdf 逐页文本，尚未接入成熟解析结果 | **下一项** | T05 位置契约；薄适配成熟解析输出，保留原 PDF、版本和页/块定位，失败不伪造内容 |
+ | T07 | 检索目前只有待独立审核的合成开发对照 | 待材料审核 / 实施 | 标注可先准备，端到端依赖 T05/T06；按论文划分材料，评价覆盖、错引、干扰、上下文与耗时，实测决定 embedding |
+ | T08 | 缺同底层模型、近预算的真实 Agent 公平评价 | 待协议与领域审核 | T01 稳定后；分报完成、缺口、追问、无依据执行、过度阻断、恢复、调用/耗时/人工介入；已见材料仅作开发回归 |
+ | T09 | Memory 候选审核、Skill 科研流程、失效传播和规模性能 | 待真实任务证据 | T05/T08；候选不自动成为事实，技能有案例/失败条件，以消融检验收益，测量后优化索引 |
+ 
+ 保留单 Agent、模块化单体、SBML 权威执行载荷、不可变产物及冻结研究协议。暂缓多 Agent、通用 PDE、开放机制搜索及没有规模测量支撑的基础设施迁移。
+ 
+-每项步骤：保存基线和最小失败证据 → Codex 写有限文件范围任务卡 → DSH 实现 → Codex 审查源码差异与科学含义 → 定向与必要回归 → 保存实际结果和限制 → 更新任务状态。任务卡与监督程序不向 DSH 开放修改。
++每项步骤：保存基线和最小失败证据 → Codex 写有限文件范围任务卡 → 按用户当前授权的分工实现 → 审查源码差异与科学含义 → 定向与必要回归 → 保存实际结果和限制 → 更新任务状态。委派 DSH 时，任务卡与监督程序不向 DSH 开放修改。
+ 
+ T01 已归档任务卡：[初次实现](../tasks/audit-t01-verdict.json)、[一次审查修订](../tasks/audit-t01-review-fix.json)。DSH 负责主体实现，Codex 独立验收并修正已定位边界；DSH 的时间预算终止和服务超时均保留，没有将其回复或终态视作验收。详情见上述结果记录。
+ 
+@@ -31,7 +31,9 @@
+ 
+ T04按用户要求由Codex独立实现，[执行计划](../artifacts/audit-t04-study-execution-20261019/execution-plan.md)与[实际产物](../artifacts/audit-t04-study-execution-20261019/scientific-results.json)已归档。旧hypothesis命令走共用冻结计划层；拟合、交叉检查与预测消耗同一科学总期限；计算失败不能成为有效负结论，真实负结果仍可完成。新v2计划显式冻结总预算，旧v1计划精确兼容并披露执行默认预算；超时结果恢复不重算。
+ 
+-下一项T05先冻结“引文中存在相同数值但目标错误”“公式文本与草稿不对应”的最小负例，以及正确直接赋值/公式的正控制；建立带目标、声明类型、数值/表达式与原文位置的结构化支持关系。先覆盖可验证的直接赋值、简单表达式和显式符号映射，无法确认的语法保留unknown并交由审核，不把检索相关或数值出现等同于证据支持。
++T05已归档[执行计划](../artifacts/audit-t05-evidence-binding-20261019/execution-plan.md)、[验收及源码差异](../artifacts/audit-t05-evidence-binding-20261019/acceptance.json)与[实际科学工具产物](../artifacts/audit-t05-evidence-binding-20261019/scientific-results.json)。新增64例开发回归，原有测试未修改；引文预检和绑定预检分开，已提供的必需证据在严格执行前从实际SBML和原文重新校验。错误返回目标与位置供修复，未知语法暂停；公式修复/澄清后实际求解、导出与T03b认领均已覆盖，不把matched提升为语义或生物学支持。
++
++下一项T06先冻结成熟解析结果的输入契约与代表性失败案例，再做薄适配：保留原PDF、解析器名称/版本、页块和原文位置映射；将正文、表格、公式缺失与扫描页区分呈现。对正常结果、缺页/错位、扫描页和解析失败建立回归，不静默补写公式或捏造可引用文本；不自行重建PDF解析引擎。
+ 
+ 任务不涉及 c13/c18 材料、独立评测材料、密钥或外部模型评价。此前四次 USTC 外发审批拒绝仍有效，不重试或改道。
+ 
+--- a/docs/seven-point-status.md
++++ b/docs/seven-point-status.md
+@@ -7,7 +7,7 @@
+ | 架构 | 单个逻辑 Agent、模块化单体、受控计算进程，LLM 不决定验证是否通过 | 多 Agent 仍是待验证选项。应先用相同底层模型、相近预算做质量/成本对照，再决定是否增加角色 |
+ | Memory | 项目/模型/来源范围的持久记忆，更正/撤回，任务快照与恢复；本轮新增有界工作上下文、原历史留存和实际发送审计 | 尚无自动生成并审核记忆候选的流程；大规模索引、跨副本撤回同步和真实长任务行为评测未完成 |
+ | RAG | 授权材料内的关键词检索、精确原文偏移、确定性排序与扫描/输出预算；新增可选片段排序、冻结方法与18例合成开发对照 | 开发标注待独立审核；尚无语义检索/重排、多模态公式或开放文献搜索，长陈述边界与词汇差异仍有限 |
+-| Tool Use | 材料读取/检索、记忆召回、技能读取、草稿/引用校验、模拟，以及冻结的训练拟合/留出比较 | 拟合仍限已验证的 profile；更多工具应由真实案例需求驱动，不开放任意代码来绕过科学契约 |
++| Tool Use | 材料读取/检索、记忆召回、技能读取、草稿/引用校验、有界目标/数值/公式绑定、模拟，以及冻结的训练拟合/留出比较 | 绑定不能证明语义支持；复杂语言/单位换算/图像公式仍unknown，成熟PDF解析适配待T06；拟合仍限已验证的profile |
+ | 工作流 | 追问、归属回复、暂停/恢复、版本与预算冻结、一次研究执行、持久调用记录、受控故障恢复/结果认领及本地所有者；统一研究入口与科学总期限 | 任意崩溃点自动恢复、跨分支全局费用/执行限额、较复杂的研究修改与失效传播仍有限；科学工具总期限不包含此前LLM讨论或研究者等待 |
+ | Skill | 固定版本的 ODE 复现、澄清复核、受约束研究指引；目录随任务模式冻结，不改变权限或科学判据 | 仍为少量内置流程；可增加有独立科学案例验收的技能，不急于通用插件市场 |
+ | Evaluation | 完整数值/故障回归、解析解、研究恢复与原检查点演练；本轮新增上下文保留/字符量消融和错误负控制 | 尚缺专家审核的未见科研任务、相同底层模型的通用工具基线和真实模块消融。脚本动作不能替代这些证据 |
+@@ -18,4 +18,4 @@
+ 
+ 此前四次 c13/c18 USTC 在线回归仍待明确的材料外发授权，未用新的工具改道重试。当前离线开发没有更新原冻结版模型成绩或把已见材料当作新留出集。
+ 
+-2026-10-19 架构复审发现验证失败聚合、证据目标绑定及异常恢复缺口，已保存[审计后的优化任务队列](optimization-backlog.md)。按单项目标推进；[T01 运行裁决](run-verdict.md)、[T02 输入契约](strict-numeric-contracts.md)、[T03a 调用记录](invocation-journal.md)、[T03b受控恢复](controlled-recovery.md)及[T04统一研究入口与科学总期限](study-execution-deadline.md)已验收。T03b在DSH超时后经用户授权改由Codex实施；T04按用户要求由Codex独立完成，完整回归926项通过，三个入口同一计划的正例/有效负例与超时认领均留档。下一项为T05结构化证据目标绑定；仍不承诺任意中断自动恢复，这些结果不表示真实模型科研能力提升。
++2026-10-19 架构复审发现验证失败聚合、证据目标绑定及异常恢复缺口，已保存[审计后的优化任务队列](optimization-backlog.md)。按单项目标推进；[T01 运行裁决](run-verdict.md)、[T02 输入契约](strict-numeric-contracts.md)、[T03a 调用记录](invocation-journal.md)、[T03b受控恢复](controlled-recovery.md)、[T04统一研究入口与科学总期限](study-execution-deadline.md)及[T05结构化证据目标绑定](evidence-binding.md)已验收。T03b在DSH超时后经用户授权改由Codex实施；T04/T05延续用户要求的Codex独立实现。T05完整回归990项通过，原有测试保留；目标错配拦截、公式修复/澄清后真实求解、导出和中断认领均留档，semantic_support仍unknown。下一项为T06成熟PDF解析适配；仍不承诺任意中断自动恢复，这些结果不表示真实模型科研能力提升。

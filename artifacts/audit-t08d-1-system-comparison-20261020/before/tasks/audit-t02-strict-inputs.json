@@ -1,0 +1,13 @@
+{
+  "schema_version": "1",
+  "id": "audit-t02-strict-inputs",
+  "objective": "统一Python构造器与JSON入口的严格数值类型边界，同时保留异常计算输出的诊断能力。",
+  "context": "用户明确要求继续T02。T01已完成，基线748通过且源码一致。Codex已写63例独立验收，当前37失败26通过。DSH只负责两个生产文件的有限实现，测试由Codex执行，不必新增测试文件。",
+  "read_files": ["artifacts/audit-t02-inputs-20261019/implementation-contract.md"],
+  "write_files": ["src/biomodel_agent/domain/contracts.py", "src/biomodel_agent/domain/serialization.py"],
+  "expected_files": ["src/biomodel_agent/domain/contracts.py", "src/biomodel_agent/domain/serialization.py"],
+  "instructions": "先读implementation-contract.md及两个生产文件，然后直接按5个小步骤编辑。共享数值检查，不改变FrozenMap的元数据能力；SimulationResult数值列保留原生NaN/Inf诊断但拒绝类型隐式转换；float溢出转为ValueError，JSON仍SchemaError。不探索其他文件、不运行shell/测试/联网/子Agent、不修改任务或监督程序。最后简短报告实际改动与限制。",
+  "acceptance": ["两个入口一致拒绝bool/数字字符串及不合法浮点转换", "None、合法值、冻结与历史读取兼容", "异常结果列诊断和序列化拒绝边界保留", "不改旧测试或科学判据"],
+  "verification_commands": [],
+  "budget": {"first_activity_ms":120000,"idle_ms":150000,"first_write_ms":180000,"write_idle_ms":180000,"total_ms":360000}
+}

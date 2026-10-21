@@ -1,0 +1,16 @@
+{
+  "status": "delivered",
+  "exit_code": 0,
+  "system": "codex",
+  "case": "c01_multistep_decay",
+  "phase": "incomplete",
+  "elapsed_seconds": 33.061401081999065,
+  "model": "gpt-6.1-sol",
+  "usage": {
+    "input_tokens": 62227,
+    "cached_input_tokens": 54784,
+    "cache_write_input_tokens": 0,
+    "output_tokens": 1025,
+    "reasoning_output_tokens": 172
+  }
+}

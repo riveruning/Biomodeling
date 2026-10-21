@@ -1,0 +1,13 @@
+{
+  "acceptance.json": "d449a62d31cc6ce41332b1af11d3ec761ff236ad7e8e56b47ae4a6cb2b0a9a02",
+  "audit.py": "fecb33e51c3ab3f32350e7f538fd15ee267ff0167d08ad076f52220455491364",
+  "documents.patch": "d0f0ea424df0f38798e0f9987a18016041f0dc90bce06e73a03efe0f5d478c32",
+  "finalize.py": "2e1e09f8617ca937128d4ff615627583f4de6e187552e0dfc53937b6dd370ba2",
+  "focused.log": "026ddd8821031cbdfc2b5610d57be7f072a97718a1633025446dab3ed1fa1a58",
+  "focused.xml": "69f7f50676f8a81df76d4672a57a23a8793c49caba2520ff99f6671fbbb77a31",
+  "http-scientific-results.json": "c3bdd14c700e14be4251ca48feacb4dd142c805ded1a7d2b082b4df5b4b1c6b8",
+  "metric-probe.json": "4966f2183fdf30d53dcde391259ab91fbce107db041c5ab281f8bac8281cbefd",
+  "verification.json": "0c9a63bd4b03a3600319df7acd03b9394a5001ba22cf2ebf6465a11e5536bd4a",
+  "verification.log": "246bcee4c6daaaa6635336e00190086e4ec73119a31f3d4c4f50631d57eb9aca",
+  "workspace-before.json": "774b34f08d3f9d4399d8f6729f2e6bdaacdaffe72ba032a7946d18225be30529"
+}

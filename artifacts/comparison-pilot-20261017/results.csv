@@ -1,0 +1,10 @@
+system,case,state,supported_facts,expected_present,correct_abstentions,expected_missing,unsupported_values,extra_targets,numeric_status,max_scaled_error,elapsed_seconds,human_content_corrections
+biomodel,raw,awaiting_input,0,0,14,14,0,,not_run,,7.929536349001864,0
+biomodel,assisted,awaiting_input,11,11,3,3,0,,not_run,,69.76006045400572,0
+biomodel,complete,completed,14,14,0,0,0,,pass,1.5798733997929305e-06,65.32045076299983,0
+dsh,raw,needs_input,0,0,14,14,0,K/value;alpha/value;beta/value;gamma/value,declined_missing_information,,67.472,0
+dsh,assisted,needs_input,11,11,3,3,0,,declined_missing_information,,60.443,0
+dsh,complete,ready,14,14,0,0,0,,pass,7.826533874322194e-08,124.148,0
+codex,raw,needs_input,0,0,14,14,0,,declined_missing_information,,70.80657344000065,0
+codex,assisted,needs_input,11,11,3,3,0,,declined_missing_information,,66.36239642600412,0
+codex,complete,ready,14,14,0,0,0,,pass,3.127794911961246e-10,73.27501947400015,0

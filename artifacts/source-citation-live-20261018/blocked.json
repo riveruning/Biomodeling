@@ -1,0 +1,12 @@
+{
+  "status": "awaiting_explicit_external_data_authorization",
+  "action": "four fixed-budget c13/c18 USTC inference trials",
+  "destination": "https://api.llm.ustc.edu.cn/v1",
+  "data": [
+    "synthetic case materials",
+    "associated original-task conversations"
+  ],
+  "automatic_approval_review_rejected": true,
+  "new_model_responses_received": 0,
+  "network_diagnostic_started": false
+}

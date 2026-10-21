@@ -1,0 +1,7 @@
+Synthetic, analyst-specified biochemical ODE model; not a published paper. Compartment: single well-mixed compartment of size 1 (dimensionless). All states are concentrations in arbitrary units (a.u.) unless a species entry states otherwise. All parameters are constant in time.
+Mechanism. A substrate S is consumed by an enzyme that is inhibited by a second species I. The material describes the rate law as 'Michaelis-Menten with a competitive inhibition factor (1 + I/KI) multiplying Km'.
+Equations. The material states dS/dt = -Vmax*S/(Km*(1 + I/KI) + S). It also declares a state for the inhibitor with the line 'dI/dt = 0'. In a second, equally authoritative place the material describes the same factor as using 'the inhibitor concentration including the fraction bound to the enzyme' without saying whether that changes I in the rate expression. The two readings are: (a) I means the free inhibitor state, whose value stays at its initial condition; (b) I means the inhibitor that is free PLUS the inhibitor sequestered in the enzyme-inhibitor complex, which grows as S is consumed. The material does not state which of the two the symbol I denotes in the rate law.
+Initial conditions. S(0) = 3.0 a.u.; I(0) = 2.0 a.u.
+Parameters. Vmax = 1.2 a.u. per minute; Km = 0.9 a.u.; KI = 1.4 a.u.
+Experiment. Batch, sampled every 0.25 min from t = 0 to t = 8 min inclusive.
+Reporting requirement. Report S and I at every sampling time.

@@ -1,0 +1,21 @@
+{
+  "schema_version": "1",
+  "root_ref": "0b283030f4b69cd833924ecfca94cf651c465560d340e1588cde5294082a63a5",
+  "objects_and_blobs": [
+    "0aa78805c0e4676f4f3b9008c51a0c99c0b9723b603b410360e056a319ceb1d1",
+    "0b283030f4b69cd833924ecfca94cf651c465560d340e1588cde5294082a63a5",
+    "16cacb5a96961324fcb1407de1dd16c8e7291426b0180b0db16a645d673a3dc6",
+    "1cdcf4ccd1a72524adfc7705801d38b9b2e5e5690c168b5b95bc6fcfa7ef4734",
+    "369818ec1f19e88f9fbcd56b790a9ee1a96a6f5339b21c9c2090ef57fc4522a0",
+    "7828e3ec54029d46ea2000b34eebc38ee8e1b6963b4a6e73014e65b9ce3e34ae",
+    "9b431176fd3a30c983614ad32dbe67959c5e2c8b63639ae3e0099c5842a7f3de",
+    "9cc9218c190955d835af3cda10e3414fdbae00bf9e9a1a4c557fba1ee91c135b",
+    "a9bb4a719cb4d57562f11c05a9800f1730b84c1031287403aef88d42104e2504",
+    "b01ed4865ca9b61db0d3a578d3bd0956a7175eefbe213051148b22000be91ee5",
+    "b4f783515733aca5e9c98e529dececd25f9bc2b70d9800c9920864ebcf186131",
+    "d2c898978c00be6bbdafb2db6c8263423425ae3ca9c07269dadac81db1512390",
+    "de48516f2d6401a9c5462feb8c5c4cece681c59817c160caf6fd5faaffde63da"
+  ],
+  "replay": "python -m biomodel_agent replay ROOT_REF --store BUNDLE_DIRECTORY",
+  "note": "Install the same project version and requirements.lock; replay records environment differences."
+}

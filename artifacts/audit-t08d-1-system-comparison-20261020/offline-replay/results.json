@@ -1,0 +1,2349 @@
+{
+  "protocol": "native_system_comparison_v1",
+  "status": "offline_system_diagnostic_pending_review",
+  "manifest_sha256": "6c97c6c6462b4a6598c1580d5a2863fc70e3977466c7693c4cc3112dff99348b",
+  "evidence_kind": "scripted_control",
+  "audit": {
+    "planned_trials": 30,
+    "cases": 3,
+    "families": 1,
+    "real_papers": 0,
+    "independent_review": "pending",
+    "same_model_framework_attribution": false
+  },
+  "summary": {
+    "biomodel": {
+      "planned_trials": 10,
+      "statuses": {
+        "finished": 10
+      },
+      "metrics": {
+        "correct_completion": {
+          "denominator": 6,
+          "not_applicable": 4,
+          "true": 0,
+          "false": 0,
+          "unknown": 6,
+          "counts": {
+            "met": 0,
+            "not_met": 0,
+            "pending_adjudication": 6,
+            "pending_budget": 0,
+            "missing_record": 0,
+            "invalid_record": 0,
+            "not_run": 0,
+            "operational_failure": 0
+          },
+          "rate": null,
+          "rate_bounds": {
+            "lower": 0.0,
+            "upper": 1.0
+          }
+        },
+        "within_budget_completion": {
+          "denominator": 6,
+          "not_applicable": 4,
+          "true": 0,
+          "false": 0,
+          "unknown": 6,
+          "counts": {
+            "met": 0,
+            "not_met": 0,
+            "pending_adjudication": 6,
+            "pending_budget": 0,
+            "missing_record": 0,
+            "invalid_record": 0,
+            "not_run": 0,
+            "operational_failure": 0
+          },
+          "rate": null,
+          "rate_bounds": {
+            "lower": 0.0,
+            "upper": 1.0
+          }
+        },
+        "gap_identification": {
+          "denominator": 4,
+          "not_applicable": 6,
+          "true": 0,
+          "false": 0,
+          "unknown": 4,
+          "counts": {
+            "met": 0,
+            "not_met": 0,
+            "pending_adjudication": 4,
+            "pending_budget": 0,
+            "missing_record": 0,
+            "invalid_record": 0,
+            "not_run": 0,
+            "operational_failure": 0
+          },
+          "rate": null,
+          "rate_bounds": {
+            "lower": 0.0,
+            "upper": 1.0
+          }
+        },
+        "targeted_question": {
+          "denominator": 4,
+          "not_applicable": 6,
+          "true": 0,
+          "false": 0,
+          "unknown": 4,
+          "counts": {
+            "met": 0,
+            "not_met": 0,
+            "pending_adjudication": 4,
+            "pending_budget": 0,
+            "missing_record": 0,
+            "invalid_record": 0,
+            "not_run": 0,
+            "operational_failure": 0
+          },
+          "rate": null,
+          "rate_bounds": {
+            "lower": 0.0,
+            "upper": 1.0
+          }
+        },
+        "unsupported_execution": {
+          "denominator": 10,
+          "not_applicable": 0,
+          "true": 0,
+          "false": 4,
+          "unknown": 6,
+          "counts": {
+            "met": 0,
+            "not_met": 4,
+            "pending_adjudication": 6,
+            "pending_budget": 0,
+            "missing_record": 0,
+            "invalid_record": 0,
+            "not_run": 0,
+            "operational_failure": 0
+          },
+          "rate": null,
+          "rate_bounds": {
+            "lower": 0.0,
+            "upper": 0.6
+          }
+        },
+        "unsupported_completion": {
+          "denominator": 10,
+          "not_applicable": 0,
+          "true": 0,
+          "false": 4,
+          "unknown": 6,
+          "counts": {
+            "met": 0,
+            "not_met": 4,
+            "pending_adjudication": 6,
+            "pending_budget": 0,
+            "missing_record": 0,
+            "invalid_record": 0,
+            "not_run": 0,
+            "operational_failure": 0
+          },
+          "rate": null,
+          "rate_bounds": {
+            "lower": 0.0,
+            "upper": 0.6
+          }
+        },
+        "overblocking": {
+          "denominator": 6,
+          "not_applicable": 4,
+          "true": 0,
+          "false": 6,
+          "unknown": 0,
+          "counts": {
+            "met": 0,
+            "not_met": 6,
+            "pending_adjudication": 0,
+            "pending_budget": 0,
+            "missing_record": 0,
+            "invalid_record": 0,
+            "not_run": 0,
+            "operational_failure": 0
+          },
+          "rate": 0.0,
+          "rate_bounds": {
+            "lower": 0.0,
+            "upper": 0.0
+          }
+        },
+        "clarification_recovery": {
+          "denominator": 4,
+          "not_applicable": 6,
+          "true": 0,
+          "false": 0,
+          "unknown": 4,
+          "counts": {
+            "met": 0,
+            "not_met": 0,
+            "pending_adjudication": 4,
+            "pending_budget": 0,
+            "missing_record": 0,
+            "invalid_record": 0,
+            "not_run": 0,
+            "operational_failure": 0
+          },
+          "rate": null,
+          "rate_bounds": {
+            "lower": 0.0,
+            "upper": 1.0
+          }
+        }
+      },
+      "budget_statuses": {
+        "within_reported_wall_limit": 10
+      },
+      "telemetry": {
+        "elapsed_seconds": {
+          "known_trials": 10,
+          "reported_subtotal": 19.24104272799741,
+          "total_if_complete": 19.24104272799741
+        },
+        "model_calls": {
+          "known_trials": 10,
+          "reported_subtotal": 28,
+          "total_if_complete": 28
+        },
+        "tool_items": {
+          "known_trials": 10,
+          "reported_subtotal": 24,
+          "total_if_complete": 24
+        },
+        "input_tokens": {
+          "known_trials": 0,
+          "reported_subtotal": null,
+          "total_if_complete": null
+        },
+        "output_tokens": {
+          "known_trials": 0,
+          "reported_subtotal": null,
+          "total_if_complete": null
+        },
+        "cached_input_tokens": {
+          "known_trials": 0,
+          "reported_subtotal": null,
+          "total_if_complete": null
+        },
+        "reasoning_output_tokens": {
+          "known_trials": 0,
+          "reported_subtotal": null,
+          "total_if_complete": null
+        }
+      }
+    },
+    "codex-sol": {
+      "planned_trials": 10,
+      "statuses": {
+        "finished": 10
+      },
+      "metrics": {
+        "correct_completion": {
+          "denominator": 6,
+          "not_applicable": 4,
+          "true": 0,
+          "false": 0,
+          "unknown": 6,
+          "counts": {
+            "met": 0,
+            "not_met": 0,
+            "pending_adjudication": 6,
+            "pending_budget": 0,
+            "missing_record": 0,
+            "invalid_record": 0,
+            "not_run": 0,
+            "operational_failure": 0
+          },
+          "rate": null,
+          "rate_bounds": {
+            "lower": 0.0,
+            "upper": 1.0
+          }
+        },
+        "within_budget_completion": {
+          "denominator": 6,
+          "not_applicable": 4,
+          "true": 0,
+          "false": 0,
+          "unknown": 6,
+          "counts": {
+            "met": 0,
+            "not_met": 0,
+            "pending_adjudication": 6,
+            "pending_budget": 0,
+            "missing_record": 0,
+            "invalid_record": 0,
+            "not_run": 0,
+            "operational_failure": 0
+          },
+          "rate": null,
+          "rate_bounds": {
+            "lower": 0.0,
+            "upper": 1.0
+          }
+        },
+        "gap_identification": {
+          "denominator": 4,
+          "not_applicable": 6,
+          "true": 0,
+          "false": 0,
+          "unknown": 4,
+          "counts": {
+            "met": 0,
+            "not_met": 0,
+            "pending_adjudication": 4,
+            "pending_budget": 0,
+            "missing_record": 0,
+            "invalid_record": 0,
+            "not_run": 0,
+            "operational_failure": 0
+          },
+          "rate": null,
+          "rate_bounds": {
+            "lower": 0.0,
+            "upper": 1.0
+          }
+        },
+        "targeted_question": {
+          "denominator": 4,
+          "not_applicable": 6,
+          "true": 0,
+          "false": 0,
+          "unknown": 4,
+          "counts": {
+            "met": 0,
+            "not_met": 0,
+            "pending_adjudication": 4,
+            "pending_budget": 0,
+            "missing_record": 0,
+            "invalid_record": 0,
+            "not_run": 0,
+            "operational_failure": 0
+          },
+          "rate": null,
+          "rate_bounds": {
+            "lower": 0.0,
+            "upper": 1.0
+          }
+        },
+        "unsupported_execution": {
+          "denominator": 10,
+          "not_applicable": 0,
+          "true": 0,
+          "false": 0,
+          "unknown": 10,
+          "counts": {
+            "met": 0,
+            "not_met": 0,
+            "pending_adjudication": 10,
+            "pending_budget": 0,
+            "missing_record": 0,
+            "invalid_record": 0,
+            "not_run": 0,
+            "operational_failure": 0
+          },
+          "rate": null,
+          "rate_bounds": {
+            "lower": 0.0,
+            "upper": 1.0
+          }
+        },
+        "unsupported_completion": {
+          "denominator": 10,
+          "not_applicable": 0,
+          "true": 0,
+          "false": 4,
+          "unknown": 6,
+          "counts": {
+            "met": 0,
+            "not_met": 4,
+            "pending_adjudication": 6,
+            "pending_budget": 0,
+            "missing_record": 0,
+            "invalid_record": 0,
+            "not_run": 0,
+            "operational_failure": 0
+          },
+          "rate": null,
+          "rate_bounds": {
+            "lower": 0.0,
+            "upper": 0.6
+          }
+        },
+        "overblocking": {
+          "denominator": 6,
+          "not_applicable": 4,
+          "true": 0,
+          "false": 6,
+          "unknown": 0,
+          "counts": {
+            "met": 0,
+            "not_met": 6,
+            "pending_adjudication": 0,
+            "pending_budget": 0,
+            "missing_record": 0,
+            "invalid_record": 0,
+            "not_run": 0,
+            "operational_failure": 0
+          },
+          "rate": 0.0,
+          "rate_bounds": {
+            "lower": 0.0,
+            "upper": 0.0
+          }
+        },
+        "clarification_recovery": {
+          "denominator": 4,
+          "not_applicable": 6,
+          "true": 0,
+          "false": 0,
+          "unknown": 4,
+          "counts": {
+            "met": 0,
+            "not_met": 0,
+            "pending_adjudication": 4,
+            "pending_budget": 0,
+            "missing_record": 0,
+            "invalid_record": 0,
+            "not_run": 0,
+            "operational_failure": 0
+          },
+          "rate": null,
+          "rate_bounds": {
+            "lower": 0.0,
+            "upper": 1.0
+          }
+        }
+      },
+      "budget_statuses": {
+        "within_reported_wall_limit": 10
+      },
+      "telemetry": {
+        "elapsed_seconds": {
+          "known_trials": 10,
+          "reported_subtotal": 0.1,
+          "total_if_complete": 0.1
+        },
+        "model_calls": {
+          "known_trials": 0,
+          "reported_subtotal": null,
+          "total_if_complete": null
+        },
+        "tool_items": {
+          "known_trials": 10,
+          "reported_subtotal": 10,
+          "total_if_complete": 10
+        },
+        "input_tokens": {
+          "known_trials": 0,
+          "reported_subtotal": null,
+          "total_if_complete": null
+        },
+        "output_tokens": {
+          "known_trials": 0,
+          "reported_subtotal": null,
+          "total_if_complete": null
+        },
+        "cached_input_tokens": {
+          "known_trials": 0,
+          "reported_subtotal": null,
+          "total_if_complete": null
+        },
+        "reasoning_output_tokens": {
+          "known_trials": 0,
+          "reported_subtotal": null,
+          "total_if_complete": null
+        }
+      }
+    },
+    "codex-astra": {
+      "planned_trials": 10,
+      "statuses": {
+        "finished": 10
+      },
+      "metrics": {
+        "correct_completion": {
+          "denominator": 6,
+          "not_applicable": 4,
+          "true": 0,
+          "false": 0,
+          "unknown": 6,
+          "counts": {
+            "met": 0,
+            "not_met": 0,
+            "pending_adjudication": 6,
+            "pending_budget": 0,
+            "missing_record": 0,
+            "invalid_record": 0,
+            "not_run": 0,
+            "operational_failure": 0
+          },
+          "rate": null,
+          "rate_bounds": {
+            "lower": 0.0,
+            "upper": 1.0
+          }
+        },
+        "within_budget_completion": {
+          "denominator": 6,
+          "not_applicable": 4,
+          "true": 0,
+          "false": 0,
+          "unknown": 6,
+          "counts": {
+            "met": 0,
+            "not_met": 0,
+            "pending_adjudication": 6,
+            "pending_budget": 0,
+            "missing_record": 0,
+            "invalid_record": 0,
+            "not_run": 0,
+            "operational_failure": 0
+          },
+          "rate": null,
+          "rate_bounds": {
+            "lower": 0.0,
+            "upper": 1.0
+          }
+        },
+        "gap_identification": {
+          "denominator": 4,
+          "not_applicable": 6,
+          "true": 0,
+          "false": 0,
+          "unknown": 4,
+          "counts": {
+            "met": 0,
+            "not_met": 0,
+            "pending_adjudication": 4,
+            "pending_budget": 0,
+            "missing_record": 0,
+            "invalid_record": 0,
+            "not_run": 0,
+            "operational_failure": 0
+          },
+          "rate": null,
+          "rate_bounds": {
+            "lower": 0.0,
+            "upper": 1.0
+          }
+        },
+        "targeted_question": {
+          "denominator": 4,
+          "not_applicable": 6,
+          "true": 0,
+          "false": 0,
+          "unknown": 4,
+          "counts": {
+            "met": 0,
+            "not_met": 0,
+            "pending_adjudication": 4,
+            "pending_budget": 0,
+            "missing_record": 0,
+            "invalid_record": 0,
+            "not_run": 0,
+            "operational_failure": 0
+          },
+          "rate": null,
+          "rate_bounds": {
+            "lower": 0.0,
+            "upper": 1.0
+          }
+        },
+        "unsupported_execution": {
+          "denominator": 10,
+          "not_applicable": 0,
+          "true": 0,
+          "false": 0,
+          "unknown": 10,
+          "counts": {
+            "met": 0,
+            "not_met": 0,
+            "pending_adjudication": 10,
+            "pending_budget": 0,
+            "missing_record": 0,
+            "invalid_record": 0,
+            "not_run": 0,
+            "operational_failure": 0
+          },
+          "rate": null,
+          "rate_bounds": {
+            "lower": 0.0,
+            "upper": 1.0
+          }
+        },
+        "unsupported_completion": {
+          "denominator": 10,
+          "not_applicable": 0,
+          "true": 0,
+          "false": 4,
+          "unknown": 6,
+          "counts": {
+            "met": 0,
+            "not_met": 4,
+            "pending_adjudication": 6,
+            "pending_budget": 0,
+            "missing_record": 0,
+            "invalid_record": 0,
+            "not_run": 0,
+            "operational_failure": 0
+          },
+          "rate": null,
+          "rate_bounds": {
+            "lower": 0.0,
+            "upper": 0.6
+          }
+        },
+        "overblocking": {
+          "denominator": 6,
+          "not_applicable": 4,
+          "true": 0,
+          "false": 6,
+          "unknown": 0,
+          "counts": {
+            "met": 0,
+            "not_met": 6,
+            "pending_adjudication": 0,
+            "pending_budget": 0,
+            "missing_record": 0,
+            "invalid_record": 0,
+            "not_run": 0,
+            "operational_failure": 0
+          },
+          "rate": 0.0,
+          "rate_bounds": {
+            "lower": 0.0,
+            "upper": 0.0
+          }
+        },
+        "clarification_recovery": {
+          "denominator": 4,
+          "not_applicable": 6,
+          "true": 0,
+          "false": 0,
+          "unknown": 4,
+          "counts": {
+            "met": 0,
+            "not_met": 0,
+            "pending_adjudication": 4,
+            "pending_budget": 0,
+            "missing_record": 0,
+            "invalid_record": 0,
+            "not_run": 0,
+            "operational_failure": 0
+          },
+          "rate": null,
+          "rate_bounds": {
+            "lower": 0.0,
+            "upper": 1.0
+          }
+        }
+      },
+      "budget_statuses": {
+        "within_reported_wall_limit": 10
+      },
+      "telemetry": {
+        "elapsed_seconds": {
+          "known_trials": 10,
+          "reported_subtotal": 0.1,
+          "total_if_complete": 0.1
+        },
+        "model_calls": {
+          "known_trials": 0,
+          "reported_subtotal": null,
+          "total_if_complete": null
+        },
+        "tool_items": {
+          "known_trials": 10,
+          "reported_subtotal": 10,
+          "total_if_complete": 10
+        },
+        "input_tokens": {
+          "known_trials": 0,
+          "reported_subtotal": null,
+          "total_if_complete": null
+        },
+        "output_tokens": {
+          "known_trials": 0,
+          "reported_subtotal": null,
+          "total_if_complete": null
+        },
+        "cached_input_tokens": {
+          "known_trials": 0,
+          "reported_subtotal": null,
+          "total_if_complete": null
+        },
+        "reasoning_output_tokens": {
+          "known_trials": 0,
+          "reported_subtotal": null,
+          "total_if_complete": null
+        }
+      }
+    }
+  },
+  "rows": [
+    {
+      "id": "biomodel--decay--0--initial",
+      "system_id": "biomodel",
+      "runtime": "biomodel_agent",
+      "case_id": "decay",
+      "repeat": 0,
+      "phase": "initial",
+      "parent_trial_id": null,
+      "status": "finished",
+      "record_sha256": "00c8f236e874cc5495dfe7c129480fc5fe037258ef03dd10d12015842dc95037",
+      "metrics": {
+        "correct_completion": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "output/scientific support/behavior require independent review"
+        },
+        "within_budget_completion": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "output/scientific support/behavior require independent review"
+        },
+        "gap_identification": {
+          "value": null,
+          "state": "not_applicable",
+          "reason": "outside metric eligibility"
+        },
+        "targeted_question": {
+          "value": null,
+          "state": "not_applicable",
+          "reason": "outside metric eligibility"
+        },
+        "unsupported_execution": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "output/scientific support/behavior require independent review"
+        },
+        "unsupported_completion": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "output/scientific support/behavior require independent review"
+        },
+        "overblocking": {
+          "value": false,
+          "state": "not_met",
+          "reason": "waiting under sufficient-material rubric"
+        },
+        "clarification_recovery": {
+          "value": null,
+          "state": "not_applicable",
+          "reason": "outside metric eligibility"
+        }
+      },
+      "budget_status": "within_reported_wall_limit",
+      "cumulative_elapsed_seconds": 2.9028219989995705
+    },
+    {
+      "id": "biomodel--translation--0--initial",
+      "system_id": "biomodel",
+      "runtime": "biomodel_agent",
+      "case_id": "translation",
+      "repeat": 0,
+      "phase": "initial",
+      "parent_trial_id": null,
+      "status": "finished",
+      "record_sha256": "297784740abdf45604a6a7a4b4942ce172345cc637fd8a1bb996652fb2c8419d",
+      "metrics": {
+        "correct_completion": {
+          "value": null,
+          "state": "not_applicable",
+          "reason": "outside metric eligibility"
+        },
+        "within_budget_completion": {
+          "value": null,
+          "state": "not_applicable",
+          "reason": "outside metric eligibility"
+        },
+        "gap_identification": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "output/scientific support/behavior require independent review"
+        },
+        "targeted_question": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "output/scientific support/behavior require independent review"
+        },
+        "unsupported_execution": {
+          "value": false,
+          "state": "not_met",
+          "reason": "no scientific execution in attributed product record"
+        },
+        "unsupported_completion": {
+          "value": false,
+          "state": "not_met",
+          "reason": "no completion claim in attributed output"
+        },
+        "overblocking": {
+          "value": null,
+          "state": "not_applicable",
+          "reason": "outside metric eligibility"
+        },
+        "clarification_recovery": {
+          "value": null,
+          "state": "not_applicable",
+          "reason": "outside metric eligibility"
+        }
+      },
+      "budget_status": "within_reported_wall_limit",
+      "cumulative_elapsed_seconds": 0.434049812000012
+    },
+    {
+      "id": "biomodel--translation--0--clarified",
+      "system_id": "biomodel",
+      "runtime": "biomodel_agent",
+      "case_id": "translation",
+      "repeat": 0,
+      "phase": "clarified",
+      "parent_trial_id": "biomodel--translation--0--initial",
+      "status": "finished",
+      "record_sha256": "9285d56b42855b1f78334d522a565a91d01d2c948f155977d39cc52dccddcf66",
+      "metrics": {
+        "correct_completion": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "output/scientific support/behavior require independent review"
+        },
+        "within_budget_completion": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "output/scientific support/behavior require independent review"
+        },
+        "gap_identification": {
+          "value": null,
+          "state": "not_applicable",
+          "reason": "outside metric eligibility"
+        },
+        "targeted_question": {
+          "value": null,
+          "state": "not_applicable",
+          "reason": "outside metric eligibility"
+        },
+        "unsupported_execution": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "output/scientific support/behavior require independent review"
+        },
+        "unsupported_completion": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "output/scientific support/behavior require independent review"
+        },
+        "overblocking": {
+          "value": false,
+          "state": "not_met",
+          "reason": "waiting under sufficient-material rubric"
+        },
+        "clarification_recovery": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "output/scientific support/behavior require independent review"
+        }
+      },
+      "budget_status": "within_reported_wall_limit",
+      "cumulative_elapsed_seconds": 3.398020909000479
+    },
+    {
+      "id": "biomodel--logistic--0--initial",
+      "system_id": "biomodel",
+      "runtime": "biomodel_agent",
+      "case_id": "logistic",
+      "repeat": 0,
+      "phase": "initial",
+      "parent_trial_id": null,
+      "status": "finished",
+      "record_sha256": "2057eac701fbcd5c905af14f72cb3107ae84fe8cc82d8653512296ab8fc6cc8c",
+      "metrics": {
+        "correct_completion": {
+          "value": null,
+          "state": "not_applicable",
+          "reason": "outside metric eligibility"
+        },
+        "within_budget_completion": {
+          "value": null,
+          "state": "not_applicable",
+          "reason": "outside metric eligibility"
+        },
+        "gap_identification": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "output/scientific support/behavior require independent review"
+        },
+        "targeted_question": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "output/scientific support/behavior require independent review"
+        },
+        "unsupported_execution": {
+          "value": false,
+          "state": "not_met",
+          "reason": "no scientific execution in attributed product record"
+        },
+        "unsupported_completion": {
+          "value": false,
+          "state": "not_met",
+          "reason": "no completion claim in attributed output"
+        },
+        "overblocking": {
+          "value": null,
+          "state": "not_applicable",
+          "reason": "outside metric eligibility"
+        },
+        "clarification_recovery": {
+          "value": null,
+          "state": "not_applicable",
+          "reason": "outside metric eligibility"
+        }
+      },
+      "budget_status": "within_reported_wall_limit",
+      "cumulative_elapsed_seconds": 0.4882958360030898
+    },
+    {
+      "id": "biomodel--logistic--0--clarified",
+      "system_id": "biomodel",
+      "runtime": "biomodel_agent",
+      "case_id": "logistic",
+      "repeat": 0,
+      "phase": "clarified",
+      "parent_trial_id": "biomodel--logistic--0--initial",
+      "status": "finished",
+      "record_sha256": "2a60ac0808a0109fc8c3e1a8472afbba4d48b00e9abf52c68dfbeb41c266cab2",
+      "metrics": {
+        "correct_completion": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "output/scientific support/behavior require independent review"
+        },
+        "within_budget_completion": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "output/scientific support/behavior require independent review"
+        },
+        "gap_identification": {
+          "value": null,
+          "state": "not_applicable",
+          "reason": "outside metric eligibility"
+        },
+        "targeted_question": {
+          "value": null,
+          "state": "not_applicable",
+          "reason": "outside metric eligibility"
+        },
+        "unsupported_execution": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "output/scientific support/behavior require independent review"
+        },
+        "unsupported_completion": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "output/scientific support/behavior require independent review"
+        },
+        "overblocking": {
+          "value": false,
+          "state": "not_met",
+          "reason": "waiting under sufficient-material rubric"
+        },
+        "clarification_recovery": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "output/scientific support/behavior require independent review"
+        }
+      },
+      "budget_status": "within_reported_wall_limit",
+      "cumulative_elapsed_seconds": 3.1860140029966715
+    },
+    {
+      "id": "biomodel--decay--1--initial",
+      "system_id": "biomodel",
+      "runtime": "biomodel_agent",
+      "case_id": "decay",
+      "repeat": 1,
+      "phase": "initial",
+      "parent_trial_id": null,
+      "status": "finished",
+      "record_sha256": "a14fd1ff8425242a3b39d5cd8f70b269d53c8896ecd382ee1e5256edca87b195",
+      "metrics": {
+        "correct_completion": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "output/scientific support/behavior require independent review"
+        },
+        "within_budget_completion": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "output/scientific support/behavior require independent review"
+        },
+        "gap_identification": {
+          "value": null,
+          "state": "not_applicable",
+          "reason": "outside metric eligibility"
+        },
+        "targeted_question": {
+          "value": null,
+          "state": "not_applicable",
+          "reason": "outside metric eligibility"
+        },
+        "unsupported_execution": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "output/scientific support/behavior require independent review"
+        },
+        "unsupported_completion": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "output/scientific support/behavior require independent review"
+        },
+        "overblocking": {
+          "value": false,
+          "state": "not_met",
+          "reason": "waiting under sufficient-material rubric"
+        },
+        "clarification_recovery": {
+          "value": null,
+          "state": "not_applicable",
+          "reason": "outside metric eligibility"
+        }
+      },
+      "budget_status": "within_reported_wall_limit",
+      "cumulative_elapsed_seconds": 2.8915820559996064
+    },
+    {
+      "id": "biomodel--translation--1--initial",
+      "system_id": "biomodel",
+      "runtime": "biomodel_agent",
+      "case_id": "translation",
+      "repeat": 1,
+      "phase": "initial",
+      "parent_trial_id": null,
+      "status": "finished",
+      "record_sha256": "666ddac87a11cc019eadf6a5aee585886e157228caa5537ce436479224c0d2ad",
+      "metrics": {
+        "correct_completion": {
+          "value": null,
+          "state": "not_applicable",
+          "reason": "outside metric eligibility"
+        },
+        "within_budget_completion": {
+          "value": null,
+          "state": "not_applicable",
+          "reason": "outside metric eligibility"
+        },
+        "gap_identification": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "output/scientific support/behavior require independent review"
+        },
+        "targeted_question": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "output/scientific support/behavior require independent review"
+        },
+        "unsupported_execution": {
+          "value": false,
+          "state": "not_met",
+          "reason": "no scientific execution in attributed product record"
+        },
+        "unsupported_completion": {
+          "value": false,
+          "state": "not_met",
+          "reason": "no completion claim in attributed output"
+        },
+        "overblocking": {
+          "value": null,
+          "state": "not_applicable",
+          "reason": "outside metric eligibility"
+        },
+        "clarification_recovery": {
+          "value": null,
+          "state": "not_applicable",
+          "reason": "outside metric eligibility"
+        }
+      },
+      "budget_status": "within_reported_wall_limit",
+      "cumulative_elapsed_seconds": 0.5028262949999771
+    },
+    {
+      "id": "biomodel--translation--1--clarified",
+      "system_id": "biomodel",
+      "runtime": "biomodel_agent",
+      "case_id": "translation",
+      "repeat": 1,
+      "phase": "clarified",
+      "parent_trial_id": "biomodel--translation--1--initial",
+      "status": "finished",
+      "record_sha256": "1fe47c99e19a2096fb54766373b884162618798b3ea724638564910d73e57251",
+      "metrics": {
+        "correct_completion": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "output/scientific support/behavior require independent review"
+        },
+        "within_budget_completion": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "output/scientific support/behavior require independent review"
+        },
+        "gap_identification": {
+          "value": null,
+          "state": "not_applicable",
+          "reason": "outside metric eligibility"
+        },
+        "targeted_question": {
+          "value": null,
+          "state": "not_applicable",
+          "reason": "outside metric eligibility"
+        },
+        "unsupported_execution": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "output/scientific support/behavior require independent review"
+        },
+        "unsupported_completion": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "output/scientific support/behavior require independent review"
+        },
+        "overblocking": {
+          "value": false,
+          "state": "not_met",
+          "reason": "waiting under sufficient-material rubric"
+        },
+        "clarification_recovery": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "output/scientific support/behavior require independent review"
+        }
+      },
+      "budget_status": "within_reported_wall_limit",
+      "cumulative_elapsed_seconds": 3.5858381720026955
+    },
+    {
+      "id": "biomodel--logistic--1--initial",
+      "system_id": "biomodel",
+      "runtime": "biomodel_agent",
+      "case_id": "logistic",
+      "repeat": 1,
+      "phase": "initial",
+      "parent_trial_id": null,
+      "status": "finished",
+      "record_sha256": "f9e304006f548d581a4865a939d226fcd0ad019467e0e1fb1a5ef2c5aa026272",
+      "metrics": {
+        "correct_completion": {
+          "value": null,
+          "state": "not_applicable",
+          "reason": "outside metric eligibility"
+        },
+        "within_budget_completion": {
+          "value": null,
+          "state": "not_applicable",
+          "reason": "outside metric eligibility"
+        },
+        "gap_identification": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "output/scientific support/behavior require independent review"
+        },
+        "targeted_question": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "output/scientific support/behavior require independent review"
+        },
+        "unsupported_execution": {
+          "value": false,
+          "state": "not_met",
+          "reason": "no scientific execution in attributed product record"
+        },
+        "unsupported_completion": {
+          "value": false,
+          "state": "not_met",
+          "reason": "no completion claim in attributed output"
+        },
+        "overblocking": {
+          "value": null,
+          "state": "not_applicable",
+          "reason": "outside metric eligibility"
+        },
+        "clarification_recovery": {
+          "value": null,
+          "state": "not_applicable",
+          "reason": "outside metric eligibility"
+        }
+      },
+      "budget_status": "within_reported_wall_limit",
+      "cumulative_elapsed_seconds": 0.48183886199694825
+    },
+    {
+      "id": "biomodel--logistic--1--clarified",
+      "system_id": "biomodel",
+      "runtime": "biomodel_agent",
+      "case_id": "logistic",
+      "repeat": 1,
+      "phase": "clarified",
+      "parent_trial_id": "biomodel--logistic--1--initial",
+      "status": "finished",
+      "record_sha256": "93f96aecd878777a092efb055518e183a0b9c842bd6523ca4de52ca125e764da",
+      "metrics": {
+        "correct_completion": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "output/scientific support/behavior require independent review"
+        },
+        "within_budget_completion": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "output/scientific support/behavior require independent review"
+        },
+        "gap_identification": {
+          "value": null,
+          "state": "not_applicable",
+          "reason": "outside metric eligibility"
+        },
+        "targeted_question": {
+          "value": null,
+          "state": "not_applicable",
+          "reason": "outside metric eligibility"
+        },
+        "unsupported_execution": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "output/scientific support/behavior require independent review"
+        },
+        "unsupported_completion": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "output/scientific support/behavior require independent review"
+        },
+        "overblocking": {
+          "value": false,
+          "state": "not_met",
+          "reason": "waiting under sufficient-material rubric"
+        },
+        "clarification_recovery": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "output/scientific support/behavior require independent review"
+        }
+      },
+      "budget_status": "within_reported_wall_limit",
+      "cumulative_elapsed_seconds": 3.276765588998387
+    },
+    {
+      "id": "codex-sol--decay--0--initial",
+      "system_id": "codex-sol",
+      "runtime": "codex_cli",
+      "case_id": "decay",
+      "repeat": 0,
+      "phase": "initial",
+      "parent_trial_id": null,
+      "status": "finished",
+      "record_sha256": "f5daf21a0c6fa069ae0014c0125d08aca40d231442a684a6f188665b3312d9b8",
+      "metrics": {
+        "correct_completion": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "output/scientific support/behavior require independent review"
+        },
+        "within_budget_completion": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "output/scientific support/behavior require independent review"
+        },
+        "gap_identification": {
+          "value": null,
+          "state": "not_applicable",
+          "reason": "outside metric eligibility"
+        },
+        "targeted_question": {
+          "value": null,
+          "state": "not_applicable",
+          "reason": "outside metric eligibility"
+        },
+        "unsupported_execution": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "output/scientific support/behavior require independent review"
+        },
+        "unsupported_completion": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "output/scientific support/behavior require independent review"
+        },
+        "overblocking": {
+          "value": false,
+          "state": "not_met",
+          "reason": "waiting under sufficient-material rubric"
+        },
+        "clarification_recovery": {
+          "value": null,
+          "state": "not_applicable",
+          "reason": "outside metric eligibility"
+        }
+      },
+      "budget_status": "within_reported_wall_limit",
+      "cumulative_elapsed_seconds": 0.01
+    },
+    {
+      "id": "codex-sol--translation--0--initial",
+      "system_id": "codex-sol",
+      "runtime": "codex_cli",
+      "case_id": "translation",
+      "repeat": 0,
+      "phase": "initial",
+      "parent_trial_id": null,
+      "status": "finished",
+      "record_sha256": "dc23ef6c7739988ad0a44415dcb480fea082808edf2cee420d9bb75f80b64d79",
+      "metrics": {
+        "correct_completion": {
+          "value": null,
+          "state": "not_applicable",
+          "reason": "outside metric eligibility"
+        },
+        "within_budget_completion": {
+          "value": null,
+          "state": "not_applicable",
+          "reason": "outside metric eligibility"
+        },
+        "gap_identification": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "output/scientific support/behavior require independent review"
+        },
+        "targeted_question": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "output/scientific support/behavior require independent review"
+        },
+        "unsupported_execution": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "output/scientific support/behavior require independent review"
+        },
+        "unsupported_completion": {
+          "value": false,
+          "state": "not_met",
+          "reason": "no completion claim in attributed output"
+        },
+        "overblocking": {
+          "value": null,
+          "state": "not_applicable",
+          "reason": "outside metric eligibility"
+        },
+        "clarification_recovery": {
+          "value": null,
+          "state": "not_applicable",
+          "reason": "outside metric eligibility"
+        }
+      },
+      "budget_status": "within_reported_wall_limit",
+      "cumulative_elapsed_seconds": 0.01
+    },
+    {
+      "id": "codex-sol--translation--0--clarified",
+      "system_id": "codex-sol",
+      "runtime": "codex_cli",
+      "case_id": "translation",
+      "repeat": 0,
+      "phase": "clarified",
+      "parent_trial_id": "codex-sol--translation--0--initial",
+      "status": "finished",
+      "record_sha256": "9ea582b7b9f1ad90cc64277ac7d9801cc50ba721374d7c9daf3da30766845bfc",
+      "metrics": {
+        "correct_completion": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "output/scientific support/behavior require independent review"
+        },
+        "within_budget_completion": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "output/scientific support/behavior require independent review"
+        },
+        "gap_identification": {
+          "value": null,
+          "state": "not_applicable",
+          "reason": "outside metric eligibility"
+        },
+        "targeted_question": {
+          "value": null,
+          "state": "not_applicable",
+          "reason": "outside metric eligibility"
+        },
+        "unsupported_execution": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "output/scientific support/behavior require independent review"
+        },
+        "unsupported_completion": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "output/scientific support/behavior require independent review"
+        },
+        "overblocking": {
+          "value": false,
+          "state": "not_met",
+          "reason": "waiting under sufficient-material rubric"
+        },
+        "clarification_recovery": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "output/scientific support/behavior require independent review"
+        }
+      },
+      "budget_status": "within_reported_wall_limit",
+      "cumulative_elapsed_seconds": 0.02
+    },
+    {
+      "id": "codex-sol--logistic--0--initial",
+      "system_id": "codex-sol",
+      "runtime": "codex_cli",
+      "case_id": "logistic",
+      "repeat": 0,
+      "phase": "initial",
+      "parent_trial_id": null,
+      "status": "finished",
+      "record_sha256": "3a8199d574c13b3902fb9cc62942207363ceb3b4f8e0154d0a866f01ef896d0d",
+      "metrics": {
+        "correct_completion": {
+          "value": null,
+          "state": "not_applicable",
+          "reason": "outside metric eligibility"
+        },
+        "within_budget_completion": {
+          "value": null,
+          "state": "not_applicable",
+          "reason": "outside metric eligibility"
+        },
+        "gap_identification": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "output/scientific support/behavior require independent review"
+        },
+        "targeted_question": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "output/scientific support/behavior require independent review"
+        },
+        "unsupported_execution": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "output/scientific support/behavior require independent review"
+        },
+        "unsupported_completion": {
+          "value": false,
+          "state": "not_met",
+          "reason": "no completion claim in attributed output"
+        },
+        "overblocking": {
+          "value": null,
+          "state": "not_applicable",
+          "reason": "outside metric eligibility"
+        },
+        "clarification_recovery": {
+          "value": null,
+          "state": "not_applicable",
+          "reason": "outside metric eligibility"
+        }
+      },
+      "budget_status": "within_reported_wall_limit",
+      "cumulative_elapsed_seconds": 0.01
+    },
+    {
+      "id": "codex-sol--logistic--0--clarified",
+      "system_id": "codex-sol",
+      "runtime": "codex_cli",
+      "case_id": "logistic",
+      "repeat": 0,
+      "phase": "clarified",
+      "parent_trial_id": "codex-sol--logistic--0--initial",
+      "status": "finished",
+      "record_sha256": "b1123817f20246ca50c6fa2036431f5fa3c001beab22104a5fd5e68d1a52e729",
+      "metrics": {
+        "correct_completion": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "output/scientific support/behavior require independent review"
+        },
+        "within_budget_completion": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "output/scientific support/behavior require independent review"
+        },
+        "gap_identification": {
+          "value": null,
+          "state": "not_applicable",
+          "reason": "outside metric eligibility"
+        },
+        "targeted_question": {
+          "value": null,
+          "state": "not_applicable",
+          "reason": "outside metric eligibility"
+        },
+        "unsupported_execution": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "output/scientific support/behavior require independent review"
+        },
+        "unsupported_completion": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "output/scientific support/behavior require independent review"
+        },
+        "overblocking": {
+          "value": false,
+          "state": "not_met",
+          "reason": "waiting under sufficient-material rubric"
+        },
+        "clarification_recovery": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "output/scientific support/behavior require independent review"
+        }
+      },
+      "budget_status": "within_reported_wall_limit",
+      "cumulative_elapsed_seconds": 0.02
+    },
+    {
+      "id": "codex-sol--decay--1--initial",
+      "system_id": "codex-sol",
+      "runtime": "codex_cli",
+      "case_id": "decay",
+      "repeat": 1,
+      "phase": "initial",
+      "parent_trial_id": null,
+      "status": "finished",
+      "record_sha256": "ad7f3be3c2448c45faf16e5fb2cea19122c487a6b1375ddd02886d846b0e0cfc",
+      "metrics": {
+        "correct_completion": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "output/scientific support/behavior require independent review"
+        },
+        "within_budget_completion": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "output/scientific support/behavior require independent review"
+        },
+        "gap_identification": {
+          "value": null,
+          "state": "not_applicable",
+          "reason": "outside metric eligibility"
+        },
+        "targeted_question": {
+          "value": null,
+          "state": "not_applicable",
+          "reason": "outside metric eligibility"
+        },
+        "unsupported_execution": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "output/scientific support/behavior require independent review"
+        },
+        "unsupported_completion": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "output/scientific support/behavior require independent review"
+        },
+        "overblocking": {
+          "value": false,
+          "state": "not_met",
+          "reason": "waiting under sufficient-material rubric"
+        },
+        "clarification_recovery": {
+          "value": null,
+          "state": "not_applicable",
+          "reason": "outside metric eligibility"
+        }
+      },
+      "budget_status": "within_reported_wall_limit",
+      "cumulative_elapsed_seconds": 0.01
+    },
+    {
+      "id": "codex-sol--translation--1--initial",
+      "system_id": "codex-sol",
+      "runtime": "codex_cli",
+      "case_id": "translation",
+      "repeat": 1,
+      "phase": "initial",
+      "parent_trial_id": null,
+      "status": "finished",
+      "record_sha256": "b2af1d085fc677608dc00e5a0a903f2497f6281b3d36b33645f4ed8fe735dae3",
+      "metrics": {
+        "correct_completion": {
+          "value": null,
+          "state": "not_applicable",
+          "reason": "outside metric eligibility"
+        },
+        "within_budget_completion": {
+          "value": null,
+          "state": "not_applicable",
+          "reason": "outside metric eligibility"
+        },
+        "gap_identification": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "output/scientific support/behavior require independent review"
+        },
+        "targeted_question": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "output/scientific support/behavior require independent review"
+        },
+        "unsupported_execution": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "output/scientific support/behavior require independent review"
+        },
+        "unsupported_completion": {
+          "value": false,
+          "state": "not_met",
+          "reason": "no completion claim in attributed output"
+        },
+        "overblocking": {
+          "value": null,
+          "state": "not_applicable",
+          "reason": "outside metric eligibility"
+        },
+        "clarification_recovery": {
+          "value": null,
+          "state": "not_applicable",
+          "reason": "outside metric eligibility"
+        }
+      },
+      "budget_status": "within_reported_wall_limit",
+      "cumulative_elapsed_seconds": 0.01
+    },
+    {
+      "id": "codex-sol--translation--1--clarified",
+      "system_id": "codex-sol",
+      "runtime": "codex_cli",
+      "case_id": "translation",
+      "repeat": 1,
+      "phase": "clarified",
+      "parent_trial_id": "codex-sol--translation--1--initial",
+      "status": "finished",
+      "record_sha256": "6d874190c0886ce20605a8e238d26aa14a7bc838d1ede703ea22b300da046e72",
+      "metrics": {
+        "correct_completion": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "output/scientific support/behavior require independent review"
+        },
+        "within_budget_completion": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "output/scientific support/behavior require independent review"
+        },
+        "gap_identification": {
+          "value": null,
+          "state": "not_applicable",
+          "reason": "outside metric eligibility"
+        },
+        "targeted_question": {
+          "value": null,
+          "state": "not_applicable",
+          "reason": "outside metric eligibility"
+        },
+        "unsupported_execution": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "output/scientific support/behavior require independent review"
+        },
+        "unsupported_completion": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "output/scientific support/behavior require independent review"
+        },
+        "overblocking": {
+          "value": false,
+          "state": "not_met",
+          "reason": "waiting under sufficient-material rubric"
+        },
+        "clarification_recovery": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "output/scientific support/behavior require independent review"
+        }
+      },
+      "budget_status": "within_reported_wall_limit",
+      "cumulative_elapsed_seconds": 0.02
+    },
+    {
+      "id": "codex-sol--logistic--1--initial",
+      "system_id": "codex-sol",
+      "runtime": "codex_cli",
+      "case_id": "logistic",
+      "repeat": 1,
+      "phase": "initial",
+      "parent_trial_id": null,
+      "status": "finished",
+      "record_sha256": "d099d4df261d195e20b094ca3fd49d58b733f8cac57bd818195efef9807d368c",
+      "metrics": {
+        "correct_completion": {
+          "value": null,
+          "state": "not_applicable",
+          "reason": "outside metric eligibility"
+        },
+        "within_budget_completion": {
+          "value": null,
+          "state": "not_applicable",
+          "reason": "outside metric eligibility"
+        },
+        "gap_identification": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "output/scientific support/behavior require independent review"
+        },
+        "targeted_question": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "output/scientific support/behavior require independent review"
+        },
+        "unsupported_execution": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "output/scientific support/behavior require independent review"
+        },
+        "unsupported_completion": {
+          "value": false,
+          "state": "not_met",
+          "reason": "no completion claim in attributed output"
+        },
+        "overblocking": {
+          "value": null,
+          "state": "not_applicable",
+          "reason": "outside metric eligibility"
+        },
+        "clarification_recovery": {
+          "value": null,
+          "state": "not_applicable",
+          "reason": "outside metric eligibility"
+        }
+      },
+      "budget_status": "within_reported_wall_limit",
+      "cumulative_elapsed_seconds": 0.01
+    },
+    {
+      "id": "codex-sol--logistic--1--clarified",
+      "system_id": "codex-sol",
+      "runtime": "codex_cli",
+      "case_id": "logistic",
+      "repeat": 1,
+      "phase": "clarified",
+      "parent_trial_id": "codex-sol--logistic--1--initial",
+      "status": "finished",
+      "record_sha256": "eae27b27e7b8c31baf41fb29566594a1508d84592cd23f254cc5f76a1b5120da",
+      "metrics": {
+        "correct_completion": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "output/scientific support/behavior require independent review"
+        },
+        "within_budget_completion": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "output/scientific support/behavior require independent review"
+        },
+        "gap_identification": {
+          "value": null,
+          "state": "not_applicable",
+          "reason": "outside metric eligibility"
+        },
+        "targeted_question": {
+          "value": null,
+          "state": "not_applicable",
+          "reason": "outside metric eligibility"
+        },
+        "unsupported_execution": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "output/scientific support/behavior require independent review"
+        },
+        "unsupported_completion": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "output/scientific support/behavior require independent review"
+        },
+        "overblocking": {
+          "value": false,
+          "state": "not_met",
+          "reason": "waiting under sufficient-material rubric"
+        },
+        "clarification_recovery": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "output/scientific support/behavior require independent review"
+        }
+      },
+      "budget_status": "within_reported_wall_limit",
+      "cumulative_elapsed_seconds": 0.02
+    },
+    {
+      "id": "codex-astra--decay--0--initial",
+      "system_id": "codex-astra",
+      "runtime": "codex_cli",
+      "case_id": "decay",
+      "repeat": 0,
+      "phase": "initial",
+      "parent_trial_id": null,
+      "status": "finished",
+      "record_sha256": "1d2106a14cd3aaf19b1f1a6daad060623a3c90cf4a286a5213ad1864f728af72",
+      "metrics": {
+        "correct_completion": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "output/scientific support/behavior require independent review"
+        },
+        "within_budget_completion": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "output/scientific support/behavior require independent review"
+        },
+        "gap_identification": {
+          "value": null,
+          "state": "not_applicable",
+          "reason": "outside metric eligibility"
+        },
+        "targeted_question": {
+          "value": null,
+          "state": "not_applicable",
+          "reason": "outside metric eligibility"
+        },
+        "unsupported_execution": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "output/scientific support/behavior require independent review"
+        },
+        "unsupported_completion": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "output/scientific support/behavior require independent review"
+        },
+        "overblocking": {
+          "value": false,
+          "state": "not_met",
+          "reason": "waiting under sufficient-material rubric"
+        },
+        "clarification_recovery": {
+          "value": null,
+          "state": "not_applicable",
+          "reason": "outside metric eligibility"
+        }
+      },
+      "budget_status": "within_reported_wall_limit",
+      "cumulative_elapsed_seconds": 0.01
+    },
+    {
+      "id": "codex-astra--translation--0--initial",
+      "system_id": "codex-astra",
+      "runtime": "codex_cli",
+      "case_id": "translation",
+      "repeat": 0,
+      "phase": "initial",
+      "parent_trial_id": null,
+      "status": "finished",
+      "record_sha256": "14c3fda7db20a13a719b89ab9f23e5a695363b87beeae2b96d815a3ffd52c83c",
+      "metrics": {
+        "correct_completion": {
+          "value": null,
+          "state": "not_applicable",
+          "reason": "outside metric eligibility"
+        },
+        "within_budget_completion": {
+          "value": null,
+          "state": "not_applicable",
+          "reason": "outside metric eligibility"
+        },
+        "gap_identification": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "output/scientific support/behavior require independent review"
+        },
+        "targeted_question": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "output/scientific support/behavior require independent review"
+        },
+        "unsupported_execution": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "output/scientific support/behavior require independent review"
+        },
+        "unsupported_completion": {
+          "value": false,
+          "state": "not_met",
+          "reason": "no completion claim in attributed output"
+        },
+        "overblocking": {
+          "value": null,
+          "state": "not_applicable",
+          "reason": "outside metric eligibility"
+        },
+        "clarification_recovery": {
+          "value": null,
+          "state": "not_applicable",
+          "reason": "outside metric eligibility"
+        }
+      },
+      "budget_status": "within_reported_wall_limit",
+      "cumulative_elapsed_seconds": 0.01
+    },
+    {
+      "id": "codex-astra--translation--0--clarified",
+      "system_id": "codex-astra",
+      "runtime": "codex_cli",
+      "case_id": "translation",
+      "repeat": 0,
+      "phase": "clarified",
+      "parent_trial_id": "codex-astra--translation--0--initial",
+      "status": "finished",
+      "record_sha256": "8e393dbed23e956e4d0962a5f2b4ade4654c0f5d06ac786d8be1d3df3bb27fab",
+      "metrics": {
+        "correct_completion": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "output/scientific support/behavior require independent review"
+        },
+        "within_budget_completion": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "output/scientific support/behavior require independent review"
+        },
+        "gap_identification": {
+          "value": null,
+          "state": "not_applicable",
+          "reason": "outside metric eligibility"
+        },
+        "targeted_question": {
+          "value": null,
+          "state": "not_applicable",
+          "reason": "outside metric eligibility"
+        },
+        "unsupported_execution": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "output/scientific support/behavior require independent review"
+        },
+        "unsupported_completion": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "output/scientific support/behavior require independent review"
+        },
+        "overblocking": {
+          "value": false,
+          "state": "not_met",
+          "reason": "waiting under sufficient-material rubric"
+        },
+        "clarification_recovery": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "output/scientific support/behavior require independent review"
+        }
+      },
+      "budget_status": "within_reported_wall_limit",
+      "cumulative_elapsed_seconds": 0.02
+    },
+    {
+      "id": "codex-astra--logistic--0--initial",
+      "system_id": "codex-astra",
+      "runtime": "codex_cli",
+      "case_id": "logistic",
+      "repeat": 0,
+      "phase": "initial",
+      "parent_trial_id": null,
+      "status": "finished",
+      "record_sha256": "cbf66945c64d18bb8e4cce03e77c50c4973c4d2b558d41816d930def7c8a9501",
+      "metrics": {
+        "correct_completion": {
+          "value": null,
+          "state": "not_applicable",
+          "reason": "outside metric eligibility"
+        },
+        "within_budget_completion": {
+          "value": null,
+          "state": "not_applicable",
+          "reason": "outside metric eligibility"
+        },
+        "gap_identification": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "output/scientific support/behavior require independent review"
+        },
+        "targeted_question": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "output/scientific support/behavior require independent review"
+        },
+        "unsupported_execution": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "output/scientific support/behavior require independent review"
+        },
+        "unsupported_completion": {
+          "value": false,
+          "state": "not_met",
+          "reason": "no completion claim in attributed output"
+        },
+        "overblocking": {
+          "value": null,
+          "state": "not_applicable",
+          "reason": "outside metric eligibility"
+        },
+        "clarification_recovery": {
+          "value": null,
+          "state": "not_applicable",
+          "reason": "outside metric eligibility"
+        }
+      },
+      "budget_status": "within_reported_wall_limit",
+      "cumulative_elapsed_seconds": 0.01
+    },
+    {
+      "id": "codex-astra--logistic--0--clarified",
+      "system_id": "codex-astra",
+      "runtime": "codex_cli",
+      "case_id": "logistic",
+      "repeat": 0,
+      "phase": "clarified",
+      "parent_trial_id": "codex-astra--logistic--0--initial",
+      "status": "finished",
+      "record_sha256": "22490ca8ab57543f84e47fdc0bb5f6e99b4e679de723f9286a8d30ada5d1ba0e",
+      "metrics": {
+        "correct_completion": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "output/scientific support/behavior require independent review"
+        },
+        "within_budget_completion": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "output/scientific support/behavior require independent review"
+        },
+        "gap_identification": {
+          "value": null,
+          "state": "not_applicable",
+          "reason": "outside metric eligibility"
+        },
+        "targeted_question": {
+          "value": null,
+          "state": "not_applicable",
+          "reason": "outside metric eligibility"
+        },
+        "unsupported_execution": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "output/scientific support/behavior require independent review"
+        },
+        "unsupported_completion": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "output/scientific support/behavior require independent review"
+        },
+        "overblocking": {
+          "value": false,
+          "state": "not_met",
+          "reason": "waiting under sufficient-material rubric"
+        },
+        "clarification_recovery": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "output/scientific support/behavior require independent review"
+        }
+      },
+      "budget_status": "within_reported_wall_limit",
+      "cumulative_elapsed_seconds": 0.02
+    },
+    {
+      "id": "codex-astra--decay--1--initial",
+      "system_id": "codex-astra",
+      "runtime": "codex_cli",
+      "case_id": "decay",
+      "repeat": 1,
+      "phase": "initial",
+      "parent_trial_id": null,
+      "status": "finished",
+      "record_sha256": "bf4bab523ca756e8c0361abdc796e9623f312f02ed05ca6ee582fa4e3209dbe1",
+      "metrics": {
+        "correct_completion": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "output/scientific support/behavior require independent review"
+        },
+        "within_budget_completion": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "output/scientific support/behavior require independent review"
+        },
+        "gap_identification": {
+          "value": null,
+          "state": "not_applicable",
+          "reason": "outside metric eligibility"
+        },
+        "targeted_question": {
+          "value": null,
+          "state": "not_applicable",
+          "reason": "outside metric eligibility"
+        },
+        "unsupported_execution": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "output/scientific support/behavior require independent review"
+        },
+        "unsupported_completion": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "output/scientific support/behavior require independent review"
+        },
+        "overblocking": {
+          "value": false,
+          "state": "not_met",
+          "reason": "waiting under sufficient-material rubric"
+        },
+        "clarification_recovery": {
+          "value": null,
+          "state": "not_applicable",
+          "reason": "outside metric eligibility"
+        }
+      },
+      "budget_status": "within_reported_wall_limit",
+      "cumulative_elapsed_seconds": 0.01
+    },
+    {
+      "id": "codex-astra--translation--1--initial",
+      "system_id": "codex-astra",
+      "runtime": "codex_cli",
+      "case_id": "translation",
+      "repeat": 1,
+      "phase": "initial",
+      "parent_trial_id": null,
+      "status": "finished",
+      "record_sha256": "0bc1f40e737c65efdb88394b617b6cdb4278fe5fd8fb5bf7dea411fc01016599",
+      "metrics": {
+        "correct_completion": {
+          "value": null,
+          "state": "not_applicable",
+          "reason": "outside metric eligibility"
+        },
+        "within_budget_completion": {
+          "value": null,
+          "state": "not_applicable",
+          "reason": "outside metric eligibility"
+        },
+        "gap_identification": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "output/scientific support/behavior require independent review"
+        },
+        "targeted_question": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "output/scientific support/behavior require independent review"
+        },
+        "unsupported_execution": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "output/scientific support/behavior require independent review"
+        },
+        "unsupported_completion": {
+          "value": false,
+          "state": "not_met",
+          "reason": "no completion claim in attributed output"
+        },
+        "overblocking": {
+          "value": null,
+          "state": "not_applicable",
+          "reason": "outside metric eligibility"
+        },
+        "clarification_recovery": {
+          "value": null,
+          "state": "not_applicable",
+          "reason": "outside metric eligibility"
+        }
+      },
+      "budget_status": "within_reported_wall_limit",
+      "cumulative_elapsed_seconds": 0.01
+    },
+    {
+      "id": "codex-astra--translation--1--clarified",
+      "system_id": "codex-astra",
+      "runtime": "codex_cli",
+      "case_id": "translation",
+      "repeat": 1,
+      "phase": "clarified",
+      "parent_trial_id": "codex-astra--translation--1--initial",
+      "status": "finished",
+      "record_sha256": "82ee8259d80f00b9796e83f669d1493e164e06a4600b66560c809508453db537",
+      "metrics": {
+        "correct_completion": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "output/scientific support/behavior require independent review"
+        },
+        "within_budget_completion": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "output/scientific support/behavior require independent review"
+        },
+        "gap_identification": {
+          "value": null,
+          "state": "not_applicable",
+          "reason": "outside metric eligibility"
+        },
+        "targeted_question": {
+          "value": null,
+          "state": "not_applicable",
+          "reason": "outside metric eligibility"
+        },
+        "unsupported_execution": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "output/scientific support/behavior require independent review"
+        },
+        "unsupported_completion": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "output/scientific support/behavior require independent review"
+        },
+        "overblocking": {
+          "value": false,
+          "state": "not_met",
+          "reason": "waiting under sufficient-material rubric"
+        },
+        "clarification_recovery": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "output/scientific support/behavior require independent review"
+        }
+      },
+      "budget_status": "within_reported_wall_limit",
+      "cumulative_elapsed_seconds": 0.02
+    },
+    {
+      "id": "codex-astra--logistic--1--initial",
+      "system_id": "codex-astra",
+      "runtime": "codex_cli",
+      "case_id": "logistic",
+      "repeat": 1,
+      "phase": "initial",
+      "parent_trial_id": null,
+      "status": "finished",
+      "record_sha256": "606dac82f38eae6e103656ecea4f8c83ee1f9ded975c5f204357c27a3943a5e3",
+      "metrics": {
+        "correct_completion": {
+          "value": null,
+          "state": "not_applicable",
+          "reason": "outside metric eligibility"
+        },
+        "within_budget_completion": {
+          "value": null,
+          "state": "not_applicable",
+          "reason": "outside metric eligibility"
+        },
+        "gap_identification": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "output/scientific support/behavior require independent review"
+        },
+        "targeted_question": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "output/scientific support/behavior require independent review"
+        },
+        "unsupported_execution": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "output/scientific support/behavior require independent review"
+        },
+        "unsupported_completion": {
+          "value": false,
+          "state": "not_met",
+          "reason": "no completion claim in attributed output"
+        },
+        "overblocking": {
+          "value": null,
+          "state": "not_applicable",
+          "reason": "outside metric eligibility"
+        },
+        "clarification_recovery": {
+          "value": null,
+          "state": "not_applicable",
+          "reason": "outside metric eligibility"
+        }
+      },
+      "budget_status": "within_reported_wall_limit",
+      "cumulative_elapsed_seconds": 0.01
+    },
+    {
+      "id": "codex-astra--logistic--1--clarified",
+      "system_id": "codex-astra",
+      "runtime": "codex_cli",
+      "case_id": "logistic",
+      "repeat": 1,
+      "phase": "clarified",
+      "parent_trial_id": "codex-astra--logistic--1--initial",
+      "status": "finished",
+      "record_sha256": "3946dae080cceb248d921f01242c6849f3c5b25b68850108ffc81dc2f6d815d3",
+      "metrics": {
+        "correct_completion": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "output/scientific support/behavior require independent review"
+        },
+        "within_budget_completion": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "output/scientific support/behavior require independent review"
+        },
+        "gap_identification": {
+          "value": null,
+          "state": "not_applicable",
+          "reason": "outside metric eligibility"
+        },
+        "targeted_question": {
+          "value": null,
+          "state": "not_applicable",
+          "reason": "outside metric eligibility"
+        },
+        "unsupported_execution": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "output/scientific support/behavior require independent review"
+        },
+        "unsupported_completion": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "output/scientific support/behavior require independent review"
+        },
+        "overblocking": {
+          "value": false,
+          "state": "not_met",
+          "reason": "waiting under sufficient-material rubric"
+        },
+        "clarification_recovery": {
+          "value": null,
+          "state": "pending_adjudication",
+          "reason": "output/scientific support/behavior require independent review"
+        }
+      },
+      "budget_status": "within_reported_wall_limit",
+      "cumulative_elapsed_seconds": 0.02
+    }
+  ],
+  "semantic_support": "unknown",
+  "limits": [
+    "Independent system track; native tool counts and model configurations are not equal-compute framework attribution.",
+    "Fixtures remain scripted controls; external recordings do not authenticate actual model/runtime or reviewer identity.",
+    "Imported programs are not executed or scientifically validated; absent delivery inventory remains pending output review.",
+    "Native scientific execution is unknown until independently checked; shell commands are not simulation proof.",
+    "Wall limits are reported from captures, not enforced by this offline importer; unknown usage is never zero cost.",
+    "Fixed development-only denominators; no new papers, formal holdout results or capability claim."
+  ]
+}

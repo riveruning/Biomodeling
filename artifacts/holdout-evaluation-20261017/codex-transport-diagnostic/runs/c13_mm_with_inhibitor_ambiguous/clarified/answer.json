@@ -1,0 +1,21 @@
+{
+  "status": "ready",
+  "parameters": [
+    {"id": "Vmax", "value": 1.2, "unit": "a.u./min"},
+    {"id": "Km", "value": 0.9, "unit": "a.u."},
+    {"id": "KI", "value": 1.4, "unit": "a.u."}
+  ],
+  "states": [
+    {"id": "S", "initial": 3.0},
+    {"id": "I", "initial": 2.0}
+  ],
+  "equations": [
+    {"state": "S", "expression": "-Vmax*S/(Km*(1 + I/KI) + S)"},
+    {"state": "I", "expression": "0"}
+  ],
+  "questions": [],
+  "limitations": [
+    "The authoritative researcher clarification defines I in the rate law as the free inhibitor state, constant at I(0); enzyme-bound inhibitor is not included.",
+    "Both states are concentrations in a.u.; time is in minutes. The simulation has not been run during this task."
+  ]
+}

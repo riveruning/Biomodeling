@@ -1,0 +1,156 @@
+{
+  "agent_ref": "437e13cfdb2b73f8cf6f1dea75bada0e463db2cfea72c22ba5674c5c0f293135",
+  "state": "awaiting_input",
+  "run_ref": null,
+  "calls": 2,
+  "repairs": 0,
+  "elapsed_seconds": 7.929536349001864,
+  "usage_total_tokens": 3986,
+  "questions": [
+    "The source text contains only image placeholders for the actual equations (1)-(3), the Hill function (4), and the parameter values in Figure 2B (e013-e025). I cannot read the ODEs, the Hill function form, or the numeric parameter values (alpha, beta, n, K, etc.) from the text. Please provide the explicit equations (1)-(3), the Hill function (4), and the Figure 2B parameter values (alpha, beta, n, K) and initial conditions."
+  ],
+  "environment": {
+    "python": "3.12.3",
+    "python_full": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]",
+    "implementation": "CPython",
+    "platform": "Linux-6.6.87.2-microsoft-standard-WSL2-x86_64-with-glibc2.39",
+    "machine": "x86_64",
+    "packages": {
+      "libroadrunner": "2.10.0",
+      "roadrunner": "absent",
+      "python-libsbml": "5.21.2",
+      "libsbml": "absent",
+      "numpy": "2.5.4",
+      "scipy": "1.18.1",
+      "pypdf": "6.20.1",
+      "biomodel-agent": "0.1.0"
+    },
+    "modules": {
+      "__init__.py": "3ebbb4065141012142168ecc70776886d2a452d80c3c3c1b19fc94665136fd5c",
+      "__main__.py": "11e716d1f66f25a0dd6ee566cb9bff3452624a3f47b8e009c3631ab2a9b01630",
+      "agent.py": "948e6fc4b58cd8f8ea629931713ccfc5d09a13ba467794d84eb0c014b34486e5",
+      "agent_tools.py": "abe06c2c67548389f32d7f47b901407b8463940434e5251678fe17ca691fe905",
+      "application.py": "efdb3812341f794985e5857f0b9c04782a1ec3543022b28c956a2d35cfdc27c1",
+      "bundles.py": "e3d710814a0205fc84fd66e5699ed5335a3bbe4d1910fc3c7f688d7ad6a49acd",
+      "cli.py": "21f4dc409bdf209ab3b42facda51e166a72a3c133da51165b2cc150cc38b17d3",
+      "domain/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "domain/contracts.py": "0c9711fb6500a00cbb4c5be748db77b7b4a8a32a0f54d76d04fc80be424f8366",
+      "domain/serialization.py": "35cd7eac8aa83a8bb7e41e0ea7f568abe34a570d38b8484c017ccf9b37d7e395",
+      "evidence.py": "020c4e0653bdbd9e06734ed060b89984dda013a9e7810ec132b51d5bf794b79f",
+      "expressions.py": "972ce61a74b747af2fcb92893b6c98bf9371408ff9737f68f22fe36e043fc8ea",
+      "fitting.py": "099546d69f8735c6b6357d23e9b4618025fc59f5ac8f655406e52db1325291b1",
+      "hypotheses.py": "22fcc3ecb93e6845b8aa484e396885bf2b56b6eb8d64e47fed7519e717f828b7",
+      "literature_scoring.py": "3e2c20e568de9203dd8e12095627f76046ab6d68b62944e3952dad61a4f70499",
+      "llm.py": "8e47c8eee713c29e40360c70c2076eae2eb30ddbaef4108ffa9200abb4176ab8",
+      "modeling.py": "69cafa82bffe977ee4a0b1e3b77c29c1bb48fd0e48d58f4644fcd045eb43c44e",
+      "reporting.py": "8316c78fa5628b8da82813f07b0c334d92fc3c73c2edbc7b55ba0bec969cf20d",
+      "simulation.py": "5ce58365e6adb77e801719a519aef488a938654bc50ca34c9dd6c2189e509f18",
+      "storage.py": "8fdfff97a2477666515664e71e2122eb2a4885d79f16c8fbb1a04735461a3062",
+      "validation.py": "a358aa2ecf7c460f3f263fbf5eb08188068f493f21f4a2a69bb1afe90faebb86"
+    },
+    "modules_sha256": "446e6f3a01fc692ef8f8da085c81f86a41e75e2b41276be86eb1c5c103c8c47b",
+    "provenance": "content_hash_of_src_biomodel_agent_py (no git metadata available)"
+  },
+  "submission_diagnostics": [],
+  "score": {
+    "items": [
+      {
+        "target": "k1/value",
+        "value_status": "correct_abstention",
+        "evidence_status": "not_applicable",
+        "fully_supported": false
+      },
+      {
+        "target": "k2/value",
+        "value_status": "correct_abstention",
+        "evidence_status": "not_applicable",
+        "fully_supported": false
+      },
+      {
+        "target": "k3/value",
+        "value_status": "correct_abstention",
+        "evidence_status": "not_applicable",
+        "fully_supported": false
+      },
+      {
+        "target": "k4/value",
+        "value_status": "correct_abstention",
+        "evidence_status": "not_applicable",
+        "fully_supported": false
+      },
+      {
+        "target": "k5/value",
+        "value_status": "correct_abstention",
+        "evidence_status": "not_applicable",
+        "fully_supported": false
+      },
+      {
+        "target": "k6/value",
+        "value_status": "correct_abstention",
+        "evidence_status": "not_applicable",
+        "fully_supported": false
+      },
+      {
+        "target": "Ki/value",
+        "value_status": "correct_abstention",
+        "evidence_status": "not_applicable",
+        "fully_supported": false
+      },
+      {
+        "target": "n/value",
+        "value_status": "correct_abstention",
+        "evidence_status": "not_applicable",
+        "fully_supported": false
+      },
+      {
+        "target": "rule:X/expression",
+        "value_status": "correct_abstention",
+        "evidence_status": "not_applicable",
+        "fully_supported": false
+      },
+      {
+        "target": "rule:Y/expression",
+        "value_status": "correct_abstention",
+        "evidence_status": "not_applicable",
+        "fully_supported": false
+      },
+      {
+        "target": "rule:Z/expression",
+        "value_status": "correct_abstention",
+        "evidence_status": "not_applicable",
+        "fully_supported": false
+      },
+      {
+        "target": "X/initial",
+        "value_status": "correct_abstention",
+        "evidence_status": "not_applicable",
+        "fully_supported": false
+      },
+      {
+        "target": "Y/initial",
+        "value_status": "correct_abstention",
+        "evidence_status": "not_applicable",
+        "fully_supported": false
+      },
+      {
+        "target": "Z/initial",
+        "value_status": "correct_abstention",
+        "evidence_status": "not_applicable",
+        "fully_supported": false
+      }
+    ],
+    "counts": {
+      "total": 14,
+      "expected_present": 0,
+      "value_correct": 0,
+      "evidence_supported": 0,
+      "fully_supported": 0,
+      "expected_missing": 14,
+      "correct_abstentions": 14,
+      "unsupported_completions": 0
+    },
+    "extra_targets": [],
+    "semantic_review": "pending_human_review",
+    "expression_method": "fixed_probe_agreement_not_symbolic_proof"
+  }
+}

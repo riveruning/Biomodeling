@@ -1,0 +1,29 @@
+{
+  "checks": [
+    {
+      "name": "matching reference accepted",
+      "pass": true
+    },
+    {
+      "name": "wrong sampling rejected",
+      "pass": true
+    },
+    {
+      "name": "nonfinite values rejected",
+      "pass": true
+    },
+    {
+      "name": "wrong species rejected",
+      "pass": true
+    },
+    {
+      "name": "specific alias question recognized",
+      "pass": true
+    },
+    {
+      "name": "generic refusal not counted as target recognition",
+      "pass": true
+    }
+  ],
+  "all_passed": true
+}

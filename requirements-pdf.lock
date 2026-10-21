@@ -1,0 +1,3 @@
+# Optional local PDF backend, accepted with the base requirements.lock environment.
+-r requirements.lock
+pymupdf==1.28.2

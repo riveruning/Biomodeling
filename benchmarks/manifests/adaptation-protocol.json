@@ -1,0 +1,39 @@
+{
+  "schema_version": "1",
+  "scenario": "synthetic signed readout deviation following sustained input",
+  "seed": 42,
+  "noise": "independent additive Gaussian sigma=0.01; specified known noise",
+  "training_conditions": [
+    "u=1,b=1"
+  ],
+  "heldout_conditions": [
+    "u=1,b=0"
+  ],
+  "fit_bounds": {
+    "k": [
+      0.5,
+      4.0
+    ],
+    "d": [
+      0.6,
+      1.8
+    ],
+    "h": [
+      0.1,
+      0.4
+    ]
+  },
+  "bounds_basis": "Synthetic scenario design priors; not biological measurements or confidence intervals",
+  "separation_threshold": 0.05,
+  "prediction_scales": {
+    "response": 1.0
+  },
+  "limitations": [
+    "Linearized candidate mechanisms",
+    "Training alone admits observational equivalence",
+    "No claim of real mechanism discovery or uniqueness",
+    "Holdout data forbidden to optimizer"
+  ],
+  "adequacy_weighted_rmse": 3.0,
+  "adequacy_rule": "Known synthetic sigma: weighted training and heldout RMSE <=3; heuristic compatibility threshold, not statistical significance"
+}

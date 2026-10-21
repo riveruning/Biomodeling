@@ -1,0 +1,5 @@
+Created [answer.json](answer.json) and [simulate.py](simulate.py).
+
+Status: `needs_input`. Equations and parameters are reconstructed with exact source quotes. X(0), Y(0), and Z(0) remain null because neither supplied file specifies them.
+
+Verified that `simulate.py` prints only the required missing-input JSON object.

@@ -1,0 +1,275 @@
+--- before/src/biomodel_agent/cli.py
++++ after/src/biomodel_agent/cli.py
+@@ -84,19 +84,19 @@
+ 
+ def _build_reference(ref_data):
+     from .domain.contracts import SimulationResult
+-    from .domain.serialization import from_dict, SchemaError
+-    try:
+-        return from_dict(SimulationResult, ref_data)
+-    except SchemaError:
+-        # curated reference: {times, values, scales, threshold, ...};
+-        # scales/threshold are frozen alongside the reference by the caller,
+-        # the constructed result carries no fabricated source/pass fields.
+-        times = ref_data.get("times")
+-        values = ref_data.get("values")
+-        if times is None or values is None:
+-            raise ValueError("reference must be a full SimulationResult or curated {times, values}")
+-        return SimulationResult(status="succeeded", times=tuple(times), values=dict(values),
+-                                time_unit=ref_data.get('time_unit', 'unknown'))
++    from .domain.serialization import from_dict
++    from .validation import validate_reference
++    if not isinstance(ref_data, dict):
++        raise ValueError("reference must be a full SimulationResult or curated {times, values}")
++    # Strip only documented scoring/provenance metadata. Structured result fields
++    # always pass through the strict codec, even when metadata is also present.
++    metadata = {"scales", "threshold", "schema_version", "track", "model_id",
++                "reference_methods", "cross_method_error", "limitations"}
++    payload = {key: value for key, value in ref_data.items() if key not in metadata}
++    payload.setdefault("status", "succeeded")
++    result = from_dict(SimulationResult, payload)
++    validate_reference(result)
++    return result
+ 
+ 
+ def _print_run_result(ref, store, strict: bool) -> int:
+--- before/src/biomodel_agent/validation.py
++++ after/src/biomodel_agent/validation.py
+@@ -118,6 +118,26 @@
+     return ValidationReport(tuple(checks))
+ 
+ 
++def validate_reference(reference: SimulationResult) -> None:
++    """Check reference usability before execution; this does not verify its truth."""
++    if not isinstance(reference, SimulationResult):
++        raise TypeError("reference must be a SimulationResult")
++    if reference.status != 'succeeded':
++        raise ValueError('reference simulation did not succeed')
++    if not reference.times or not reference.values:
++        raise ValueError('reference requires nonempty samples and columns')
++    if not all(_is_finite(t) for t in reference.times):
++        raise ValueError('reference time grid must contain finite numbers')
++    if any(b <= a for a, b in zip(reference.times, reference.times[1:])):
++        raise ValueError('reference time grid must be strictly increasing')
++    for key, column in reference.values.items():
++        if not isinstance(key, str) or not key:
++            raise ValueError('reference column names must be nonempty strings')
++        if not all(_is_finite(value) for value in column):
++            raise ValueError(f'reference.values[{key!r}] must contain finite numbers')
++    _series(dict(reference.values), len(reference.times), 'reference.values')
++
++
+ def compare_series(
+     actual: object,
+     reference: object,
+@@ -129,6 +149,10 @@
+     actual_unit = actual.time_unit if isinstance(actual, SimulationResult) else actual.get('time_unit', 'unknown')
+     reference_unit = reference.time_unit if isinstance(reference, SimulationResult) else reference.get('time_unit', 'unknown')
+     clock = comparison_time_unit(actual_unit, reference_unit)
++    for label, result in (("actual", actual), ("reference", reference)):
++        status = result.status if isinstance(result, SimulationResult) else result.get('status', 'succeeded')
++        if status != 'succeeded':
++            raise ValueError(f'{label} simulation did not succeed')
+     if isinstance(actual, SimulationResult):
+         times, values = actual.times, actual.values
+     else:
+@@ -154,10 +178,6 @@
+         raise ValueError(f"time grids differ: {len(grid_a)} vs {len(grid_b)} samples")
+     if not grid_a or not values or not ref_values:
+         raise ValueError('comparison requires nonempty samples and columns')
+-    if isinstance(actual, SimulationResult) and actual.status != 'succeeded':
+-        raise ValueError('actual simulation did not succeed')
+-    if isinstance(reference, SimulationResult) and reference.status != 'succeeded':
+-        raise ValueError('reference simulation did not succeed')
+     a = _series(dict(values), len(grid_a), "actual.values")
+     b = _series(dict(ref_values), len(grid_a), "reference.values")
+     if set(a) != set(b):
+--- before/src/biomodel_agent/application.py
++++ after/src/biomodel_agent/application.py
+@@ -338,6 +338,7 @@
+     if clock.status == 'fail':
+         raise ValueError(clock.message)
+     if reference is not None:
++        validation.validate_reference(reference)
+         time_units.comparison_time_unit(experiment.time_unit, reference.time_unit)
+     source_preflight = _source_validation(store, artifact)
+     if strict and source_preflight['source_review']['issues']:
+--- before/src/biomodel_agent/agent.py
++++ after/src/biomodel_agent/agent.py
+@@ -119,6 +119,8 @@
+     if not all(isinstance(r, str) and REF_RE.fullmatch(r) for r in source_refs):
+         raise ValueError("invalid or unavailable source refs")
+     if reference is not None:
++        from .validation import validate_reference
++        validate_reference(reference)
+         time_units.comparison_time_unit(experiment.time_unit, reference.time_unit)
+     try:
+         for ref in source_refs:
+@@ -194,6 +196,8 @@
+     solver = from_dict(SolverConfig, task['solver'])
+     reference = from_dict(SimulationResult, task['reference']) if task['reference'] is not None else None
+     if reference is not None:
++        from .validation import validate_reference
++        validate_reference(reference)
+         time_units.comparison_time_unit(experiment.time_unit, reference.time_unit)
+     # Preserve bytes and identity exactly. This assertion is not a verified paper correction.
+     blob_ref = store.put_blob(reply.encode('utf-8'))
+--- before/tests/test_reference_input_validation.py
++++ after/tests/test_reference_input_validation.py
+@@ -0,0 +1,130 @@
++"""Unusable reference results cannot become successful curated CLI inputs."""
++from copy import deepcopy
++import json
++
++import pytest
++
++from biomodel_agent import agent, application, cli, evidence, modeling, simulation, validation
++from biomodel_agent.domain.contracts import ExperimentSpec, ModelDraft, Parameter, RateRule, SimulationResult, State
++from biomodel_agent.domain.serialization import SchemaError, to_dict
++from biomodel_agent.storage import ArtifactStore
++
++
++def payload():
++    return {'times': [0., 1.], 'values': {'x': [1., .5]}, 'scales': {'x': 1.}}
++
++
++def model():
++    return modeling.build_model(ModelDraft('decay', (State('x', 1.),), (Parameter('k', .4),),
++                                          rate_rules=(RateRule('x', '-k*x'),)))
++
++
++@pytest.mark.parametrize('status', ['failed', 'timed_out', 'unsupported', 'invalid'])
++def test_explicit_failed_or_invalid_status_never_becomes_success(status):
++    data = payload(); data['status'] = status
++    with pytest.raises(ValueError):
++        cli._build_reference(data)
++
++
++@pytest.mark.parametrize('field,value', [('checks', {'checks': 'bad'}), ('backend', 3),
++                                         ('elapsed_s', 'slow'), ('diagnostics', [False]),
++                                         ('time_unit', 'day'), ('status', None)])
++def test_scoring_metadata_does_not_hide_invalid_structured_fields(field, value):
++    data = payload(); data[field] = value
++    with pytest.raises(ValueError):
++        cli._build_reference(data)
++
++
++def test_full_result_plus_scoring_metadata_keeps_structured_fields():
++    original = SimulationResult('succeeded', (0., 1.), {'x': (1., .5)},
++                                diagnostics=('external reference generator',), backend='independent', elapsed_s=.3)
++    data = {**to_dict(original), 'scales': {'x': 1.}, 'threshold': .001}
++    before = deepcopy(data)
++    assert cli._build_reference(data) == original and data == before
++
++
++def test_curated_documented_provenance_is_accepted_without_fabricating_evidence():
++    data = {**payload(), 'schema_version': 1, 'track': 'numeric', 'model_id': 'synthetic',
++            'reference_methods': ['independent solver'], 'cross_method_error': 0., 'limitations': ['synthetic']}
++    result = cli._build_reference(data)
++    assert result.status == 'succeeded' and not result.checks.checks
++
++
++@pytest.mark.parametrize('data', [None, [], {'times': [], 'values': {}},
++                                  {**payload(), 'staus': 'failed'},
++                                  {**payload(), 'values': {'x': [1., float('nan')]}},
++                                  {**payload(), 'times': [1., 0.]},
++                                  {**payload(), 'times': [0., 0.]}])
++def test_bad_reference_rejected_by_cli(data):
++    with pytest.raises(ValueError):
++        cli._build_reference(data)
++
++
++def bad_references():
++    return [SimulationResult('failed', (0., 1.), {'x': (1., .5)}),
++            SimulationResult('succeeded'),
++            SimulationResult('succeeded', (0., 1.), {'x': (1., float('inf'))}),
++            SimulationResult('succeeded', (1., 0.), {'x': (1., .5)})]
++
++
++@pytest.mark.parametrize('reference', bad_references())
++def test_application_rejects_before_cache_store_or_solver(tmp_path, monkeypatch, reference):
++    store = ArtifactStore(tmp_path / 'store'); before = store.list()
++    monkeypatch.setattr(simulation, 'simulate', lambda *a, **kw: pytest.fail('solver called'))
++    monkeypatch.setattr(store, 'list', lambda *a: pytest.fail('cache called'))
++    with pytest.raises(ValueError, match='reference'):
++        application.run_reproduction(store, model(), ExperimentSpec((0., 1.)),
++                                     reference=reference, scales={'x': 1.})
++    monkeypatch.undo()
++    assert store.list() == before
++
++
++class Scripted:
++    last_usage = {}
++    def __init__(self): self.calls = []
++    def respond(self, messages):
++        self.calls.append(deepcopy(messages))
++        return {'action': 'ask_researcher', 'args': {'question': 'Clarify mechanism.'}}
++
++
++@pytest.mark.parametrize('reference', bad_references())
++def test_agent_rejects_before_task_write_or_model_call(tmp_path, reference):
++    store = ArtifactStore(tmp_path / 'store'); before = store.list(); provider = Scripted()
++    with pytest.raises(ValueError, match='reference'):
++        agent.run_agent(store, provider, [], ExperimentSpec((0., 1.)), reference=reference)
++    assert not provider.calls and store.list() == before
++
++
++def test_old_failed_reference_checkpoint_is_rejected_before_reply_write(tmp_path, monkeypatch):
++    store = ArtifactStore(tmp_path / 'store'); provider = Scripted()
++    source_path = tmp_path / 'source.txt'; source_path.write_text('Synthetic source.')
++    source = evidence.ingest_source(store, source_path)
++    # Build a genuine paused checkpoint using the old missing-preflight behavior.
++    with monkeypatch.context() as legacy:
++        legacy.setattr(validation, 'validate_reference', lambda *a: None)
++        parent = agent.run_agent(store, provider, [source], ExperimentSpec((0., 1.)),
++                                 reference=bad_references()[0], scales={'x': 1.})
++    before = store.list(); provider = Scripted()
++    with pytest.raises(ValueError, match='reference simulation did not succeed'):
++        agent.resume_agent(store, provider, parent, 'Researcher reply.', respondent='Researcher A')
++    assert not provider.calls and store.list() == before
++
++
++def test_failed_reference_cli_run_creates_no_run_record(tmp_path, capsys):
++    sbml = tmp_path / 'model.xml'; sbml.write_text(model().sbml)
++    experiment = tmp_path / 'experiment.json'; experiment.write_text(json.dumps({'times': [0., 1.]}))
++    reference = tmp_path / 'reference.json'
++    reference.write_text(json.dumps({**payload(), 'status': 'failed'}))
++    code = cli.main(['run', str(sbml), '--experiment', str(experiment), '--reference', str(reference),
++                     '--store', str(tmp_path / 'store')])
++    assert code == 1 and 'reference simulation did not succeed' in capsys.readouterr().err
++    assert not ArtifactStore(tmp_path / 'store').list()
++
++
++@pytest.mark.parametrize('which', ['actual', 'reference'])
++@pytest.mark.parametrize('status', ['failed', 'timed_out'])
++def test_mapping_comparison_honors_explicit_failure_status(which, status):
++    actual = payload(); reference = payload()
++    (actual if which == 'actual' else reference)['status'] = status
++    with pytest.raises(ValueError, match=f'{which} simulation did not succeed'):
++        validation.compare_series(actual, reference, {'x': 1.})
+--- before/docs/reference-input-validation.md
++++ after/docs/reference-input-validation.md
+@@ -0,0 +1,15 @@
++# 参考结果输入验证（2026-10-18）
++
++## 已复现问题与修复
++
++CLI 原先先尝试解码完整 SimulationResult，任意 SchemaError 后再按简写读取。加入 scales 等评分字段会触发回退；回退写死 succeeded，因此明确 failed 的参考结果也会被提升为成功，其他格式错误同样可能被忽略。
++
++现在仅移除已支持的外层评分与来源描述字段（scales、threshold、schema_version、track、model_id、reference_methods、cross_method_error、limitations），其余字段全部走严格领域解码。仅缺省 status 时给简写填入 succeeded；显式失败、非法状态、错误的结构字段和未知字段均拒绝。输入字典不修改；来源描述的存在不构成验证证据。
++
++新增统一参考输入预检：必须成功，具有非空样本与列，时间严格递增，所有数据有限。CLI、直接运行、Agent 启动与恢复均在仿真、缓存查询、模型调用或新回复写入前拒绝不可用参考。比较接口也尊重字典形式中显式提供的失败状态；旧简写不带 status 时仍可比较。
++
++## 验证与范围
++
++新增 33 项回归覆盖状态覆盖漏洞、格式错误、完整结果与简写兼容、错误参考的提前拒绝、旧检查点恢复和字典比较入口。完整测试共 464 项，最终结果以 artifacts/reference-input-validation-20261018/acceptance.json 和 installed-pytest.xml 为准。保存变更前后文件、补丁与测试日志。另运行三个原检查点的脚本化兼容演练，沿用原数值参考与预算；这些演练不代表自主模型能力。
++
++这次没有调用外部模型，没有修改独立测试集，也不声称提高了完整 Agent 基准通过率。预检仅证明参考在格式上可用于比较，不证明参考来源、科学结论或数值正确性；不会修复、裁剪或转换参考数据。离线数值比较仍遵守已有显式时间单位协议。
+--- before/README.md
++++ after/README.md
+@@ -107,3 +107,5 @@
+ - 先验证科学计算核心，再加入 LLM；不要求 GPU，不训练基础模型。
+ 
+ Codex、GPT-6 Sol、DSH 等属于开发工具层。它们可以协作实现本项目，但不因此成为产品运行时组件，也不规定产品内部采用多 Agent 架构。
++
++2026-10-18 参考输入：[参考结果输入验证](docs/reference-input-validation.md)。修复评分配置导致失败参考被误读为成功的问题；在执行和任务恢复前验证参考可用性，完整回归 464 项。

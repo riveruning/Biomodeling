@@ -1,0 +1,96 @@
+{
+  "task_id": "T04",
+  "status": "accepted",
+  "accepted_at_utc": "2026-10-19T08:54:42.328651+00:00",
+  "implementation_owner": "Codex alone, explicitly requested by the user",
+  "dsh_or_subagents_used": false,
+  "objective": "Shared frozen scientific study execution/verdict and one monotonic scientific deadline across fitting, crosscheck, heldout and intervention predictions",
+  "baseline": {
+    "accepted_full_passed": 895,
+    "source_acceptance": "artifacts/audit-t03b-recovery-20261019/acceptance.json",
+    "source_hashes_matched_before_work": true,
+    "all_previous_test_files_unchanged": true
+  },
+  "production_files": [
+    "src/biomodel_agent/agent.py",
+    "src/biomodel_agent/cli.py",
+    "src/biomodel_agent/fitting.py",
+    "src/biomodel_agent/hypotheses.py",
+    "src/biomodel_agent/reporting.py",
+    "src/biomodel_agent/studies.py",
+    "src/biomodel_agent/deadlines.py"
+  ],
+  "new_test_file": "tests/test_study_execution_acceptance.py",
+  "new_test_cases": 31,
+  "verification": {
+    "baseline": {
+      "tests": 15,
+      "failures": 7,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 3.756
+    },
+    "first": {
+      "tests": 111,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 44.694
+    },
+    "expanded": {
+      "tests": 31,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 27.037
+    },
+    "full": {
+      "tests": 926,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 186.917
+    }
+  },
+  "commands": {
+    "baseline": "PYTHONDONTWRITEBYTECODE=1 .venv/bin/python -m pytest -q -p no:cacheprovider tests/test_study_execution_acceptance.py --basetemp=/tmp/biomodel-t04-baseline --junitxml=artifacts/audit-t04-study-execution-20261019/baseline.xml",
+    "first": "PYTHONDONTWRITEBYTECODE=1 .venv/bin/python -m pytest -q -p no:cacheprovider tests/test_study_execution_acceptance.py tests/test_agent_studies.py tests/test_research_workflows.py tests/test_experiment_time_units.py --basetemp=/tmp/biomodel-t04-first --junitxml=artifacts/audit-t04-study-execution-20261019/first.xml",
+    "expanded": "PYTHONDONTWRITEBYTECODE=1 .venv/bin/python -m pytest -q -p no:cacheprovider tests/test_study_execution_acceptance.py --basetemp=/tmp/biomodel-t04-expanded --junitxml=artifacts/audit-t04-study-execution-20261019/expanded.xml",
+    "full": "PYTHONDONTWRITEBYTECODE=1 .venv/bin/python -m pytest -q -p no:cacheprovider --basetemp=/tmp/biomodel-t04-full --junitxml=artifacts/audit-t04-study-execution-20261019/full.xml",
+    "scientific_evidence": "PYTHONDONTWRITEBYTECODE=1 .venv/bin/python artifacts/audit-t04-study-execution-20261019/scientific-evidence.py"
+  },
+  "scientific_evidence": "scientific-results.json",
+  "legacy_v1_fixture": "baseline-plan-v1.json",
+  "implementation_sha256": "4774ac081c7407e60fb116a8ec448bea74c96cfc17d726e3e6774faae3d18b1f",
+  "final_hashes": {
+    "src/biomodel_agent/agent.py": "527198693861a47707a723286c341cca3b6cc86a326994049e26c95bac4d69da",
+    "src/biomodel_agent/cli.py": "19c61cbd7388543a324549f06b5ac764e59b005d3e9a654f45dd6d0f16902381",
+    "src/biomodel_agent/fitting.py": "001b869384e90ddd2132dec609b72b3ad75a308068737fe04f5b9a6057ef816c",
+    "src/biomodel_agent/hypotheses.py": "9360ff2f9e44e0c76143221ae2a87d41a4dceeaf708d4f1e45d1e7d353ee3321",
+    "src/biomodel_agent/reporting.py": "e09e77b784b62dda9bc0b35011877a86fcc5c912bda73307e52dab9bf314c96c",
+    "src/biomodel_agent/studies.py": "7f057504823bc632700dc4ad36ff57ecb2074c370ae1b57df0f005707211f309",
+    "src/biomodel_agent/deadlines.py": "c2883cc440a7dcc1757b07ce63f4b7d24c01a3a1c1f259d02dd8ae5aa0d35ff0",
+    "tests/test_study_execution_acceptance.py": "e539f657d34ff5312876a8b6d1c9b9f5d16b906b4f257344465870976c7a7b36",
+    "docs/study-execution-deadline.md": "07057250fcbad346cfd94770bcb153086b0f48ab28790e2290fbebd581ad55c4",
+    "docs/optimization-backlog.md": "13582486efd7c83997b792b2f7a49a0991634e951f5c251759ea6aef5183c948",
+    "docs/seven-point-status.md": "141812d41ed0b86b58049f8dee779b310ab3899b5a9163b9da4cde228f2c42d8"
+  },
+  "diff": "changes.patch",
+  "contract": "implementation-contract.md",
+  "execution_plan": "execution-plan.md",
+  "compatibility": [
+    "New v2 plans freeze total_timeout_s; exact v1 plans remain immutable with explicitly disclosed legacy execution default.",
+    "Legacy hypothesis CLI uses the same frozen-plan adapter and now defaults to a 30s per-fit cap; total default is 300s, capped at 600s.",
+    "Standalone fitting.predict without timeout retains original behavior; scientific study predictions are explicitly bounded.",
+    "Older study results remain readable; missing phase/deadline facts cannot establish fresh completion eligibility.",
+    "T03b ownership, invocation budget and returned-result adoption retained; changed source fingerprints are not bypassed."
+  ],
+  "limitations": [
+    "Scientific tool deadline excludes earlier LLM conversation, researcher waiting and later response/recovery audit writes.",
+    "Static validation, immutable storage writes and bounded process reaping can add wall-clock overhead; no OS hard real-time or power-loss guarantee.",
+    "No distributed ownership or global fee cap across explicit execution branches.",
+    "No new model-capability evaluation; scripted actions and real deterministic calculations are reported separately.",
+    "No c13/c18 transmission, no independent holdout material reads, no dependency or global environment changes."
+  ],
+  "next_task": "T05: structured evidence binding for target assignments, expressions and source spans"
+}

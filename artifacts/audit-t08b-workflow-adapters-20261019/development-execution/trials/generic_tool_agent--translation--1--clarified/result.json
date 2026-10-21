@@ -1,0 +1,76 @@
+{
+  "record": {
+    "trial_id": "generic_tool_agent--translation--1--clarified",
+    "manifest_sha256": "f2ccd66775137ff2fad83e11ff727b8a47d7f32f01f6c2c9f0d31b59ca9d78fe",
+    "evidence_kind": "scripted_control",
+    "model_config": {
+      "provider": "offline_control",
+      "model": "scripted-fixture",
+      "revision": "not-a-model",
+      "temperature": 0.0,
+      "top_p": 1.0,
+      "max_output_tokens": 1000,
+      "seed": 0
+    },
+    "toolchain_sha256": "149e4a7e2d5c300cf8f180a388a99c103b257c03413ac97b60c3605f955f57bf",
+    "status": "finished",
+    "continuation": "resumed",
+    "parent_trial_id": "generic_tool_agent--translation--1--initial",
+    "observation": {
+      "state": "completed",
+      "executed": true,
+      "claimed_complete": true,
+      "identified_gaps": [],
+      "question_targets": [],
+      "question_texts": []
+    },
+    "assessment": {
+      "authority": "unreviewed",
+      "reviewer": null,
+      "evidence_refs": [],
+      "numeric": "unknown",
+      "source_support": "unknown",
+      "behavior_labels_reviewed": false
+    },
+    "telemetry": {
+      "model_calls": 3,
+      "tool_calls": 3,
+      "max_request_chars": 6994,
+      "max_response_tokens": null,
+      "elapsed_seconds": 2.154383492001216,
+      "human_interventions": 0,
+      "human_seconds": 0.0,
+      "input_tokens": null,
+      "output_tokens": null
+    }
+  },
+  "session_ref": "8d658e5f60c47fa3a5d162fca6e5e4646df9365b9fa8d0327a9739e7c708d49f",
+  "store_root": "/home/riveruning/biologymodel_agent/artifacts/audit-t08b-workflow-adapters-20261019/development-execution/stores/generic_tool_agent--translation--1",
+  "audit": {
+    "supervised": true,
+    "stop_reason": null,
+    "run_ref": "17bd5014b5f9f0311b232b60dffc2dbcad16dd5766381bd736d1804252f99033",
+    "native_agent_run_ref": null,
+    "request_refs": [
+      "010b06da0a3906142f260921e72efe54daa876e06ab5599ae875eb7339fd9a16",
+      "2c8c5e7a04c09af58fc75a177df91121a08902c7a865b4df74bb82eef2e4ecea",
+      "e82e8ffbe35374c5be40c643d88e93f141467abf22e6db2d96ea4f8bac7d8349"
+    ],
+    "response_refs": [
+      "a290dd1b744ff08d76b118254091ec2443b00603f98fdd99f0a810cdef5c12cd",
+      "e2bb7a8eef020818569f73cb97b87ce123af9959256d7428c89e961860bf112e",
+      "7b1039b6bc500e42ee4f4cf7ade0e29458eb2d267984f8825af78348b98f366f"
+    ],
+    "reservation_refs": [
+      "d903559f77b657adb700bf071ca02ca321573b323f4b9b71f715e6875eb27fc5",
+      "ba046be50d568e99ad506f0398c5ea3b9fb4d01d00febca1160ecb8be54e4dde",
+      "99a2e7c7c4c05455f8c10a7a630091d3e5f1d3729d3784fd5274bbf8ae8b9ff2",
+      "42f56a2f4ee11b435e7e3c29bfe27495ae77e27b70e4e3dd1943db200af0650f",
+      "18b54944580bdd2fd645af33c0609ad2185f5b1ff0e21a5208e90242376f40bb"
+    ],
+    "clarification_origin": "prerecorded_protocol",
+    "runtime_adapter_sha256": "bc5684016fa4131bfc91e8db16386adacdbedc644e7e9b4bd68763a66722e1b4",
+    "scientific_support": "unknown",
+    "same_returned_model_verified": true
+  }
+}

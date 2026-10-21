@@ -1,0 +1,51 @@
+{
+  "status": "accepted",
+  "created_at": "2026-10-18T09:42:19.742834+00:00",
+  "scope": "complete numeric literal boundaries in source assignments",
+  "files": [
+    {
+      "path": "src/biomodel_agent/source_review.py",
+      "staged": "src/biomodel_agent/source_review.py",
+      "before_sha256": "830d4ba09c44d52e2397f3c012abaee0cc4e443e1b83c49ef0a7e15ce0ef35aa",
+      "after_sha256": "bbf085e42b374bb1270bd697bd15e6fdbee0bd321391bd80ee87aa92dd1ba1bb"
+    },
+    {
+      "path": "tests/test_source_literal_assignments.py",
+      "staged": "tests/test_source_literal_assignments.py",
+      "before_sha256": null,
+      "after_sha256": "c73db2128e41785a62993a6d2787a38817f54ebf1484113a55dd80706452b5e9"
+    },
+    {
+      "path": "README.md",
+      "staged": "README.md",
+      "before_sha256": "f1e39ae12af0570de626251a3d92301fb1b8376215b860544d7c3082262fbe2d",
+      "after_sha256": "b78bda792f6c8dc99aba838d98e17e980a5793aa5b063fa8f6fe0bb0a882b5c5"
+    },
+    {
+      "path": "docs/literal-assignment-validation.md",
+      "staged": "docs/literal-assignment-validation.md",
+      "before_sha256": null,
+      "after_sha256": "b6254a5f561f6ed858d8505cc3df23b502737a531bbde295ea900f6322fadf6b"
+    }
+  ],
+  "baseline_tests": 323,
+  "tests": {
+    "tests": 350,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "validation": "existing project suite with staged modified modules, 27 new development regressions",
+  "pytest_log": "pytest.log",
+  "pytest_xml": "pytest.xml",
+  "offline_original_proposals": 3,
+  "new_model_calls": 0,
+  "full_agent_benchmark_success_measured": false,
+  "original_evaluation_modified": false,
+  "independent_holdout": false,
+  "known_limitations": [
+    "original proposals still require citation repair",
+    "no new live LLM performance measurement",
+    "bounded source parser, no general semantic proof"
+  ]
+}

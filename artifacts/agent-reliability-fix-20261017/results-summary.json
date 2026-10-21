@@ -1,0 +1,91 @@
+{
+  "baseline": {
+    "complete_success": {
+      "count": 0,
+      "denominator": 2
+    },
+    "unsupported_completion": {
+      "count": 1,
+      "denominator": 8
+    },
+    "gap_detection": {
+      "count": 3,
+      "denominator": 8
+    },
+    "clarified_rebuild": {
+      "count": 1,
+      "denominator": 8
+    },
+    "conditional_rebuild": {
+      "count": 0,
+      "denominator": 3
+    },
+    "wall_seconds_sum": 671.3414947270139,
+    "provider_tokens_sum": 95068,
+    "incomplete_or_failed_trials": 13
+  },
+  "text_mode": {
+    "complete_success": {
+      "count": 2,
+      "denominator": 2
+    },
+    "unsupported_completion": {
+      "count": 0,
+      "denominator": 8
+    },
+    "gap_detection": {
+      "count": 8,
+      "denominator": 8
+    },
+    "clarified_rebuild": {
+      "count": 7,
+      "denominator": 8
+    },
+    "conditional_rebuild": {
+      "count": 7,
+      "denominator": 8
+    },
+    "wall_seconds_sum": 851.7505030580032,
+    "provider_tokens_sum": 118651,
+    "incomplete_or_failed_trials": 1
+  },
+  "json_mode": {
+    "complete_success": {
+      "count": 2,
+      "denominator": 2
+    },
+    "unsupported_completion": {
+      "count": 0,
+      "denominator": 8
+    },
+    "gap_detection": {
+      "count": 8,
+      "denominator": 8
+    },
+    "clarified_rebuild": {
+      "count": 8,
+      "denominator": 8
+    },
+    "conditional_rebuild": {
+      "count": 8,
+      "denominator": 8
+    },
+    "wall_seconds_sum": 663.9305814269974,
+    "provider_tokens_sum": 113444,
+    "incomplete_or_failed_trials": 0
+  },
+  "json_diagnostics": {
+    "causes": {
+      "successful_execution": 10,
+      "specific_gap_identified": 8
+    },
+    "retries": 1,
+    "protocol_errors_observed": 1,
+    "terminal_protocol_failures": 0,
+    "model_questions": 7,
+    "validation_questions": 1
+  },
+  "tests": 273,
+  "holdout_accessed": false,
+  "no_generalization_claim": true
+}

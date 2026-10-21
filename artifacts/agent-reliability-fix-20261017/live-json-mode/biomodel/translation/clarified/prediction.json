@@ -1,0 +1,79 @@
+{
+  "state": "completed",
+  "facts": {
+    "s/value": {
+      "value": 0.8,
+      "evidence": [
+        {
+          "source_id": "case",
+          "quote": "Parameter s = 0.8."
+        }
+      ]
+    },
+    "dm/value": {
+      "value": 0.4,
+      "evidence": [
+        {
+          "source_id": "case",
+          "quote": "Parameter dm = 0.4."
+        }
+      ]
+    },
+    "kp/value": {
+      "value": 0.6,
+      "evidence": [
+        {
+          "source_id": "case",
+          "quote": "Parameter kp = 0.6."
+        }
+      ]
+    },
+    "dp/value": {
+      "value": 0.2,
+      "evidence": [
+        {
+          "source_id": "case",
+          "quote": "Parameter dp = 0.2."
+        }
+      ]
+    },
+    "M/initial": {
+      "value": 1.0,
+      "evidence": [
+        {
+          "source_id": "case",
+          "quote": "Initial M = 1.0."
+        }
+      ]
+    },
+    "P/initial": {
+      "value": 0.2,
+      "evidence": [
+        {
+          "source_id": "case",
+          "quote": "Initial P = 0.2."
+        }
+      ]
+    },
+    "rule:M/expression": {
+      "value": "s-dm*M",
+      "evidence": [
+        {
+          "source_id": "case",
+          "quote": "Equation dM/dt = s-dm*M."
+        }
+      ]
+    },
+    "rule:P/expression": {
+      "value": "kp*M-dp*P",
+      "evidence": [
+        {
+          "source_id": "case",
+          "quote": "Equation dP/dt = kp*M-dp*P."
+        }
+      ]
+    }
+  },
+  "proposal_status": "last_attempt_not_necessarily_accepted",
+  "duplicate_targets": []
+}

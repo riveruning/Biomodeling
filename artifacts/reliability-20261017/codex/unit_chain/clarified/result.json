@@ -1,0 +1,19 @@
+{
+  "status": "delivered",
+  "exit_code": 0,
+  "model": "gpt-6.1-sol",
+  "usage": {
+    "input_tokens": 65836,
+    "cached_input_tokens": 56448,
+    "cache_write_input_tokens": 0,
+    "output_tokens": 964,
+    "reasoning_output_tokens": 28
+  },
+  "tokens": null,
+  "calls": null,
+  "workspace": "/tmp/biomodel-reliability-_5n6q30_",
+  "system": "codex",
+  "case": "unit_chain",
+  "phase": "clarified",
+  "elapsed_seconds": 47.03272702999675
+}

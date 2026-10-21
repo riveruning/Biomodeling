@@ -1,0 +1,25 @@
+{
+  "reason": "Initial trial provider 429 errors obscure capability; all 18 input conditions per system rerun in separate directory",
+  "planned_systems": [
+    "biomodel",
+    "kinmodgpt"
+  ],
+  "selection": "all cases and phases, not selected successes/failures",
+  "changes": [
+    "sequential system execution",
+    "five-second pacing before every product request",
+    "five-second pause before KinModGPT trial",
+    "observe successful provider response JSON for parser diagnosis"
+  ],
+  "unchanged": [
+    "input freeze",
+    "original prompts",
+    "model selection",
+    "original parser and tools",
+    "call/repair budgets",
+    "no output correction or retry"
+  ],
+  "not_primary_results": true,
+  "no_conversation_resume": true,
+  "launcher_sha256": "05c2a7516adfc49f3a07669052e83918e14529355c390e519168274cef98fbb4"
+}

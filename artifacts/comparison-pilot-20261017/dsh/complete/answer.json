@@ -1,0 +1,34 @@
+{
+  "status": "ready",
+  "parameters": [
+    {"id": "k1", "value": 1.0, "quote": "e021: k1 = 1.0; k3 = 1.0; k5 = 1.0."},
+    {"id": "k2", "value": 0.1, "quote": "e022: k2 = 0.1; k4 = 0.1; k6 = 0.1."},
+    {"id": "k3", "value": 1.0, "quote": "e021: k1 = 1.0; k3 = 1.0; k5 = 1.0."},
+    {"id": "k4", "value": 0.1, "quote": "e022: k2 = 0.1; k4 = 0.1; k6 = 0.1."},
+    {"id": "k5", "value": 1.0, "quote": "e021: k1 = 1.0; k3 = 1.0; k5 = 1.0."},
+    {"id": "k6", "value": 0.1, "quote": "e022: k2 = 0.1; k4 = 0.1; k6 = 0.1."},
+    {"id": "Ki", "value": 1.0, "quote": "e023: Ki = 1.0."},
+    {"id": "n", "value": 10.0, "quote": "e024: n = 10."}
+  ],
+  "states": [
+    {"id": "X", "initial": 0.1, "quote": "Initial X = 0.1."},
+    {"id": "Y", "initial": 0.2, "quote": "Initial Y = 0.2."},
+    {"id": "Z", "initial": 0.3, "quote": "Initial Z = 0.3."}
+  ],
+  "equations": [
+    {"state": "X", "expression": "k1*Ki**n/(Ki**n + Z**n) - k2*X", "quote": "dX/dt = k1*Ki^n/(Ki^n + Z^n) - k2*X."},
+    {"state": "Y", "expression": "k3*X - k4*Y", "quote": "dY/dt = k3*X - k4*Y."},
+    {"state": "Z", "expression": "k5*Y - k6*Z", "quote": "dZ/dt = k5*Y - k6*Z."}
+  ],
+  "questions": [
+    "Simulate the three-variable Goodwin ODE model from t=0 to t=120 at the 61 time points listed in experiment.json (0.0, 2.0, ..., 120.0).",
+    "Report the values of X, Y, Z at each requested time, using the analyst-specified initial conditions X=0.1, Y=0.2, Z=0.3 and the Figure 2B parameters."
+  ],
+  "limitations": [
+    "Initial conditions X=0.1, Y=0.2, Z=0.3 are analyst-specified exploration values, not original-paper initial conditions; the result is an exploratory simulation, not an exact reproduction of Figure 2B.",
+    "The parameter values are transcribed from Figure 2B images via decimal equivalents; the source is a visual transcription pending independent human review.",
+    "Units are arbitrary (a.u.); no physical unit conversion is justified by this excerpt.",
+    "The model is stiff (n=10 Hill function); the simulation uses solve_ivp with the 'BDF' method and a tight tolerance for stability over the 0-120 time span."
+  ],
+  "initial_origin": "analyst-specified exploration protocol in source.txt lines 27-31, not original-paper initial conditions"
+}

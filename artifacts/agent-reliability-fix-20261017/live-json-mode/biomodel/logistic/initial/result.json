@@ -1,0 +1,17 @@
+{
+  "status": "awaiting_input",
+  "calls": 2,
+  "tokens": 2336,
+  "questions": [
+    "The source gives two equally authoritative alternatives for the ODE: dX/dt = r*X*(1-X/K) OR dX/dt = r*X*(1-X)/K, and does not specify which was used. Which one should the model use?"
+  ],
+  "problems": [],
+  "model_ref": null,
+  "run_ref": null,
+  "agent_ref": "96435782b7a2c2f40c282549ae22a93404df204da3d4d771fefa6aee04bc4737",
+  "product_modules_sha256": "6576b32fccfcdeb47f6de998db003859c0ba3f9c9da831e42eb3155fbbe54775",
+  "system": "biomodel",
+  "case": "logistic",
+  "phase": "initial",
+  "elapsed_seconds": 16.348122145998786
+}

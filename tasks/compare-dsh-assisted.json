@@ -1,0 +1,28 @@
+{
+  "schema_version": "1",
+  "id": "compare-dsh-assisted",
+  "objective": "独立完成一个生物ODE材料重建与模拟任务；这是通用DSH评测，不是产品实现",
+  "context": "只使用给定材料，严格按TASK.md交付。禁止读取其他案例、gold、项目实现或既往评测。可执行性由外部评测器检查，不需要在本会话运行shell。",
+  "read_files": [
+    "benchmarks/inputs/comparison-pilot/assisted/source.txt",
+    "benchmarks/inputs/comparison-pilot/assisted/experiment.json",
+    "benchmarks/inputs/comparison-pilot/assisted/TASK.md"
+  ],
+  "write_files": [
+    "artifacts/comparison-pilot-20261017/dsh/assisted/answer.json",
+    "artifacts/comparison-pilot-20261017/dsh/assisted/simulate.py"
+  ],
+  "expected_files": [
+    "artifacts/comparison-pilot-20261017/dsh/assisted/answer.json",
+    "artifacts/comparison-pilot-20261017/dsh/assisted/simulate.py"
+  ],
+  "instructions": "读取TASK.md、source.txt和experiment.json，将answer.json与simulate.py写入指定的两个允许文件。即使缺信息，也交付说明缺失的两个文件。禁止读取其他任何文件。只使用文件工具，无shell或联网。按通用科学编程方法完成，不能调用biomodel_agent。",
+  "acceptance": [
+    "实际交付模型解释与独立Python程序或明确的缺失信息说明"
+  ],
+  "verification_commands": [],
+  "budget": {
+    "total_ms": 480000,
+    "first_write_ms": 240000
+  }
+}

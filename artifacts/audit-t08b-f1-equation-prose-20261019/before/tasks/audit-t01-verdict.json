@@ -1,0 +1,35 @@
+{
+  "schema_version": "1",
+  "id": "audit-t01-verdict",
+  "objective": "修复严格模式明确验证失败被未知状态掩盖的问题，统一运行、Agent完成与CLI的失败裁决。",
+  "context": "用户要求Codex安排并指挥DSH逐项修复。当前完整回归715通过，但真实非负性失败在严格模式仍让Agent completed。必要契约已保存，先阅读契约。上次派发在申请读取storage.py时因未列入任务范围而停止，未改文件；本次已补入这一只读依赖。本任务不涉及PDF、RAG、证据绑定或恢复机制。新测试文件已经由Codex创建为空文件，供DSH读取后写入实际测试。",
+  "read_files": [
+    "artifacts/audit-t01-verdict-20261019/implementation-contract.md",
+    "src/biomodel_agent/domain/contracts.py",
+    "src/biomodel_agent/domain/serialization.py",
+    "src/biomodel_agent/validation.py",
+    "src/biomodel_agent/storage.py",
+    "tests/test_research_workflows.py"
+  ],
+  "write_files": [
+    "src/biomodel_agent/application.py",
+    "src/biomodel_agent/agent.py",
+    "src/biomodel_agent/cli.py",
+    "tests/test_run_verdict.py"
+  ],
+  "expected_files": [
+    "src/biomodel_agent/application.py",
+    "src/biomodel_agent/agent.py",
+    "src/biomodel_agent/cli.py",
+    "tests/test_run_verdict.py"
+  ],
+  "instructions": "按implementation-contract.md实现。先读必要文件，再对明确位置做小步修改；3个生产文件+1个新测试文件。共享纯裁决helper放application.py，由其他入口复用，避免复制判据。测试覆盖真实链路和未知状态负控制。只有列出的read/write/edit文件工具可用；不得运行测试、shell、网络、子Agent、目录扫描或安装。不得读取其他材料或修改历史测试。交付后简述接口和限制，Codex负责独立测试与验收。",
+  "acceptance": [
+    "严格模式明确数值/静态/比较失败不能被未知来源覆盖",
+    "Agent和CLI复用共享裁决，旧记录的失败事实也不能绕过",
+    "unknown/not_run保持未知，无依据不得提升为pass；已有合法未核验行为保留",
+    "包含真实求解回归和有区分力的负控制，无网络调用"
+  ],
+  "verification_commands": [],
+  "budget": {"first_activity_ms":120000,"idle_ms":180000,"first_write_ms":300000,"write_idle_ms":300000,"total_ms":600000}
+}

@@ -1,0 +1,6 @@
+Synthetic, analyst-specified biochemical ODE model; not a published paper.
+Time t is in minutes. States are dimensionless abstract activities. The fixed compartment has size 1 dimensionless.
+Initial X = 0.2.
+Parameter r = 0.8.
+Parameter K = 2.0.
+The source contains two equally authoritative alternatives: dX/dt = r*X*(1-X/K) OR dX/dt = r*X*(1-X)/K. It does not specify which was used.

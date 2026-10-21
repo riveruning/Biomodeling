@@ -1,0 +1,17 @@
+{
+  "status": "awaiting_input",
+  "calls": 2,
+  "tokens": 2315,
+  "questions": [
+    "The source gives conflicting units for parameter k: the parameter table labels k per second, but the equation legend labels k per minute (k=0.3). Which unit should be used for k in the model?"
+  ],
+  "problems": [],
+  "model_ref": null,
+  "run_ref": null,
+  "agent_ref": "faa5b28d2528ee6d9673190e832264ab3b246b8347936ba1864aab81f0129bde",
+  "product_modules_sha256": "6576b32fccfcdeb47f6de998db003859c0ba3f9c9da831e42eb3155fbbe54775",
+  "system": "biomodel",
+  "case": "unit_decay",
+  "phase": "initial",
+  "elapsed_seconds": 16.46189301299819
+}

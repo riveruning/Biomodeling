@@ -1,0 +1,17 @@
+{
+  "status": "awaiting_input",
+  "calls": 2,
+  "tokens": 2376,
+  "questions": [
+    "The source gives conflicting units for parameter k1: the parameter table labels k1 as per second, but the equation legend labels k1 as per minute (per minute). Which unit should be used for k1 in the model?"
+  ],
+  "problems": [],
+  "model_ref": null,
+  "run_ref": null,
+  "agent_ref": "9a6cc1ad79ecce8db8d548512d6a2c5c3413836c87480b9f10cc27234f37203e",
+  "product_modules_sha256": "6576b32fccfcdeb47f6de998db003859c0ba3f9c9da831e42eb3155fbbe54775",
+  "system": "biomodel",
+  "case": "unit_chain",
+  "phase": "initial",
+  "elapsed_seconds": 16.73259570099981
+}

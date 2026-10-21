@@ -1,0 +1,12 @@
+{
+  "preexisting_changed": [
+    "src/biomodel_agent/agent.py",
+    "docs/optimization-backlog.md",
+    "docs/seven-point-status.md"
+  ],
+  "unexpected_changes": [],
+  "original_tests_unchanged": true,
+  "new_production_modules": [
+    "src/biomodel_agent/invocations.py"
+  ]
+}

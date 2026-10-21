@@ -1,0 +1,71 @@
+{
+  "record": {
+    "trial_id": "fixed_workflow--translation--1--initial",
+    "manifest_sha256": "f2ccd66775137ff2fad83e11ff727b8a47d7f32f01f6c2c9f0d31b59ca9d78fe",
+    "evidence_kind": "scripted_control",
+    "model_config": {
+      "provider": "offline_control",
+      "model": "scripted-fixture",
+      "revision": "not-a-model",
+      "temperature": 0.0,
+      "top_p": 1.0,
+      "max_output_tokens": 1000,
+      "seed": 0
+    },
+    "toolchain_sha256": "149e4a7e2d5c300cf8f180a388a99c103b257c03413ac97b60c3605f955f57bf",
+    "status": "finished",
+    "continuation": "none",
+    "parent_trial_id": null,
+    "observation": {
+      "state": "awaiting_input",
+      "executed": false,
+      "claimed_complete": false,
+      "identified_gaps": [],
+      "question_targets": [],
+      "question_texts": [
+        "What is the initial P value?"
+      ]
+    },
+    "assessment": {
+      "authority": "unreviewed",
+      "reviewer": null,
+      "evidence_refs": [],
+      "numeric": "unknown",
+      "source_support": "unknown",
+      "behavior_labels_reviewed": false
+    },
+    "telemetry": {
+      "model_calls": 1,
+      "tool_calls": 1,
+      "max_request_chars": 2581,
+      "max_response_tokens": null,
+      "elapsed_seconds": 0.15001868499530246,
+      "human_interventions": 0,
+      "human_seconds": 0.0,
+      "input_tokens": null,
+      "output_tokens": null
+    }
+  },
+  "session_ref": "85b33319cb4944dbfbf021031a0d031f0adf9b441097fda7824cde4e0b05e89f",
+  "store_root": "/home/riveruning/biologymodel_agent/artifacts/audit-t08b-workflow-adapters-20261019/development-execution/stores/fixed_workflow--translation--1",
+  "audit": {
+    "supervised": true,
+    "stop_reason": null,
+    "run_ref": null,
+    "native_agent_run_ref": null,
+    "request_refs": [
+      "cc2a33a6fdd50859483cd1ed44271d2bd5b0842a1edef4969ce26a9a15bae588"
+    ],
+    "response_refs": [
+      "c7df3e073163ea2e2d97c69375644ee7129aeacd0eaed84e1a22cf37e966778b"
+    ],
+    "reservation_refs": [
+      "a090e2e4c7c6c0637322c3f695318aa78d6a7ba96b32860c9014296ad94b76a0",
+      "4caf7a14f30a962f9c053402283382b5a5df923705e1fb77801a11c14a11a226"
+    ],
+    "clarification_origin": null,
+    "runtime_adapter_sha256": "bc5684016fa4131bfc91e8db16386adacdbedc644e7e9b4bd68763a66722e1b4",
+    "scientific_support": "unknown",
+    "same_returned_model_verified": true
+  }
+}

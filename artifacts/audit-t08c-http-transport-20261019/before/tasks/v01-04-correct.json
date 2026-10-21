@@ -1,0 +1,28 @@
+{
+  "schema_version": "1",
+  "id": "v01-04-correct",
+  "objective": "修复已定位的证据和存储错误，不改变API。",
+  "context": "模块化Python单体，JSON schema_version=1。已有to_dict/from_dict处理dataclasses。禁止shell/todo_write/glob/联网。Codex验收。",
+  "read_files": [
+    "src/biomodel_agent/domain/serialization.py",
+    "src/biomodel_agent/domain/contracts.py"
+  ],
+  "write_files": [
+    "src/biomodel_agent/storage.py",
+    "src/biomodel_agent/evidence.py",
+    "tests/test_storage_evidence.py",
+    "tests/test_contracts.py"
+  ],
+  "expected_files": [
+    "src/biomodel_agent/storage.py",
+    "src/biomodel_agent/evidence.py",
+    "tests/test_storage_evidence.py",
+    "tests/test_contracts.py"
+  ],
+  "instructions": "具体实测9failed53passed：evidence.add_claim将source_ref = store.get(source_ref)错误覆盖hash为dict，改store.get仅验证不覆盖。tests/test_contracts.py第64行itemassignment应期待TypeError而非AttributeError（针对_pairs属性才AttributeError）。tests/test_storage_evidence PDF夹具写出只有%PDF-1.4\\n，手工拼接忘了parts且没EOF，重写PDF夹具用pypdf.PdfWriter.add_blank_page和PdfWriter.write；含text用pypdf.generic.DecodedStreamObject配真实Helvetica字体引用，PdfWriter维护xref。测试控制~200行，保留hash/refs/tamper/recovery/NaN/claimpage/quoteprecise/scannedPDF/multipagePDF行为，删除重复字段镜像测试。\n存储修复：get/verify/put refs需递归验证整个引用链（不仅直属objecthash），增加seen/depth保护；单写者声明继续，现有文件相同payload复用必须验证且补回缺失SQLite索引。recover捕获JSONDecodeError/UnicodeDecodeError/ArtifactError并报告corrupt而不崩溃。envelope schema仅精确schema_version/kind/payload/refs，kind非空str，refs64hex；reject未知fields；canonicalJSON ensureallow_nanfalse。所有文件勿shell/todo，每文件整写或必要精准edit一次，最后文字完成。",
+  "acceptance": [
+    "原始文件及对象不能静默覆盖",
+    "引用、哈希、位置可验证"
+  ],
+  "verification_commands": []
+}

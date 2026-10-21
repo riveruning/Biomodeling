@@ -1,0 +1,1 @@
+The Na_K pump rate is 3.0 per second.

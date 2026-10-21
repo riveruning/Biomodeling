@@ -1,0 +1,1 @@
+{"kind":"evaluation_response","payload":{"content":"{\"action\": \"run\", \"args\": {}}","returned_model":"scripted-fixture","trial_id":"domain_agent--translation--0--clarified","usage":{}},"refs":["e1de0c17d1c6f167cbcb8829e4057baa6bc096bd5f451e5baab90807d19990a7"],"schema_version":"1"}

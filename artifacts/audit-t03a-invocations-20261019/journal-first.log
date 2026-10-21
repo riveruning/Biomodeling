@@ -1,0 +1,29 @@
+.F...............                                                        [100%]
+=================================== FAILURES ===================================
+_ test_errors_and_interruptions_never_release_attempt_budget_or_record_raw_exception _
+
+tmp_path = PosixPath('/tmp/biomodel-t03a-journal-first/test_errors_and_interruptions_0')
+
+    def test_errors_and_interruptions_never_release_attempt_budget_or_record_raw_exception(tmp_path):
+        store=ArtifactStore(tmp_path)
+        ledger=journal(store)
+        secret='hidden-provider-credential'
+        def fail():
+            raise RuntimeError(secret)
+        with pytest.raises(RuntimeError,match=secret):
+            ledger.invoke('respond',fail)
+        assert ledger.calls==1 and rows(store)[-1]['payload']['phase']=='error'
+        assert secret not in json.dumps(rows(store))
+        def interrupt():
+            raise KeyboardInterrupt()
+        with pytest.raises(KeyboardInterrupt):
+            ledger.invoke('respond',interrupt)
+        assert ledger.calls==2 and rows(store)[-1]['payload']['phase']=='interrupted'
+>       assert rows(store)[-1]['payload']['details']['error_type']=='KeyboardInterrupt'
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       KeyError: 'error_type'
+
+tests/test_invocation_journal.py:54: KeyError
+=========================== short test summary info ============================
+FAILED tests/test_invocation_journal.py::test_errors_and_interruptions_never_release_attempt_budget_or_record_raw_exception
+1 failed, 16 passed in 1.43s

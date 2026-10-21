@@ -1,0 +1,34 @@
+{
+  "schema_version": "1",
+  "id": "v01-07-study-core",
+  "objective": "实现B受约束候选建模、多起点参数估计、干预留出比较和不确定性报告。",
+  "context": "SBML唯一执行真值。拟合初期仅支持constantparameters+parameterstate rate-rules（反应/fundef/derived等拟合明确unsupported，不影响模拟）。根进程拿着holdout，不把它传拟合worker。frozen领域契约和store已定义。所有现成numpy/scipy在.venv，禁shell/todo。",
+  "read_files": [
+    "src/biomodel_agent/domain/contracts.py",
+    "src/biomodel_agent/domain/serialization.py",
+    "src/biomodel_agent/modeling.py",
+    "src/biomodel_agent/simulation.py",
+    "src/biomodel_agent/fitting.py",
+    "src/biomodel_agent/storage.py",
+    "src/biomodel_agent/expressions.py"
+  ],
+  "write_files": [
+    "src/biomodel_agent/hypotheses.py"
+  ],
+  "expected_files": [
+    "src/biomodel_agent/hypotheses.py"
+  ],
+  "budget": {
+    "idle_ms": 360000,
+    "first_write_ms": 480000,
+    "write_idle_ms": 360000,
+    "total_ms": 900000
+  },
+  "instructions": "hypotheses.adaptation_candidates()->dict[str,ModelDraft]：反馈feedback states x,z，params k=2,d=1.2,h=.2,u=1,b=1，x'=k*u-d*x-b*z，z'=h*x；前馈iff：x'=k*(u-b*z)-d*x，z'=h*(u-z)，params k=2,d=1,h=.2,u=1,b=1；baseline：x'=k*u-d*x，params k=2,d=1,u=1,b=1（b unused但protocol统一允许干预）。states initial0 quantityvariable，signed readout deviation不能标真实非负concentration。所有unit='dimensionless'（time second意味着d/h单位需unknown或定义反秒，未知诚实记录）；hypothesis_refs保存新的systemconjecture metadata而不是自动paperfact。说明linearization/scenario，仅候选模板不是开放机制发现。\nhypotheses.run_hypothesis_study(store,candidates,training,holdout=(),observations=(),bounds=None,starts=3,seed=17,max_nfev=100,timeout_s=90,separation_threshold=.05)->str。candidates是dict名称→ModelDraft；默认obs=response=x，defaultbounds k(.5,4),d(.6,1.8),h(.1,.4)（baseline仅k,d），bounds每candidate供覆盖。模型从空草案build而非扫描一个model，每candidate保存Hypothesis/ModelDraft/ModelArtifact+fitting对象 refs；真值generator不可在product代码。拟合worker只接受training；所有candidate拟合完后才读holdout role必须holdout，predict冻结bestparams无refit。记录heldout weightedRMSE/scaledRMSE（scale supplied row?默认1明确记录），ranking仅有holdout时按冻结RMSE，差小于threshold返回indistinguishable，不强制赢家。无holdout返回indistinguishable_from_training并明确观测等价/仍可能有不同预测；模型poorallfit/预测error返回none_adequate而非selectbest。3候选统一budget。\n至少对每fitbest的training第一个condition用libRoadRunner simulate一次校验SciPy预测映射scaledmaxerror <=1e-3（scale1预冻）并记录；失败该candidate不能科学可用。保存holdoutprotocol、数据refs/seed/software/numericdiag，数据不确定性local/Jacobian不是globalidentifiabilityproof。建议实验：在当前候选与bestparams下干预b=0，先predict fixedprotocol无用holdout调参，保存候选输出差异与条件限制；若已有b=0 holdout，描述这是验证干预不是新颖建议。研究包输出kind hypothesis_study payload {status,candidates:...,comparison,experiment_suggestion,limitations} refs所有原始data/models/fits。\n\n现在仅hypotheses.py≤220行，每依赖只读一次，不扫描tests；fitting.py接口 fit_parameters(artifact,training,observations,bounds,starts=3,seed=17,max_nfev=100,timeout_s=90)->dict; predict(artifact,experiment,observations,parameters)->dict。只read/write/edit当前指定文件，先交付文件后文字完成。",
+  "acceptance": [
+    "不同机制从空模型构建",
+    "holdout不能参加拟合",
+    "局部诊断不冒充结构可辨识证明"
+  ],
+  "verification_commands": []
+}

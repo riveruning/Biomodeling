@@ -1,0 +1,53 @@
+{
+  "schema_version": 1,
+  "protocol": "native_system_comparison_v1",
+  "manifest_sha256": "6c97c6c6462b4a6598c1580d5a2863fc70e3977466c7693c4cc3112dff99348b",
+  "trial": {
+    "id": "biomodel--logistic--0--clarified",
+    "system_id": "biomodel",
+    "runtime": "biomodel_agent",
+    "case_id": "logistic",
+    "repeat": 0,
+    "phase": "clarified",
+    "parent_trial_id": "biomodel--logistic--0--initial"
+  },
+  "evidence_kind": "scripted_control",
+  "capture_kind": "product_v1_record",
+  "capture_sha256": "86aa607b4f77c21e5b535309a3e34918c0d76ed6abc11a7c3f35ff5713adcb34",
+  "status": "finished",
+  "session": {
+    "id": "e3287231015ca223a141126aa501c5c1cd9e66a9b520540d3bd6926d99d0e5b4",
+    "mode": "resumed",
+    "parent_record_sha256": "2057eac701fbcd5c905af14f72cb3107ae84fe8cc82d8653512296ab8fc6cc8c",
+    "identity_authenticated": false
+  },
+  "observation": {
+    "state": "completed",
+    "completion_claimed": true,
+    "execution_declared": true,
+    "execution_observed": true,
+    "question_texts": [],
+    "final_messages": [],
+    "artifacts": []
+  },
+  "assessment": {
+    "authority": "unreviewed",
+    "numeric": "unknown",
+    "source_support": "unknown",
+    "behavior_labels_reviewed": false
+  },
+  "telemetry": {
+    "elapsed_seconds": 2.6977181669935817,
+    "model_calls": 3,
+    "tool_items": 3,
+    "tool_count_kind": "domain_tool_invocations",
+    "input_tokens": null,
+    "output_tokens": null,
+    "cached_input_tokens": null,
+    "reasoning_output_tokens": null,
+    "cumulative_elapsed_seconds": 3.1860140029966715
+  },
+  "diagnostics": [
+    "product_v1_observation_attribution_not_identity_authentication"
+  ]
+}

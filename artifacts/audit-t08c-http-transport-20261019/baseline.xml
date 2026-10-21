@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="2" failures="0" skipped="0" tests="2" time="0.083" timestamp="2026-10-19T23:28:00.699860+08:00" hostname="LAPTOP-2QUP5P60"><testcase classname="tests.test_comparison_transport" name="test_http_request_preserves_the_frozen_payload_and_uses_no_real_key" time="0.001"><error message="failed on setup with &quot;FileNotFoundError: [Errno 2] No such file or directory: '/home/riveruning/biologymodel_agent/benchmarks/development/comparison_transport.py'&quot;">@pytest.fixture
+    def transport_module():
+        spec = importlib.util.spec_from_file_location('comparison_transport_acceptance',
+            ROOT/'benchmarks/development/comparison_transport.py')
+        module = importlib.util.module_from_spec(spec)
+&gt;       spec.loader.exec_module(module)
+
+tests/test_comparison_transport.py:18: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+&lt;frozen importlib._bootstrap_external&gt;:991: in exec_module
+    ???
+&lt;frozen importlib._bootstrap_external&gt;:1128: in get_code
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;_frozen_importlib_external.SourceFileLoader object at 0x7ee5c0f72db0&gt;
+path = '/home/riveruning/biologymodel_agent/benchmarks/development/comparison_transport.py'
+
+&gt;   ???
+E   FileNotFoundError: [Errno 2] No such file or directory: '/home/riveruning/biologymodel_agent/benchmarks/development/comparison_transport.py'
+
+&lt;frozen importlib._bootstrap_external&gt;:1186: FileNotFoundError</error></testcase><testcase classname="tests.test_comparison_transport" name="test_preparation_is_offline_frozen_and_never_authorizes_egress" time="0.001"><error message="failed on setup with &quot;FileNotFoundError: [Errno 2] No such file or directory: '/home/riveruning/biologymodel_agent/benchmarks/development/comparison_transport.py'&quot;">@pytest.fixture
+    def transport_module():
+        spec = importlib.util.spec_from_file_location('comparison_transport_acceptance',
+            ROOT/'benchmarks/development/comparison_transport.py')
+        module = importlib.util.module_from_spec(spec)
+&gt;       spec.loader.exec_module(module)
+
+tests/test_comparison_transport.py:18: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+&lt;frozen importlib._bootstrap_external&gt;:991: in exec_module
+    ???
+&lt;frozen importlib._bootstrap_external&gt;:1128: in get_code
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;_frozen_importlib_external.SourceFileLoader object at 0x7ee5c0f73770&gt;
+path = '/home/riveruning/biologymodel_agent/benchmarks/development/comparison_transport.py'
+
+&gt;   ???
+E   FileNotFoundError: [Errno 2] No such file or directory: '/home/riveruning/biologymodel_agent/benchmarks/development/comparison_transport.py'
+
+&lt;frozen importlib._bootstrap_external&gt;:1186: FileNotFoundError</error></testcase></testsuite></testsuites>

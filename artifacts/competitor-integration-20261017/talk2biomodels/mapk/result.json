@@ -1,0 +1,34 @@
+{
+  "system": "Talk2Biomodels",
+  "case": "mapk",
+  "model": "qwen3.8-chat",
+  "variant": "official_graph_alternative_LLM_module_only_environment",
+  "vendor_source_modified": false,
+  "original_model_available": false,
+  "adaptations": [
+    "namespace bootstrap skips only unrelated root app imports",
+    "caller-supplied ChatOpenAI uses alternative provider/model",
+    "module-specific dependencies; full monorepo extras not installed"
+  ],
+  "environment": {
+    "python": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]",
+    "packages": {
+      "tellurium": null,
+      "antimony": null,
+      "libroadrunner": null,
+      "openai": "1.109.1",
+      "copasi-basico": "0.84",
+      "langgraph": "0.3.34",
+      "langchain-core": "0.3.40",
+      "langchain-openai": "0.3.0",
+      "numpy": "1.26.4",
+      "scipy": "1.17.1"
+    }
+  },
+  "graph_import_and_construction": "pass",
+  "status": "integration_or_execution_failed",
+  "error_type": "RuntimeError",
+  "error": "integration_model_call_budget_exhausted",
+  "calls": 8,
+  "elapsed_seconds": 69.21913172000495
+}

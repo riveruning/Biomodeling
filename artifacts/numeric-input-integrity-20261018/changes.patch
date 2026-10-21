@@ -1,0 +1,247 @@
+--- before/src/biomodel_agent/validation.py
++++ after/src/biomodel_agent/validation.py
+@@ -10,6 +10,7 @@
+ from __future__ import annotations
+ 
+ import math
++from collections.abc import Mapping
+ 
+ from .domain.contracts import Check, SimulationResult, ValidationReport
+ 
+@@ -17,24 +18,42 @@
+ 
+ 
+ def _is_finite(value: object) -> bool:
+-    return isinstance(value, (int, float)) and not isinstance(value, bool) and math.isfinite(float(value))
++    try:
++        return isinstance(value, (int, float)) and not isinstance(value, bool) and math.isfinite(float(value))
++    except OverflowError:
++        return False
+ 
+ 
+ def _series(container: object, expected: int, where: str) -> dict[str, tuple[float, ...]]:
+-    if not isinstance(container, dict):
++    if not isinstance(container, Mapping):
+         raise ValueError(f"{where} must be a mapping of column -> sequence")
+     out: dict[str, tuple[float, ...]] = {}
+     for key, value in container.items():
++        if not isinstance(key, str) or not key:
++            raise ValueError(f"{where} column names must be nonempty strings")
+         if not isinstance(value, (list, tuple)):
+             raise ValueError(f"{where}[{key!r}] must be a sequence of numbers")
++        if not all(_is_finite(x) for x in value):
++            raise ValueError(f"{where}[{key!r}] must contain finite numbers (not booleans or strings)")
+         column = tuple(float(x) for x in value)
+         if len(column) != expected:
+             raise ValueError(f"{where}[{key!r}] has {len(column)} values, expected {expected}")
+         for x in column:
+             if not math.isfinite(x):
+                 raise ValueError(f"{where}[{key!r}] contains a non-finite value: {x!r}")
+-        out[str(key)] = column
++        out[key] = column
+     return out
++
++
++def _time_grid(times: object, where: str) -> tuple[float, ...]:
++    if not isinstance(times, (list, tuple)) or not times:
++        raise ValueError(f"{where} must provide a nonempty time grid")
++    if not all(_is_finite(t) for t in times):
++        raise ValueError(f"{where} time grid must contain finite numbers (not booleans or strings)")
++    grid = tuple(float(t) for t in times)
++    if any(b <= a for a, b in zip(grid, grid[1:])):
++        raise ValueError(f"{where} time grid must be strictly increasing")
++    return grid
+ 
+ 
+ def _scales(scales: object, columns: object) -> dict[str, float]:
+@@ -83,13 +102,12 @@
+         return ValidationReport(tuple(checks))
+ 
+     known = set(result.values.keys())
+-    values = _series(dict(result.values), len(result.times), "values")
+-    bad = [f"{k}[{i}]={v!r}" for k, column in values.items()
+-           for i, v in enumerate(column) if not math.isfinite(v)]
+-    if bad:
+-        checks.append(Check(code="finite", status="fail", severity="blocking",
+-                            message="non-finite output: " + ", ".join(bad[:8])))
+-        return ValidationReport(tuple(checks))
++    try:
++        _time_grid(result.times, 'simulation')
++        values = _series(result.values, len(result.times), "values")
++    except ValueError as exc:
++        return ValidationReport((Check(code="finite", status="fail", severity="blocking",
++                                       message=str(exc)),))
+     checks.append(Check(code="finite", status="pass", message="all output values are finite"))
+ 
+     measured: list[str] = []
+@@ -148,7 +166,7 @@
+             raise ValueError('reference column names must be nonempty strings')
+         if not all(_is_finite(value) for value in column):
+             raise ValueError(f'reference.values[{key!r}] must contain finite numbers')
+-    _series(dict(reference.values), len(reference.times), 'reference.values')
++    _series(reference.values, len(reference.times), 'reference.values')
+ 
+ 
+ def compare_series(
+@@ -159,6 +177,11 @@
+ ) -> dict:
+     """Max scaled absolute error between two series on an identical grid."""
+     from .time_units import comparison_time_unit
++    for label, result in (("actual", actual), ("reference", reference)):
++        if not isinstance(result, (SimulationResult, Mapping)):
++            raise ValueError(f"{label} must be a SimulationResult or a series mapping")
++        if isinstance(result, Mapping) and not {'times', 'values'}.issubset(result):
++            raise ValueError(f"{label} must provide times and values")
+     actual_unit = actual.time_unit if isinstance(actual, SimulationResult) else actual.get('time_unit', 'unknown')
+     reference_unit = reference.time_unit if isinstance(reference, SimulationResult) else reference.get('time_unit', 'unknown')
+     clock = comparison_time_unit(actual_unit, reference_unit)
+@@ -180,19 +203,14 @@
+     threshold = float(threshold)
+     if not math.isfinite(threshold) or threshold <= 0.0:
+         raise ValueError(f"threshold must be positive and finite, got {threshold!r}")
+-    if not isinstance(times, (list, tuple)) or not isinstance(ref_times, (list, tuple)):
+-        raise ValueError("both series must provide a time grid")
+-    grid_a = tuple(float(t) for t in times)
+-    grid_b = tuple(float(t) for t in ref_times)
+-    for t in grid_a + grid_b:
+-        if not math.isfinite(t):
+-            raise ValueError(f"time grid contains a non-finite value: {t!r}")
++    grid_a = _time_grid(times, 'actual')
++    grid_b = _time_grid(ref_times, 'reference')
+     if grid_a != grid_b:
+         raise ValueError(f"time grids differ: {len(grid_a)} vs {len(grid_b)} samples")
+     if not grid_a or not values or not ref_values:
+         raise ValueError('comparison requires nonempty samples and columns')
+-    a = _series(dict(values), len(grid_a), "actual.values")
+-    b = _series(dict(ref_values), len(grid_a), "reference.values")
++    a = _series(values, len(grid_a), "actual.values")
++    b = _series(ref_values, len(grid_a), "reference.values")
+     if set(a) != set(b):
+         raise ValueError(f"columns differ: {sorted(set(a) ^ set(b))}")
+     fixed = _scales(scales, sorted(a))
+--- before/tests/test_numeric_input_integrity.py
++++ after/tests/test_numeric_input_integrity.py
+@@ -0,0 +1,93 @@
++"""Invalid trajectories must not be normalized into comparison evidence."""
++from copy import deepcopy
++import json
++import math
++
++import pytest
++
++from biomodel_agent import validation
++from biomodel_agent.domain.contracts import FrozenMap, SimulationResult
++
++
++def data():
++    return {'times': [0., 1.], 'values': {'x': [1., .5]}}
++
++
++INVALID = [
++    {'times': [False, True], 'values': {'x': [1., .5]}},
++    {'times': ['0', '1'], 'values': {'x': [1., .5]}},
++    {'times': [1., 0.], 'values': {'x': [1., .5]}},
++    {'times': [0., 0.], 'values': {'x': [1., .5]}},
++    {'times': [0., float('nan')], 'values': {'x': [1., .5]}},
++    {'times': [0., 1.], 'values': {'x': [True, False]}},
++    {'times': [0., 1.], 'values': {'x': ['1', '.5']}},
++    {'times': [0., 1.], 'values': {'x': [1., float('inf')]}},
++    {'times': [0., 1.], 'values': {3: [1., .5]}},
++    {'times': [0., 1.], 'values': {'': [1., .5]}},
++    {'times': [0., 1.], 'values': [['x', [1., .5]]]},
++    {'times': [0., 1.], 'values': {'x': [1.]}},
++    {'times': [0., 1.]},
++    None,
++]
++
++
++@pytest.mark.parametrize('invalid', INVALID)
++@pytest.mark.parametrize('side', ['actual', 'reference'])
++def test_invalid_trajectory_cannot_be_compared(side, invalid):
++    actual, reference = data(), data()
++    if side == 'actual': actual = invalid
++    else: reference = invalid
++    with pytest.raises(ValueError):
++        validation.compare_series(actual, reference, {'x': 1.})
++
++
++@pytest.mark.parametrize('value', [float('nan'), float('inf'), -float('inf')])
++def test_nonfinite_numeric_result_returns_blocking_report(value):
++    result = SimulationResult('succeeded', (0., 1.), {'x': [1., value]})
++    report = validation.validate_numeric(result, nonnegative=('x',))
++    assert not report.can_execute and not report.fully_passed
++    assert any(c.code == 'finite' and c.status == 'fail' and c.severity == 'blocking' for c in report.checks)
++    # The diagnostic itself remains JSON safe; the original numeric evidence is unchanged.
++    json.dumps([c.message for c in report.checks], allow_nan=False)
++    assert result.values['x'][1] == value or math.isnan(result.values['x'][1])
++
++
++@pytest.mark.parametrize('times', [(1., 0.), (0., 0.)])
++def test_invalid_result_grid_returns_blocking_report(times):
++    result = SimulationResult('succeeded', times, {'x': [1., .5]})
++    report = validation.validate_numeric(result)
++    assert not report.can_execute and 'strictly increasing' in report.checks[0].message
++
++
++@pytest.mark.parametrize('as_result', [False, True])
++def test_analytical_decay_error_and_threshold_unchanged(as_result):
++    ref = {'times': [0, 1], 'values': {'x': [1, math.exp(-.4)]}}
++    actual = deepcopy(ref); actual['values']['x'][1] += .002
++    before = deepcopy(actual)
++    if as_result:
++        reference = SimulationResult('succeeded', tuple(ref['times']), ref['values'])
++        observed = SimulationResult('succeeded', tuple(actual['times']), actual['values'])
++    else:
++        reference, observed = ref, actual
++    outcome = validation.compare_series(observed, reference, {'x': 2.}, .0011)
++    assert outcome['status'] == 'pass' and outcome['max_scaled_error'] == pytest.approx(.001)
++    assert validation.compare_series(observed, reference, {'x': 2.}, .0009)['status'] == 'fail'
++    assert actual == before
++
++
++def test_immutable_column_mapping_is_supported_without_stringifying_names():
++    actual = {'times': [0., 1.], 'values': FrozenMap({'x': (1., .5)})}
++    assert validation.compare_series(actual, data(), {'x': 1.})['status'] == 'pass'
++
++
++def test_negative_start_and_single_sample_are_valid_grids():
++    one = {'times': [-1.], 'values': {'x': [1.]}}
++    assert validation.compare_series(one, one, {'x': 1.})['status'] == 'pass'
++
++
++def test_huge_integer_not_representable_as_float_is_rejected_cleanly():
++    invalid = {'times': [0., 1.], 'values': {'x': [1., 10 ** 400]}}
++    with pytest.raises(ValueError, match='finite numbers'):
++        validation.compare_series(invalid, data(), {'x': 1.})
++    with pytest.raises(ValueError, match='positive finite'):
++        validation.validate_scales({'x': 10 ** 400})
+--- before/docs/numeric-input-integrity.md
++++ after/docs/numeric-input-integrity.md
+@@ -0,0 +1,19 @@
++# 数值轨迹输入完整性（2026-10-18）
++
++## 已复现缺陷
++
++直接调用比较接口时，布尔值或数字字符串会被 float 转成普通数字；两份同样错误的数据可被判为 pass。两份同样倒序或包含重复时间点的轨迹也可通过。另外，validate_numeric 对成功状态但含 NaN/Infinity 的 SimulationResult 调用内部列解析时会抛 ValueError，原有构造失败报告的分支无法执行。
++
++修复前后的可复现输入与结果保存在 artifacts/numeric-input-integrity-20261018/before.json、after.json。
++
++## 改动
++
++比较接口要求结果为 SimulationResult 或包含 times/values 的映射；时间点为非空、有限、严格递增的数字序列，拒绝布尔值与字符串。列容器必须为映射，每个列名须为非空字符串，列值须为长度匹配的有限数字序列。不再把列表键值对转换成映射，或把非字符串列名转成字符串。保留 FrozenMap 支持、单采样点及负起点。
++
++validate_numeric 将不可用轨迹转换为 blocking 的 finite/fail 检查报告，不因 NaN/Infinity 或倒序时间点抛出原有解析异常；不修改原始结果，不裁剪、填充或修复数据。超出浮点表示范围的整数被视为非法输入，避免转换溢出。固定尺度和误差阈值公式未变。
++
++## 验证
++
++新增 38 项回归，分别覆盖实际/参考两侧的类型、时间网格、列名、长度、容器和有限性问题，非有限输出的失败报告，解析衰减轨迹的误差阈值、不可变映射及边界网格。完整测试 526 项，以 artifacts/numeric-input-integrity-20261018/acceptance.json 与 installed-pytest.xml 为最终证据。另做三个原检查点的脚本化离线兼容演练，仍不代表模型自主完成。
++
++此次只修改数值验证模块及测试/说明，不调用外部模型，不改变独立测试集或历史评测成绩。严格检查无法恢复进入 SimulationResult 构造前已被其他调用者转换的信息；这不是对所有输入链路的形式化证明。
+--- before/README.md
++++ after/README.md
+@@ -111,3 +111,5 @@
+ 2026-10-18 参考输入：[参考结果输入验证](docs/reference-input-validation.md)。修复评分配置导致失败参考被误读为成功的问题；在执行和任务恢复前验证参考可用性，完整回归 464 项。
+ 
+ 2026-10-18 评分尺度：[固定评分尺度预检](docs/fixed-scale-preflight.md)。拒绝布尔值等非法尺度，执行与恢复前检查参考列覆盖；解析解、缓存与重放回归保留，完整测试 488 项。
++
++2026-10-18 轨迹输入：[数值轨迹输入完整性](docs/numeric-input-integrity.md)。比较拒绝隐式类型转换与非法时间网格；非有限输出产生阻断报告。完整回归 526 项。

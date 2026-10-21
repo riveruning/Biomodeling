@@ -1,0 +1,11 @@
+✔ runtime overlay preserves original config and credential reference, bounds retries (2.36022ms)
+✔ runtime overrides only configured models and supported wire protocols (0.711148ms)
+✔ runtime refuses to copy a plain credential into its overlay (0.519428ms)
+ℹ tests 3
+ℹ suites 0
+ℹ pass 3
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 11.906783

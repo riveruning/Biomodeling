@@ -1,0 +1,24 @@
+{
+  "status": "executed",
+  "initial_values": {
+    "R": 0.0,
+    "P": 0.0
+  },
+  "parameters": {
+    "km_R_P": 1.0,
+    "K_R_P": 1.0,
+    "n_R_P": 1.0,
+    "kdeg_R": 1.0,
+    "kp_R_P": 1.0,
+    "kdeg_P": 1.0
+  },
+  "calls": 1,
+  "tokens": 946,
+  "variant": "official_original_prompt_alternative_LLM_compatible_runtime",
+  "questions": [],
+  "native_clarification_capability": "not_available",
+  "system": "kinmodgpt",
+  "case": "feedback",
+  "phase": "initial",
+  "elapsed_seconds": 4.399300386001414
+}

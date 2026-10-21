@@ -1,0 +1,125 @@
+{
+  "task_id": "T08c",
+  "status": "engineering_accepted",
+  "T08_actual_same_model_comparison": "pending",
+  "checks": {
+    "baseline": {
+      "tests": 2,
+      "errors": 2,
+      "failures": 0,
+      "skipped": 0,
+      "time": 0.083
+    },
+    "expanded": {
+      "tests": 62,
+      "errors": 0,
+      "failures": 0,
+      "skipped": 0,
+      "time": 22.195
+    },
+    "final-controls": {
+      "tests": 74,
+      "errors": 0,
+      "failures": 0,
+      "skipped": 0,
+      "time": 29.476
+    },
+    "first": {
+      "tests": 2,
+      "errors": 0,
+      "failures": 0,
+      "skipped": 0,
+      "time": 1.814
+    },
+    "focused": {
+      "tests": 165,
+      "errors": 0,
+      "failures": 0,
+      "skipped": 0,
+      "time": 76.119
+    },
+    "full": {
+      "tests": 1309,
+      "errors": 0,
+      "failures": 0,
+      "skipped": 0,
+      "time": 330.77
+    }
+  },
+  "baseline_note": "Two missing-module setup errors establish absent HTTP/preparation capabilities, not regressions in existing product behavior.",
+  "new_controls": 74,
+  "original_product_source_and_tests_unchanged": true,
+  "original_scorer_and_scripted_driver_unchanged": true,
+  "original_baseline_files": 217,
+  "modified_baseline_files": [
+    "benchmarks/development/workflow_adapters.py",
+    "docs/agent-evaluation-protocol.md",
+    "docs/optimization-backlog.md",
+    "docs/seven-point-status.md",
+    "docs/workflow-adapters.md"
+  ],
+  "prior_artifact_files_unchanged": 2425,
+  "product_toolchain_sha256": "abad7db107b62cb942b96ec88df701d47c8eb236275d0cf17216f37da6686252",
+  "manifest_and_script_identical_to_F1": true,
+  "http_mock_execution": {
+    "status": "adapter_execution_complete",
+    "planned_trials": 30,
+    "finished_records": 30,
+    "operational_statuses": {
+      "finished": 30
+    },
+    "observed_states": {
+      "completed": 18,
+      "awaiting_input": 12
+    },
+    "provider_requests": 66,
+    "online_inference_calls": 0,
+    "scientific_execution_attempts": 18,
+    "evidence_kind": "scripted_control",
+    "scientific_support": "unknown",
+    "note": "Adapter execution evidence; scripted decisions and unreviewed assessments are not model capability scores."
+  },
+  "actual_http_receipts": 66,
+  "actual_original_native_task_resumes": 4,
+  "numeric_diagnostics": "http-scientific-results.json",
+  "preparation_example_status": "prepared_only_no_authorization",
+  "selected_real_provider_or_model": false,
+  "real_credential_reads": 0,
+  "unit_credential_controls": "Only explicit T08C fake/unset environment names; MockTransport uses a fixed dummy token without reading the actual key.",
+  "online_inference_calls": 0,
+  "actual_human_review_decisions": 0,
+  "old_USTC_c13_c18_denials_retried": false,
+  "changed_files": [
+    "benchmarks/development/comparison_transport.py",
+    "benchmarks/development/workflow_adapters.py",
+    "tests/test_comparison_transport.py",
+    "docs/comparison-transport.md",
+    "docs/workflow-adapters.md",
+    "docs/agent-evaluation-protocol.md",
+    "docs/optimization-backlog.md",
+    "docs/seven-point-status.md",
+    "tasks/audit-t08c-http-transport.json"
+  ],
+  "final_hashes": {
+    "benchmarks/development/comparison_transport.py": "47e2d383a75d56bffe52c0858c24a026775a45d866fea9d58102b21b2c83b6c4",
+    "benchmarks/development/workflow_adapters.py": "1184e44fe5386cff8cce5c05f644668263ab74b1550af8e2e587bc2cf5372aaf",
+    "tests/test_comparison_transport.py": "d3d9b4e65e65629adf86231da856b6a430c4914f9c502ddb1b68f77bffb78e51",
+    "docs/comparison-transport.md": "271ab70440fa884ffe27a187a3791343ec5f92bd831e74ac7f9ecad9c225db1c",
+    "docs/workflow-adapters.md": "aa5718415a10f0f45f5216c314387e540dd61bfaefffeb72ee1ccda25a06892a",
+    "docs/agent-evaluation-protocol.md": "ffa0bbdc494a876db87b8db189aefed8fdc623303a7018e30e4a15560277ddb8",
+    "docs/optimization-backlog.md": "7493f8374b80b5a46846689e701cd075d90fc49d855c1ddbfd9404231b8304cf",
+    "docs/seven-point-status.md": "abaf68cae5a97242db96e5977d634367644fbad2493959f1fc6a70cecc582431",
+    "tasks/audit-t08c-http-transport.json": "1d98f1f25c2e7549f63054b61ee14b25c75c1a09893c01df9608df871eb79088"
+  },
+  "diff": "changes.patch",
+  "official_protocol_reference": "https://developers.openai.com/api/reference/resources/chat/subresources/completions/methods/create",
+  "limits": [
+    "Legacy non-streaming Chat Completions subset only; actual provider/model parameter support unverified, no silent fallbacks.",
+    "Declared/returned model, revision and fingerprint are attribution, not provider/model authentication.",
+    "Preparation freezes a proposed concrete scope and cannot grant transmission authorization; CLI has no execution command.",
+    "HTTP mocks and literal scripted decisions are engineering controls, never real model capability results.",
+    "All assessments remain unreviewed and source semantic support unknown.",
+    "HTTP phase timeouts and decoded byte limits have documented bounds; POSIX supervisor supplies the common hard deadline.",
+    "No new papers, dependencies, independent evalset, real credentials or c13/c18 materials accessed."
+  ]
+}

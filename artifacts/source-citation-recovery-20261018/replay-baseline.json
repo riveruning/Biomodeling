@@ -1,0 +1,164 @@
+{
+  "kind": "offline_submit_draft_replay",
+  "model_calls": 0,
+  "full_agent_success_measured": false,
+  "modules_sha256": "247383f706a0ccfdb63c84e45360d79be7c44cf3beb52d6477ba4a63a38cc0de",
+  "rows": [
+    {
+      "case": "c13_mm_with_inhibitor_ambiguous",
+      "phase": "resume",
+      "response_file": "/home/riveruning/biologymodel_agent/artifacts/holdout-evaluation-20261017/runs/biomodel/c13_mm_with_inhibitor_ambiguous/incomplete/resume/response-01.json",
+      "state": "awaiting_input",
+      "problems": [
+        "rule:I/expression: cite the researcher clarification used to resolve this target"
+      ],
+      "source_issues": [],
+      "model_ref": null
+    },
+    {
+      "case": "c18_two_pathway_unit_conflict",
+      "phase": "clarified",
+      "response_file": "/home/riveruning/biologymodel_agent/artifacts/holdout-evaluation-20261017/runs/biomodel/c18_two_pathway_unit_conflict/clarified/clarified/response-02.json",
+      "state": "awaiting_input",
+      "problems": [
+        "kf/value: please clarify conflicting declared values",
+        "kg/value: please clarify conflicting declared values"
+      ],
+      "source_issues": [
+        {
+          "target": "kf/value",
+          "kind": "conflicting_declared_values",
+          "question": "kf/value: please clarify conflicting declared values",
+          "evidence": [
+            {
+              "source_ref": "0b4e9c2bdc0bb4696dfa3b52d891a0f037068c925ad7a2dc7ce85017d3ba19b3",
+              "page": 1,
+              "start": 577,
+              "end": 713,
+              "quote": "Parameter table. The entry for the fast route reads: 'kf = 0.18 per minute'. The entry for the slow route reads: 'kg = 0.12 per minute'.",
+              "value": 0.18,
+              "unit": "per minute"
+            },
+            {
+              "source_ref": "0b4e9c2bdc0bb4696dfa3b52d891a0f037068c925ad7a2dc7ce85017d3ba19b3",
+              "page": 1,
+              "start": 714,
+              "end": 1048,
+              "quote": "Equations legend. The legend immediately below the equation set annotates the same two symbols differently: it states 'kf = 0.18 per hour' and, in a second line, 'kg = 0.12 per minute'. It also adds a sentence describing kf as 'the fast-route rate constant, which should be entered as 10.8 per hour if the timetable is kept in hours'.",
+              "value": 0.18,
+              "unit": "per hour"
+            },
+            {
+              "source_ref": "0b4e9c2bdc0bb4696dfa3b52d891a0f037068c925ad7a2dc7ce85017d3ba19b3",
+              "page": 1,
+              "start": 1414,
+              "end": 1717,
+              "quote": "The legend's 'per hour' annotation for kf is a typographical error. All three figures describe one physical rate: kf = 0.18 per minute = 10.8 per hour = 0.003 per second. kg = 0.12 per minute as printed. Use the per-minute values directly with the minute timetable; total rate kf + kg = 0.30 per minute.",
+              "value": 0.18,
+              "unit": "per minute"
+            }
+          ]
+        },
+        {
+          "target": "kg/value",
+          "kind": "conflicting_declared_values",
+          "question": "kg/value: please clarify conflicting declared values",
+          "evidence": [
+            {
+              "source_ref": "0b4e9c2bdc0bb4696dfa3b52d891a0f037068c925ad7a2dc7ce85017d3ba19b3",
+              "page": 1,
+              "start": 577,
+              "end": 713,
+              "quote": "Parameter table. The entry for the fast route reads: 'kf = 0.18 per minute'. The entry for the slow route reads: 'kg = 0.12 per minute'.",
+              "value": 0.12,
+              "unit": "per minute"
+            },
+            {
+              "source_ref": "0b4e9c2bdc0bb4696dfa3b52d891a0f037068c925ad7a2dc7ce85017d3ba19b3",
+              "page": 1,
+              "start": 714,
+              "end": 1048,
+              "quote": "Equations legend. The legend immediately below the equation set annotates the same two symbols differently: it states 'kf = 0.18 per hour' and, in a second line, 'kg = 0.12 per minute'. It also adds a sentence describing kf as 'the fast-route rate constant, which should be entered as 10.8 per hour if the timetable is kept in hours'.",
+              "value": 0.12,
+              "unit": "per minute"
+            },
+            {
+              "source_ref": "0b4e9c2bdc0bb4696dfa3b52d891a0f037068c925ad7a2dc7ce85017d3ba19b3",
+              "page": 1,
+              "start": 1414,
+              "end": 1717,
+              "quote": "The legend's 'per hour' annotation for kf is a typographical error. All three figures describe one physical rate: kf = 0.18 per minute = 10.8 per hour = 0.003 per second. kg = 0.12 per minute as printed. Use the per-minute values directly with the minute timetable; total rate kf + kg = 0.30 per minute.",
+              "value": 0.12,
+              "unit": "per minute"
+            },
+            {
+              "source_ref": "0b4e9c2bdc0bb4696dfa3b52d891a0f037068c925ad7a2dc7ce85017d3ba19b3",
+              "page": 1,
+              "start": 1414,
+              "end": 1717,
+              "quote": "The legend's 'per hour' annotation for kf is a typographical error. All three figures describe one physical rate: kf = 0.18 per minute = 10.8 per hour = 0.003 per second. kg = 0.12 per minute as printed. Use the per-minute values directly with the minute timetable; total rate kf + kg = 0.30 per minute.",
+              "value": 0.3,
+              "unit": "per minute"
+            }
+          ]
+        }
+      ],
+      "model_ref": null
+    },
+    {
+      "case": "c18_two_pathway_unit_conflict",
+      "phase": "resume",
+      "response_file": "/home/riveruning/biologymodel_agent/artifacts/holdout-evaluation-20261017/runs/biomodel/c18_two_pathway_unit_conflict/incomplete/resume/response-01.json",
+      "state": "awaiting_input",
+      "problems": [
+        "kg/value: please clarify conflicting declared values"
+      ],
+      "source_issues": [
+        {
+          "target": "kg/value",
+          "kind": "conflicting_declared_values",
+          "question": "kg/value: please clarify conflicting declared values",
+          "evidence": [
+            {
+              "source_ref": "4d221b2eeb9104b1c2a9bd1396cb05a95e97c000dc9952b2881e94a87c76028f",
+              "page": 1,
+              "start": 577,
+              "end": 713,
+              "quote": "Parameter table. The entry for the fast route reads: 'kf = 0.18 per minute'. The entry for the slow route reads: 'kg = 0.12 per minute'.",
+              "value": 0.12,
+              "unit": "per minute"
+            },
+            {
+              "source_ref": "4d221b2eeb9104b1c2a9bd1396cb05a95e97c000dc9952b2881e94a87c76028f",
+              "page": 1,
+              "start": 714,
+              "end": 1048,
+              "quote": "Equations legend. The legend immediately below the equation set annotates the same two symbols differently: it states 'kf = 0.18 per hour' and, in a second line, 'kg = 0.12 per minute'. It also adds a sentence describing kf as 'the fast-route rate constant, which should be entered as 10.8 per hour if the timetable is kept in hours'.",
+              "value": 0.12,
+              "unit": "per minute"
+            },
+            {
+              "source_ref": "e7e98c2a81330da24ad5e999e8011c36237eb2c279783e1a2e49967feeef6483",
+              "page": 1,
+              "start": 261,
+              "end": 564,
+              "quote": "The legend's 'per hour' annotation for kf is a typographical error. All three figures describe one physical rate: kf = 0.18 per minute = 10.8 per hour = 0.003 per second. kg = 0.12 per minute as printed. Use the per-minute values directly with the minute timetable; total rate kf + kg = 0.30 per minute.",
+              "value": 0.12,
+              "unit": "per minute"
+            },
+            {
+              "source_ref": "e7e98c2a81330da24ad5e999e8011c36237eb2c279783e1a2e49967feeef6483",
+              "page": 1,
+              "start": 261,
+              "end": 564,
+              "quote": "The legend's 'per hour' annotation for kf is a typographical error. All three figures describe one physical rate: kf = 0.18 per minute = 10.8 per hour = 0.003 per second. kg = 0.12 per minute as printed. Use the per-minute values directly with the minute timetable; total rate kf + kg = 0.30 per minute.",
+              "value": 0.3,
+              "unit": "per minute"
+            }
+          ]
+        }
+      ],
+      "model_ref": null
+    }
+  ]
+}

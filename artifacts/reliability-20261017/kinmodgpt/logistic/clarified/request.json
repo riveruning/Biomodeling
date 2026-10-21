@@ -1,0 +1,18 @@
+{
+  "model": "qwen3.8-chat",
+  "messages": [
+    {
+      "role": "system",
+      "content": "You are a program that converts biochemical reactions written in natural language into Antimony language. First, remember the following conversion rules.\n\n# Conversion rules\n| Natural language | Antimony language | \n| E catalyzes the conversion of X to Y | X -> Y ; kcat_E_X_Y * E * X / ( Km_E_X_Y + X ) ; kcat_E_X_Y = 1 ; Km_E_X_Y = 1; E = 1 |\n| X is phosphorylated | X -> X_P ; Vp_X * X / ( Km_X + X ) ; Vp_X = 1 ; Km_X = 1 |\n| X is converted into Y | X -> Y ; kc_X_Y * X; kc_X_Y = 1 |\n| X and Y bind to form Z | X + Y -> Z ; ka_X_Y_Z * X * Y ; ka_X_Y_Z = 1 |\n| X dissociates into Y and Z | X -> Y + Z ; kd_X_Y_Z * X ; kd_X_Y_Z = 1 |\n| X is produced (or transcribed) | -> X ; km_X ; km_X  = 1 |\n| Expression of X is repressed (or negatively regulated or downregulated) by R | -> X ; km_X_R * K_X_R ^ n_X_R / ( K_X_R ^ n_X_R + R ^ n_X_R ) ; km_X_R = 1 ; K_X_R = 1 ; n_X_R = 1 |\n| Expression of X is activated (or positively regulated or upregulated) by A | -> X ; km_X_A * A ^ n_X_A / ( K_X_A ^ n_X_A + A ^ n_X_A ) ; km_X_A = 1 ; K_X_A = 1 ; n_X_A = 1 |\n| Y is translated from X | -> Y ; kp_X_Y * X ; kp_X_Y = 1 |\n| X degrades (or decays) | X -> ; kdeg_X * X ; kdeg_X = 1 |\n| X (concentration) is Y M (or mM or uM or nM or pM) | X = Y |\n\n# Examples\n\"The expression of G is negatively regulated by R.\" is converted into \"-> G ; km_G_R * K_G_R ^ n_G_R / ( K_G_R ^ n_G_R + R ^ n_G_R ) ; km_G_R = 1 ; K_G_R = 1 ; n_G_R = 1\"\n\"G is upregulated by A.\" is converted into \"-> G ; km_G_A * A ^ n_G_A / ( K_G_A ^ n_G_A + A ^ n_G_A ) ; km_G_A = 1 ; K_G_A = 1 ; n_G_A = 1\"\n\nUsing the conversion rules provided, convert the biochemical reactions listed below into Antimony language. After converting each reaction, create a bullet point list that includes all the resulting expressions. In the list, show one reaction per line. No need to provide further explanations, just present the list. Start each line with '-'.\n\n"
+    },
+    {
+      "role": "user",
+      "content": "Synthetic, analyst-specified biochemical ODE model; not a published paper.\nTime t is in minutes. States are dimensionless abstract activities. The fixed compartment has size 1 dimensionless.\nInitial X = 0.2.\nParameter r = 0.8.\nParameter K = 2.0.\nThe source contains two equally authoritative alternatives: dX/dt = r*X*(1-X/K) OR dX/dt = r*X*(1-X)/K. It does not specify which was used.\n\nAuthor clarification (supersedes the unresolved statement above):\nThe author confirms the intended equation is dX/dt = r*X*(1-X/K). The alternative is rejected.\n"
+    }
+  ],
+  "temperature": 0,
+  "max_tokens": 6144,
+  "top_p": 1,
+  "frequency_penalty": 0,
+  "presence_penalty": 0
+}

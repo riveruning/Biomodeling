@@ -1,0 +1,89 @@
+{
+  "status": "accepted",
+  "created_at": "2026-10-18T12:22:23.456219+00:00",
+  "scope": "reference input integrity across strict CLI decoding, early API/agent preflight and mapping comparison",
+  "files": [
+    {
+      "path": "src/biomodel_agent/cli.py",
+      "staged": "src/biomodel_agent/cli.py",
+      "before_sha256": "31958e54bdc86907afec350f0de2156062149506fdfb38782ad15d656d443a45",
+      "after_sha256": "e8d214590013e4ea6528b465d7755a8d95413f5dd500dc7fe15014d3b810cb9b"
+    },
+    {
+      "path": "src/biomodel_agent/validation.py",
+      "staged": "src/biomodel_agent/validation.py",
+      "before_sha256": "6be9467a22ab468f51341fce50fbe7f103baf6103c3a1a972ddc719b51467375",
+      "after_sha256": "945f24af263c437c77163836bf58da0c7ec5063756d331a8a61cf8586adbe07f"
+    },
+    {
+      "path": "src/biomodel_agent/application.py",
+      "staged": "src/biomodel_agent/application.py",
+      "before_sha256": "a82b2279c7fb44cdb32239e11196c8b834579f5c56d284fdc7b098160b7f054d",
+      "after_sha256": "efabd84d6c6009a5987afa439c4c8bc6a3b8a0b7824438c1beda64c2412630ea"
+    },
+    {
+      "path": "src/biomodel_agent/agent.py",
+      "staged": "src/biomodel_agent/agent.py",
+      "before_sha256": "63bbd46ecec55158fc9a2e1fc34191a5c11dc44bf7614f46f9289b9f1cd8c3c9",
+      "after_sha256": "073aabd2760deed9abec18390df94c3bebe6bf9edd7a9287b7008f82346d287e"
+    },
+    {
+      "path": "tests/test_reference_input_validation.py",
+      "staged": "tests/test_reference_input_validation.py",
+      "before_sha256": null,
+      "after_sha256": "420f3928d3439adefe4617198ea776fab5252af9eef8c4d7618fde564802f42a"
+    },
+    {
+      "path": "docs/reference-input-validation.md",
+      "staged": "docs/reference-input-validation.md",
+      "before_sha256": null,
+      "after_sha256": "6ca88fba5865f09e639563f66f35f85f6f51e24dc40c35cee74014d141f6a8f5"
+    },
+    {
+      "path": "README.md",
+      "staged": "README.md",
+      "before_sha256": "14af688765ccc717aa19f7186a5468d30944c7b9616fb4f2075ba3fcb0285502",
+      "after_sha256": "ec72c70b63876d67a4785f48eccd70768b0fdec33d2d6f3f4b98c2e0823a9b7b"
+    }
+  ],
+  "baseline_tests": 431,
+  "tests": {
+    "tests": 464,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "validation": "existing project suite with staged modified modules, 33 new reference input regressions; identical copied storage test keeps spawned imports on staged source",
+  "pytest_log": "pytest.log",
+  "pytest_xml": "pytest.xml",
+  "offline_original_proposals": 3,
+  "new_model_calls": 0,
+  "full_agent_benchmark_success_measured": false,
+  "original_evaluation_modified": false,
+  "independent_holdout": false,
+  "known_limitations": [
+    "reference preflight validates usability, not scientific truth",
+    "no new live LLM performance measurement",
+    "labels are declarations, not source verification; no automatic time conversion"
+  ],
+  "installed_tests": {
+    "tests": 464,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "installed_test_command": [
+    "/home/riveruning/biologymodel_agent/.venv/bin/python",
+    "-m",
+    "pytest",
+    "-q",
+    "-p",
+    "no:cacheprovider",
+    "--basetemp=/tmp/biology-agent-reference-input-installed-20261018",
+    "--junitxml=/home/riveruning/biologymodel_agent/artifacts/reference-input-validation-20261018/installed-pytest.xml"
+  ],
+  "installed_test_exit_code": 0,
+  "old_checkpoint_exercise_exit_code": 0,
+  "old_checkpoint_exercise_is_scripted": true,
+  "old_checkpoint_exercise_completed": 3
+}

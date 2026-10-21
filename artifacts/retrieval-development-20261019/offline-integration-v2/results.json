@@ -1,0 +1,11 @@
+{
+  "kind": "scripted_offline_integration_not_model_performance",
+  "agent_run_ref": "72d5ab529cd5587b870d0e655bc2353e88afd219ab83c20ceeace20e2d354625",
+  "state": "completed",
+  "calls": 4,
+  "retrieval_method": "passage_v2",
+  "actual_endpoint": 0.6703202833572259,
+  "analytic_endpoint": 0.6703200460356393,
+  "absolute_error": 2.373215866047218e-07,
+  "scientific_status": "not_verified"
+}

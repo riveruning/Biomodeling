@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="7" skipped="0" tests="15" time="3.756" timestamp="2026-10-19T16:28:42.696016+08:00" hostname="LAPTOP-2QUP5P60"><testcase classname="tests.test_study_execution_acceptance" name="test_core_all_fit_timeouts_cannot_claim_completed" time="0.197"><failure message="AssertionError: assert 'completed' != 'completed'">tmp_path = PosixPath('/tmp/biomodel-t04-baseline/test_core_all_fit_timeouts_can0')
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x771d944bddc0&gt;
+
+    def test_core_all_fit_timeouts_cannot_claim_completed(tmp_path, monkeypatch):
+        store, settings, _, _, _ = prepared(tmp_path)
+        monkeypatch.setattr(fitting, 'fit_parameters', fail_fits)
+        candidates = {'cand_baseline': hypotheses.adaptation_candidates()['cand_baseline']}
+        result = store.get(hypotheses.run_hypothesis_study(store, candidates, settings['training'],
+            settings['holdout'], starts=1))['payload']
+&gt;       assert result['status'] != 'completed'
+E       AssertionError: assert 'completed' != 'completed'
+
+tests/test_study_execution_acceptance.py:36: AssertionError</failure></testcase><testcase classname="tests.test_study_execution_acceptance" name="test_legacy_cli_all_fit_timeouts_must_fail" time="0.291"><failure message="assert 0 != 0">tmp_path = PosixPath('/tmp/biomodel-t04-baseline/test_legacy_cli_all_fit_timeou0')
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x771e0c50afc0&gt;
+capsys = &lt;_pytest.capture.CaptureFixture object at 0x771d944be4e0&gt;
+
+    def test_legacy_cli_all_fit_timeouts_must_fail(tmp_path, monkeypatch, capsys):
+        store, settings, _, _, _ = prepared(tmp_path)
+        training = tmp_path / 'training.json'; training.write_text(json.dumps(settings['training']))
+        holdout = tmp_path / 'holdout.json'; holdout.write_text(json.dumps(settings['holdout']))
+        monkeypatch.setattr(fitting, 'fit_parameters', fail_fits)
+        code = cli.main(['hypothesis', '--training', str(training), '--holdout', str(holdout),
+                         '--starts', '1', '--store', str(store.root)])
+&gt;       assert code != 0
+E       assert 0 != 0
+
+tests/test_study_execution_acceptance.py:47: AssertionError</failure></testcase><testcase classname="tests.test_study_execution_acceptance" name="test_heldout_prediction_failure_is_not_completed_research" time="1.387"><failure message="assert True is False">tmp_path = PosixPath('/tmp/biomodel-t04-baseline/test_heldout_prediction_failur0')
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x771d9481e300&gt;
+
+    def test_heldout_prediction_failure_is_not_completed_research(tmp_path, monkeypatch):
+        store, _, plan, _, _ = prepared(tmp_path)
+        monkeypatch.setattr(fitting, 'predict', lambda *a, **k: (_ for _ in ()).throw(ValueError('prediction unavailable')))
+        result = store.get(studies.execute_study(store, plan))['payload']
+&gt;       assert result['completion_eligible'] is False
+E       assert True is False
+
+tests/test_study_execution_acceptance.py:54: AssertionError</failure></testcase><testcase classname="tests.test_study_execution_acceptance" name="test_fit_preflight_never_runs_parent_ode_before_timeout" time="0.051"><failure message="Failed: parent ODE escaped deadline">monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x771d9452e270&gt;
+
+    def test_fit_preflight_never_runs_parent_ode_before_timeout(monkeypatch):
+        from test_research_workflows import decay, training_data
+        monkeypatch.setattr(fitting, 'solve_ivp', lambda *a, **k: pytest.fail('parent ODE escaped deadline'))
+&gt;       result = fitting.fit_parameters(decay(), training_data(), [{'id': 'signal', 'expression': 'x'}],
+                                        {'d': (.1, 1.5)}, starts=1, timeout_s=.001)
+
+tests/test_study_execution_acceptance.py:61: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+src/biomodel_agent/fitting.py:226: in fit_parameters
+    _,rows,obs = _prepare(artifact,training,observations,bounds)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src/biomodel_agent/fitting.py:156: in _prepare
+    compiler.predict(spec,obs,{k:(float(v[0])+float(v[1]))/2 for k,v in bounds.items()})
+src/biomodel_agent/fitting.py:102: in predict
+    sol = solve_ivp(rhs,(left,right),y,t_eval=targets,method='DOP853',rtol=1e-9,atol=1e-11)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+a = (&lt;function _Compiler.predict.&lt;locals&gt;.rhs at 0x771d94388040&gt;, (0.0, 5.0), array([1.]))
+k = {'t_eval': [0.3333333333333333, 0.6666666666666666, 1.0, 1.3333333333333333, 1.6666666666666665, 2.0, ...], 'method': 'DOP853', 'rtol': 1e-09, 'atol': 1e-11}
+
+&gt;   monkeypatch.setattr(fitting, 'solve_ivp', lambda *a, **k: pytest.fail('parent ODE escaped deadline'))
+                                                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   Failed: parent ODE escaped deadline
+
+tests/test_study_execution_acceptance.py:60: Failed</failure></testcase><testcase classname="tests.test_study_execution_acceptance" name="test_new_plan_freezes_total_study_budget" time="0.029"><failure message="ValueError: unknown study configuration fields">tmp_path = PosixPath('/tmp/biomodel-t04-baseline/test_new_plan_freezes_total_st0')
+
+    def test_new_plan_freezes_total_study_budget(tmp_path):
+&gt;       store, _, plan, _, _ = prepared(tmp_path, total_timeout_s=7.)
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_study_execution_acceptance.py:67: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test_study_execution_acceptance.py:20: in prepared
+    plan = studies.prepare_study(store, settings)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src/biomodel_agent/studies.py:116: in prepare_study
+    return store.put(PLAN_KIND, _payload(config))
+                                ^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+config = {'training': [{'id': 'train', 'role': 'training', 'experiment': {'times': [0.0, 0.5, 1.0, 2.0, 4.0], 'time_unit': 'sec...1.2642411176571153, 1.7293294335267746, 1.9633687222225316]}, ...}], 'candidates': ['cand_baseline'], 'starts': 1, ...}
+
+    def _payload(config):
+        if not isinstance(config, dict) or set(config) - _CONFIG_KEYS:
+&gt;           raise ValueError('unknown study configuration fields')
+E           ValueError: unknown study configuration fields
+
+src/biomodel_agent/studies.py:85: ValueError</failure></testcase><testcase classname="tests.test_study_execution_acceptance" name="test_bad_total_timeout_rejected_before_artifact_writes[True]" time="0.026" /><testcase classname="tests.test_study_execution_acceptance" name="test_bad_total_timeout_rejected_before_artifact_writes[5]" time="0.025" /><testcase classname="tests.test_study_execution_acceptance" name="test_bad_total_timeout_rejected_before_artifact_writes[0.0]" time="0.026" /><testcase classname="tests.test_study_execution_acceptance" name="test_bad_total_timeout_rejected_before_artifact_writes[-1.0]" time="0.024" /><testcase classname="tests.test_study_execution_acceptance" name="test_bad_total_timeout_rejected_before_artifact_writes[nan]" time="0.024" /><testcase classname="tests.test_study_execution_acceptance" name="test_bad_total_timeout_rejected_before_artifact_writes[inf]" time="0.027" /><testcase classname="tests.test_study_execution_acceptance" name="test_bad_total_timeout_rejected_before_artifact_writes[601.0]" time="0.025" /><testcase classname="tests.test_study_execution_acceptance" name="test_bad_total_timeout_rejected_before_artifact_writes[10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000]" time="0.059" /><testcase classname="tests.test_study_execution_acceptance" name="test_bounded_prediction_matches_analytic_solution" time="0.002"><failure message="TypeError: predict() got an unexpected keyword argument 'timeout_s'">def test_bounded_prediction_matches_analytic_solution():
+        candidate = modeling.build_model(hypotheses.adaptation_candidates()['cand_baseline'])
+&gt;       result = fitting.predict(candidate, ExperimentSpec((0., .5, 1.), time_unit='second'),
+            [{'id': 'response', 'expression': 'x'}], {'k': 2., 'd': 1.}, timeout_s=5.)
+E       TypeError: predict() got an unexpected keyword argument 'timeout_s'
+
+tests/test_study_execution_acceptance.py:90: TypeError</failure></testcase><testcase classname="tests.test_study_execution_acceptance" name="test_prediction_timeout_stops_worker" time="0.003"><failure message="TypeError: predict() got an unexpected keyword argument 'timeout_s'">tmp_path = PosixPath('/tmp/biomodel-t04-baseline/test_prediction_timeout_stops_0')
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x771d94332240&gt;
+
+    def test_prediction_timeout_stops_worker(tmp_path, monkeypatch):
+        candidate = modeling.build_model(hypotheses.adaptation_candidates()['cand_baseline'])
+        monkeypatch.setattr(fitting, '_predict_worker', slow_prediction, raising=False)
+        before = {p.pid for p in mp.active_children()}
+        start = time.monotonic()
+        with pytest.raises(TimeoutError):
+&gt;           fitting.predict(candidate, ExperimentSpec((0., 1.), time_unit='second'),
+                [{'id': 'response', 'expression': 'x'}], {'k': 2., 'd': 1.}, timeout_s=.03)
+E           TypeError: predict() got an unexpected keyword argument 'timeout_s'
+
+tests/test_study_execution_acceptance.py:101: TypeError</failure></testcase></testsuite></testsuites>

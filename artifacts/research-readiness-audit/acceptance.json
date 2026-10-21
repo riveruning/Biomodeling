@@ -1,0 +1,30 @@
+{
+  "status": "audit_and_plan_delivered",
+  "scope": "Evidence audit and next-phase planning; no product implementation this turn",
+  "prior_workspace_files_verified_unchanged": 209,
+  "modified_existing_files": [],
+  "new_documents": {
+    "docs/research-readiness-audit.md": "79c35bd793e0c34c26b6be8f6d826e9db0cc1cc96d63cd0ae5435fd74a9e7805",
+    "tasks/research-next-phase.json": "2b6bf2b699b6b5d8239d499f24e88062d8ac5f16bcf96ab43eefa1a5b4f94ce6"
+  },
+  "local_document_links_verified": 8,
+  "fresh_focused_regression": {
+    "tests": 121,
+    "errors": 0,
+    "failures": 0,
+    "skipped": 0
+  },
+  "fresh_test_seconds": 34.527,
+  "archived_full_regression_passed": 1309,
+  "fresh_full_regression": false,
+  "new_tests_added": 0,
+  "confirmed_reporting_issue": "Unreviewed completed outcomes receive no success credit but unknown=0; pending adjudication needs distinct reporting",
+  "confirmed_documentation_drift": "agent-study-tool.md deadline description predates studies.py/T04 v2 total deadline",
+  "next_task": "T08d-0",
+  "new_online_model_calls": 0,
+  "new_scientific_solver_runs": 0,
+  "independent_evalset_read": false,
+  "new_evaluation_papers_added": false,
+  "real_credentials_read": false,
+  "limits": "Saved artifacts are verified, not a new independent domain audit. Focused tests are engineering controls; scientific review and actual current-version comparisons remain pending."
+}

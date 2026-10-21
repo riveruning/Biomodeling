@@ -1,0 +1,11 @@
+{
+  "preexisting_changed": [
+    "src/biomodel_agent/domain/contracts.py",
+    "src/biomodel_agent/domain/serialization.py",
+    "docs/optimization-backlog.md",
+    "docs/seven-point-status.md"
+  ],
+  "unexpected_changes": [],
+  "original_tests_unchanged": true,
+  "codex_production_edits": false
+}

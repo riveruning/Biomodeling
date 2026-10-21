@@ -1,0 +1,379 @@
+--- before/src/biomodel_agent/source_review.py
++++ after/src/biomodel_agent/source_review.py
+@@ -17,7 +17,20 @@
+ _UNRESOLVED = re.compile(r'not\s+(?:specify|specified|state|clear)|unclear|unresolved|ambiguous|which|未(?:说明|确定)|歧义', re.I)
+ _CONTRAST = re.compile(r'\bbut\b|conflict|contradict|inconsisten|冲突|不一致', re.I)
+ _AUTHOR = re.compile(r'^\s*(?:the\s+)?author\s+(?:confirms?|corrects?|clarifies?)\b', re.I)
+-_HEADER = re.compile(r'^\s*author\s+(?:clarification|correction)\b', re.I)
++_HEADER = re.compile(r'^\s*(?:author|researcher)\s+(?:clarification|correction)\b', re.I)
++
++
++def _direct_assignment(line, match):
++    """Do not interpret the last operand of an expression as its whole LHS.
++
++    This check only recognizes literal assignments; it does not solve sums,
++    products or ratios for a parameter. Leading Markdown list markers remain
++    valid declaration contexts.
++    """
++    before = line[:match.start()].rstrip()
++    if before and before[-1] in '+-−*/^=<>≤≥≠×÷':
++        return before in ('-', '*')
++    return True
+ 
+ 
+ def _unit_scale(text):
+@@ -104,8 +117,10 @@
+                         prefix = r'(?:\bInitial\s+'+token+r'\b|\b'+token+r'\s+initial\b|\b'+token+r'\s*\(\s*0\s*\))'
+                     else:
+                         prefix = r'(?<![\w])'+token+r'(?![\w])(?:\s+value\b)?'
+-                    declarations = list(re.finditer(prefix+r'\s*(?:value\s*)?(?:=|:|is\b)?\s*(?P<value>'+_NUM+r')\s*(?P<unit>'+_UNIT+r')?',line,re.I))
+-                    absent = re.search(prefix+r'\s*(?:value\s*)?(?:is\b|was\b|=|:)?\s*(?:explicitly\s+)?(?:'+_MISSING.pattern+r')',line,re.I)
++                    declarations = [m for m in re.finditer(prefix+r'\s*(?:value\s*)?(?:=|:|is\b)?\s*(?P<value>'+_NUM+r')\s*(?P<unit>'+_UNIT+r')?',line,re.I)
++                                    if _direct_assignment(line, m)]
++                    absent = next((m for m in re.finditer(prefix+r'\s*(?:value\s*)?(?:is\b|was\b|=|:)?\s*(?:explicitly\s+)?(?:'+_MISSING.pattern+r')',line,re.I)
++                                   if _direct_assignment(line, m)), None)
+                     if absent:
+                         missing.setdefault(target,[]).append(location)
+                         resolved.pop(target,None)
+@@ -124,7 +139,8 @@
+                                 unit_labels.pop(name+'/unit',None)
+                         else:numeric.setdefault(target,[]).append(fact)
+                     if field == 'value' and _CONTRAST.search(line) and not explicit_author:
+-                        labels = list(re.finditer(r'(?<![\w])'+token+r'(?![\w])\s+(?:as\s+|in\s+)?(?P<unit>'+_UNIT+r')',line,re.I))
++                        labels = [m for m in re.finditer(r'(?<![\w])'+token+r'(?![\w])\s+(?:as\s+|in\s+)?(?P<unit>'+_UNIT+r')',line,re.I)
++                                  if _direct_assignment(line, m)]
+                         label_scales = {_unit_scale(m.group('unit')) for m in labels}
+                         declared_scales = {_unit_scale(m.group('unit')) for m in declarations if m.group('unit')}
+                         scales = label_scales | declared_scales
+--- before/src/biomodel_agent/agent_tools.py
++++ after/src/biomodel_agent/agent_tools.py
+@@ -82,13 +82,14 @@
+         static = modeling.validate_draft(draft)
+         result['checks'] = [to_dict(c) for c in static.checks]
+         missing = [k for k,v in required.items() if v is None]
++        citation_problems = []
+         if mode == 'reproduction':
+             for target,value in required.items():
+                 q = quotes.get(target,[])
+                 if not q:
+-                    missing.append(target+': citation missing')
++                    citation_problems.append(target+': citation missing')
+                 elif isinstance(value,(int,float)) and not any(any(math.isclose(float(m.group()),value,rel_tol=1e-12,abs_tol=0.) for m in NUMBER.finditer(text)) for text in q):
+-                    missing.append(target+': numeric value not present in cited text')
++                    citation_problems.append(target+': numeric value not present in cited text')
+         if mode == 'reproduction':
+             for resolution in review['resolutions']:
+                 target, fact = resolution['target'], resolution['evidence']
+@@ -99,12 +100,17 @@
+                     continue
+                 linked_sources = {store.get(r)['payload']['source_ref'] for r in links.get(target, [])}
+                 if fact['source_ref'] not in linked_sources:
+-                    missing.append(target+': cite the researcher clarification used to resolve this target')
++                    citation_problems.append(target+': cite the researcher clarification used to resolve this target')
+                 if 'value' in fact and isinstance(required[target], (int, float)):
+                     if not math.isclose(required[target], fact['value'], rel_tol=1e-12, abs_tol=0.):
+                         missing.append(target+': draft value differs from the researcher clarification; provide an explicit matching declaration')
+         if missing:
+-            result.update(state='awaiting_input',problems=missing)
++            result.update(state='awaiting_input',problems=missing+citation_problems)
++            return result
++        if citation_problems:
++            # The source is available to the model: repair its citation within
++            # the existing budget instead of asking the researcher to repeat it.
++            result.update(state='invalid',problems=citation_problems)
+             return result
+         if not static.can_execute:
+             result['problems'] = [c.message for c in static.checks if c.status == 'fail']
+--- before/tests/test_research_workflows.py
++++ after/tests/test_research_workflows.py
+@@ -138,7 +138,7 @@
+     assert len(record['events'][0]['requests'])==2  # actual call snapshot, not mutable final history
+     missing={**args,'evidence':args['evidence'][1:]}
+     outcome=agent_tools.submit_draft(store,missing,[ref])
+-    assert outcome['state']=='awaiting_input' and outcome['artifact'] is None
++    assert outcome['state']=='invalid' and outcome['artifact'] is None
+     budget=store.get(agent.run_agent(store,Scripted(actions),[ref],ExperimentSpec((0.,1.)),max_calls=1))['payload']
+     assert budget['state']=='incomplete'
+ 
+--- before/tests/test_source_and_citation_regressions.py
++++ after/tests/test_source_and_citation_regressions.py
+@@ -0,0 +1,172 @@
++"""Development regressions for exposed source-parser and evidence failures.
++
++These are synthetic examples of already observed failure classes, not an
++independent holdout evaluation. No network requests or reference answers.
++"""
++from copy import deepcopy
++import json
++import math
++
++import pytest
++
++from biomodel_agent import agent, agent_tools, evidence
++from biomodel_agent.domain.contracts import ExperimentSpec, ModelDraft, Parameter, RateRule, State
++from biomodel_agent.domain.serialization import to_dict
++from biomodel_agent.source_review import review_sources
++from biomodel_agent.storage import ArtifactStore
++
++
++TEXT = 'Initial x = 1.\nParameter k = 0.4.\nEquation dx/dt = -k*x.\n'
++
++
++def material(tmp_path, text=TEXT):
++    store = ArtifactStore(tmp_path / 'store')
++    path = tmp_path / 'source.txt'
++    path.write_text(text)
++    return store, evidence.ingest_source(store, path)
++
++
++def proposal(source):
++    draft = ModelDraft('decay', (State('x', 1.),), (Parameter('k', .4),),
++                       rate_rules=(RateRule('x', '-k*x'),))
++    return {'draft': to_dict(draft), 'evidence': [
++        {'target': target, 'source_ref': source, 'page': 1, 'quote': quote}
++        for target, quote in [('x/initial', 'Initial x = 1.'),
++                              ('k/value', 'Parameter k = 0.4.'),
++                              ('rule:x/expression', 'Equation dx/dt = -k*x.')]]}
++
++
++class Scripted:
++    last_usage = {}
++
++    def __init__(self, actions):
++        self.actions = iter(actions)
++        self.calls = []
++
++    def respond(self, messages):
++        self.calls.append(deepcopy(messages))
++        action = next(self.actions)
++        return action(messages) if callable(action) else action
++
++
++def action(name, args=None):
++    return {'action': name, 'args': args or {}}
++
++
++@pytest.mark.parametrize('expression', ['a + b', 'a-b', 'a * b', 'a/b', 'a^b', 'a = b'])
++def test_expression_tail_does_not_create_a_parameter_assignment(tmp_path, expression):
++    store, ref = material(tmp_path, f'Parameter b = 0.17.\nTotal {expression} = 0.46.')
++    result = review_sources(store, [ref], ['b/value'])
++    assert result['issues'] == []
++    assert result['semantic_support'] == 'unknown'
++
++
++def test_composite_assignment_cannot_resolve_a_missing_parameter(tmp_path):
++    store, ref = material(tmp_path, 'Parameter b is missing.\nAuthor clarification:\na + b = 0.46.')
++    result = review_sources(store, [ref], ['b/value'])
++    assert [i['kind'] for i in result['issues']] == ['missing_source_value']
++    assert not result['resolutions']
++
++
++def test_composite_assignment_does_not_hide_a_real_conflict(tmp_path):
++    store, ref = material(tmp_path, 'b = 0.17.\nb = 0.21.\nAuthor clarification:\na + b = 0.46.')
++    result = review_sources(store, [ref], ['b/value'])
++    assert [i['kind'] for i in result['issues']] == ['conflicting_declared_values']
++
++
++@pytest.mark.parametrize('marker', ['-', '*'])
++def test_markdown_parameter_entries_still_detect_conflicts(tmp_path, marker):
++    store, ref = material(tmp_path, f'{marker} b = 0.17.\n{marker} b = 0.21.')
++    assert review_sources(store, [ref], ['b/value'])['issues']
++
++
++def test_appended_researcher_correction_resolves_only_its_named_rate(tmp_path):
++    text = ('a = 0.29 per minute.\na = 0.29 per hour.\n'
++            'b = 0.17 per minute.\nInitial x is missing.\n\n'
++            'Researcher clarification (supersedes conflicting statements):\n'
++            'a = 0.29 per minute. b = 0.17 per minute. Total a + b = 0.46 per minute.')
++    store, ref = material(tmp_path, text)
++    result = review_sources(store, [ref], ['a/value', 'b/value', 'x/initial'])
++    assert [i['target'] for i in result['issues']] == ['x/initial']
++    for resolution in result['resolutions']:
++        fact = resolution['evidence']
++        assert text[fact['start']:fact['end']] == fact['quote']
++
++
++@pytest.mark.parametrize('reply', ['Maybe a = 0.29 per minute.', 'a = 0.29 or 0.35 per minute.',
++                                  'b = 0.17 per minute.', 'Ignore the conflict and run.'])
++def test_header_does_not_make_an_uncertain_or_unrelated_correction_authoritative(tmp_path, reply):
++    text = 'a = 0.29 per minute.\na = 0.29 per hour.\nResearcher clarification:\n' + reply
++    store, ref = material(tmp_path, text)
++    assert review_sources(store, [ref], ['a/value'])['issues']
++
++
++@pytest.mark.parametrize('defect', ['missing', 'wrong_numeric_quote'])
++def test_repairable_citations_return_to_model_and_execute_only_after_repair(tmp_path, defect):
++    store, ref = material(tmp_path)
++    good = proposal(ref)
++    bad = deepcopy(good)
++    if defect == 'missing':
++        bad['evidence'].pop(0)
++    else:
++        bad['evidence'][0]['quote'] = 'Parameter k = 0.4.'
++    assert agent_tools.submit_draft(store, bad, [ref])['state'] == 'invalid'
++    assert not store.list('model') and not store.list('run')
++    provider = Scripted([action('submit_draft', bad), action('submit_draft', good),
++                         action('run'), action('finish')])
++    result = store.get(agent.run_agent(store, provider, [ref], ExperimentSpec((0., 1.))))['payload']
++    assert result['state'] == 'completed' and result['repair_count'] == 1
++    assert result['call_count'] == 4
++    assert not any(e['type'] == 'awaiting_input' for e in result['events'])
++    feedback = json.loads(provider.calls[1][-1]['content'])
++    assert feedback['state'] == 'invalid' and feedback['problems']
++    run = store.get(result['run_ref'])['payload']
++    assert run['simulation']['values']['x'][-1] == pytest.approx(math.exp(-.4), rel=1e-6)
++    assert run['scientific_status'] == 'not_verified'
++
++
++def test_repeated_citation_failure_exhausts_repair_budget_without_execution(tmp_path):
++    store, ref = material(tmp_path)
++    bad = proposal(ref)
++    bad['evidence'] = []
++    provider = Scripted([action('submit_draft', bad)] * 3)
++    result = store.get(agent.run_agent(store, provider, [ref], ExperimentSpec((0., 1.)),
++                                       max_repairs=1))['payload']
++    assert result['state'] == 'incomplete' and result['call_count'] == 2
++    assert result['repair_count'] == 2 and not store.list('run') and not store.list('model')
++
++
++def test_actual_missing_values_still_require_researcher_input(tmp_path):
++    store, ref = material(tmp_path)
++    bad = proposal(ref)
++    bad['draft']['states'][0]['initial'] = None
++    bad['evidence'] = []
++    result = agent_tools.submit_draft(store, bad, [ref])
++    assert result['state'] == 'awaiting_input'
++    assert result['artifact'] is None and not store.list('model')
++
++
++def test_repeated_equation_in_reply_can_repair_citation_in_original_task(tmp_path):
++    store, ref = material(tmp_path, TEXT.replace('Initial x = 1.', 'Initial x is missing.'))
++    parent = agent.run_agent(store, Scripted([action('ask_researcher', {'question': 'Initial x?'})]),
++                             [ref], ExperimentSpec((0., 1.)))
++    original = store.get(parent)
++
++    def submit(messages):
++        reply_ref = json.loads(messages[-1]['content'])['source_ref']
++        data = proposal(ref)
++        data['evidence'][0]['source_ref'] = reply_ref
++        return action('submit_draft', data)
++
++    def repair(messages):
++        data = deepcopy(json.loads(messages[-2]['content'])['args'])
++        data['evidence'][2]['source_ref'] = data['evidence'][0]['source_ref']
++        return action('submit_draft', data)
++
++    provider = Scripted([submit, repair, action('run'), action('finish')])
++    result = store.get(agent.resume_agent(store, provider, parent,
++        'Initial x = 1.\nEquation dx/dt = -k*x.', respondent='Researcher A'))['payload']
++    assert result['state'] == 'completed' and result['call_count'] == 5
++    assert result['repair_count'] == 1 and result['parent_run_ref'] == parent
++    assert store.get(parent) == original
++    assert len(store.list('run')) == 1
+--- before/README.md
++++ after/README.md
+@@ -15,6 +15,8 @@
+ 2026-10-17 研究者交互：[澄清记录与任务恢复](docs/agent-resume.md)。暂停后可通过 `agent-resume` 继续原任务，保留证据历史和剩余预算；新增跨进程演示，未读取独立测试集。
+ 
+ 2026-10-18 冻结版外部诊断：[独立材料审核与五类小测对照](docs/holdout-pilot-evaluation.md)。复算 20 例参考，单列 6 例评分边界；完成五类材料的原生 Codex 对照和实际任务恢复。属于待领域专家审核的小样本诊断，未建立领先结论。
++
++2026-10-18 开发修复：[来源赋值识别与引用自修](docs/source-and-citation-recovery.md)。修复复合表达式尾项的虚假赋值、识别追加的研究者澄清标题，并把可自修引用错误交还模型。原始回答离线重放与完整回归分别留档，不更新冻结版评测成绩。
+ 
+ ## 阅读顺序
+ 
+--- before/docs/source-and-citation-recovery.md
++++ after/docs/source-and-citation-recovery.md
+@@ -0,0 +1,37 @@
++# 来源赋值识别与引用自修
++
++2026-10-18（北京时间）。根据已公开的冻结版诊断修复来源解析与错误分类。独立测试材料已经被读取，本轮属于开发回归；原始材料、冻结副本、模型回答和既有比较成绩保持原样。
++
++## 行为变化
++
++- `a + b = 0.46` 之类复合表达式不再被当作 `b = 0.46`。同类加、减、乘、除、幂、链式赋值尾项也不用于产生单参数声明或解除缺失；Markdown 列表中的直接声明仍可识别。这是限定的文本检查，没有求解代数约束。
++- 已有的 author clarification 标题规则扩展到 researcher clarification/correction。标题下明确、针对具体目标的声明可覆盖该目标的旧冲突；不确定、无关的回答和单纯要求忽略冲突不能解除问题。这些都是用于当前分析的声明，语义支持仍为 unknown，不验证回答者身份或论文真实性。
++- 草稿的引用缺失、引用未包含所填数值、未引用已提供的研究者补充，返回 `invalid` 交还模型修正，沿用现有总调用和草稿修订预算。重复失败会结束为 incomplete，不能带着失败草稿执行。
++- 实际缺失数值、未解决来源冲突、草稿值违背明确补充数值，仍为 `awaiting_input`。缺失和引用错误共存时优先保留待澄清状态；没有降低引用校验或数值匹配要求。
++
++## 验证与实际边界
++
++修改前完整 Python 基线为 303 项通过。本轮新增 20 项开发回归，并更新一处针对旧错误分类的测试断言；完整回归为 **323 项通过**。测试包括：复合表达式不能制造参数冲突、不能解除真正缺失或冲突、保留列表参数检查、澄清的目标与不确定性范围、引用自修预算耗尽不执行，以及原任务恢复时补充文本重述公式后自行修正引用并执行真实 ODE。合成衰减的数值结果与解析解核对，科学状态保留 not_verified。
++
++另对原始诊断的三份真实模型草稿进行工具级离线重放：原回答字节不变，使用复制的存储，无网络、零次模型调用。
++
++| 已见案例阶段 | 原代码 submit_draft | 修复后 submit_draft |
++|---|---|---|
++| c13 原任务恢复 | awaiting_input，要求重新引用补充中的 I 公式 | invalid，交还模型修正同一引用 |
++| c18 补全新会话 | awaiting_input，kf 与 kg 数值冲突 | invalid，虚假冲突消除，原回答另有非唯一引用 |
++| c18 原任务恢复 | awaiting_input，kg 数值冲突 | invalid，虚假冲突消除，原回答另有非唯一引用 |
++
++**这三份原始草稿尚未成为 ready，也没有完成新的真实 LLM 评测。** 不把排除第一层错误当作模型已经修正后续引用，亦不更新此前的 2/4 恢复结果。重复公式仍需要引用补充来源，本轮通过预算内自修处理，没有实现任意公式的语义等价比较。
++
++本轮产物位于 `artifacts/source-citation-recovery-20261018/`，包括源码前后快照、文件哈希、完整测试日志和 XML，以及原回答在原代码与修复代码上的离线工具输出。回放脚本在 `benchmarks/development/check_agent_source_recovery.py`：
++
++```bash
++PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=src .venv/bin/python \
++  benchmarks/development/check_agent_source_recovery.py \
++  --original-runs artifacts/holdout-evaluation-20261017/runs/biomodel \
++  --output /tmp/my-source-recovery-replay
++```
++
++输出目录必须不存在。该脚本只重放 submit_draft，不生成新模型动作、不运行完整 Agent 或模拟；合成恢复与求解链路由回归测试覆盖。
++
++后续优先用新模型响应验证上述引用能否在原预算内完成自修，再处理重复事实和真正变更事实的证据归属。新的未见材料及人类领域审核仍有必要。
+--- before/benchmarks/development/check_agent_source_recovery.py
++++ after/benchmarks/development/check_agent_source_recovery.py
+@@ -0,0 +1,53 @@
++"""Offline tool-level replay of existing, already exposed model proposals.
++
++No new model responses, no response editing and no claim of full-agent success.
++Run in a separate process for each candidate with its PYTHONPATH set explicitly.
++"""
++import argparse
++import json
++from pathlib import Path
++import shutil
++
++from biomodel_agent import agent_tools, application
++from biomodel_agent.llm import ChatProvider
++from biomodel_agent.storage import ArtifactStore
++
++
++def main():
++    parser = argparse.ArgumentParser()
++    parser.add_argument('--original-runs', type=Path, required=True)
++    parser.add_argument('--output', type=Path, required=True)
++    args = parser.parse_args()
++    args.output.mkdir(parents=True, exist_ok=False)
++    rows = []
++    selected = [('c13_mm_with_inhibitor_ambiguous', 'resume'),
++                ('c18_two_pathway_unit_conflict', 'clarified'),
++                ('c18_two_pathway_unit_conflict', 'resume')]
++    for case, phase in selected:
++        stage = 'incomplete' if phase == 'resume' else phase
++        original = args.original_runs / case / stage
++        payload = json.loads((original / phase / 'agent.json').read_text())
++        work = args.output / case / phase
++        shutil.copytree(original / 'store', work / 'store')
++        store = ArtifactStore(work / 'store')
++        for path in sorted((original / phase).glob('response-*.json')):
++            response = json.loads(path.read_text())
++            raw = response['choices'][0]['message']['content']
++            action = ChatProvider('https://unused.invalid/v1', 'offline')._parse(raw)
++            if action['action'] != 'submit_draft':
++                continue
++            result = agent_tools.submit_draft(store, action['args'], payload['source_refs'])
++            rows.append({'case': case, 'phase': phase, 'response_file': str(path),
++                         'state': result['state'], 'problems': result['problems'],
++                         'source_issues': result['source_review']['issues'],
++                         'model_ref': result['model_ref']})
++    output = {'kind': 'offline_submit_draft_replay', 'model_calls': 0,
++              'full_agent_success_measured': False,
++              'modules_sha256': application.environment_fingerprint()['modules_sha256'],
++              'rows': rows}
++    (args.output / 'results.json').write_text(json.dumps(output, indent=2, ensure_ascii=False))
++    print(json.dumps(output, indent=2, ensure_ascii=False))
++
++
++if __name__ == '__main__':
++    main()

@@ -1,0 +1,28 @@
+{
+  "id": "chatcmpl-e6cf97ce-6b5b-481b-b557-33ae55351bab",
+  "created": 1792252866,
+  "model": "qwen3.8-chat",
+  "object": "chat.completion",
+  "choices": [
+    {
+      "finish_reason": "stop",
+      "index": 0,
+      "message": {
+        "content": "{\"action\": \"submit_draft\", \"args\": {\"draft\": {\"id\": \"substrate_inhibition_ode\", \"time_unit\": \"minute\", \"compartment\": {\"id\": \"c1\", \"size\": 1, \"unit\": \"dimensionless\"}, \"states\": [{\"id\": \"S\", \"initial\": 1.0, \"unit\": \"a.u.\", \"quantity_kind\": \"variable\", \"nonnegative\": false}], \"parameters\": [{\"id\": \"Vmax\", \"value\": 0.9, \"unit\": \"a.u. per minute\", \"origin\": \"source\"}, {\"id\": \"Km\", \"value\": 1.5, \"unit\": \"a.u.\", \"origin\": \"source\"}, {\"id\": \"KI\", \"value\": 0.8, \"unit\": \"a.u.\", \"origin\": \"source\"}], \"reactions\": [], \"rate_rules\": [{\"state\": \"S\", \"expression\": \"-Vmax*S/(Km + S + S^2/KI)\"}], \"derived\": []}, \"evidence\": [{\"target\": \"S/initial\", \"source_ref\": \"b62d05ce7953f6f59db00636ea52123aa49f23f88c7eec726aee32195364480f\", \"page\": 1, \"quote\": \"S(0) = 1.0 a.u.\"}, {\"target\": \"Vmax/value\", \"source_ref\": \"b62d05ce7953f6f59db00636ea52123aa49f23f88c7eec726aee32195364480f\", \"page\": 1, \"quote\": \"Vmax = 0.9 a.u. per minute\"}, {\"target\": \"Km/value\", \"source_ref\": \"b62d05ce7953f6f59db00636ea52123aa49f23f88c7eec726aee32195364480f\", \"page\": 1, \"quote\": \"Km = 1.5 a.u.\"}, {\"target\": \"KI/value\", \"source_ref\": \"b62d05ce7953f6f59db00636ea52123aa49f23f88c7eec726aee32195364480f\", \"page\": 1, \"quote\": \"The inhibition constant KI = 0.8 a.u.\"}, {\"target\": \"rule:S/expression\", \"source_ref\": \"b62d05ce7953f6f59db00636ea52123aa49f23f88c7eec726aee32195364480f\", \"page\": 1, \"quote\": \"dS/dt = -Vmax*S/(Km + S + S^2/KI).\"}, {\"target\": \"time_unit\", \"source_ref\": \"b62d05ce7953f6f59db00636ea52123aa49f23f88c7eec726aee32195364480f\", \"page\": 1, \"quote\": \"sampled every 0.2 min from t = 0 to t = 8 min inclusive.\"}, {\"target\": \"c1/size\", \"source_ref\": \"b62d05ce7953f6f59db00636ea52123aa49f23f88c7eec726aee32195364480f\", \"page\": 1, \"quote\": \"single well-mixed compartment of size 1 (dimensionless)\"}], \"mechanism\": \"Single-substrate degradation with substrate inhibition (Haldane-type rate law).\"}, \"reason\": \"Source gives explicit ODE, initial condition, and all parameters (KI resolved by researcher clarification).\"}",
+        "role": "assistant",
+        "provider_specific_fields": {
+          "refusal": null
+        }
+      },
+      "provider_specific_fields": {}
+    }
+  ],
+  "usage": {
+    "completion_tokens": 944,
+    "prompt_tokens": 1583,
+    "total_tokens": 2527,
+    "prompt_tokens_details": {
+      "cached_tokens": 0
+    }
+  }
+}

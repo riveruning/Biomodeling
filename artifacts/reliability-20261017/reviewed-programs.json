@@ -1,0 +1,20 @@
+{
+  "artifacts/reliability-20261017/codex/binding/clarified/simulate.py": "1ff3bab1092b5285fa579e010d63a36d1d4027f8ee4982fafc3c3b1e16af651c",
+  "artifacts/reliability-20261017/codex/binding/initial/simulate.py": "6490a771b795241231f29d5adf5a994e81c7df206012190fabb6be9dd753af9a",
+  "artifacts/reliability-20261017/codex/decay/initial/simulate.py": "2ffca45affe239ad0cc75cc167730106a2c3142e2c13c1efe4e468cdae6113f7",
+  "artifacts/reliability-20261017/codex/feedback/clarified/simulate.py": "359151b433c609d1b87d2885645e8433d34921d361743657e38c0bb662ebbd15",
+  "artifacts/reliability-20261017/codex/feedback/initial/simulate.py": "85b0dfac62bf94e43b4817cd0a255eba70f55191364e76f486c17b03671aa8c9",
+  "artifacts/reliability-20261017/codex/logistic/clarified/simulate.py": "e88304266967d48d79bbbabde6b7015785e47932f89cd2ef7598f50d2aad11eb",
+  "artifacts/reliability-20261017/codex/logistic/initial/simulate.py": "a6ca9b0ef12980b5cf1344d1bd1fee2f5333de66f96bb477f8dd1b75acb9759c",
+  "artifacts/reliability-20261017/codex/reversible/clarified/simulate.py": "02f0b9c3027d7203b80967336766c61f97c8cb2b1b607dc166c0c157e4b7d46b",
+  "artifacts/reliability-20261017/codex/reversible/initial/simulate.py": "ed9ddad6d05abbff0580b673ab9bff9357cde0535388dae481ec82a497824c1b",
+  "artifacts/reliability-20261017/codex/saturation/clarified/simulate.py": "2f7692983acaf9e620849c871818d9728ecef380c535b94b23a258b816e9fea8",
+  "artifacts/reliability-20261017/codex/saturation/initial/simulate.py": "148b7fe75378806ac735eedbcc1de4ecb995e993c3dcc8387db384de95c49d8d",
+  "artifacts/reliability-20261017/codex/translation/clarified/simulate.py": "df11191a1c83790a443175dca6ea59062a2bc9dcc58bbd8340f67ef78958ecf1",
+  "artifacts/reliability-20261017/codex/translation/initial/simulate.py": "fc7f60b719376fe117d843e13499ed916006c1f38e00846701d5e727281f3118",
+  "artifacts/reliability-20261017/codex/turnover/initial/simulate.py": "c3288977c2c06bcba078e99cdad3c1c78750fc6d8e7b6613a7215c507e78dc0a",
+  "artifacts/reliability-20261017/codex/unit_chain/clarified/simulate.py": "824e0eb58ed0621a9669f987eb76e5dfe8959063820d528090875f96504b7cab",
+  "artifacts/reliability-20261017/codex/unit_chain/initial/simulate.py": "08bf44f40cc138b9c3b363695243650e9ae867386fbd5ceec7313dd43de51a94",
+  "artifacts/reliability-20261017/codex/unit_decay/clarified/simulate.py": "be0cfa4741dca1ad3c4812557ae0c92ede73dfcccd1c778f6b7bb53c4791aa9f",
+  "artifacts/reliability-20261017/codex/unit_decay/initial/simulate.py": "d9fe08eff7b763d55cf611de0ad4938e21f5eb07f04ecdb65c3300f7a3227f38"
+}

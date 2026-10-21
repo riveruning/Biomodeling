@@ -1,0 +1,72 @@
+................................F............                            [100%]
+=================================== FAILURES ===================================
+____________________ test_verdict_priority_and_basis_shape _____________________
+
+    def test_verdict_priority_and_basis_shape():
+        from biomodel_agent.application import (
+            Check,
+            ValidationReport,
+            blocking_verdict_basis,
+            derive_scientific_status,
+            initial_scientific_status,
+        )
+    
+        ok_source = {"status": "complete", "semantic_support": "supported", "units_unknown": False}
+        bad_source = {"status": "incomplete", "semantic_support": "unknown", "units_unknown": True}
+    
+        # 1. explicit failure beats everything, including a pass-looking comparison.
+        r1 = derive_scientific_status({
+            "status": "succeeded", "scientific_status": "not_verified",
+            "static_validation": {"checks": []},
+            "numeric_validation": {"checks": [
+                {"code": "finite", "status": "pass", "severity": "blocking", "message": ""},
+                {"code": "nonnegative", "status": "fail", "severity": "blocking", "message": "neg"}]},
+            "comparison": {"status": "pass"},
+        })
+        assert r1 == "failed"
+    
+        # 2. no failure, missing provenance -> not_verified, empty basis.
+        r2 = derive_scientific_status({
+            "status": "succeeded", "scientific_status": "not_verified",
+            "numeric_validation": {"checks": [
+                {"code": "finite", "status": "pass", "severity": "blocking", "message": ""}]},
+            "comparison": {"status": "not_run"},
+        })
+        assert r2 == "not_verified" and blocking_verdict_basis({"status": "succeeded"}) == {}
+    
+        # 3. non-blocking/warning fails are not failures.
+        r3 = derive_scientific_status({
+            "status": "succeeded",
+            "numeric_validation": {"checks": [
+                {"code": "convergence", "status": "fail", "severity": "warning", "message": ""}]},
+            "comparison": {"status": "not_run"},
+        })
+        assert r3 == "not_verified"
+    
+        # 4. initial status: strict pass requires real comparison + required
+        #    numeric pass + supported sources; unknown source -> not_verified.
+        #    numeric_ok is used directly below so the dataclass path and the
+        #    serialized-record path can be checked against each other.
+        numeric_ok = ValidationReport((
+            Check("finite", "pass", severity="blocking"),
+            Check("convergence", "pass", severity="blocking"),
+        ))
+        assert initial_scientific_status("succeeded", (), numeric_ok, "pass", ok_source, True) == "passed_structured_reference"
+        assert initial_scientific_status("succeeded", (), numeric_ok, "pass", bad_source, True) == "not_verified"
+        assert initial_scientific_status("succeeded", (), numeric_ok, "not_run", ok_source, True) == "not_verified"
+        # Normal mode: numerical pass label; reference fail is a failure.
+        assert initial_scientific_status("succeeded", (), numeric_ok, "pass", bad_source, False) == "passed_structured_reference"
+        assert initial_scientific_status("succeeded", (), numeric_ok, "fail", ok_source, False) == "failed"
+        # Execution failure dominates.
+        assert initial_scientific_status("failed", (), (), "pass", ok_source, True) == "failed"
+    
+        # 5. shared kernel: initial and derive agree on identical facts.  The
+        #    record below serializes exactly what initial_scientific_status is
+        #    given, so the two paths must produce the same verdict.
+>       from biomodel_agent import serialization
+E       ImportError: cannot import name 'serialization' from 'biomodel_agent' (/home/riveruning/biologymodel_agent/src/biomodel_agent/__init__.py)
+
+tests/test_run_verdict.py:590: ImportError
+=========================== short test summary info ============================
+FAILED tests/test_run_verdict.py::test_verdict_priority_and_basis_shape - Imp...
+1 failed, 44 passed in 25.39s

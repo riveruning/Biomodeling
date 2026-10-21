@@ -1,0 +1,35 @@
+{
+  "schema_version": "1",
+  "id": "v01-08-interface",
+  "objective": "交付CLI和事实驱动报告，简短可靠无需框架。",
+  "context": "只依赖冻结接口。application.run_reproduction(store,artifact,experiment,observations=(),solver=None,reference=None,scales=None,threshold=1e-3,strict=False,use_cache=True,nonnegative=())->runref; replay_run(store,ref)->newref; ArtifactStore(root);store.get(ref)->{kind,payload,refs};store.put/put_blob/get_blob；ModelArtifact(id,sbml),from_dict(ExperimentSpec,dict),ObservationSpec;hypotheses.adaptation_candidates()/run_hypothesis_study(store,candidates,training,holdout=(),observations=(),bounds=None,starts=3,seed=17,max_nfev=100,timeout_s=90,separation_threshold=.05)->ref；agent.run_agent/llm.ChatProvider待闭环，按此调用。",
+  "read_files": [
+    "src/biomodel_agent/domain/contracts.py",
+    "src/biomodel_agent/domain/serialization.py",
+    "src/biomodel_agent/reporting.py",
+    "src/biomodel_agent/cli.py",
+    "src/biomodel_agent/__main__.py"
+  ],
+  "write_files": [
+    "src/biomodel_agent/reporting.py",
+    "src/biomodel_agent/cli.py",
+    "src/biomodel_agent/__main__.py"
+  ],
+  "expected_files": [
+    "src/biomodel_agent/reporting.py",
+    "src/biomodel_agent/cli.py",
+    "src/biomodel_agent/__main__.py"
+  ],
+  "budget": {
+    "idle_ms": 360000,
+    "first_write_ms": 480000,
+    "total_ms": 900000
+  },
+  "instructions": "reporting.render_report(store,ref)->Markdown：run记录所有fact保存inputref/backend/solver环境/执行status/scientific_status/comparison status及各validation含unknown/not_run/source coverage不足、cache/replay、limitations。不能LLM生成数字/pass；hypothesis_study/agent_run可用关键字段JSON +limitations给完整事实报告。未知kind拒绝。输入数值大数组不渲染全部，只状态/metrics，源码引用hash，source未知含明示。约70行。\ncli.main(argv=None)->int，argparse子命令：validate SBML [--strict]，run SBML --experiment JSON --store DIR [--observations JSON] [--reference JSON] [--scales JSON] [--strict] [--no-cache]，replay REF --store，report REF --store [--output FILE]，agent --source FILE(可重复) --experiment JSON --store [--base-url] [--model] [--api-key-env BIOMODEL_API_KEY] [--max-calls8] [--mode reproduction/hypothesis] [--allowed-mechanism 可重复]，hypothesis --training JSON [--holdout JSON] --store [--starts3]。run reference允许完整SimulationResult JSON或curatedreference {times,values,scales,threshold,...}，构造SimulationResult(statussucceeded)同时读scales/threshold预冻，不伪造sourcepassed。validate基于validate_artifact；run基于领域application；agent ingest_source真实材料再provider，base_url/model env BIOMODEL_BASE_URL/BIOMODEL_MODEL fallback，否则明确缺设置。数据json UTF8 finite，no secrets日志，except返回明白错误exit1。成功print {ref,status,scientific_status,comparison}，执行failed/comparisonfail exit1，strictscientificnotverified exit2，unknownunit探索validateexit0 strictfullpassfail2。reportoutput可普通文件写用户指定；hypothesis若study失败不exit0，生物学不确定性正确completed也成功。约150行，别实现新计算逻辑。\n__main__.py只if __name__== '__main__':raise SystemExit(main())，防spawn子进程重新跑CLI。现在3文件，禁read其它文件/目录scan/todo/shell，完整一次write每文件然后文字完成。",
+  "acceptance": [
+    "CLI复用领域逻辑",
+    "报告unknown和失败诚实",
+    "spawn-safe入口"
+  ],
+  "verification_commands": []
+}

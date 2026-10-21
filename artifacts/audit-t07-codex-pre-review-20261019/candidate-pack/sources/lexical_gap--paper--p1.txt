@@ -1,0 +1,1 @@
+At t=0, N=12 cells; N is the state used in dN/dt = r*N.

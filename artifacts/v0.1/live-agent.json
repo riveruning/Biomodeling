@@ -1,0 +1,10 @@
+{
+  "status": "completed",
+  "agent_ref": "204aee8883a861fafe6781ce27961907760e3a59a8bb2a26dbc60e83d5276baa",
+  "run_ref": "15f16a4c654a5bcbc6673aed21526561b514c3697cbc3551f2a067e56b4b6c21",
+  "model": "claude-sonnet-4-6",
+  "calls": 5,
+  "repairs": 1,
+  "usage_total_tokens": 9589,
+  "scope": "one live extraction/execution of a curated synthetic specification; not a paper benchmark or baseline advantage proof"
+}

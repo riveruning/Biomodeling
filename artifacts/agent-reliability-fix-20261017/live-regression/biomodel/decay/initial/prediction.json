@@ -1,0 +1,34 @@
+{
+  "state": "completed",
+  "facts": {
+    "k/value": {
+      "value": 0.4,
+      "evidence": [
+        {
+          "source_id": "case",
+          "quote": "Parameter k = 0.4."
+        }
+      ]
+    },
+    "A/initial": {
+      "value": 2.0,
+      "evidence": [
+        {
+          "source_id": "case",
+          "quote": "Initial A = 2.0."
+        }
+      ]
+    },
+    "rule:A/expression": {
+      "value": "-k*A",
+      "evidence": [
+        {
+          "source_id": "case",
+          "quote": "Equation dA/dt = -k*A."
+        }
+      ]
+    }
+  },
+  "proposal_status": "last_attempt_not_necessarily_accepted",
+  "duplicate_targets": []
+}

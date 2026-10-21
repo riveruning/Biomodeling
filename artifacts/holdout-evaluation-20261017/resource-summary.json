@@ -1,0 +1,12 @@
+{
+  "biomodel_fresh_calls": 27,
+  "biomodel_fresh_tokens": 67232,
+  "biomodel_resume_incremental_calls": 12,
+  "biomodel_resume_incremental_tokens": 52891,
+  "biomodel_fresh_elapsed_s": 446.0931752420074,
+  "biomodel_resume_elapsed_s": 228.1419281779963,
+  "codex_fresh_elapsed_s": 315.7605534279937,
+  "codex_input_tokens": 547008,
+  "codex_cached_input_tokens": 482304,
+  "codex_output_tokens": 9246
+}

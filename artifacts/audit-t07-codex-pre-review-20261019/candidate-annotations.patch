@@ -1,0 +1,37 @@
+--- artifacts/audit-t07-retrieval-review-20261019/review-pack/packet.json
++++ candidate-pack/packet.json
+@@ -842,7 +842,7 @@
+     },
+     {
+       "id": "clarification_scope",
+-      "category": "conflict",
++      "category": "condition_scope",
+       "query": "initial X amount",
+       "paper_family_id": "shared-synthetic-development-template",
+       "split": "development",
+@@ -878,7 +878,7 @@
+           "end": 48,
+           "quote": "The initial X amount is 2 nmol in the main text.",
+           "id": "a1",
+-          "role": "conflict_candidate"
++          "role": "support_candidate"
+         },
+         {
+           "source_id": "clarification",
+@@ -887,11 +887,11 @@
+           "end": 116,
+           "quote": "Researcher clarification: the initial X amount is 5 nmol for condition B; the earlier 2 nmol applies to condition A.",
+           "id": "a2",
+-          "role": "conflict_candidate"
+-        }
+-      ],
+-      "expectation": "conflicting",
+-      "annotation_note": "Hand-specified synthetic target spans; pending independent review. Neither a paper gold standard nor unseen evaluation. Review priority: condition A/B statements may be compatible; the legacy conflict label is only a retrieval candidate, not a verified scientific contradiction.",
++          "role": "support_candidate"
++        }
++      ],
++      "expectation": "answerable",
++      "annotation_note": "Codex AI development pre-review correction candidate, not independently domain-approved. Authorized clarification assigns X(0)=2 nmol to condition A and X(0)=5 nmol to condition B; these are compatible conditional initial values. Retrieve both sources and preserve attribution. The query can be answered as a condition-to-value mapping; a single execution still needs the target condition. Both anchors remain required. Seen synthetic development material only.",
+       "review": {
+         "status": "pending",
+         "reviewer": null,

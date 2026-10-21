@@ -1,0 +1,59 @@
+{
+  "schema_version": 1,
+  "protocol": "native_system_comparison_v1",
+  "manifest_sha256": "6c97c6c6462b4a6598c1580d5a2863fc70e3977466c7693c4cc3112dff99348b",
+  "trial": {
+    "id": "codex-sol--translation--1--clarified",
+    "system_id": "codex-sol",
+    "runtime": "codex_cli",
+    "case_id": "translation",
+    "repeat": 1,
+    "phase": "clarified",
+    "parent_trial_id": "codex-sol--translation--1--initial"
+  },
+  "evidence_kind": "scripted_control",
+  "capture_kind": "codex_jsonl",
+  "capture_sha256": "a02379b98915c7749a848cab68e71b5c9f8109fad17caa0ad965fc2b1e8e8e75",
+  "status": "finished",
+  "session": {
+    "id": "3e9b277c-1459-5c6c-a5b6-cab29fa22c1c",
+    "mode": "resumed",
+    "parent_record_sha256": "b2af1d085fc677608dc00e5a0a903f2497f6281b3d36b33645f4ed8fe735dae3",
+    "identity_authenticated": false
+  },
+  "observation": {
+    "state": "completed",
+    "completion_claimed": true,
+    "execution_declared": true,
+    "execution_observed": null,
+    "question_texts": [],
+    "final_messages": [
+      "Literal offline interface control; not an actual model response."
+    ],
+    "artifacts": [
+      {
+        "path": "program.py",
+        "role": "program",
+        "sha256": "6684d1b03da5573212dd8a0089e265de36201884675ba64b32cfaeace35df937"
+      }
+    ]
+  },
+  "assessment": {
+    "authority": "unreviewed",
+    "numeric": "unknown",
+    "source_support": "unknown",
+    "behavior_labels_reviewed": false
+  },
+  "telemetry": {
+    "elapsed_seconds": 0.01,
+    "model_calls": null,
+    "tool_items": 1,
+    "tool_count_kind": "native_completed_tool_items",
+    "input_tokens": null,
+    "output_tokens": null,
+    "cached_input_tokens": null,
+    "reasoning_output_tokens": null,
+    "cumulative_elapsed_seconds": 0.02
+  },
+  "diagnostics": []
+}

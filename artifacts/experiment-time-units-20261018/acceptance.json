@@ -1,0 +1,103 @@
+{
+  "status": "accepted",
+  "created_at": "2026-10-18T10:43:32.608276+00:00",
+  "scope": "explicit experiment clock across agent, simulation, fitting and cache boundaries",
+  "files": [
+    {
+      "path": "src/biomodel_agent/time_units.py",
+      "staged": "src/biomodel_agent/time_units.py",
+      "before_sha256": null,
+      "after_sha256": "b4dbd584abcce667bb8eb089bc4342e29284a643ff6ee3c14b42388fa03041a2"
+    },
+    {
+      "path": "src/biomodel_agent/domain/contracts.py",
+      "staged": "src/biomodel_agent/domain/contracts.py",
+      "before_sha256": "0c9711fb6500a00cbb4c5be748db77b7b4a8a32a0f54d76d04fc80be424f8366",
+      "after_sha256": "6e56aec977f16a03092df0a64498490fc78368b49c684447a957a4cb706b971d"
+    },
+    {
+      "path": "src/biomodel_agent/simulation.py",
+      "staged": "src/biomodel_agent/simulation.py",
+      "before_sha256": "5ce58365e6adb77e801719a519aef488a938654bc50ca34c9dd6c2189e509f18",
+      "after_sha256": "7de90e2aa1c0e654d4ad1e285f88c7fec2174faf2a2f2641ba1df9297aa71659"
+    },
+    {
+      "path": "src/biomodel_agent/application.py",
+      "staged": "src/biomodel_agent/application.py",
+      "before_sha256": "1da1d5fbab5d7c5281fc55449723c95b335ca144e0cbc57ab2440ff7316490a9",
+      "after_sha256": "767f9493da25afb77559d1ee3c677c12b834e086b90e5cc1b71f3f49e7dd0792"
+    },
+    {
+      "path": "src/biomodel_agent/fitting.py",
+      "staged": "src/biomodel_agent/fitting.py",
+      "before_sha256": "099546d69f8735c6b6357d23e9b4618025fc59f5ac8f655406e52db1325291b1",
+      "after_sha256": "17b37ea04c28916844b46a1ec6da39cb8a038303ce81d2348820993f9720e422"
+    },
+    {
+      "path": "src/biomodel_agent/agent.py",
+      "staged": "src/biomodel_agent/agent.py",
+      "before_sha256": "76aa935db5dd9118169da66650bf5961ed731247fe403aea98504b8c2ef79975",
+      "after_sha256": "c8606da5f45d93cbbdb60fb1e0cb6eae537030e876754bff32b04621b09cfd5f"
+    },
+    {
+      "path": "tests/test_experiment_time_units.py",
+      "staged": "tests/test_experiment_time_units.py",
+      "before_sha256": null,
+      "after_sha256": "b913b51ae77bd3bf6254981cb7055d2e62cf902ec4f7e809b32ab403b2a300c9"
+    },
+    {
+      "path": "docs/experiment-time-units.md",
+      "staged": "docs/experiment-time-units.md",
+      "before_sha256": null,
+      "after_sha256": "cd9952cc4f207fad5c666ee148c47e7cb2df353535f2b481f2337eb6d9ed1084"
+    },
+    {
+      "path": "README.md",
+      "staged": "README.md",
+      "before_sha256": "9eb9bc48ccb86b107883eb1e2940161c8d6b2284e1a9b3658e8b7e137617f53c",
+      "after_sha256": "a24b014d252741de638fe7d9be6ff78336cbe5594450632c32839b380450c47c"
+    }
+  ],
+  "baseline_tests": 364,
+  "tests": {
+    "tests": 402,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "validation": "existing project suite with staged modified modules, 38 new experiment time-unit regressions; identical copied storage test keeps spawned imports on staged source",
+  "pytest_log": "pytest.log",
+  "pytest_xml": "pytest.xml",
+  "offline_original_proposals": 3,
+  "new_model_calls": 0,
+  "full_agent_benchmark_success_measured": false,
+  "original_evaluation_modified": false,
+  "independent_holdout": false,
+  "known_limitations": [
+    "explicit experiment time constraint is optional; omitted units remain unknown",
+    "no new live LLM performance measurement",
+    "bounded SBML clock resolver; no parameter-unit inference or automatic time conversion"
+  ],
+  "installed_test_command": [
+    "/home/riveruning/biologymodel_agent/.venv/bin/python",
+    "-m",
+    "pytest",
+    "-q",
+    "-p",
+    "no:cacheprovider",
+    "--basetemp=/tmp/biology-agent-time-installed-20261018",
+    "--junitxml=/home/riveruning/biologymodel_agent/artifacts/experiment-time-units-20261018/installed-pytest.xml"
+  ],
+  "installed_test_exit_code": 0,
+  "old_checkpoint_exercise_exit_code": 0,
+  "old_checkpoint_exercise_is_scripted": true,
+  "old_checkpoint_exercise_completed": 3,
+  "installed_tests": {
+    "tests": 402,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "offline_scripted_workflow_exercises": 3,
+  "model_capability_measured": false
+}

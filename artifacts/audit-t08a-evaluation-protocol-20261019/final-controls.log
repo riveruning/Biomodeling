@@ -1,0 +1,1 @@
+{"status": "passed", "control_sets": ["nominal", "adverse", "missing"], "planned_rows_per_set": 30, "actual_model_calls": 0, "actual_scientific_tool_calls": 0}

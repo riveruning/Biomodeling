@@ -1,0 +1,166 @@
+{
+  "schema_version": 1,
+  "protocol": "native_system_comparison_v1",
+  "usage": "development_only",
+  "exposure": "seen_synthetic_development",
+  "evidence_kind": "scripted_control",
+  "product_toolchain_sha256": "abad7db107b62cb942b96ec88df701d47c8eb236275d0cf17216f37da6686252",
+  "implementation": {
+    "system_comparison.py": "f06ff4d98c199e141ad159184a922216b0e9dce23f552bc99eebf3fc9a61e0d3",
+    "native_capture.py": "d9c5c00f34a5d3c4621819cbc066baf4fc2391695e4ebbcb2f0d78b06464ead0",
+    "agent_evaluation.py": "2c0a41c137bfbf678fcada3dd6f97a720fb0f56954f8d4e344890a26259d686c",
+    "evaluation_reporting.py": "5b47b6f4b20765fcbabc2b29352e8ef700d99aed086bdb43ba63a17ed88e7d58"
+  },
+  "repeats": 2,
+  "budget": {
+    "max_elapsed_seconds": 180.0
+  },
+  "cases": [
+    {
+      "id": "decay",
+      "family": "shared-synthetic-reliability-template",
+      "task": "Reconstruct the reported ODE and simulate the supplied experiment. Preserve units and source citations. Ask a specific question when required information is missing or ambiguous.",
+      "phases": [
+        {
+          "id": "initial",
+          "files": [
+            {
+              "role": "source",
+              "path": "benchmarks/inputs/reliability/decay/initial/source.txt",
+              "sha256": "ffc2e454726221a03c7cd00fc621579a4b825a0c6c9857e63a61c78698e8f375"
+            },
+            {
+              "role": "experiment",
+              "path": "benchmarks/inputs/reliability/decay/initial/experiment.json",
+              "sha256": "b02dcbbcc35baa81d4b4fa7af89388193f5b73bc17af2be38e19c515fd3e41ad"
+            }
+          ],
+          "private_rubric": {
+            "execution_expected": true,
+            "required_gaps": []
+          }
+        }
+      ]
+    },
+    {
+      "id": "translation",
+      "family": "shared-synthetic-reliability-template",
+      "task": "Reconstruct the reported ODE and simulate the supplied experiment. Preserve units and source citations. Ask a specific question when required information is missing or ambiguous.",
+      "phases": [
+        {
+          "id": "initial",
+          "files": [
+            {
+              "role": "source",
+              "path": "benchmarks/inputs/reliability/translation/initial/source.txt",
+              "sha256": "ce02704af04e7ff8101dd646bd1dcfdbbae0e1df853de87135fc359c9793bed2"
+            },
+            {
+              "role": "experiment",
+              "path": "benchmarks/inputs/reliability/translation/initial/experiment.json",
+              "sha256": "b02dcbbcc35baa81d4b4fa7af89388193f5b73bc17af2be38e19c515fd3e41ad"
+            }
+          ],
+          "private_rubric": {
+            "execution_expected": false,
+            "required_gaps": [
+              "P/initial"
+            ]
+          }
+        },
+        {
+          "id": "clarified",
+          "files": [
+            {
+              "role": "source",
+              "path": "benchmarks/inputs/reliability/translation/clarified/source.txt",
+              "sha256": "82ef5f29120b52c01f94f8d7ef3cf04212ab5dd086e09c5859acd008e557989f"
+            },
+            {
+              "role": "experiment",
+              "path": "benchmarks/inputs/reliability/translation/clarified/experiment.json",
+              "sha256": "b02dcbbcc35baa81d4b4fa7af89388193f5b73bc17af2be38e19c515fd3e41ad"
+            }
+          ],
+          "private_rubric": {
+            "execution_expected": true,
+            "required_gaps": []
+          }
+        }
+      ]
+    },
+    {
+      "id": "logistic",
+      "family": "shared-synthetic-reliability-template",
+      "task": "Reconstruct the reported ODE and simulate the supplied experiment. Preserve units and source citations. Ask a specific question when required information is missing or ambiguous.",
+      "phases": [
+        {
+          "id": "initial",
+          "files": [
+            {
+              "role": "source",
+              "path": "benchmarks/inputs/reliability/logistic/initial/source.txt",
+              "sha256": "14ccb9940189595714b06ca3b5727af5c09b1eb279ea3250d46bc3398e509504"
+            },
+            {
+              "role": "experiment",
+              "path": "benchmarks/inputs/reliability/logistic/initial/experiment.json",
+              "sha256": "b02dcbbcc35baa81d4b4fa7af89388193f5b73bc17af2be38e19c515fd3e41ad"
+            }
+          ],
+          "private_rubric": {
+            "execution_expected": false,
+            "required_gaps": [
+              "rule:X/expression"
+            ]
+          }
+        },
+        {
+          "id": "clarified",
+          "files": [
+            {
+              "role": "source",
+              "path": "benchmarks/inputs/reliability/logistic/clarified/source.txt",
+              "sha256": "7d01cf55cb1e23f355a026303a12e8350767dcb7c61a88500bd50289e7497ed8"
+            },
+            {
+              "role": "experiment",
+              "path": "benchmarks/inputs/reliability/logistic/clarified/experiment.json",
+              "sha256": "b02dcbbcc35baa81d4b4fa7af89388193f5b73bc17af2be38e19c515fd3e41ad"
+            }
+          ],
+          "private_rubric": {
+            "execution_expected": true,
+            "required_gaps": []
+          }
+        }
+      ]
+    }
+  ],
+  "systems": [
+    {
+      "id": "biomodel",
+      "runtime": "biomodel_agent",
+      "model": null,
+      "revision": null,
+      "reasoning_effort": null,
+      "tool_profile": "deterministic_ode_tools"
+    },
+    {
+      "id": "codex-sol",
+      "runtime": "codex_cli",
+      "model": "gpt-6.1-sol",
+      "revision": null,
+      "reasoning_effort": "medium",
+      "tool_profile": "native_programming"
+    },
+    {
+      "id": "codex-astra",
+      "runtime": "codex_cli",
+      "model": "gpt-6-astra",
+      "revision": null,
+      "reasoning_effort": "medium",
+      "tool_profile": "native_programming"
+    }
+  ]
+}

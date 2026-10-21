@@ -1,0 +1,257 @@
+{
+  "status": "operator_numerical_audit_passed; human_domain_review_pending",
+  "human_reviewed": false,
+  "dataset_builders_imported": false,
+  "product_code_used": false,
+  "cases": [
+    {
+      "case": "c01_multistep_decay",
+      "method": "separately hand-coded RHS from materials; Radau",
+      "max_scaled_errors": {
+        "A": 1.0129788341473045e-08,
+        "B": 2.0796072050421922e-08
+      },
+      "tolerance": 1e-06,
+      "pass": true,
+      "species_match": true
+    },
+    {
+      "case": "c02_chain3_decay",
+      "method": "separately hand-coded RHS from materials; Radau",
+      "max_scaled_errors": {
+        "A": 6.549417711868936e-09,
+        "B": 1.3984199796387054e-08,
+        "C": 1.594801521508183e-08,
+        "P": 1.4570444582523808e-08
+      },
+      "tolerance": 1e-06,
+      "pass": true,
+      "species_match": true
+    },
+    {
+      "case": "c03_mm_decay",
+      "method": "separately hand-coded RHS from materials; Radau",
+      "max_scaled_errors": {
+        "S": 6.129817986533226e-09
+      },
+      "tolerance": 1e-06,
+      "pass": true,
+      "species_match": true
+    },
+    {
+      "case": "c04_competing_elimination",
+      "method": "separately hand-coded RHS from materials; Radau",
+      "max_scaled_errors": {
+        "D": 3.905330103748383e-09
+      },
+      "tolerance": 1e-06,
+      "pass": true,
+      "species_match": true,
+      "analytic_max_absolute_error": 6.434852650727407e-12
+    },
+    {
+      "case": "c05_seq_activation_missing_initial",
+      "method": "separately hand-coded RHS from materials; Radau",
+      "max_scaled_errors": {
+        "E": 9.574587522820365e-09,
+        "S": 1.5972820621712458e-08,
+        "Es": 2.0748583516961177e-08
+      },
+      "tolerance": 1e-06,
+      "pass": true,
+      "species_match": true
+    },
+    {
+      "case": "c06_reversible_saturation_missing_initial",
+      "method": "separately hand-coded RHS from materials; Radau",
+      "max_scaled_errors": {
+        "X": 7.456105510783573e-09,
+        "Y": 9.183888907422104e-09
+      },
+      "tolerance": 1e-06,
+      "pass": true,
+      "species_match": true
+    },
+    {
+      "case": "c07_mm_reversible_missing_initial",
+      "method": "separately hand-coded RHS from materials; Radau",
+      "max_scaled_errors": {
+        "P": 1.247136588444775e-08,
+        "Q": 1.761580521832647e-08
+      },
+      "tolerance": 1e-06,
+      "pass": true,
+      "species_match": true
+    },
+    {
+      "case": "c08_sequential_activation_missing_initial",
+      "method": "separately hand-coded RHS from materials; Radau",
+      "max_scaled_errors": {
+        "A": 1.543134257412741e-08,
+        "B": 4.796099004056309e-09,
+        "As": 4.7960989624229455e-09,
+        "C": 4.717949753096917e-09
+      },
+      "tolerance": 1e-06,
+      "pass": true,
+      "species_match": true
+    },
+    {
+      "case": "c09_two_step_saturation_missing_parameter",
+      "method": "separately hand-coded RHS from materials; Radau",
+      "max_scaled_errors": {
+        "S": 4.860793212380088e-09
+      },
+      "tolerance": 1e-06,
+      "pass": true,
+      "species_match": true
+    },
+    {
+      "case": "c10_mm_reversible_pair_missing_parameter",
+      "method": "separately hand-coded RHS from materials; Radau",
+      "max_scaled_errors": {
+        "A": 8.158822802547169e-09,
+        "B": 2.9322841618259532e-08,
+        "C": 8.308431572364347e-09
+      },
+      "tolerance": 1e-06,
+      "pass": true,
+      "species_match": true
+    },
+    {
+      "case": "c11_activation_flux_missing_parameter",
+      "method": "separately hand-coded RHS from materials; Radau",
+      "max_scaled_errors": {
+        "P": 4.579883389199679e-09,
+        "A": 3.96417343395683e-09
+      },
+      "tolerance": 1e-06,
+      "pass": true,
+      "species_match": true
+    },
+    {
+      "case": "c12_two_compartment_exchange_missing_parameter",
+      "method": "separately hand-coded RHS from materials; Radau",
+      "max_scaled_errors": {
+        "C": 1.2454074993506481e-08,
+        "T": 1.8681112457687172e-08
+      },
+      "tolerance": 1e-06,
+      "pass": true,
+      "species_match": true
+    },
+    {
+      "case": "c13_mm_with_inhibitor_ambiguous",
+      "method": "separately hand-coded RHS from materials; Radau",
+      "max_scaled_errors": {
+        "S": 1.5729644845900264e-08,
+        "I": 0.0
+      },
+      "tolerance": 1e-06,
+      "pass": true,
+      "species_match": true
+    },
+    {
+      "case": "c14_feedback_repression_ambiguous",
+      "method": "separately hand-coded RHS from materials; Radau",
+      "max_scaled_errors": {
+        "R": 4.274684021548016e-08,
+        "P": 1.4359838918073351e-08
+      },
+      "tolerance": 1e-06,
+      "pass": true,
+      "species_match": true
+    },
+    {
+      "case": "c15_autocatalytic_ambiguous",
+      "method": "separately hand-coded RHS from materials; Radau",
+      "max_scaled_errors": {
+        "X": 1.5887528661551186e-08
+      },
+      "tolerance": 1e-06,
+      "pass": true,
+      "species_match": true
+    },
+    {
+      "case": "c16_decay_ambiguous",
+      "method": "separately hand-coded RHS from materials; Radau",
+      "max_scaled_errors": {
+        "Y": 6.974453966738078e-09
+      },
+      "tolerance": 1e-06,
+      "pass": true,
+      "species_match": true,
+      "analytic_max_absolute_error": 1.2168044349891716e-12
+    },
+    {
+      "case": "c17_mathematical_decay_unit_conflict",
+      "method": "separately hand-coded RHS from materials; Radau",
+      "max_scaled_errors": {
+        "R": 2.4499880124650986e-08
+      },
+      "tolerance": 1e-06,
+      "pass": true,
+      "species_match": true,
+      "analytic_max_absolute_error": 1.965760887401302e-12
+    },
+    {
+      "case": "c18_two_pathway_unit_conflict",
+      "method": "separately hand-coded RHS from materials; Radau",
+      "max_scaled_errors": {
+        "M": 9.11151780691455e-09
+      },
+      "tolerance": 1e-06,
+      "pass": true,
+      "species_match": true,
+      "analytic_max_absolute_error": 4.136246900543483e-12
+    },
+    {
+      "case": "c19_temperature_scaled_decay_unit_conflict",
+      "method": "separately hand-coded RHS from materials; Radau",
+      "max_scaled_errors": {
+        "Z": 4.593028673443516e-09
+      },
+      "tolerance": 1e-06,
+      "pass": true,
+      "species_match": true,
+      "analytic_max_absolute_error": 3.460343123151688e-12
+    },
+    {
+      "case": "c20_two_compartment_unit_conflict",
+      "method": "separately hand-coded RHS from materials; Radau",
+      "max_scaled_errors": {
+        "C": 1.2461475074054817e-08,
+        "T": 4.147632819971528e-08
+      },
+      "tolerance": 1e-06,
+      "pass": true,
+      "species_match": true
+    }
+  ],
+  "boundary_cases": {
+    "c06_reversible_saturation_missing_initial": "Preparation contains no Y; Y(0)=0 is supported by supplied prose, not an unsupported guess.",
+    "c07_mm_reversible_missing_initial": "Purified P with no Q introduced supports Q(0)=0.",
+    "c08_sequential_activation_missing_initial": "No complex forms before illumination; As(0)=0 is inferable.",
+    "c15_autocatalytic_ambiguous": "Alternative appendix expression is dimensionally inconsistent with declared K and k units; a justified dimensional rejection must be distinguished from arbitrary choice.",
+    "c16_decay_ambiguous": "Rate 0.4 and time constant 2.5 are reciprocal consistent entries; ambiguity rubric may penalize justified interpretation.",
+    "c17_mathematical_decay_unit_conflict": "0.05 per second equals 3 per minute; legend and second timetable agree. No conflicting physical rate is specified."
+  },
+  "other_findings": [
+    "allowed.json discloses expected execution and blocking target; omit it from all model-visible workspaces.",
+    "c03 statement about finite-time exhaustion is mathematically false for Michaelis-Menten with Km>0. Positive S decays asymptotically; the numeric reference remains consistent.",
+    "c01 prose S1/S2 and equation symbols A/B differ; equations plus reporting identify the intended mapping.",
+    "Original scale text in experiment mentions max absolute reference; scoring_rules uses max(1,max absolute reference). Freeze the latter explicitly.",
+    "Units clarification c20 explicitly provides both per-minute rates; its numeric effect is real, unlike the same-rate conversions in c17."
+  ],
+  "pilot_selection_rule": "first unambiguous case in each category, ordered by case ID; no system outputs observed before selection",
+  "pilot_cases": [
+    "c01_multistep_decay",
+    "c05_seq_activation_missing_initial",
+    "c09_two_step_saturation_missing_parameter",
+    "c13_mm_with_inhibitor_ambiguous",
+    "c18_two_pathway_unit_conflict"
+  ],
+  "pilot_selection_note": "c17 is a boundary case; c18 is the next unit-conflict case. c13 has genuine unresolved inhibitor interpretation despite missing full alternative equations.",
+  "formal_superiority_claim_allowed": false,
+  "auditor_code_sha256": "a1c659126124213d2d31fba0351fa3e0082190d4514f9c77a292f4a79663de84"
+}

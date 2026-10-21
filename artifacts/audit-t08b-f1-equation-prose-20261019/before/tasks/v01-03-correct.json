@@ -1,0 +1,33 @@
+{
+  "schema_version": "1",
+  "id": "v01-03-correct",
+  "objective": "实现隔离的libRoadRunner模拟、数值验证和固定误差比较。",
+  "context": "Python3.12，既有frozen dataclass契约。使用.venv已安装libsbml/roadrunner/numpy/scipy。只read/write/edit列出的文件，禁止todo_write、shell、目录扫描与联网。测试由Codex执行。",
+  "read_files": [
+    "src/biomodel_agent/domain/contracts.py",
+    "src/biomodel_agent/modeling.py",
+    "src/biomodel_agent/expressions.py"
+  ],
+  "write_files": [
+    "src/biomodel_agent/simulation.py",
+    "src/biomodel_agent/validation.py",
+    "tests/test_simulation.py"
+  ],
+  "expected_files": [
+    "src/biomodel_agent/simulation.py",
+    "src/biomodel_agent/validation.py",
+    "tests/test_simulation.py"
+  ],
+  "instructions": "simulation.simulate(artifact,experiment,observations=(),solver=None)->SimulationResult。执行前validate_artifact失败阻止；unsupported check对应status unsupported，其余failed。不修改输入。不做shell。spawn multiprocessing进程，父进程poll queue(timeout)，不要先join再读queue死锁，超时terminate再join返回timed_out无成功结果。worker顶层function可pickle；允许配置rlimit CPU（可选）但不是任意代码沙箱。进程结束后清理。LibRoadRunner load SBML在worker，integrator=cvode relative_tolerance,absolute_tolerance,maximum_num_steps按solver。记录backend版本/rtol等diagnostics。尽量避免导入heavy roadrunner在父进程。\n时间协议：从t0=experiment.times[0]的声明初值开始（不擅自0预平衡），应用initial_overrides严格只state，parameter_overrides只可赋值的constant parameter；不能override assignment target或compartment。segments只外部参数变更，不能改state/derived；segment必须[t0,tlast]内；在采样/段边界并集逐次integrate/oneStep准确到目标时刻（RR.integrate(start,end)用integrator.variable_step_size=false以到端点；确认rr.time），采样同一时刻先应用segment值再evaluate观测，状态连续参数右连续。不依赖均匀输出simulate(start,end,N)替代任意times。默认输出所有states（species and rate-ruleparameter），新增observations允许表达式相同安全parser，environment包含states/parameters/derived/compartment/time；column id不得撞state否则ValueError，getFloatingSpeciesConcentrations不是通用amount，按declaredhasOnlySubstanceUnits选择rr[sid] vs rr['[sid]']：amount rr[sid], concentration rr['[sid]']。initial amount vs concentration/rr.init同样处理。导入boundary/constant species初值override可？先拒绝constant，明确错误。\n数值验证validation.validate_numeric(result, nonnegative=(), conservation=(),atol=1e-10)->ValidationReport：非success没有pass，所有输出finite，指定nonnegative变量阈值 -10*atol；no clipping，保留原输出。conservation 可延后不实现而显示not_run，不能暗示massbalance。validation.compare_series(actual,reference,scales,threshold=1e-3)->dict：必须相同grid、相同columns、正有限scales固定，max_scaled_error,status pass/fail。验证finite否则ValueError。validation.convergence_check(coarse,fine,scales,threshold)->Check调用比较。结果worker自动添加finite check，观测/初值失败failed包含diagnostic，不掩盖错误。\n独立测试解析生灭dx/dt=k-d*x，不规则times，初值/参数覆盖，observable=2*x（结果state和obs）；非单位volume amount vs concentration反应体现正确volume换算；刺激segment边界观测parameter右连续且积分结果解析；未知override和assignmentoverride拒绝（returnedfailed或ValueError，但不静默忽略）；timeout用极短solver.timeout_s=0.001真实spawn；unknown单位仍unknown；非法模型无spawn。root将escalated运行spawn测试，别尝试run命令。\n彻底重写simulation.py现有文件包含截断f字符串、RR假API、SimpleQueue.poll不存在。正确roadrunner.RoadRunner(sbml)不是load；rr.model.setTime(t0)设置开始时间，不能rr.integrate(0,t0)擅自预平衡；rr[id]/rr[\"[id]\"]读写当前状态（单独设置initialcondition之后不reset恢复），参数常数可设置rr[param]。sbmlinspection用libsbml.readSBMLFromString，sp.getBoundaryCondition()/getConstant()，rate目标从getListOfRules读取作为state，assignment目标不能override，只可constant non-rate参数作为segment。environment所有species按量-kind选择+所有parameter+compartment+time，obs可以用参数/derived/time。输出只state和observables，不输出所有constantparams冒充state。rr.integrator.integrate(start,dt)还是rr.integrate(start,end)必须用准确确认的接口：推荐rr.oneStep(current,delta)得到actualtime，设置variable_step_size=false；具体可读libroadrunner docs Codex已安装但禁止shell自己probe。multiprocessing.Queue.get(timeout=...)先读取，再join，queue.Empty→timeoutterminate。捕获workerexit避免等无界；Queue.close/join_thread。非finite output失败，不让strict JSON NaN持久化，diagnostic保存坏值字符串，不填0。自动finitecheck返回ValidationReport，执行失败至少blockingfail check而不是empty fullypass。添加validation.py和test_simulation.py，之前这两文件空。每文件整写一次，最后文字完成，不多轮猜测自修改。\n压缩实现：simulation~180-230行、validation~80行、tests~130行。避免冗长模块docstring/重复注释，每文件一次整写。优先尽快交付simulation文件然后validation和tests。",
+  "acceptance": [
+    "有依据的数学/语义检查，不支持则明确阻止",
+    "只交付文件，Codex独立验收"
+  ],
+  "verification_commands": [],
+  "budget": {
+    "idle_ms": 360000,
+    "first_write_ms": 480000,
+    "write_idle_ms": 360000,
+    "total_ms": 900000
+  }
+}

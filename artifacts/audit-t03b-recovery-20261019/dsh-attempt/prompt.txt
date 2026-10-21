@@ -1,0 +1,11 @@
+你是 DSH 实现者，Codex 负责指挥、独立审查和验收。
+任务 audit-t03b-recovery-core；工作区 /home/riveruning/biologymodel_agent。只完成本次单一目标：实现只读恢复诊断、进程所有者锁与已返回调用的受控重放核心，不接入Agent入口。
+必要背景：T03a完整849项通过。用户明确继续T03b并沿用Codex验收/DSH代码分工。recovery.py是Codex准备的空文件，不算交付。契约固定接口；Agent集成将单独派发。仅开发源码，不含论文评测材料。
+允许读取：/home/riveruning/biologymodel_agent/artifacts/audit-t03b-recovery-20261019/implementation-contract-core.md, /home/riveruning/biologymodel_agent/src/biomodel_agent/storage.py, /home/riveruning/biologymodel_agent/src/biomodel_agent/domain/serialization.py, /home/riveruning/biologymodel_agent/src/biomodel_agent/domain/contracts.py, /home/riveruning/biologymodel_agent/src/biomodel_agent/recovery.py, /home/riveruning/biologymodel_agent/src/biomodel_agent/invocations.py
+仅允许写入：/home/riveruning/biologymodel_agent/src/biomodel_agent/recovery.py, /home/riveruning/biologymodel_agent/src/biomodel_agent/invocations.py
+具体要求：先读implementation-contract-core与invocations/storage，按固定接口实现。所有代码在两个允许文件中，保留T03a语义。只用明确文件read/write/edit，不用shell/目录扫描/网络/子Agent，不改测试、任务卡或监督程序。先交付核心模块，再概述接口和限制；验收与Agent接线由Codex安排。
+验收条件：诊断只读并校验序号、配对、冻结版本及预算；已返回产物重放不重复计算/付费，未知结果阻断；flock进程互斥且崩溃释放，不删锁文件；T03a旧API和持久化边界保持
+只使用明确路径的 read_file、write_file、edit_file 工具；不要使用 todo_write、规划工具、glob、目录扫描、shell、联网或安装工具。
+测试命令由 Codex 审查后执行。不要修改监督脚本、任务卡、权限配置或敏感路径。
+先交付最小可审查文件，不输出长篇计划；若阻塞，报告具体原因，不无限换工具尝试。
+最后简短列出实际文件、接口与限制。完成回复不代表验收通过。

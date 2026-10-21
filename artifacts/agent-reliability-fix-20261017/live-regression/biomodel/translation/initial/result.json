@@ -1,0 +1,19 @@
+{
+  "status": "awaiting_input",
+  "calls": 2,
+  "tokens": 3534,
+  "questions": [
+    "Please resolve: P/initial: please clarify missing source value"
+  ],
+  "problems": [
+    "P/initial: please clarify missing source value"
+  ],
+  "model_ref": null,
+  "run_ref": null,
+  "agent_ref": "a7bc2a25384735f6c40990d3633a630f3482c9261c8ed997276a7c5bf86692e1",
+  "product_modules_sha256": "3223ecf97ad97509bffb78ca21f44c9c525a139ca5c56bdcb4d13b1870ef0ccc",
+  "system": "biomodel",
+  "case": "translation",
+  "phase": "initial",
+  "elapsed_seconds": 37.3014993220022
+}

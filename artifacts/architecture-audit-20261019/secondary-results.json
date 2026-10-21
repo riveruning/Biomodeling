@@ -1,0 +1,15 @@
+{
+  "primitive_api_inconsistency": [
+    {
+      "value": true,
+      "python_constructor": 1.0,
+      "json_codec": "SchemaError"
+    },
+    {
+      "value": "0.4",
+      "python_constructor": 0.4,
+      "json_codec": "SchemaError"
+    }
+  ],
+  "changes_since_last_acceptance_in_eight_recorded_files": []
+}

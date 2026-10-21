@@ -1,0 +1,113 @@
+{
+  "date": "2026-10-19",
+  "status": "completed_offline_development",
+  "objective": "auditable retrieval baseline and explicit passage retrieval option",
+  "baseline_tests": {
+    "tests": "688",
+    "failures": "0",
+    "errors": "0",
+    "skipped": "0",
+    "time": "113.195"
+  },
+  "full_tests": {
+    "tests": "715",
+    "failures": "0",
+    "errors": "0",
+    "skipped": "0",
+    "time": "116.940"
+  },
+  "targeted_tests": {
+    "tests": "129",
+    "failures": "0",
+    "errors": "0",
+    "skipped": "0",
+    "time": "18.511"
+  },
+  "final_targeted_tests": {
+    "tests": "27",
+    "failures": "0",
+    "errors": "0",
+    "skipped": "0",
+    "time": "3.517"
+  },
+  "legacy_outputs_unchanged": true,
+  "fixtures_unchanged_since_baseline": true,
+  "unexpected_changes_to_preexisting_src_tests": [],
+  "retrieval_comparison": {
+    "lexical_v1": {
+      "cases": 18,
+      "anchors": 21,
+      "covered_anchors": 10,
+      "anchor_recall": 0.47619047619047616,
+      "complete_cases": 7,
+      "mean_reciprocal_rank_positive_cases": 0.4117647058823529,
+      "irrelevant_hit_fraction": 0.5,
+      "snippet_chars": 7151,
+      "response_json_chars": 12266,
+      "outside_annotated_span_fraction": 0.9155362886309607
+    },
+    "passage_v2": {
+      "cases": 18,
+      "anchors": 21,
+      "covered_anchors": 19,
+      "anchor_recall": 0.9047619047619048,
+      "complete_cases": 16,
+      "mean_reciprocal_rank_positive_cases": 0.7058823529411765,
+      "irrelevant_hit_fraction": 0.3103448275862069,
+      "snippet_chars": 2191,
+      "response_json_chars": 8830,
+      "outside_annotated_span_fraction": 0.4281150159744409
+    }
+  },
+  "fixture_sha256": "bb3118e8353e8c1e651dd451c3c7340cb3e17e9e4951ae7f11414bb9523d7603",
+  "scripted_integration": {
+    "kind": "scripted_offline_integration_not_model_performance",
+    "agent_run_ref": "72d5ab529cd5587b870d0e655bc2353e88afd219ab83c20ceeace20e2d354625",
+    "state": "completed",
+    "calls": 4,
+    "retrieval_method": "passage_v2",
+    "actual_endpoint": 0.6703202833572259,
+    "analytic_endpoint": 0.6703200460356393,
+    "absolute_error": 2.373215866047218e-07,
+    "scientific_status": "not_verified"
+  },
+  "initial_script_failure": "offline-integration-failure.json",
+  "external_llm_calls": 0,
+  "new_dependencies": [],
+  "default_retrieval_method": "lexical_v1",
+  "changed_files": [
+    "src/biomodel_agent/retrieval.py",
+    "src/biomodel_agent/agent.py",
+    "src/biomodel_agent/cli.py",
+    "tests/test_passage_retrieval.py",
+    "benchmarks/development/evaluate_retrieval.py",
+    "benchmarks/inputs/retrieval-development/cases.json",
+    "docs/passage-retrieval.md",
+    "docs/seven-point-status.md"
+  ],
+  "source_hashes": {
+    "src/biomodel_agent/retrieval.py": "87cddc5d2f7275385edcec6d6bec7ce9827571ac44f55e220dacbb3cdd74f5e4",
+    "src/biomodel_agent/agent.py": "d60156bde0bc94ce9a5ac5fb0a9248c4a442656c7aefd9fd38cbc24701929c9d",
+    "src/biomodel_agent/cli.py": "71e8f56616edd728eaee555e4b865241c386a7458c1983c37f17c51160b6cf55",
+    "tests/test_passage_retrieval.py": "626128dc92bf85536f7bd4493a982ad49ccdb67cfae89a7d4750edd429f5f7e3",
+    "benchmarks/development/evaluate_retrieval.py": "f86690934275aa854b5b6ab605bbda2cd383fde2841d1a6ea5d3cbd1d80e99c5",
+    "benchmarks/inputs/retrieval-development/cases.json": "bb3118e8353e8c1e651dd451c3c7340cb3e17e9e4951ae7f11414bb9523d7603",
+    "docs/passage-retrieval.md": "e711c5c962b58ff04724d6a18788d234075eddab9545cc15082671bb5a47613d",
+    "docs/seven-point-status.md": "87753b2a5ed2edaaf33bb03920833ba2fda4305df1c8a8f1fa0aab163a9ba70d"
+  },
+  "limitations": [
+    "Synthetic development annotations pending independent review; not held-out or expert gold.",
+    "Lexical wording mismatch and long-statement window clipping remain.",
+    "No real-model capability or embedding benefit established.",
+    "Previously blocked USTC evaluations not retried."
+  ],
+  "artifacts": [
+    "changes.patch",
+    "before/",
+    "after/",
+    "baseline.log",
+    "pytest.log",
+    "final-comparison/results.json",
+    "offline-integration-v2/results.json"
+  ]
+}

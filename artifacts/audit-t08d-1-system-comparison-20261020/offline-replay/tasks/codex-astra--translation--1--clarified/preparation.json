@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "protocol": "native_system_comparison_v1",
+  "status": "prepared_only_no_authorization",
+  "manifest_sha256": "6c97c6c6462b4a6598c1580d5a2863fc70e3977466c7693c4cc3112dff99348b",
+  "trial": {
+    "id": "codex-astra--translation--1--clarified",
+    "system_id": "codex-astra",
+    "runtime": "codex_cli",
+    "case_id": "translation",
+    "repeat": 1,
+    "phase": "clarified",
+    "parent_trial_id": "codex-astra--translation--1--initial"
+  },
+  "continuation": "resumed",
+  "parent_record_sha256": "0bc1f40e737c65efdb88394b617b6cdb4278fe5fd8fb5bf7dea411fc01016599",
+  "remaining_elapsed_seconds": 179.99,
+  "runtime_files": {
+    "source.txt": "82ef5f29120b52c01f94f8d7ef3cf04212ab5dd086e09c5859acd008e557989f",
+    "experiment.json": "b02dcbbcc35baa81d4b4fa7af89388193f5b73bc17af2be38e19c515fd3e41ad",
+    "TASK.md": "308aaabcebecd10fc90ace4bb352b949d1a25a462e934c07d2ade683ede46e33"
+  },
+  "isolation_status": "bundle_projection_only_not_an_OS_sandbox",
+  "service_configuration": "deferred",
+  "online_calls": 0
+}

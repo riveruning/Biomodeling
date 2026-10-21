@@ -1,0 +1,40 @@
+{
+  "schema_version": "1",
+  "id": "v01-01-repair",
+  "objective": "修复已实测失败的领域契约，交付可运行代码。",
+  "context": "Codex运行13测试7失败6通过。无需执行任何命令；只read/write/edit这3文件，禁止shell。没有必要继续规划。",
+  "read_files": [],
+  "write_files": [
+    "src/biomodel_agent/domain/contracts.py",
+    "src/biomodel_agent/domain/serialization.py",
+    "tests/test_contracts.py"
+  ],
+  "expected_files": [
+    "src/biomodel_agent/domain/contracts.py",
+    "src/biomodel_agent/domain/serialization.py",
+    "tests/test_contracts.py"
+  ],
+  "instructions": "重写serialization.py而非补丁式修补。保留既有API。修复：\n1 FrozenMap必须通用、深不可变、pickle友好。键任意非空str（证据路径如reaction:r/rate不是SBML ID），值递归mapping→FrozenMap、list/tuple→tuple、其余str/bool/int/float/None合法；拒绝可变或未知对象。通过__setattr__拒绝重新赋_pairs且用__reduce__返回(FrozenMap,(self._pairs,))保持pickle。模型ID校验由各dataclass做。数值map helper自行验证ID+有限数字，明确转换float。\n2 ModelDraft uniqueness不能对rate_rules使用obj.id，RateRule只有state不是新的ID。element_map用FrozenMap不作数值转换。ModelArtifact同理。state.quantity_kind限定variable/amount/concentration。\n3 递归JSON编解码：_leaf处理dataclass（to_dict），FrozenMap，tuple/list及primitive；from_dict用get_type_hints，对dataclass调用from_dict，对tuple[T,...]用args[0]逐元素重建（不要递归hint本身）；types.UnionType/typing.Union分支支持NoneType、str|None、float|None；float接受int/float不bool且有限，int只int不bool，bool只能bool，str只能str。未知字段拒绝；必需字段检测用dataclasses.MISSING而不是truthiness；有default字段缺失应使用default。将类型/构造错误包装SchemaError。init=False的hash输入验证。\n4 测试修复：exp.initial_overrides['a']=99不能裸执行，要放pytest.raises(TypeError)。FrozenMap属性改写pytest.raises(AttributeError)。warning_fail单元素tuple补逗号。删除SolverConfig缺省max_steps必须报错的错误期待，改测缺少Parameter.id。make_draft.element_map改真实证据嵌套结构和str。保留缺失None。\n5 增加嵌套证据input外部dict/list变更隔离，_pairs属性不能修改，SBML字符串hash验证，SimulationResult JSON roundtrip，非有限strict-json拒绝，rate-rule draft正常构造，未知嵌套字段拒绝。\n最后文字回复完成。不要尝试shell、syntax check、run_command、glob或目录扫描，测试由Codex完成。",
+  "acceptance": [
+    "dataclass快照不可受外部修改",
+    "序列化拒绝未知字段",
+    "None和unknown保持明确",
+    "测试由Codex执行"
+  ],
+  "verification_commands": [
+    [
+      ".venv/bin/python",
+      "-m",
+      "pytest",
+      "tests/test_contracts.py",
+      "-q"
+    ]
+  ],
+  "budget": {
+    "first_activity_ms": 120000,
+    "idle_ms": 180000,
+    "first_write_ms": 300000,
+    "write_idle_ms": 300000,
+    "total_ms": 600000
+  }
+}

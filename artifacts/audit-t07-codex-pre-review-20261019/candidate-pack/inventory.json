@@ -1,0 +1,284 @@
+{
+  "audit": {
+    "cases": 18,
+    "paper_families": 1,
+    "documents": 21,
+    "required_spans": 21,
+    "review_status": {
+      "pending": 18
+    },
+    "reviewed_comparison_ready": false,
+    "real_paper_count": 0,
+    "semantic_support": "unknown"
+  },
+  "source_content_sha256": "7529e191078a292085b29c95a5968bae47628dc68a136212cc036272a0eed51d",
+  "cases": [
+    {
+      "id": "parameter_late",
+      "category": "parameter",
+      "family": "shared-synthetic-development-template",
+      "split": "development",
+      "expectation": "answerable",
+      "sources": [
+        {
+          "id": "paper",
+          "role": "main",
+          "pages_sha256": "d1a616d2212b4ba75878e8f14981431d4feed5a0c6f4ed9729209cd4dfb9ca1f"
+        }
+      ]
+    },
+    {
+      "id": "initial_late",
+      "category": "initial",
+      "family": "shared-synthetic-development-template",
+      "split": "development",
+      "expectation": "answerable",
+      "sources": [
+        {
+          "id": "paper",
+          "role": "main",
+          "pages_sha256": "4bb218266edea7fa0f9cd9de74a4a8a75c42e8f7be10e1ec2a07656dbf1b0dde"
+        }
+      ]
+    },
+    {
+      "id": "unit_late",
+      "category": "unit",
+      "family": "shared-synthetic-development-template",
+      "split": "development",
+      "expectation": "answerable",
+      "sources": [
+        {
+          "id": "paper",
+          "role": "main",
+          "pages_sha256": "f672f885090bf092fb977f20f8db5504af0372900a92fec8d00f7301f8a2a75d"
+        }
+      ]
+    },
+    {
+      "id": "formula_late",
+      "category": "formula",
+      "family": "shared-synthetic-development-template",
+      "split": "development",
+      "expectation": "answerable",
+      "sources": [
+        {
+          "id": "paper",
+          "role": "main",
+          "pages_sha256": "3fa1c285f639e1a2659d09c8cfde915b07700829e70a5017c2dc53f8037bab3a"
+        }
+      ]
+    },
+    {
+      "id": "qualifier",
+      "category": "parameter",
+      "family": "shared-synthetic-development-template",
+      "split": "development",
+      "expectation": "answerable",
+      "sources": [
+        {
+          "id": "paper",
+          "role": "main",
+          "pages_sha256": "9e7b705bb322194a42e2ecf98926a50e1e8ab273712528b5a639888b6aef46ed"
+        }
+      ]
+    },
+    {
+      "id": "supplement",
+      "category": "supplement",
+      "family": "shared-synthetic-development-template",
+      "split": "development",
+      "expectation": "answerable",
+      "sources": [
+        {
+          "id": "main",
+          "role": "main",
+          "pages_sha256": "aaad14ed9250eadd0363b0b81939a1db3879f951566c58f617920e72e3c38256"
+        },
+        {
+          "id": "supplement",
+          "role": "supplement",
+          "pages_sha256": "977668f43b65d900950d87fb047b5bd80b30acb2f4785b6c1a3106b6a1d24775"
+        }
+      ]
+    },
+    {
+      "id": "conflict_same_page",
+      "category": "conflict",
+      "family": "shared-synthetic-development-template",
+      "split": "development",
+      "expectation": "conflicting",
+      "sources": [
+        {
+          "id": "paper",
+          "role": "main",
+          "pages_sha256": "770824d9e92a5129add050bf2479c5b0ae25d52df1216712059d808440712f71"
+        }
+      ]
+    },
+    {
+      "id": "conflict_two_sources",
+      "category": "conflict",
+      "family": "shared-synthetic-development-template",
+      "split": "development",
+      "expectation": "conflicting",
+      "sources": [
+        {
+          "id": "main",
+          "role": "main",
+          "pages_sha256": "1b17985a30af6def2c3e89268ba134410f592ec441bf7cb805ef794feec1690a"
+        },
+        {
+          "id": "supplement",
+          "role": "supplement",
+          "pages_sha256": "809d416e665f72491ea46d1f8478719d2899c1982221662483555dba8dd4e54f"
+        }
+      ]
+    },
+    {
+      "id": "symbol_substring",
+      "category": "parameter",
+      "family": "shared-synthetic-development-template",
+      "split": "development",
+      "expectation": "answerable",
+      "sources": [
+        {
+          "id": "paper",
+          "role": "main",
+          "pages_sha256": "ae81cf488e53d94747b36c7aaec736eb78e57236e3e491d52769c3c84402018e"
+        }
+      ]
+    },
+    {
+      "id": "underscore_symbol",
+      "category": "parameter",
+      "family": "shared-synthetic-development-template",
+      "split": "development",
+      "expectation": "answerable",
+      "sources": [
+        {
+          "id": "paper",
+          "role": "main",
+          "pages_sha256": "7589fd41ab17d7feb553ae1eb6d1977068ed2d53126140258c3c48d1a3792457"
+        }
+      ]
+    },
+    {
+      "id": "unicode_offsets",
+      "category": "unit",
+      "family": "shared-synthetic-development-template",
+      "split": "development",
+      "expectation": "answerable",
+      "sources": [
+        {
+          "id": "paper",
+          "role": "main",
+          "pages_sha256": "a88c6ea35fa88b3d469d9e37e82372297689fbd5293490f06325cbb78039eda6"
+        }
+      ]
+    },
+    {
+      "id": "no_match",
+      "category": "no_match",
+      "family": "shared-synthetic-development-template",
+      "split": "development",
+      "expectation": "not_located",
+      "sources": [
+        {
+          "id": "paper",
+          "role": "main",
+          "pages_sha256": "62f9d936268983fe3fa33ea84588170144ea19e4baf4f9f75ae92516bdfd4080"
+        }
+      ]
+    },
+    {
+      "id": "untrusted_instructions",
+      "category": "formula",
+      "family": "shared-synthetic-development-template",
+      "split": "development",
+      "expectation": "answerable",
+      "sources": [
+        {
+          "id": "paper",
+          "role": "main",
+          "pages_sha256": "69cf89b66a2259a3153314b9cea05b3ee69be8099998f95168f3f72aa810ecb4"
+        }
+      ]
+    },
+    {
+      "id": "multiple_initials",
+      "category": "initial",
+      "family": "shared-synthetic-development-template",
+      "split": "development",
+      "expectation": "answerable",
+      "sources": [
+        {
+          "id": "paper",
+          "role": "main",
+          "pages_sha256": "a643da708c2943d3425bc3e8e849f89977cb9a47942a764b6de0a876eeebd2db"
+        }
+      ]
+    },
+    {
+      "id": "missing_is_evidence",
+      "category": "missing",
+      "family": "shared-synthetic-development-template",
+      "split": "development",
+      "expectation": "explicit_missing",
+      "sources": [
+        {
+          "id": "paper",
+          "role": "main",
+          "pages_sha256": "337b1d1ae025121d2498ef894aaf81661dcf0dc7391be2e36c4ed63da0e9a022"
+        }
+      ]
+    },
+    {
+      "id": "lexical_gap",
+      "category": "wording_gap",
+      "family": "shared-synthetic-development-template",
+      "split": "development",
+      "expectation": "answerable",
+      "sources": [
+        {
+          "id": "paper",
+          "role": "main",
+          "pages_sha256": "fd105e783278780041d21e211a37485c7f36ca62d01176a829a37f259c48df80"
+        }
+      ]
+    },
+    {
+      "id": "long_paragraph",
+      "category": "initial",
+      "family": "shared-synthetic-development-template",
+      "split": "development",
+      "expectation": "answerable",
+      "sources": [
+        {
+          "id": "paper",
+          "role": "main",
+          "pages_sha256": "8c725728e8763e06d2483e6ac41375b56a897e7fdb6cbcc1fa0a4244ed5678ad"
+        }
+      ]
+    },
+    {
+      "id": "clarification_scope",
+      "category": "condition_scope",
+      "family": "shared-synthetic-development-template",
+      "split": "development",
+      "expectation": "answerable",
+      "sources": [
+        {
+          "id": "paper",
+          "role": "main",
+          "pages_sha256": "230b3ec34e858d339d63e50dca3163ed23f5ed42fae21d455d4d227514b8cfb6"
+        },
+        {
+          "id": "clarification",
+          "role": "clarification",
+          "pages_sha256": "5a4e93836c18e75a82b9deb6b4d6448e442da2de2cca247e2d685a8030ff6a58"
+        }
+      ]
+    }
+  ]
+}

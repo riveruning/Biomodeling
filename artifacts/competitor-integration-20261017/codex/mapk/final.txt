@@ -1,0 +1,3 @@
+Created and ran [simulate.py](simulate.py), which prints only the requested JSON object. Saved output in [time_course.json](time_course.json).
+
+Verified 121 points from 0 through 1800 at 15-unit intervals, covering all 8 dynamic species. Initial values and model parameters remain unchanged.

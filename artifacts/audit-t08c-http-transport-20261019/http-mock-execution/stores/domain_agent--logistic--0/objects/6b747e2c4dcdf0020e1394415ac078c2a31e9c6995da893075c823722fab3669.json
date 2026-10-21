@@ -1,0 +1,1 @@
+{"kind":"evaluation_response","payload":{"content":"{\"action\": \"finish\", \"args\": {}}","returned_model":"scripted-fixture","trial_id":"domain_agent--logistic--0--clarified","usage":{}},"refs":["bad6fdaf16b371e04606c0817d4975f7f8639fdd1cc2311939d7d2f69a94456b"],"schema_version":"1"}

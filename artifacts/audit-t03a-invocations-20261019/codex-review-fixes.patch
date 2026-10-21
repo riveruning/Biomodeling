@@ -1,0 +1,57 @@
+--- dsh-revised-delivery/src/biomodel_agent/agent.py
++++ codex-reviewed/src/biomodel_agent/agent.py
+@@ -333,13 +333,13 @@
+                                 calls=calls, runs=run_count)
+ 
+     def invoke(name, callback, **kwargs):
++        nonlocal calls, run_count
+         # Every real provider/tool call goes through the journal; the finally
+         # syncs the local counts in every outcome (return, error, interruption)
+         # so budget accounting never drifts from the persisted journal.
+         try:
+             return journal.invoke(name, callback, **kwargs)
+         finally:
+-            nonlocal calls, run_count
+             calls, run_count = journal.calls, journal.runs
+ 
+     def save_checkpoint(_store, current_state, call, repair, history, model, run, sources, draft):
+@@ -357,7 +357,8 @@
+ 
+     def finish_session(*args):
+         return _final(*args, task_ref=task_ref, parent_run_ref=parent_run_ref,
+-                      clarification_refs=tuple(clarification_refs))
++                      clarification_refs=tuple(clarification_refs),
++                      execution_ref=journal.execution_ref, invocation_refs=journal.refs)
+ 
+     while calls < max_calls:
+         if memory_scope is not None:
+@@ -573,8 +574,8 @@
+                                               'draft_ref': r.get('draft_ref'), 'model_ref': r.get('model_ref'),
+                                               'hypothesis_ref': r.get('hypothesis_ref'),
+                                               'source_review_ref': r.get('source_review_ref')},
+-                         result_refs=lambda r: [r for r in (r.get('draft_ref'), r.get('model_ref'),
+-                                                            r.get('hypothesis_ref'), r.get('source_review_ref')) if r])
++                         result_refs=lambda r: [ref for ref in (r.get('draft_ref'), r.get('model_ref'),
++                                                              r.get('hypothesis_ref'), r.get('source_review_ref')) if ref])
+             if result['state'] == 'ready':
+                 clock = time_units.check_experiment_time(result['artifact'].sbml, experiment.time_unit)
+                 result['checks'].append(to_dict(clock))
+--- dsh-first-delivery/src/biomodel_agent/invocations.py
++++ codex-reviewed/src/biomodel_agent/invocations.py
+@@ -167,9 +167,9 @@
+             self._terminal(name, operation_id, "error", call_count, run_count,
+                            {"error_type": type(exc).__name__}, reserved_ref, ())
+             raise
+-        except BaseException:
++        except BaseException as exc:
+             self._terminal(name, operation_id, "interrupted", call_count, run_count,
+-                           {}, reserved_ref, ())
++                           {"error_type": type(exc).__name__}, reserved_ref, ())
+             raise
+         summary = summarize(result) if summarize is not None else result
+         if summary is None:
+@@ -205,4 +205,4 @@
+             "replay_class": REPLAY_CLASSES[name],
+             "details": details,
+         }, refs=tuple(dict.fromkeys(refs)))
+-        self.refs.append(terminal_ref)+        self.refs.append(terminal_ref)

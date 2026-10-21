@@ -1,0 +1,28 @@
+........................................................................ [ 32%]
+........................................................................ [ 64%]
+...............................................................F........ [ 96%]
+........                                                                 [100%]
+=================================== FAILURES ===================================
+_______ test_hard_deadline_also_bounds_the_scientific_tool[domain_agent] _______
+
+adapters = <module 'workflow_adapters_acceptance' from '/home/riveruning/biologymodel_agent/benchmarks/development/workflow_adapters.py'>
+tmp_path = PosixPath('/tmp/t08b-f1-focused/test_hard_deadline_also_bounds2')
+workflow = 'domain_agent'
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x70d8b2251d90>
+
+    @pytest.mark.parametrize('workflow',['fixed_workflow','generic_tool_agent','domain_agent'])
+    def test_hard_deadline_also_bounds_the_scientific_tool(adapters,tmp_path,workflow,monkeypatch):
+        p=projection(adapters,workflow); p['budget']['max_elapsed_seconds']=.6
+        def slow(*args,**kwargs): time.sleep(5)
+        monkeypatch.setattr(adapters.application,'run_reproduction',slow)
+        start=time.monotonic()
+        out=adapters.run_trial(p,EnvelopeTransport(p,complete_actions(workflow)),tmp_path/'scientific-timeout')
+        assert time.monotonic()-start<3
+        assert out['record']['status']=='timeout'
+>       assert out['record']['observation']['executed'] is True
+E       assert False is True
+
+tests/test_workflow_adapters.py:283: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_workflow_adapters.py::test_hard_deadline_also_bounds_the_scientific_tool[domain_agent]
+1 failed, 223 passed in 61.61s (0:01:01)

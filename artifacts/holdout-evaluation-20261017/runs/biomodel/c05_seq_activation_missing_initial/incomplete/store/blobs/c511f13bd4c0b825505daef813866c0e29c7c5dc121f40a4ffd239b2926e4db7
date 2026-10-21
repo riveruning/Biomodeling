@@ -1,0 +1,7 @@
+# Pre-written researcher clarification (frozen before any run)
+# case: c05_seq_activation_missing_initial
+# blocking target: Es/initial
+# This text is appended verbatim to source.txt to form the clarified phase.
+# It was written without observing any system's output.
+
+Initial Es = 0.5 a.u. (Es is the complex E*). At t = 0 the mixture already contains pre-formed complex at that concentration.

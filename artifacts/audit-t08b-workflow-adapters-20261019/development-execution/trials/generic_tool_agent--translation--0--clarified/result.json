@@ -1,0 +1,76 @@
+{
+  "record": {
+    "trial_id": "generic_tool_agent--translation--0--clarified",
+    "manifest_sha256": "f2ccd66775137ff2fad83e11ff727b8a47d7f32f01f6c2c9f0d31b59ca9d78fe",
+    "evidence_kind": "scripted_control",
+    "model_config": {
+      "provider": "offline_control",
+      "model": "scripted-fixture",
+      "revision": "not-a-model",
+      "temperature": 0.0,
+      "top_p": 1.0,
+      "max_output_tokens": 1000,
+      "seed": 0
+    },
+    "toolchain_sha256": "149e4a7e2d5c300cf8f180a388a99c103b257c03413ac97b60c3605f955f57bf",
+    "status": "finished",
+    "continuation": "resumed",
+    "parent_trial_id": "generic_tool_agent--translation--0--initial",
+    "observation": {
+      "state": "completed",
+      "executed": true,
+      "claimed_complete": true,
+      "identified_gaps": [],
+      "question_targets": [],
+      "question_texts": []
+    },
+    "assessment": {
+      "authority": "unreviewed",
+      "reviewer": null,
+      "evidence_refs": [],
+      "numeric": "unknown",
+      "source_support": "unknown",
+      "behavior_labels_reviewed": false
+    },
+    "telemetry": {
+      "model_calls": 3,
+      "tool_calls": 3,
+      "max_request_chars": 6994,
+      "max_response_tokens": null,
+      "elapsed_seconds": 1.9753173099961714,
+      "human_interventions": 0,
+      "human_seconds": 0.0,
+      "input_tokens": null,
+      "output_tokens": null
+    }
+  },
+  "session_ref": "29ea93dc1c7d2caf7cc6c9d3f2b469ab66da79b684892f87877c74cdb3edb1a2",
+  "store_root": "/home/riveruning/biologymodel_agent/artifacts/audit-t08b-workflow-adapters-20261019/development-execution/stores/generic_tool_agent--translation--0",
+  "audit": {
+    "supervised": true,
+    "stop_reason": null,
+    "run_ref": "e60ec52c93e800a514c51b95de0b4ea211e79f84de84b6558c348b6f23647495",
+    "native_agent_run_ref": null,
+    "request_refs": [
+      "226e0d04272b90bb242abdda2de326d8a1e27b2f1239657acabf37cae73d964d",
+      "a9f005349738eff8a18be9a4a9e1f6abb764d317e69ef4bbf00594ed543b2409",
+      "0100dc6cb4f78f112a21b7a780bd120a028cb99588a7c62e7245249bc3ff28b6"
+    ],
+    "response_refs": [
+      "7be52b90d814d8627aa9d2dfbe47596cbe274596aaa488f356ee14ae415f9b30",
+      "3fcfd73d0c38e031a0fb4a62dcb779ddffb094ba5906a71582c08ef05b38ebcd",
+      "e4c67869e12c048f0d6fa8649b50a9013df57b8de1f8af0ef83673cd236a36ff"
+    ],
+    "reservation_refs": [
+      "2713c7515fdf63cbec58cd59472bc077138c32ab02202ce314e1e1009053d4a7",
+      "ddadd26fb257b149a2d0bed295ebd8822756836055890f3a393263b0c2f0da46",
+      "74342a2b49b8d8a28eb7ea55eaf9424ff639638cc96315080fe7dd1dab8212be",
+      "ff26d660302323c53379ce14af4ca63a86032e29fcd669055072dca045998b98",
+      "fd4c701009cda4dbc4cb1e297f1085355921994c81f9abe48ac6ea0f770ee1c0"
+    ],
+    "clarification_origin": "prerecorded_protocol",
+    "runtime_adapter_sha256": "bc5684016fa4131bfc91e8db16386adacdbedc644e7e9b4bd68763a66722e1b4",
+    "scientific_support": "unknown",
+    "same_returned_model_verified": true
+  }
+}

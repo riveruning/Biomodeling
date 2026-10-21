@@ -1,0 +1,71 @@
+{
+  "record": {
+    "trial_id": "domain_agent--logistic--1--clarified",
+    "manifest_sha256": "f2ccd66775137ff2fad83e11ff727b8a47d7f32f01f6c2c9f0d31b59ca9d78fe",
+    "evidence_kind": "scripted_control",
+    "model_config": {
+      "provider": "offline_control",
+      "model": "scripted-fixture",
+      "revision": "not-a-model",
+      "temperature": 0.0,
+      "top_p": 1.0,
+      "max_output_tokens": 1000,
+      "seed": 0
+    },
+    "toolchain_sha256": "149e4a7e2d5c300cf8f180a388a99c103b257c03413ac97b60c3605f955f57bf",
+    "status": "finished",
+    "continuation": "resumed",
+    "parent_trial_id": "domain_agent--logistic--1--initial",
+    "observation": {
+      "state": "awaiting_input",
+      "executed": false,
+      "claimed_complete": false,
+      "identified_gaps": [],
+      "question_targets": [],
+      "question_texts": [
+        "Please resolve: rule:X/expression: binding unknown: unsupported or incomplete declaration context; cite a complete direct declaration"
+      ]
+    },
+    "assessment": {
+      "authority": "unreviewed",
+      "reviewer": null,
+      "evidence_refs": [],
+      "numeric": "unknown",
+      "source_support": "unknown",
+      "behavior_labels_reviewed": false
+    },
+    "telemetry": {
+      "model_calls": 1,
+      "tool_calls": 1,
+      "max_request_chars": 7666,
+      "max_response_tokens": null,
+      "elapsed_seconds": 0.36775635800586315,
+      "human_interventions": 0,
+      "human_seconds": 0.0,
+      "input_tokens": null,
+      "output_tokens": null
+    }
+  },
+  "session_ref": "4af1905af1c86fa83018359e6855146f15ed45f76b6cf59b268d9fdd945c473e",
+  "store_root": "/home/riveruning/biologymodel_agent/artifacts/audit-t08b-workflow-adapters-20261019/development-execution/stores/domain_agent--logistic--1",
+  "audit": {
+    "supervised": true,
+    "stop_reason": null,
+    "run_ref": null,
+    "native_agent_run_ref": "a66b03f3f81265678f6c72b220341f7d260b412a9c5363ef490949aa8783935d",
+    "request_refs": [
+      "3eff32355b0262574cbccff3466c2280bb9023deb7af8723a1336954b89025bf"
+    ],
+    "response_refs": [
+      "1a00d17accc95ef4287bbea86b076458e486885d133107b0cb8330e288651209"
+    ],
+    "reservation_refs": [
+      "ce3d9583e96dacf29430affb2c88a644ed5a0fd798b8ef186ef2ad78a70718c7",
+      "3e92efe37864600b35f52031f6de09912661d7b4bb3bb5fba03f9d41b351446e"
+    ],
+    "clarification_origin": "prerecorded_protocol",
+    "runtime_adapter_sha256": "bc5684016fa4131bfc91e8db16386adacdbedc644e7e9b4bd68763a66722e1b4",
+    "scientific_support": "unknown",
+    "same_returned_model_verified": true
+  }
+}

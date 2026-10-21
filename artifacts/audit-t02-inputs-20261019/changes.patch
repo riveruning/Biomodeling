@@ -1,0 +1,380 @@
+--- before/src/biomodel_agent/domain/contracts.py
++++ after/src/biomodel_agent/domain/contracts.py
+@@ -127,15 +127,31 @@
+     return str(value)
+ 
+ 
++def strict_float(value: object, what: str) -> float:
++    """Return ``value`` as a float, strictly.
++
++    Accepts int/float only (numpy.float64 etc. via isinstance); bool, str,
++    Decimal and __float__-only objects are rejected without invoking any
++    conversion protocol.  Converting an int that overflows the float range
++    surfaces as ValueError rather than OverflowError.
++    """
++    if isinstance(value, bool) or not isinstance(value, (int, float)):
++        raise ValueError(f"{what} must be an int or float, got {type(value).__name__}")
++    try:
++        f = float(value)
++    except OverflowError:
++        raise ValueError(f"{what} must be finite, got {value!r}") from None
++    if not math.isfinite(f):
++        raise ValueError(f"{what} must be finite, got {value!r}")
++    return f
++
++
+ def finite(value: float | None, what: str, allow_none: bool) -> float | None:
+     if value is None:
+         if not allow_none:
+             raise ValueError(f"{what} must not be None")
+         return None
+-    f = float(value)
+-    if not math.isfinite(f):
+-        raise ValueError(f"{what} must be finite, got {value!r}")
+-    return f
++    return strict_float(value, what)
+ 
+ 
+ def copy_finite_map(value: Mapping[str, Any] | tuple[tuple[str, Any], ...], what: str) -> FrozenMap:
+@@ -148,11 +164,7 @@
+             for i, x in enumerate(v):
+                 walk(f"{key}[{i}]", x)
+         else:
+-            if isinstance(v, bool) or not isinstance(v, (int, float)):
+-                raise ValueError(f"{what}[{key!r}] must be a number, got {v!r}")
+-            f = float(v)
+-            if not math.isfinite(f):
+-                raise ValueError(f"{what}[{key!r}] must be finite, got {v!r}")
++            strict_float(v, f"{what}[{key!r}]")
+     fm = FrozenMap(value)
+     for k, v in fm.items():
+         walk(k, v)
+@@ -377,7 +389,7 @@
+             if v is not None and v <= 0:
+                 raise ValueError(f"{name} must be > 0")
+             object.__setattr__(self, name, v)
+-        if not isinstance(self.max_steps, int) or self.max_steps <= 0:
++        if isinstance(self.max_steps, bool) or not isinstance(self.max_steps, int) or self.max_steps <= 0:
+             raise ValueError("max_steps must be a positive integer")
+ 
+ 
+@@ -437,7 +449,26 @@
+                 raise ValueError(f"SimulationResult.values[{k!r}] must be a sequence of floats")
+             if len(v) != len(checked):
+                 raise ValueError(f"SimulationResult.values[{k!r}] length must match times")
+-            cols[k] = tuple(float(x) for x in v)
++            # Strict typing: refuse bool/str/__float__ objects and
++            # non-representable ints; keep native float NaN/Inf as-is for
++            # downstream validation diagnostics.
++            col: list[float] = []
++            for x in v:
++                if isinstance(x, bool) or not isinstance(x, (int, float)):
++                    raise ValueError(
++                        f"SimulationResult.values[{k!r}] must contain int or float, "
++                        f"got {type(x).__name__}"
++                    )
++                if isinstance(x, float):
++                    col.append(x)
++                else:
++                    try:
++                        col.append(float(x))
++                    except OverflowError:
++                        raise ValueError(
++                            f"SimulationResult.values[{k!r}] cannot be represented as float: {x!r}"
++                        ) from None
++            cols[k] = tuple(col)
+         object.__setattr__(self, "values", FrozenMap(cols))
+         object.__setattr__(self, "diagnostics", tuple(self.diagnostics))
+         object.__setattr__(self, "elapsed_s", finite(self.elapsed_s, "elapsed_s", False))
+--- before/src/biomodel_agent/domain/serialization.py
++++ after/src/biomodel_agent/domain/serialization.py
+@@ -27,7 +27,7 @@
+ from dataclasses import MISSING, is_dataclass, fields
+ from typing import Any, get_args, get_origin, get_type_hints
+ 
+-from .contracts import FrozenMap
++from .contracts import FrozenMap, strict_float
+ 
+ 
+ class SchemaError(ValueError):
+@@ -81,11 +81,10 @@
+             return data
+         raise SchemaError(f"{name}: expected int, got {type(data).__name__}")
+     if hint is float:
+-        if isinstance(data, bool) or not isinstance(data, (int, float)):
+-            raise SchemaError(f"{name}: expected finite number, got {data!r}")
+-        if isinstance(data, float) and not math.isfinite(data):
+-            raise SchemaError(f"{name}: expected finite number, got {data!r}")
+-        return float(data)
++        try:
++            return strict_float(data, name)
++        except ValueError as exc:
++            raise SchemaError(f"{name}: {exc}") from exc
+     if hint is str:
+         if isinstance(data, str):
+             return data
+--- /dev/null
++++ after/tests/test_numeric_contract_acceptance.py
+@@ -0,0 +1,111 @@
++"""Codex-owned input boundary checks; providers are never called."""
++from copy import deepcopy
++from decimal import Decimal
++import json
++import math
++import pickle
++
++import pytest
++
++from biomodel_agent import validation
++from biomodel_agent.domain import contracts as c
++from biomodel_agent.domain.serialization import from_dict, to_dict
++
++
++CASES = {
++    'parameter': (c.Parameter, {'id':'k','value':1.}, ('value',)),
++    'initial': (c.State, {'id':'x','initial':1.}, ('initial',)),
++    'volume': (c.Compartment, {'size':1.}, ('size',)),
++    'segment_time': (c.InputSegment, {'time':1.,'values':{'k':2.}}, ('time',)),
++    'experiment_time': (c.ExperimentSpec, {'times':[0.,2.]}, ('times',0)),
++    'rtol': (c.SolverConfig, {'rtol':1.}, ('rtol',)),
++    'atol': (c.SolverConfig, {'atol':1.}, ('atol',)),
++    'timeout': (c.SolverConfig, {'timeout_s':1.}, ('timeout_s',)),
++    'result_time': (c.SimulationResult, {'status':'succeeded','times':[0.,2.],'values':{'x':[1.,.5]}}, ('times',0)),
++    'elapsed': (c.SimulationResult, {'status':'failed','elapsed_s':1.}, ('elapsed_s',)),
++    'result_column': (c.SimulationResult, {'status':'succeeded','times':[0.,2.],'values':{'x':[1.,.5]}}, ('values','x',0)),
++    'initial_override': (c.ExperimentSpec, {'times':[0.,2.],'initial_overrides':{'x':1.}}, ('initial_overrides','x')),
++    'stoichiometry': (c.Reaction, {'id':'r','reactants':{'x':1.},'products':{},'rate':'k*x'}, ('reactants','x')),
++}
++
++
++def modified(case, value):
++    cls, payload, path = CASES[case]
++    payload = deepcopy(payload)
++    target = payload
++    for key in path[:-1]:
++        target = target[key]
++    target[path[-1]] = value
++    return cls, payload
++
++
++@pytest.mark.parametrize('case', list(CASES))
++@pytest.mark.parametrize('value', [True, '1.0', 10**400], ids=['bool','string','overflowing_integer'])
++def test_invalid_numbers_rejected_by_python_and_json(case, value):
++    cls, payload = modified(case, value)
++    for constructor in (lambda:cls(**payload), lambda:from_dict(cls,payload)):
++        with pytest.raises(ValueError):
++            constructor()
++
++
++@pytest.mark.parametrize('value', [True, False, 1., '1', None])
++def test_step_count_never_accepts_bool_float_or_string(value):
++    for constructor in (lambda:c.SolverConfig(max_steps=value),
++                        lambda:from_dict(c.SolverConfig,{'max_steps':value})):
++        with pytest.raises(ValueError):
++            constructor()
++
++
++def test_no_implicit_float_protocol_or_decimal_conversion():
++    converted = []
++    class Convertible:
++        def __float__(self):
++            converted.append(True)
++            return 1.
++    for value in (Decimal('1'), Convertible()):
++        with pytest.raises(ValueError):
++            c.Parameter('k',value)
++        with pytest.raises(ValueError):
++            c.SimulationResult('succeeded',(0.,),{'x':[value]})
++    assert converted == []
++
++
++@pytest.mark.parametrize('case', list(CASES))
++def test_legal_int_and_float_paths_match_and_roundtrip(case):
++    for value in (1,1.):
++        cls, payload = modified(case,value)
++        direct = cls(**payload)
++        decoded = from_dict(cls,payload)
++        assert direct == decoded
++        encoded = to_dict(direct)
++        assert from_dict(cls,json.loads(json.dumps(encoded,allow_nan=False))) == direct
++        assert pickle.loads(pickle.dumps(direct)) == direct
++
++
++def test_missing_values_and_generic_metadata_keep_their_types():
++    for cls,payload in ((c.Parameter,{'id':'k','value':None}), (c.State,{'id':'x','initial':None})):
++        assert cls(**payload) == from_dict(cls,payload)
++    metadata = c.FrozenMap({'accepted':True,'label':'1.0','unknown':None})
++    assert metadata['accepted'] is True and metadata['label']=='1.0' and metadata['unknown'] is None
++    assert c.SolverConfig(max_steps=10**400).max_steps == 10**400
++
++
++@pytest.mark.parametrize('value', [float('nan'),float('inf'),-float('inf')])
++def test_abnormal_solver_columns_are_preserved_but_never_numeric_evidence(value):
++    payload={'status':'succeeded','times':[0.,1.],'values':{'x':[1.,value]}}
++    for result in (c.SimulationResult(**payload),from_dict(c.SimulationResult,payload)):
++        actual = result.values['x'][1]
++        assert actual == value or (math.isnan(actual) and math.isnan(value))
++        report = validation.validate_numeric(result)
++        assert any(check.code=='finite' and check.status=='fail' for check in report.checks)
++        with pytest.raises(ValueError):
++            to_dict(result)
++
++
++def test_t01_persisted_inputs_still_decode_without_rewriting():
++    from pathlib import Path
++    root=Path(__file__).resolve().parents[1]
++    frozen=json.loads((root/'benchmarks/inputs/contracts-compatibility/t01-negative-run.json').read_text())
++    assert from_dict(c.ExperimentSpec,frozen['experiment']).times == (0.,2.,4.)
++    assert from_dict(c.SolverConfig,frozen['solver']).max_steps == 100000
++    assert from_dict(c.SimulationResult,frozen['simulation']).values['x'][-1] < -.5
+--- /dev/null
++++ after/benchmarks/inputs/contracts-compatibility/t01-negative-run.json
+@@ -0,0 +1,63 @@
++{
++  "provenance": {
++    "kind": "copied_from_pre_T02_accepted_T01_persisted_payloads",
++    "run_ref": "2f51852c97e2f039427be632c1359608f6775029691bb92b1a11f94559150fed",
++    "input_ref": "467826e83137cbbcaf877d548cf4b5f0ae3b7532ec7a043d1b7cc3f669860dd8"
++  },
++  "experiment": {
++    "initial_overrides": {},
++    "parameter_overrides": {},
++    "segments": [],
++    "time_unit": "unknown",
++    "times": [
++      0.0,
++      2.0,
++      4.0
++    ]
++  },
++  "solver": {
++    "atol": 1e-10,
++    "max_steps": 100000,
++    "rtol": 1e-07,
++    "timeout_s": 30.0
++  },
++  "simulation": {
++    "backend": "libRoadRunner/cvode",
++    "checks": {
++      "checks": [
++        {
++          "code": "experiment_time_unit",
++          "message": "Experiment time unit is unknown; alignment with the model clock was not checked.",
++          "severity": "warning",
++          "status": "unknown"
++        },
++        {
++          "code": "finite",
++          "message": "all output values are finite",
++          "severity": "blocking",
++          "status": "pass"
++        }
++      ]
++    },
++    "diagnostics": [
++      "backend=libRoadRunner/cvode",
++      "roadrunner=2.10.0",
++      "rtol=1e-07 atol=1e-10 max_steps=100000"
++    ],
++    "elapsed_s": 0.43360931100323796,
++    "status": "succeeded",
++    "time_unit": "unknown",
++    "times": [
++      0.0,
++      2.0,
++      4.0
++    ],
++    "values": {
++      "x": [
++        1.0,
++        0.1999999999999993,
++        -0.6000000000000008
++      ]
++    }
++  }
++}--- /dev/null
++++ after/tasks/audit-t02-strict-inputs.json
+@@ -0,0 +1,13 @@
++{
++  "schema_version": "1",
++  "id": "audit-t02-strict-inputs",
++  "objective": "统一Python构造器与JSON入口的严格数值类型边界，同时保留异常计算输出的诊断能力。",
++  "context": "用户明确要求继续T02。T01已完成，基线748通过且源码一致。Codex已写63例独立验收，当前37失败26通过。DSH只负责两个生产文件的有限实现，测试由Codex执行，不必新增测试文件。",
++  "read_files": ["artifacts/audit-t02-inputs-20261019/implementation-contract.md"],
++  "write_files": ["src/biomodel_agent/domain/contracts.py", "src/biomodel_agent/domain/serialization.py"],
++  "expected_files": ["src/biomodel_agent/domain/contracts.py", "src/biomodel_agent/domain/serialization.py"],
++  "instructions": "先读implementation-contract.md及两个生产文件，然后直接按5个小步骤编辑。共享数值检查，不改变FrozenMap的元数据能力；SimulationResult数值列保留原生NaN/Inf诊断但拒绝类型隐式转换；float溢出转为ValueError，JSON仍SchemaError。不探索其他文件、不运行shell/测试/联网/子Agent、不修改任务或监督程序。最后简短报告实际改动与限制。",
++  "acceptance": ["两个入口一致拒绝bool/数字字符串及不合法浮点转换", "None、合法值、冻结与历史读取兼容", "异常结果列诊断和序列化拒绝边界保留", "不改旧测试或科学判据"],
++  "verification_commands": [],
++  "budget": {"first_activity_ms":120000,"idle_ms":150000,"first_write_ms":180000,"write_idle_ms":180000,"total_ms":360000}
++}
+--- /dev/null
++++ after/docs/strict-numeric-contracts.md
+@@ -0,0 +1,35 @@
++# Python 与 JSON 数值边界一致性（T02）
++
++2026-10-19。任务来源：[优化任务队列](optimization-backlog.md)。
++
++## 问题与行为
++
++此前 Python 的 Parameter('k', True) 会变成1.0，数字字符串会被float()隐式转换，相同JSON标量却被拒绝。时间、求解器、步数和结果列也存在类似差异；结果列经FrozenMap重建时，JSON入口同样可能接受布尔值/数字字符串并将其归一化成正常轨迹。
++
++现在统一领域数值类型边界：
++
++| 场景 | 当前规则 |
++|---|---|
++| 参数、初值、区室大小、时间、求解器浮点配置、耗时、数值映射 | 接受有限int/float，拒绝bool、数字字符串、Decimal、仅实现__float__的对象及无法表示为float的整数 |
++| 显式缺失参数与初值 | None保持缺失，不补值；其他标量的None限制沿用原契约 |
++| max_steps | 仍为正整数，拒绝bool、float、字符串；不转float，不新增计数上限 |
++| SimulationResult结果列 | 严格数值类型；保留原生float NaN/Inf供数值验证诊断，不修复/裁剪成有限值 |
++| 通用FrozenMap元数据 | bool、字符串、None仍可保留，未套用数值字段的规则 |
++
++异常结果列保留不等于数值证据通过：validate_numeric仍报告blocking fail，to_dict仍拒绝非有限值。结果时间与elapsed_s没有获得该诊断例外。结果时间网格的顺序检查仍由原有验证器处理，未改变科学门槛或单位规则。
++
++Python领域输入对非法值返回ValueError；JSON codec仍返回SchemaError。contracts.strict_float为有限数值转换的共享入口，finite保留原签名和None语义；数值映射和JSON浮点分支复用它。输出列使用允许非有限诊断值的独立转换路径。
++
++合法int/float、pickle、JSON往返保持原行为，合法数值映射中的整数叶仍按原类型保存。isinstance兼容原本符合int/float判断的类型，不承诺接收所有NumPy或第三方数值类型。此前依赖隐式字符串/Decimal转换的调用者需要先显式整理输入。
++
++## 实施与验证记录
++
++DSH在任务卡限定的两个文件中完成主体实现：domain/contracts.py、domain/serialization.py。监督结果为ready_for_review，未作为自动验收；Codex独立审查及测试，未修改这次DSH生产代码。原有测试文件保持不变。
++
++独立验收包含63个检查（是字段/类型覆盖矩阵，不是63个不同缺陷）：实施前37失败、26通过，覆盖隐式转换、整数溢出、合法值、None、元数据、异常输出及历史读取。定向回归189项通过；最终完整Python回归811项通过，125.81秒，无失败、错误或跳过。
++
++历史兼容样本来自T01已保存的真实负值模拟，实验、求解器、结果与原产物逐字段一致，原对象和输入哈希校验通过。小型固定样本位于benchmarks/inputs/contracts-compatibility/t01-negative-run.json，测试只读该样本，不打开或改写历史存储。
++
++源码快照、DSH交付、差异、失败基线、实际行为探针、兼容性校验及最终完整回归记录见 [T02验收记录](../artifacts/audit-t02-inputs-20261019/acceptance.json)。
++
++本次不迁移旧产物，不推断已经被归一化为数值的旧输入原本是否来自bool/string，不实现语义审核或崩溃恢复。没有增加依赖或运行新的产品模型评测；DSH使用现有开发通道，未发送c13/c18材料或重试此前被拒绝的回归。
+--- before/docs/optimization-backlog.md
++++ after/docs/optimization-backlog.md
+@@ -7,8 +7,8 @@
+ | ID | 问题 / 清晰目标 | 状态 | 依赖与验收 |
+ |---|---|---|---|
+ | T01 | 严格模式中明确数值失败被归为 not_verified，Agent 仍 completed；统一失败裁决 | **已验收**：[结果与限制](run-verdict.md) | 实际负值模拟、收敛/比较失败和旧记录检查已覆盖；定向45通过，完整748通过，原有测试保留 |
+-| T02 | Python 构造器与 JSON 数值校验不一致 | **下一项** | T01 已完成；bool、字符串、非有限数值在公开入口一致拒绝，合法历史产物继续可读 |
+-| T03a | 工具调用与调用预算缺少一致的持久化边界 | 待设计 / 实施 | T01；记录调用 ID、预算预留和执行前后阶段；故障注入保留明确状态 |
++| T02 | Python 构造器与 JSON 数值校验不一致 | **已验收**：[结果与限制](strict-numeric-contracts.md) | DSH两文件实现，独立审查无生产修正；定向189通过，完整811通过，保留异常结果诊断与合法历史读取 |
++| T03a | 工具调用与调用预算缺少一致的持久化边界 | **下一项** | T01/T02已完成；记录调用 ID、预算预留和执行前后阶段；故障注入保留明确状态 |
+ | T03b | 任意中断恢复、结果认领、执行所有者与重试分类 | 待实施 | T03a；已存结果不重复计算，外部结果未知不盲目重发，冲突执行拒绝，显式分支可追溯 |
+ | T04 | 旧 hypothesis / study-run / Agent 研究入口不同，预测不受统一期限控制 | 待实施 | T01、T03a；共享冻结用例，区分所有计算失败与科学负结果，整个研究有 deadline |
+ | T05 | 引文中的数值可错绑目标，公式可不对应草稿 | 待实施 | T01；新增结构化证据记录，先覆盖直接赋值、简单公式和符号映射；未知语法待审核 |
+@@ -23,7 +23,9 @@
+ 
+ T01 已归档任务卡：[初次实现](../tasks/audit-t01-verdict.json)、[一次审查修订](../tasks/audit-t01-review-fix.json)。DSH 负责主体实现，Codex 独立验收并修正已定位边界；DSH 的时间预算终止和服务超时均保留，没有将其回复或终态视作验收。详情见上述结果记录。
+ 
+-下一项 T02 实施步骤：先建立 Python 构造器与 from_dict 的非法值/合法值对照；核对 finite、计数和轨迹字段各自契约，避免混入新科学规则；把最小数值边界修改派给 DSH，保留独立负控制；验证现有合法序列化、数值执行及旧产物读取，再运行适当回归。T02 结束前不同时派发 T03。
++T02已归档[任务卡](../tasks/audit-t02-strict-inputs.json)，DSH正常交付两个生产文件；独立63例矩阵由37失败/26通过转为全部通过，最终完整811项通过。Codex没有修改本轮DSH生产代码，原有测试保留；详情见结果记录。
++
++下一项T03a步骤：先复现调用前、服务返回后、工具结果落盘后的中断；列清工具副作用与可安全重试类别；冻结调用记录/预算预留的最小协议；派发有限文件范围给DSH；独立故障注入验证调用次数与阶段持久化。T03a先建立记录与边界，T03b再接异常恢复、结果认领和执行所有者，不能把记录存在称为任意崩溃可恢复。
+ 
+ 任务不涉及 c13/c18 材料、独立评测材料、密钥或外部模型评价。此前四次 USTC 外发审批拒绝仍有效，不重试或改道。
+ 
+--- before/docs/seven-point-status.md
++++ after/docs/seven-point-status.md
+@@ -18,4 +18,4 @@
+ 
+ 此前四次 c13/c18 USTC 在线回归仍待明确的材料外发授权，未用新的工具改道重试。当前离线开发没有更新原冻结版模型成绩或把已见材料当作新留出集。
+ 
+-2026-10-19 架构复审发现验证失败聚合、证据目标绑定及异常恢复缺口，已保存[审计后的优化任务队列](optimization-backlog.md)。按单项任务卡由 DSH 实现，Codex 独立审查与验收；[T01 运行裁决已验收](run-verdict.md)，明确失败不会再被未知状态掩盖，完整回归748项通过。下一项为T02输入契约一致性，其他任务仍按队列推进；此结果不表示真实模型科研能力提升。
++2026-10-19 架构复审发现验证失败聚合、证据目标绑定及异常恢复缺口，已保存[审计后的优化任务队列](optimization-backlog.md)。按单项任务卡由 DSH 实现，Codex 独立审查与验收；[T01 运行裁决已验收](run-verdict.md)，明确失败不会再被未知状态掩盖，完整回归748项通过；[T02 输入契约一致性已验收](strict-numeric-contracts.md)，完整回归811项通过。下一项为T03a调用记录与预算持久化，其他任务仍按队列推进；这些结果不表示真实模型科研能力提升。

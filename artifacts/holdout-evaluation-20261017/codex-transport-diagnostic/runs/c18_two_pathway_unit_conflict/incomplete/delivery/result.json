@@ -1,0 +1,16 @@
+{
+  "status": "delivered",
+  "exit_code": 0,
+  "system": "codex",
+  "case": "c18_two_pathway_unit_conflict",
+  "phase": "incomplete",
+  "elapsed_seconds": 37.8865589210036,
+  "model": "gpt-6.1-sol",
+  "usage": {
+    "input_tokens": 62334,
+    "cached_input_tokens": 57088,
+    "cache_write_input_tokens": 0,
+    "output_tokens": 980,
+    "reasoning_output_tokens": 68
+  }
+}

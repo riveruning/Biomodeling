@@ -1,0 +1,79 @@
+{
+  "status": "needs_input",
+  "parameters": [
+    {
+      "id": "alpha",
+      "value": null,
+      "quote": "For the parameter values chosen ( [IMAGE_FORMULA: info:doi/10.1371/journal.pone.0069573.e013] ),"
+    },
+    {
+      "id": "beta",
+      "value": null,
+      "quote": "For the parameter values chosen ( [IMAGE_FORMULA: info:doi/10.1371/journal.pone.0069573.e013] ),"
+    },
+    {
+      "id": "gamma",
+      "value": null,
+      "quote": "For the parameter values chosen ( [IMAGE_FORMULA: info:doi/10.1371/journal.pone.0069573.e013] ),"
+    },
+    {
+      "id": "n",
+      "value": null,
+      "quote": "Griffith [9] demonstrated that limit-cycle oscillations can be obtained only if the Hill coefficient [IMAGE_FORMULA: info:doi/10.1371/journal.pone.0069573.e011] is larger than 8."
+    },
+    {
+      "id": "K",
+      "value": null,
+      "quote": "[IMAGE_FORMULA: info:doi/10.1371/journal.pone.0069573.e014] remains always above the threshold [IMAGE_FORMULA: info:doi/10.1371/journal.pone.0069573.e015]"
+    }
+  ],
+  "states": [
+    {
+      "id": "X",
+      "initial": null,
+      "quote": "The variables [IMAGE_FORMULA: info:doi/10.1371/journal.pone.0069573.e007] , [IMAGE_FORMULA: info:doi/10.1371/journal.pone.0069573.e008] and [IMAGE_FORMULA: info:doi/10.1371/journal.pone.0069573.e009] can be interpreted as the concentration of a given gene mRNA, the corresponding protein, and a transcriptional inhibitor, respectively."
+    },
+    {
+      "id": "Y",
+      "initial": null,
+      "quote": "The variables [IMAGE_FORMULA: info:doi/10.1371/journal.pone.0069573.e007] , [IMAGE_FORMULA: info:doi/10.1371/journal.pone.0069573.e008] and [IMAGE_FORMULA: info:doi/10.1371/journal.pone.0069573.e009] can be interpreted as the concentration of a given gene mRNA, the corresponding protein, and a transcriptional inhibitor, respectively."
+    },
+    {
+      "id": "Z",
+      "initial": null,
+      "quote": "The variables [IMAGE_FORMULA: info:doi/10.1371/journal.pone.0069573.e007] , [IMAGE_FORMULA: info:doi/10.1371/journal.pone.0069573.e008] and [IMAGE_FORMULA: info:doi/10.1371/journal.pone.0069573.e009] can be interpreted as the concentration of a given gene mRNA, the corresponding protein, and a transcriptional inhibitor, respectively."
+    }
+  ],
+  "equations": [
+    {
+      "state": "X",
+      "expression": null,
+      "quote": "Its dynamics is governed by 3 ordinary differential equations: Scheme of the Goodwin model."
+    },
+    {
+      "state": "Y",
+      "expression": null,
+      "quote": "Its dynamics is governed by 3 ordinary differential equations: Scheme of the Goodwin model."
+    },
+    {
+      "state": "Z",
+      "expression": null,
+      "quote": "Its dynamics is governed by 3 ordinary differential equations: Scheme of the Goodwin model."
+    }
+  ],
+  "questions": [
+    "What are the ASCII forms of the three ODEs in equations (1)-(3), i.e. the contents of image formulas e004, e005 and e006?",
+    "What is the ASCII form of the Hill repression function (image formula e010) used in the X equation, and which symbol is the Hill threshold (e015)?",
+    "What are the exact parameter values listed in image formula e013 (the Fig. 2B / 'parameter values chosen' set)?",
+    "What is the exact value of the Hill coefficient n used (image formula e011), and is it the same symbol as in equation (1)?",
+    "What initial conditions X(0), Y(0), Z(0) were used for the numerical integration shown in Fig. 2B?"
+  ],
+  "limitations": [
+    "The source text renders all equation and parameter content as [IMAGE_FORMULA ...] placeholders (e004-e017); no equation body or numeric parameter value is available as text.",
+    "TASK.md forbids inferring the inaccessible image equations from prior knowledge, so the RHS of each ODE must stay null rather than being reconstructed from the known Goodwin form.",
+    "The initial conditions for X, Y, Z are not stated anywhere in the supplied source.txt, so all state initials are null.",
+    "The only quantitative statement available in text is the Griffith threshold 'Hill coefficient ... is larger than 8' for limit cycles; this is a bound, not the value used in Fig. 2B.",
+    "The source is a CC BY excerpt (DOI 10.1371/journal.pone.0069573) truncated at 2000 characters on its last line; the Figure 2 caption values may appear in the truncated remainder, but it is not readable and cannot be guessed."
+  ],
+  "initial_origin": "no_source_statement"
+}

@@ -1,0 +1,17 @@
+{
+  "taskId": "audit-t03a-invocations",
+  "bridgeTaskId": "9e336b43-144b-430f-a5d4-2707105d9e2a",
+  "outcome": "error",
+  "elapsedMs": 498745,
+  "polls": 68,
+  "reviews": 17,
+  "changedFiles": [
+    "src/biomodel_agent/invocations.py",
+    "src/biomodel_agent/agent.py"
+  ],
+  "missingFiles": [],
+  "delivered": true,
+  "acceptance": "not_run",
+  "error": "RequestError: Internal error: turn failed: terminated\n    at Connection.handleResponse (file:///home/riveruning/tools/mcp-acp-bridge/node_modules/@agentclientprotocol/sdk/dist/acp.js:1173:40)\n    at Connection.processMessage (file:///home/riveruning/tools/mcp-acp-bridge/node_modules/@agentclientprotocol/sdk/dist/acp.js:1099:18)\n    at Connection.receive (file:///home/riveruning/tools/mcp-acp-bridge/node_modules/@agentclientprotocol/sdk/dist/acp.js:1037:30)\n    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)",
+  "outputDirectory": "/home/riveruning/biologymodel_agent/.workflow/runs/audit-t03a-invocations-1792379605660-9d991e8b"
+}

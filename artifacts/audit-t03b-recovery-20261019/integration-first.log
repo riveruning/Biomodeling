@@ -1,0 +1,53 @@
+..........................................................FFF........... [ 98%]
+.                                                                        [100%]
+=================================== FAILURES ===================================
+___________ test_non_pending_or_legacy_runs_cannot_resume[completed] ___________
+
+tmp_path = PosixPath('/tmp/biomodel-t03b-integration-first/test_non_pending_or_legacy_run0')
+state = 'completed'
+
+    @pytest.mark.parametrize('state', ['completed', 'failed', 'incomplete'])
+    def test_non_pending_or_legacy_runs_cannot_resume(tmp_path, state):
+        store = ArtifactStore(tmp_path / 'store')
+        ref = store.put('agent_run', {'state': state})
+>       with pytest.raises(ValueError, match='awaiting_input'):
+E       AssertionError: Regex pattern did not match.
+E         Expected regex: 'awaiting_input'
+E         Actual message: 'run has no recoverable task configuration'
+
+tests/test_agent_resume.py:229: AssertionError
+____________ test_non_pending_or_legacy_runs_cannot_resume[failed] _____________
+
+tmp_path = PosixPath('/tmp/biomodel-t03b-integration-first/test_non_pending_or_legacy_run1')
+state = 'failed'
+
+    @pytest.mark.parametrize('state', ['completed', 'failed', 'incomplete'])
+    def test_non_pending_or_legacy_runs_cannot_resume(tmp_path, state):
+        store = ArtifactStore(tmp_path / 'store')
+        ref = store.put('agent_run', {'state': state})
+>       with pytest.raises(ValueError, match='awaiting_input'):
+E       AssertionError: Regex pattern did not match.
+E         Expected regex: 'awaiting_input'
+E         Actual message: 'run has no recoverable task configuration'
+
+tests/test_agent_resume.py:229: AssertionError
+__________ test_non_pending_or_legacy_runs_cannot_resume[incomplete] ___________
+
+tmp_path = PosixPath('/tmp/biomodel-t03b-integration-first/test_non_pending_or_legacy_run2')
+state = 'incomplete'
+
+    @pytest.mark.parametrize('state', ['completed', 'failed', 'incomplete'])
+    def test_non_pending_or_legacy_runs_cannot_resume(tmp_path, state):
+        store = ArtifactStore(tmp_path / 'store')
+        ref = store.put('agent_run', {'state': state})
+>       with pytest.raises(ValueError, match='awaiting_input'):
+E       AssertionError: Regex pattern did not match.
+E         Expected regex: 'awaiting_input'
+E         Actual message: 'run has no recoverable task configuration'
+
+tests/test_agent_resume.py:229: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_agent_resume.py::test_non_pending_or_legacy_runs_cannot_resume[completed]
+FAILED tests/test_agent_resume.py::test_non_pending_or_legacy_runs_cannot_resume[failed]
+FAILED tests/test_agent_resume.py::test_non_pending_or_legacy_runs_cannot_resume[incomplete]
+3 failed, 70 passed in 33.29s

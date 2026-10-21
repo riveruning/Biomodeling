@@ -1,0 +1,512 @@
+--- before/src/biomodel_agent/time_units.py
++++ after/src/biomodel_agent/time_units.py
+@@ -0,0 +1,74 @@
++"""Explicit experiment-clock checks; no inferred units or automatic conversion.
++
++SBML Model.timeUnits defines the model clock. Inspect the definition rather
++than trusting its ID: an imported unit called 'minute' need not mean 60 s.
++The bounded resolver accepts built-in seconds and a single second-based unit
++with exponent one; other definitions remain unresolved.
++"""
++from __future__ import annotations
++
++import math
++
++_ALIASES = {
++    'unknown': 'unknown',
++    's': 'second', 'sec': 'second', 'secs': 'second', 'second': 'second', 'seconds': 'second',
++    'min': 'minute', 'mins': 'minute', 'minute': 'minute', 'minutes': 'minute',
++    'h': 'hour', 'hr': 'hour', 'hrs': 'hour', 'hour': 'hour', 'hours': 'hour',
++}
++_SECONDS = {'second': 1., 'minute': 60., 'hour': 3600.}
++
++
++def normalize_time_unit(value):
++    if not isinstance(value, str) or value.strip().lower() not in _ALIASES:
++        raise ValueError('experiment time_unit must be second, minute, hour, a supported alias, or unknown')
++    return _ALIASES[value.strip().lower()]
++
++
++def model_time_scale(sbml):
++    """Seconds per model time unit, or None when not explicitly resolved."""
++    import libsbml
++
++    doc = libsbml.readSBMLFromString(sbml)
++    model = doc.getModel() if doc else None
++    if model is None or not model.isSetTimeUnits():
++        return None
++    name = model.getTimeUnits()
++    if name == 'second':
++        return 1.
++    definition = model.getUnitDefinition(name)
++    if definition is None or definition.getNumUnits() != 1:
++        return None
++    unit = definition.getUnit(0)
++    if unit.getKind() != libsbml.UNIT_KIND_SECOND or unit.getExponentAsDouble() != 1.:
++        return None
++    if unit.getOffset() != 0.:
++        return None
++    try:
++        scale = float(unit.getMultiplier()) * 10. ** unit.getScale()
++    except (OverflowError, ValueError):
++        return None
++    return scale if math.isfinite(scale) and scale > 0. else None
++
++
++def time_unit_check(requested, model_scale):
++    from .domain.contracts import Check
++
++    unit = normalize_time_unit(requested)
++    if unit == 'unknown':
++        return Check('experiment_time_unit', 'unknown',
++                     'Experiment time unit is unknown; alignment with the model clock was not checked.', 'warning')
++    if model_scale is None:
++        return Check('experiment_time_unit', 'fail',
++                     f'Experiment time_unit={unit!r}, but explicit SBML time units could not be resolved; no unit is inferred.')
++    if not math.isclose(_SECONDS[unit], model_scale, rel_tol=1e-12, abs_tol=0.):
++        return Check('experiment_time_unit', 'fail',
++                     f'Experiment time_unit={unit!r} ({_SECONDS[unit]:g} seconds/unit) differs from the SBML model clock ({model_scale:g} seconds/unit); no automatic time conversion is applied.')
++    return Check('experiment_time_unit', 'pass',
++                 f'Experiment time_unit={unit!r} matches the SBML model clock ({model_scale:g} seconds/unit).')
++
++
++def check_experiment_time(sbml, requested):
++    # Legacy experiments remain explicitly unknown without even interpreting
++    # a model's unit names or importing a numerical backend.
++    unit = normalize_time_unit(requested)
++    return time_unit_check(unit, None if unit == 'unknown' else model_time_scale(sbml))
+--- before/src/biomodel_agent/domain/contracts.py
++++ after/src/biomodel_agent/domain/contracts.py
+@@ -326,8 +326,11 @@
+     initial_overrides: FrozenMap = FrozenMap()
+     parameter_overrides: FrozenMap = FrozenMap()
+     segments: tuple[InputSegment, ...] = ()
+-
+-    def __post_init__(self) -> None:
++    time_unit: str = 'unknown'
++
++    def __post_init__(self) -> None:
++        from ..time_units import normalize_time_unit
++        object.__setattr__(self, 'time_unit', normalize_time_unit(self.time_unit))
+         ts = tuple(self.times)
+         if not ts:
+             raise ValueError("ExperimentSpec.times must be non-empty")
+--- before/src/biomodel_agent/simulation.py
++++ after/src/biomodel_agent/simulation.py
+@@ -39,6 +39,7 @@
+ 
+ from . import expressions
+ from . import modeling
++from . import time_units
+ from .domain.contracts import (
+     Check,
+     ExperimentSpec,
+@@ -406,6 +407,12 @@
+             elapsed_s=_time.monotonic() - wall,
+         )
+ 
++    clock = time_units.check_experiment_time(artifact.sbml, experiment.time_unit)
++    report = ValidationReport((*report.checks, clock))
++    if clock.status == 'fail':
++        return SimulationResult(status='failed', checks=report, diagnostics=(clock.message,),
++                                backend=_BACKEND, elapsed_s=_time.monotonic()-wall)
++
+     ctx = _inspect_sbml(artifact.sbml)
+     state = ctx["state"]
+ 
+@@ -567,7 +574,7 @@
+         status="succeeded",
+         times=tuple(float(t) for t in data["times"]),
+         values=FrozenMap({k: tuple(float(v) for v in col) for k, col in values.items()}),
+-        checks=_finite_check("all output values are finite"),
++        checks=ValidationReport((clock, *_finite_check("all output values are finite").checks)),
+         diagnostics=diag,
+         backend=data.get("backend", _BACKEND),
+         elapsed_s=elapsed,
+--- before/src/biomodel_agent/application.py
++++ after/src/biomodel_agent/application.py
+@@ -19,7 +19,7 @@
+ from uuid import uuid4
+ import math
+ 
+-from . import evidence, modeling, simulation, validation
++from . import evidence, modeling, simulation, validation, time_units
+ from .domain.contracts import (
+     Check,
+     ExperimentSpec,
+@@ -334,6 +334,9 @@
+     if isinstance(threshold, bool) or not isinstance(threshold, (int, float)) or not math.isfinite(threshold) or threshold <= 0:
+         raise ValueError(f"threshold must be a positive number, got {threshold!r}")
+ 
++    clock = time_units.check_experiment_time(artifact.sbml, experiment.time_unit)
++    if clock.status == 'fail':
++        raise ValueError(clock.message)
+     source_preflight = _source_validation(store, artifact)
+     if strict and source_preflight['source_review']['issues']:
+         raise ValueError('Unresolved source conflicts: ' + '; '.join(
+@@ -386,6 +389,7 @@
+ 
+     # --- real execution -----------------------------------------------------
+     static = modeling.validate_artifact(artifact)
++    static = ValidationReport((*static.checks, clock))
+     try:
+         result = simulation.simulate(artifact, experiment, observations, solver)
+     except Exception as exc:
+--- before/src/biomodel_agent/fitting.py
++++ after/src/biomodel_agent/fitting.py
+@@ -12,7 +12,7 @@
+ from scipy.integrate import solve_ivp
+ from scipy.optimize import least_squares
+ 
+-from . import expressions, modeling
++from . import expressions, modeling, time_units
+ from .domain.contracts import ExperimentSpec, ObservationSpec
+ from .domain.serialization import to_dict, from_dict
+ 
+@@ -34,6 +34,7 @@
+ 
+ class _Compiler:
+     def __init__(self, artifact):
++        self.time_scale = time_units.model_time_scale(artifact.sbml)
+         report = modeling.validate_artifact(artifact)
+         if not report.can_execute:
+             raise Unsupported('; '.join(c.message for c in report.checks if c.status == 'fail'))
+@@ -55,6 +56,9 @@
+ 
+     def predict(self, experiment, observations, parameters):
+         spec = _experiment(experiment)
++        clock = time_units.time_unit_check(spec.time_unit, self.time_scale)
++        if clock.status == 'fail':
++            raise ValueError(clock.message)
+         params = dict(self.constants)
+         for name, value in parameters.items():
+             if name not in self.constants or not math.isfinite(float(value)):
+--- before/src/biomodel_agent/agent.py
++++ after/src/biomodel_agent/agent.py
+@@ -6,7 +6,7 @@
+ import time
+ from typing import Any
+ 
+-from . import agent_tools, application
++from . import agent_tools, application, time_units
+ from .domain.contracts import (
+     ExperimentSpec, FrozenMap, ModelArtifact, ObservationSpec, SolverConfig,
+     SimulationResult,
+@@ -53,6 +53,7 @@
+ def _experiment_brief(experiment: ExperimentSpec) -> dict:
+     return {
+         "times": list(experiment.times),
++        "time_unit": experiment.time_unit,
+         "initial_overrides": dict(experiment.initial_overrides),
+         "parameter_overrides": dict(experiment.parameter_overrides),
+         "segments": len(experiment.segments),
+@@ -365,6 +366,11 @@
+             artifact = None
+             model_ref = None
+             result = agent_tools.submit_draft(store, args, source_refs, mode, tuple(allowed_mechanisms))
++            if result['state'] == 'ready':
++                clock = time_units.check_experiment_time(result['artifact'].sbml, experiment.time_unit)
++                result['checks'].append(to_dict(clock))
++                if clock.status == 'fail':
++                    result.update(state='invalid', artifact=None, model_ref=None, problems=[clock.message])
+             draft_ref = result.get("draft_ref") or draft_ref
+             events.append({"type": "tool_result", "call": calls, "tool": action,
+                            "state": result["state"], "problems": list(result["problems"]),
+--- before/tests/test_experiment_time_units.py
++++ after/tests/test_experiment_time_units.py
+@@ -0,0 +1,222 @@
++"""An explicit experimental clock is enforced before numerical execution."""
++from copy import deepcopy
++import json
++import math
++import pickle
++
++import libsbml
++import pytest
++
++from biomodel_agent import agent, application, cli, evidence, fitting, modeling, simulation, time_units
++from biomodel_agent.domain.contracts import ExperimentSpec, ModelArtifact, ModelDraft, ObservationSpec, Parameter, RateRule, State
++from biomodel_agent.domain.serialization import from_dict, to_dict
++from biomodel_agent.storage import ArtifactStore
++
++
++def decay(unit='second', k=.4):
++    return modeling.build_model(ModelDraft('decay', (State('x', 1.),), (Parameter('k', k),),
++                                           rate_rules=(RateRule('x', '-k*x'),), time_unit=unit))
++
++
++@pytest.mark.parametrize('alias, expected', [('s', 'second'), ('SECONDS', 'second'), ('sec', 'second'),
++                                          (' min ', 'minute'), ('minutes', 'minute'),
++                                          ('h', 'hour'), ('hrs', 'hour'), ('unknown', 'unknown')])
++def test_time_unit_round_trip_is_canonical_and_immutable(alias, expected):
++    spec = ExperimentSpec((0., 1.), time_unit=alias)
++    assert spec.time_unit == expected
++    assert from_dict(ExperimentSpec, to_dict(spec)) == spec
++    assert pickle.loads(pickle.dumps(spec)) == spec
++    with pytest.raises(AttributeError):
++        spec.time_unit = 'second'
++
++
++@pytest.mark.parametrize('unit', ['', None, 60, True, 'day', 'dimensionless', 'per minute'])
++def test_invalid_or_unsupported_experiment_time_units_are_not_coerced(unit):
++    with pytest.raises(ValueError, match='time_unit'):
++        ExperimentSpec((0., 1.), time_unit=unit)
++
++
++def test_legacy_json_omission_remains_unknown():
++    legacy = from_dict(ExperimentSpec, {'times': [0., 1.]})
++    assert legacy.time_unit == 'unknown'
++    assert time_units.check_experiment_time(decay().sbml, legacy.time_unit).status == 'unknown'
++
++
++@pytest.mark.parametrize('unit, seconds', [('second', 1.), ('minute', 60.), ('hour', 3600.)])
++def test_generated_model_clock_is_read_from_its_definition(unit, seconds):
++    assert time_units.model_time_scale(decay(unit).sbml) == seconds
++    assert time_units.check_experiment_time(decay(unit).sbml, unit).status == 'pass'
++
++
++def custom_clock(multiplier, scale=0, kind=libsbml.UNIT_KIND_SECOND, exponent=1.):
++    doc = libsbml.readSBMLFromString(decay('minute').sbml)
++    model = doc.getModel()
++    definition = model.getUnitDefinition('minute')
++    definition.setId('custom_clock')
++    unit = definition.getUnit(0)
++    unit.setMultiplier(multiplier)
++    unit.setScale(scale)
++    unit.setKind(kind)
++    unit.setExponent(exponent)
++    model.setTimeUnits('custom_clock')
++    return ModelArtifact('custom', libsbml.writeSBMLToString(doc))
++
++
++def test_custom_definition_uses_multiplier_and_decimal_scale():
++    artifact = custom_clock(6., scale=1)
++    assert time_units.model_time_scale(artifact.sbml) == 60.
++    assert time_units.check_experiment_time(artifact.sbml, 'min').status == 'pass'
++
++
++def test_a_unit_called_minute_cannot_override_its_actual_definition():
++    doc = libsbml.readSBMLFromString(decay('minute').sbml)
++    doc.getModel().getUnitDefinition('minute').getUnit(0).setMultiplier(3600.)
++    check = time_units.check_experiment_time(libsbml.writeSBMLToString(doc), 'minute')
++    assert check.status == 'fail' and '3600 seconds/unit' in check.message
++
++
++@pytest.mark.parametrize('artifact', [custom_clock(60., kind=libsbml.UNIT_KIND_METRE),
++                                     custom_clock(60., exponent=-1.), custom_clock(0.),
++                                     custom_clock(-60.), custom_clock(1., scale=999)])
++def test_unresolved_or_nonphysical_clock_is_not_guessed(artifact):
++    assert time_units.model_time_scale(artifact.sbml) is None
++    assert time_units.check_experiment_time(artifact.sbml, 'minute').status == 'fail'
++
++
++def test_missing_model_time_units_are_unknown_even_when_experiment_is_explicit():
++    artifact = decay('unknown')
++    assert time_units.model_time_scale(artifact.sbml) is None
++    assert time_units.check_experiment_time(artifact.sbml, 'second').status == 'fail'
++    assert time_units.check_experiment_time(artifact.sbml, 'unknown').status == 'unknown'
++
++
++def test_simulation_mismatch_stops_before_spawning(monkeypatch):
++    monkeypatch.setattr(simulation.multiprocessing, 'get_context', lambda *a: pytest.fail('wrong clock reached worker'))
++    result = simulation.simulate(decay('second'), ExperimentSpec((0., 1.), time_unit='minute'))
++    assert result.status == 'failed' and not result.times
++    assert any(c.code == 'experiment_time_unit' and c.status == 'fail' for c in result.checks.checks)
++
++
++def test_application_mismatch_stops_before_cache_and_store_writes(tmp_path, monkeypatch):
++    store = ArtifactStore(tmp_path / 'store')
++    before = store.list()
++    monkeypatch.setattr(store, 'list', lambda *a: pytest.fail('clock mismatch reached cache'))
++    monkeypatch.setattr(simulation, 'simulate', lambda *a: pytest.fail('clock mismatch reached solver'))
++    with pytest.raises(ValueError, match='differs from the SBML model clock'):
++        application.run_reproduction(store, decay(), ExperimentSpec((0., 1.), time_unit='minute'))
++    monkeypatch.undo()
++    assert store.list() == before
++
++
++def test_matched_minute_clock_runs_without_rescaling_grid():
++    result = simulation.simulate(decay('minute'), ExperimentSpec((0., .5, 1.), time_unit='min'))
++    assert result.status == 'succeeded' and result.times == (0., .5, 1.)
++    assert result.values['x'][-1] == pytest.approx(math.exp(-.4), rel=1e-6)
++    assert any(c.code == 'experiment_time_unit' and c.status == 'pass' for c in result.checks.checks)
++
++
++def test_legacy_unknown_clock_is_reported_without_relabeling():
++    result = simulation.simulate(decay('unknown'), ExperimentSpec((0., 1.)))
++    assert result.status == 'succeeded'
++    assert result.values['x'][-1] == pytest.approx(math.exp(-.4), rel=1e-6)
++    assert any(c.code == 'experiment_time_unit' and c.status == 'unknown' for c in result.checks.checks)
++
++
++def test_explicit_alias_cache_and_replay_keep_the_frozen_clock(tmp_path):
++    store = ArtifactStore(tmp_path / 'store')
++    artifact = decay('minute')
++    first = application.run_reproduction(store, artifact, ExperimentSpec((0., 1.), time_unit='min'))
++    second = application.run_reproduction(store, artifact, ExperimentSpec((0., 1.), time_unit='minute'))
++    assert store.get(second)['payload']['cached_from'] == first
++    replay = store.get(application.replay_run(store, first))['payload']
++    frozen = store.get(replay['input_ref'])['payload']
++    assert frozen['experiment']['time_unit'] == 'minute'
++    assert replay['simulation']['values']['x'][-1] == pytest.approx(math.exp(-.4), rel=1e-6)
++
++
++def test_fitting_rejects_wrong_clock_before_integration(monkeypatch):
++    monkeypatch.setattr(fitting, 'solve_ivp', lambda *a, **kw: pytest.fail('wrong clock reached fitter integration'))
++    with pytest.raises(ValueError, match='differs from the SBML model clock'):
++        fitting.predict(decay(), ExperimentSpec((0., 1.), time_unit='minute'),
++                        (ObservationSpec('signal', 'x'),), {'k': .4})
++
++
++def test_fit_validation_rejects_wrong_clock_before_optimizer(tmp_path, monkeypatch):
++    monkeypatch.setattr(fitting.mp, 'get_context', lambda *a: pytest.fail('wrong clock reached optimizer worker'))
++    training = [{'id': 'a', 'role': 'training',
++                 'experiment': to_dict(ExperimentSpec((0., 1.), time_unit='minute')),
++                 'values': {'signal': [1., .7]}, 'sigma': {'signal': .01}}]
++    with pytest.raises(ValueError, match='differs from the SBML model clock'):
++        fitting.fit_parameters(decay(), training, (ObservationSpec('signal', 'x'),), {'k': (.1, 1.)})
++
++
++def test_prediction_with_matched_clock_agrees_with_simulation():
++    spec = ExperimentSpec((0., .5, 1.), time_unit='minute')
++    prediction = fitting.predict(decay('minute'), spec, (ObservationSpec('signal', 'x'),), {'k': .4})
++    assert prediction['observables']['signal'][-1] == pytest.approx(math.exp(-.4), rel=1e-8)
++
++
++TEXT = 'Initial x = 1.\nParameter k = 0.4.\nEquation dx/dt = -k*x.\nTime is measured in minutes.\n'
++
++
++def source_proposal(tmp_path, store, unit):
++    path = tmp_path / 'source.txt'; path.write_text(TEXT)
++    source = evidence.ingest_source(store, path)
++    draft = ModelDraft('decay', (State('x', 1.),), (Parameter('k', .4),),
++                       rate_rules=(RateRule('x', '-k*x'),), time_unit=unit)
++    return source, {'draft': to_dict(draft), 'evidence': [
++        {'target': target, 'source_ref': source, 'page': 1, 'quote': quote}
++        for target, quote in [('x/initial', 'Initial x = 1.'), ('k/value', 'Parameter k = 0.4.'),
++                              ('rule:x/expression', 'Equation dx/dt = -k*x.')]]}
++
++
++class Scripted:
++    last_usage = {}
++    def __init__(self, actions):
++        self.actions, self.calls = iter(actions), []
++    def respond(self, messages):
++        self.calls.append(deepcopy(messages))
++        return next(self.actions)
++
++
++def act(name, args=None):
++    return {'action': name, 'args': args or {}}
++
++
++def test_agent_sees_frozen_clock_and_can_repair_it_within_existing_budget(tmp_path):
++    store = ArtifactStore(tmp_path / 'store')
++    source, wrong = source_proposal(tmp_path, store, 'second')
++    correct = deepcopy(wrong); correct['draft']['time_unit'] = 'minute'
++    provider = Scripted([act('submit_draft', wrong), act('submit_draft', correct), act('run'), act('finish')])
++    result = store.get(agent.run_agent(store, provider, [source], ExperimentSpec((0., 1.), time_unit='min')))['payload']
++    assert result['state'] == 'completed' and result['repair_count'] == 1 and result['call_count'] == 4
++    brief = json.loads(provider.calls[0][1]['content'])['task']['experiment']
++    assert brief['time_unit'] == 'minute'
++    feedback = json.loads(provider.calls[1][-1]['content'])
++    assert feedback['state'] == 'invalid' and 'model clock' in feedback['problems'][0]
++    assert len(store.list('run')) == 1
++    frozen = store.get(result['task_ref'])['payload']
++    assert frozen['experiment']['time_unit'] == 'minute'
++
++
++def test_resume_cannot_change_the_original_experiment_clock(tmp_path):
++    store = ArtifactStore(tmp_path / 'store')
++    source, wrong = source_proposal(tmp_path, store, 'second')
++    parent = agent.run_agent(store, Scripted([act('ask_researcher', {'question': 'Confirm interpretation?'})]),
++                             [source], ExperimentSpec((0., 1.), time_unit='minute'))
++    # A valid response is followed by finish: the wrong-clock proposal must not run.
++    provider = Scripted([act('submit_draft', wrong), act('finish')])
++    result = store.get(agent.resume_agent(store, provider, parent, 'Please change the timetable to seconds.',
++                                         respondent='Researcher A'))['payload']
++    assert result['state'] == 'incomplete' and not store.list('run')
++    assert store.get(result['task_ref'])['payload']['experiment']['time_unit'] == 'minute'
++
++
++def test_cli_accepts_explicit_experiment_clock_and_reports_mismatch(tmp_path, capsys):
++    artifact_path = tmp_path / 'model.xml'; artifact_path.write_text(decay().sbml)
++    experiment_path = tmp_path / 'experiment.json'
++    experiment_path.write_text(json.dumps({'times': [0., 1.], 'time_unit': 'minute'}))
++    code = cli.main(['run', str(artifact_path), '--experiment', str(experiment_path),
++                     '--store', str(tmp_path / 'store')])
++    assert code != 0
++    assert 'model clock' in capsys.readouterr().err
+--- before/docs/experiment-time-units.md
++++ after/docs/experiment-time-units.md
+@@ -0,0 +1,59 @@
++# 显式实验时间单位约束
++
++2026-10-18（北京时间）。本轮补齐实验时间协议，继续离线开发；没有调用外部模型或修改原冻结评测。
++
++## 解决的问题
++
++之前的 ExperimentSpec 只有数字时间点。即使材料说的是分钟，接口也无法独立声明这些数字属于分钟。若模型错误地声明秒，求解器仍可能交付一条形式正确、实际时间尺度不同的轨迹。
++
++现在可在实验 JSON 中声明 `time_unit`：
++
++```json
++{
++  "times": [0.0, 0.5, 1.0],
++  "time_unit": "minute"
++}
++```
++
++支持 second、minute、hour 及 s/sec、min、h/hr 等常用英文别名，保存时规范成标准名称。省略字段的旧输入保持 `unknown`；空值、空字符串、维度错误和未支持单位明确拒绝。采样点、初值、参数覆盖和输入分段均不自动改写。
++
++按 SBML 规定，模型的 timeUnits 是全局时间基准，反应和速率规则使用该基准；缺少 timeUnits 不等于默认秒。[libSBML Model 官方说明](https://sbml.org/software/libsbml/5.18.0/docs/formatted/c-api/class_model__t.html)
++
++## 执行与恢复
++
++- 直接模拟在启动工作进程前检查。显式实验单位与模型不同，返回 failed 和 experiment_time_unit 检查；不启动求解器。
++- 应用接口在写入冻结输入及查询缓存前检查，避免缓存绕过。通过后将实验单位写入冻结输入与检查结果；规范化的 min/minute 可以复用同一输入缓存，重放仍使用冻结单位。
++- 拟合预测和训练预检使用同一检查，错误时间协议不进入积分或优化工作进程。模型时间尺度只在编译器初始化时解析，避免每次残差评估重复解析 SBML。
++- Agent 的实验摘要向模型展示该单位。错误草稿时间基准返回 invalid，在既有调用与修订预算内修正；真正执行前仍由应用与求解层复查。恢复任务继承原实验时间协议，补充回复不能改变被冻结的时间单位。
++
++旧输入未声明实验单位时仍可按原流程执行，但新增检查显示 unknown，不把未检查的时间一致性标成通过。该兼容行为不证明来源或时间单位正确。
++
++## 有限的单位解析范围
++
++检查使用模型实际的 SBML 时间定义，不相信 unit ID 的名字。例如，一个叫 minute 但实际 multiplier=3600 的定义，不会当作 60 秒。当前识别内置 second，或由单个 second 单元组成、指数为 1、无偏移、正且有限的 multiplier 与十进制 scale 的定义。[libSBML Unit 官方说明](https://sbml.org/software/libsbml/5.18.0/docs/formatted/c-api/class_unit__t.html)
++
++未声明、复合或当前不能解析的模型时间定义，遇到显式实验单位时会阻断并说明无法核对，不猜测默认单位。这里没有实现任意单位系统、完整量纲分析、速率参数单位核验或自动的时间/参数换算；也没有新增参考轨迹单位协议。
++
++## 验证与兼容性
++
++新增 38 项针对性测试，覆盖 JSON/别名/不可变与 pickle、旧输入省略字段、生成模型与自定义单位定义、名称误导、非物理尺度、模拟启动前阻断、缓存查询前阻断、真实分钟轨迹、缓存和重放、拟合与优化入口、Agent 预算内修正及恢复时协议冻结，以及 CLI 的明确错误。
++
++完整回归：**402 项通过**，修改前为 364 项。正确分钟衰减模型的实际模拟与解析解 exp(-0.4*t) 核对；匹配单位的独立 SciPy 预测也通过解析参考。这是软件与数值协议验证，不是新的 LLM 或论文复现成绩。
++
++本功能跨数据契约、Agent、应用、模拟与拟合共用一个检查模块，作为同一次原子改动验收，避免某条运行路径遗漏约束。无需新依赖。
++
++首次全套预验收曾因存储测试向 sys.path 插入项目旧源码路径，使新建的拟合子进程读到旧版契约而失败；父进程读到的是候选版本。最终预验收以字节相同的该测试副本保持子进程导入候选源码，原测试文件未改动。最初的一条 CLI 测试调用也曾把位置参数错写为 --sbml，已按实际 CLI 修正。上述初始日志与最终全量日志/XML均保留，不把测试路径问题报告为产品的单位换算能力。
++
++源码前后快照、补丁、文件哈希及验证记录保存在 `artifacts/experiment-time-units-20261018/`。安装后用正常项目路径运行全套测试，无需额外源码路径覆盖：
++
++```bash
++PYTHONDONTWRITEBYTECODE=1 .venv/bin/python -m pytest -q -p no:cacheprovider
++```
++
++示例 Python 接口：
++
++```python
++experiment = ExperimentSpec((0.0, 0.5, 1.0), time_unit='min')
++```
++
++用户应根据材料明确声明实验时钟，并使模型的时间基准与之相符；该字段不会自动验证材料中的参数单位或生物学解释。
+--- before/README.md
++++ after/README.md
+@@ -21,6 +21,8 @@
+ 2026-10-18 后续修复：[数值声明边界与验证状态](docs/literal-assignment-validation.md)。避免把分数、算式或残缺数值截为参数字面量；完整回归 350 项通过。真实模型验证因网络限制及外发授权审批而未完成，未产生新的性能结论。
+ 
+ 2026-10-18 引用诊断：[多处引文诊断与离线恢复演练](docs/citation-diagnostics.md)。一次反馈多处重复/缺失引文，给出有限候选位置；引用预检失败不创建部分 claim。完整回归 364 项通过，另用明确标注的脚本修订演练旧任务恢复，不计为新的模型成绩。
++
++2026-10-18 实验时间：[显式实验时间单位约束](docs/experiment-time-units.md)。实验可声明秒、分或小时；模型时间单位不一致时，在缓存、求解或拟合前阻断，Agent 可在原预算内修正。旧输入保持 unknown，不自动补单位或换算。
+ 
+ ## 阅读顺序
+ 

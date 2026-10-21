@@ -1,0 +1,71 @@
+{
+  "status": "accepted",
+  "created_at": "2026-10-18T13:20:32.012750+00:00",
+  "scope": "strict trajectory comparison input and blocking nonfinite numeric reports",
+  "files": [
+    {
+      "path": "src/biomodel_agent/validation.py",
+      "staged": "src/biomodel_agent/validation.py",
+      "before_sha256": "fdd96ac32c58e94a260d47a62edb3e98d74fae4d1ab06526f2f5b5db1343568f",
+      "after_sha256": "28ce11607eddd8972cebceea4190979507bdfeee9eb863e0c425fac06b79f994"
+    },
+    {
+      "path": "tests/test_numeric_input_integrity.py",
+      "staged": "tests/test_numeric_input_integrity.py",
+      "before_sha256": null,
+      "after_sha256": "22dfec799c88064595c34831b7592ef893dcd585534c59a16b87df146336428b"
+    },
+    {
+      "path": "docs/numeric-input-integrity.md",
+      "staged": "docs/numeric-input-integrity.md",
+      "before_sha256": null,
+      "after_sha256": "3a15a4f78db4d7f8893a87e11d0ffa14567e3384aa70b4128fcc77701fb9f051"
+    },
+    {
+      "path": "README.md",
+      "staged": "README.md",
+      "before_sha256": "d8c4b87ea821f053f29f8081744f574c17570f94dcbd0e105fe133b08dd9ae1c",
+      "after_sha256": "b64c6d025e10fd44163f4f08eb3851a948dc924fb4be218aac63dc13fb5761c5"
+    }
+  ],
+  "baseline_tests": 488,
+  "tests": {
+    "tests": 526,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "validation": "existing project suite with staged modified modules, 38 new numeric input regressions; identical copied storage test keeps spawned imports on staged source",
+  "pytest_log": "pytest.log",
+  "pytest_xml": "pytest.xml",
+  "offline_original_proposals": 3,
+  "new_model_calls": 0,
+  "full_agent_benchmark_success_measured": false,
+  "original_evaluation_modified": false,
+  "independent_holdout": false,
+  "known_limitations": [
+    "numeric input validation does not establish scientific truth",
+    "no new live LLM performance measurement",
+    "labels are declarations, not source verification; no automatic time conversion"
+  ],
+  "installed_tests": {
+    "tests": 526,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "installed_test_command": [
+    "/home/riveruning/biologymodel_agent/.venv/bin/python",
+    "-m",
+    "pytest",
+    "-q",
+    "-p",
+    "no:cacheprovider",
+    "--basetemp=/tmp/biology-agent-numeric-input-installed-20261018",
+    "--junitxml=/home/riveruning/biologymodel_agent/artifacts/numeric-input-integrity-20261018/installed-pytest.xml"
+  ],
+  "installed_test_exit_code": 0,
+  "old_checkpoint_exercise_exit_code": 0,
+  "old_checkpoint_exercise_is_scripted": true,
+  "old_checkpoint_exercise_completed": 3
+}

@@ -1,0 +1,34 @@
+{
+  "schema_version": "1",
+  "id": "v01-05-core",
+  "objective": "实现冻结输入、研究运行记录、缓存与无LLM重跑和诚实报告。",
+  "context": "已有ArtifactStore(root):put(kind,payload,refs=())->hash; get(ref)->envelope{kind,payload,refs,schema_version}; list(kind=None)->listrefs。simulation.simulate(artifact,experiment,observations=(),solver=None)；modeling.validate_artifact、validate_draft、build_model；validation.compare_series/validate_numeric。接口按任务定义，无需读取正在写的adapter。禁止命令/todo工具。",
+  "read_files": [
+    "src/biomodel_agent/domain/contracts.py",
+    "src/biomodel_agent/domain/serialization.py",
+    "src/biomodel_agent/storage.py",
+    "src/biomodel_agent/evidence.py",
+    "src/biomodel_agent/validation.py",
+    "src/biomodel_agent/simulation.py",
+    "src/biomodel_agent/modeling.py"
+  ],
+  "write_files": [
+    "src/biomodel_agent/application.py"
+  ],
+  "expected_files": [
+    "src/biomodel_agent/application.py"
+  ],
+  "instructions": "application.environment_fingerprint()->dict记录Python/platform/packageversions(importlib.metadata)和src/biomodel_agent所有*.py内容hash（非git项目不能伪造gitcommit）。\nrun_reproduction(store,artifact,experiment,observations=(),solver=None,reference=None,scales=None,threshold=1e-3,strict=False,use_cache=True,nonnegative=())->str运行ref。保存input对象kind simulation_input，payload{artifact:to_dict,experiment:to_dict,observations:listto_dict,solver:to_dict,reference:to_dict SimulationResult or null,scales:dict or null,threshold,strict,nonnegative:list,environment:fingerprint}，refs包含artifact.element_map里claim hash（如空不伪造），输入构造报错要明确。cache key=inputref实际涵盖source/code/environment以及协议。只复用相同inputref的成功且numeric.pass运行；cache也新run对象payload{'cached_from':oldref,...}UUID/time，refs包括inputref和oldref，不能伪装独立重复。无cache或replay必须真的simulate。必须数值收敛诊断：同模型solver rtol/atol缩小10倍再运行一次，成功时compare_series fixedscales（如果未给scale，按粗结果maxabs每变量并记入validation，声明这是数值稳定性不是论文基准尺度）；诊断fine结果应保存ref。不支持/失败不再试。数值checks finite、nonnegative、convergence；source checks用evidence.validate_links requiredtargets不能仅从element_map.keys（否则missing逃逸），从SBML提取每state initial、each parameter value（assignmentderived不是constantparam）、rule/reaction expression等，具体targets统一 id/initial,id/value,rule:<target>/expression,reaction:<id>/rate。包括单位unknown status，严格文献结论在source.semantic_support unknown或unitunknown时标未核查；sourcechecked人审含claimsreviewstatus也不自动支持方程真正确。\nrun payload {input_ref,status,simulation:to_dict,static_validation:to_dict,numeric_validation:to_dict,source_validation:dict,comparison:dict or {status:'not_run'},convergence_ref,cache_key,environment,cached_from:null,mode:'strict_reproduction' ifstrict else 'structured_execution',scientific_status:'not_verified'/'failed'/'passed_structured_reference'}。执行success≠科学pass。严格sources未核查不可passed，即使curve匹配；missingitems返回清单。未知units不可mathfullypassed；notrun不得0。比较只有success和reference时且scales提供允许，保存fixedprotocol，失败或没reference不pass。返回对象ref后UI可get。没有reference不能用对自身compare冒充复现。\nreplay_run(store,run_ref)->str从inputref的frozen fields from_dict重新run use_cache=False，不LLM，保留replay_of原ref（需要run_reproduction可选replay_of=None或新run派生），记录currentenvironment与old相差dictionary不能忽略。\n\n现在只交付application.py一个文件，≤220行。禁止读tests及其它模块。任务prompt已提供接口，不需要验证当前其它模块临时测试错误，不修它们，尽快一遍read依赖+一次write交付。无reporting/test目标，它们后续独立任务。最後文字完成。",
+  "acceptance": [
+    "frozen研究包重跑不调用LLM",
+    "cache和独立复算区分",
+    "未知和失败如实报告"
+  ],
+  "verification_commands": [],
+  "budget": {
+    "idle_ms": 360000,
+    "first_write_ms": 480000,
+    "write_idle_ms": 360000,
+    "total_ms": 900000
+  }
+}

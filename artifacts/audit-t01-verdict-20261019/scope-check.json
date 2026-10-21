@@ -1,0 +1,10 @@
+{
+  "changed_preexisting_files": [
+    "src/biomodel_agent/agent.py",
+    "src/biomodel_agent/application.py",
+    "src/biomodel_agent/cli.py",
+    "docs/seven-point-status.md"
+  ],
+  "unexpected_changes": [],
+  "original_tests_preserved": true
+}

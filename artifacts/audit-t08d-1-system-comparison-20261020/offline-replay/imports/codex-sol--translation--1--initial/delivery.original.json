@@ -1,0 +1,8 @@
+{
+  "state": "awaiting_input",
+  "execution_declared": false,
+  "question_texts": [
+    "What is the initial P value?"
+  ],
+  "artifacts": []
+}

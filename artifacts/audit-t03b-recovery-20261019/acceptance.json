@@ -1,0 +1,173 @@
+{
+  "task_id": "T03b",
+  "status": "accepted",
+  "accepted_at": "2026-10-19T08:03:34.387944+00:00",
+  "objective": "Verified explicit interrupted-execution recovery, result adoption, safe read retry and local execution ownership",
+  "implementation_owner": "Codex; user explicitly changed division after DSH timeout and failed minimal READY probe",
+  "dsh": {
+    "task": "tasks/audit-t03b-recovery-core.json",
+    "outcome": "error: stream idle timeout",
+    "delivered": false,
+    "changed_source_files": [],
+    "minimal_probe": "TimeoutError after 30.03s; original configured route only",
+    "further_dispatches": 0
+  },
+  "baseline": {
+    "previous_full_passed": 849,
+    "previous_acceptance": "artifacts/audit-t03a-invocations-20261019/acceptance.json",
+    "all_previous_tests_unchanged": true,
+    "baseline_hashes": "baseline-hashes.json"
+  },
+  "production_files": [
+    "src/biomodel_agent/agent.py",
+    "src/biomodel_agent/cli.py",
+    "src/biomodel_agent/invocations.py",
+    "src/biomodel_agent/recovery.py"
+  ],
+  "new_test_files": [
+    "tests/test_recovery_core.py",
+    "tests/test_recovery_acceptance.py"
+  ],
+  "new_test_cases": 46,
+  "verification": {
+    "core-baseline": {
+      "tests": 22,
+      "failures": 22,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 1.499
+    },
+    "core-first": {
+      "tests": 39,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 3.67
+    },
+    "integration-first": {
+      "tests": 73,
+      "failures": 3,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 33.286
+    },
+    "adoption-first": {
+      "tests": 17,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 15.139
+    },
+    "review": {
+      "tests": 112,
+      "failures": 3,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 51.787
+    },
+    "targeted": {
+      "tests": 113,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 50.565
+    },
+    "full": {
+      "tests": 895,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 138.913
+    }
+  },
+  "commands": {
+    "targeted": "PYTHONDONTWRITEBYTECODE=1 .venv/bin/python -m pytest -q -p no:cacheprovider tests/test_recovery_core.py tests/test_recovery_acceptance.py tests/test_invocation_journal.py tests/test_invocation_acceptance.py tests/test_agent_resume.py --basetemp=/tmp/biomodel-t03b-targeted --junitxml=artifacts/audit-t03b-recovery-20261019/targeted.xml",
+    "full": "PYTHONDONTWRITEBYTECODE=1 .venv/bin/python -m pytest -q -p no:cacheprovider --basetemp=/tmp/biomodel-t03b-full --junitxml=artifacts/audit-t03b-recovery-20261019/full.xml",
+    "durable_fault_evidence": "PYTHONDONTWRITEBYTECODE=1 .venv/bin/python artifacts/audit-t03b-recovery-20261019/fault-evidence.py"
+  },
+  "fault_evidence": {
+    "kind": "offline_scripted_real_science_and_process_exit_not_model_capability",
+    "implementation_sha256": "99efe06289ad36e794f706747b256743c18414d287d59a9625f992b0132d8946",
+    "cases": [
+      {
+        "case": "provider",
+        "exitcode": 41,
+        "execution_ref": "eba7b608e09cbd0c8d2fd5d63de7236798e6a1b411f7072d9bd17691d95cfa78",
+        "diagnosis": "blocked",
+        "reasons": [
+          "external_outcome_unknown"
+        ],
+        "calls_before": 1,
+        "compute_before": 0,
+        "scientific_runs_before": 0,
+        "action": "blocked_without_resubmission",
+        "new_provider_calls": 0
+      },
+      {
+        "case": "result",
+        "exitcode": 42,
+        "execution_ref": "e8cc538cb5f3167cab8b83e60f6f013e45a0d5209193513bd74f756885ded817",
+        "diagnosis": "ready",
+        "reasons": [],
+        "calls_before": 2,
+        "compute_before": 1,
+        "scientific_runs_before": 1,
+        "action": "continued",
+        "state": "completed",
+        "final_ref": "cb396df93a943b2283ab3c05a5a8e05b5de09c5ecb184645a2d115a058806f02",
+        "calls_after": 3,
+        "new_provider_calls": 1,
+        "scientific_runs_after": 1,
+        "all_invocations_exported": true,
+        "same_result_ref": true,
+        "endpoint": 0.6703202833572259,
+        "scientific_status": "not_verified"
+      },
+      {
+        "case": "read",
+        "exitcode": 44,
+        "execution_ref": "b4f783515733aca5e9c98e529dececd25f9bc2b70d9800c9920864ebcf186131",
+        "diagnosis": "ready",
+        "reasons": [],
+        "calls_before": 1,
+        "compute_before": 0,
+        "scientific_runs_before": 0,
+        "action": "continued",
+        "state": "awaiting_input",
+        "final_ref": "0b283030f4b69cd833924ecfca94cf651c465560d340e1588cde5294082a63a5",
+        "calls_after": 2,
+        "new_provider_calls": 1,
+        "scientific_runs_after": 0,
+        "all_invocations_exported": true,
+        "read_reservations": 1,
+        "original_read_reservation_reused": true
+      }
+    ]
+  },
+  "implementation_sha256": "99efe06289ad36e794f706747b256743c18414d287d59a9625f992b0132d8946",
+  "final_hashes": {
+    "src/biomodel_agent/agent.py": "706a20d6c63d9ccba204c2f96069dcf4c2be67fca6a2b6a297858f8edab987c3",
+    "src/biomodel_agent/cli.py": "c70d59e2c301e12eea5dc1ecac07ddbf8f81e70e9e61cab9116f0eb179469c8f",
+    "src/biomodel_agent/invocations.py": "13f46795a34978db510bd87e7280c2edf63091fdb29996b0b5b92e41a1a36dfe",
+    "src/biomodel_agent/recovery.py": "35c49cba831859130f2d38e487f605b397cc08b7691bf96f08cecac4eaa0fc1c",
+    "tests/test_recovery_core.py": "70a4e9b49174456a53208b45e972ebe0616fac1dc48bf4820a0a4ef09ec18d50",
+    "tests/test_recovery_acceptance.py": "04350fa85fdb798ea3ac51d7bd37ee931444539e248503eca4cabcf8e1406ac9",
+    "docs/optimization-backlog.md": "db4652b963dadf69d24e46e1eac41bbdea428988d2ad2f71fa778557e3557642",
+    "docs/seven-point-status.md": "ca02bf62a2fe7d84a3f7b9c0798510c6d6c941bbf077f26350ecc5bad1d51878",
+    "docs/invocation-journal.md": "226068f904e25a144a40b40cd87e8711b415596ba626801c080c0803d4f5f2d4",
+    "docs/controlled-recovery.md": "162cb44c88c6fdc2a0a2c901473a84c0e9b7c2c476262747052e6af548f8f25d",
+    "tasks/audit-t03b-recovery-core.json": "15f03b6f465a4f55e1b54e76d77a85d7ffbd895d7f4ccfbc7bb2a756f41aa880"
+  },
+  "diff": "changes.patch",
+  "plan": "execution-plan.md",
+  "limitations": [
+    "Explicit controlled recovery, not arbitrary crash auto-resume or exactly-once delivery.",
+    "Legacy or changed implementation fingerprints refuse migration; normal researcher resume compatibility retained.",
+    "Error/interrupted outcomes remain blocked; normal pre-existing bounded provider retry policy unchanged.",
+    "Local advisory task ownership only; no distributed locks or cross-branch token/currency caps.",
+    "Read-only diagnosis scans object files; no independent large-store latency evaluation.",
+    "Fault/script/unit/numerical evidence is not real model scientific capability evaluation."
+  ],
+  "c13_c18_online_regressions": "not attempted; previous material transmission rejection preserved",
+  "next_task": "T04: shared study execution verdict and total deadline, starting from frozen cross-entry failure baseline"
+}

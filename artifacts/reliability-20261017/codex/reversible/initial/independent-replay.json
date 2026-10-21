@@ -1,0 +1,5 @@
+{
+  "exit_code": 0,
+  "stdout": "{\"status\": \"needs_input\", \"reason\": \"Initial B is not reported. What is the initial value of B at the same initial time as A = 1.0?\"}\n",
+  "stderr": ""
+}

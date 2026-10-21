@@ -1,0 +1,15 @@
+{
+  "status": "failed",
+  "calls": 1,
+  "tokens": 0,
+  "questions": [],
+  "problems": [],
+  "model_ref": null,
+  "run_ref": null,
+  "agent_ref": "16a1bfcbfb520c6356ae0827701101f207d2383a64f3d5e37cbabd9cb633a034",
+  "product_modules_sha256": "446e6f3a01fc692ef8f8da085c81f86a41e75e2b41276be86eb1c5c103c8c47b",
+  "system": "biomodel",
+  "case": "logistic",
+  "phase": "initial",
+  "elapsed_seconds": 0.17339107600128045
+}

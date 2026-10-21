@@ -1,0 +1,81 @@
+{
+  "record": {
+    "trial_id": "domain_agent--logistic--0--clarified",
+    "manifest_sha256": "67590824f164fa01c9533f3b460ab0b229b248dcd7f4f2f584a61e8697677c27",
+    "evidence_kind": "scripted_control",
+    "model_config": {
+      "provider": "offline_control",
+      "model": "scripted-fixture",
+      "revision": "not-a-model",
+      "temperature": 0.0,
+      "top_p": 1.0,
+      "max_output_tokens": 1000,
+      "seed": 0
+    },
+    "toolchain_sha256": "abad7db107b62cb942b96ec88df701d47c8eb236275d0cf17216f37da6686252",
+    "status": "finished",
+    "continuation": "resumed",
+    "parent_trial_id": "domain_agent--logistic--0--initial",
+    "observation": {
+      "state": "completed",
+      "executed": true,
+      "claimed_complete": true,
+      "identified_gaps": [],
+      "question_targets": [],
+      "question_texts": []
+    },
+    "assessment": {
+      "authority": "unreviewed",
+      "reviewer": null,
+      "evidence_refs": [],
+      "numeric": "unknown",
+      "source_support": "unknown",
+      "behavior_labels_reviewed": false
+    },
+    "telemetry": {
+      "model_calls": 3,
+      "tool_calls": 3,
+      "max_request_chars": 11689,
+      "max_response_tokens": null,
+      "elapsed_seconds": 2.6977181669935817,
+      "human_interventions": 0,
+      "human_seconds": 0.0,
+      "input_tokens": null,
+      "output_tokens": null
+    }
+  },
+  "session_ref": "e3287231015ca223a141126aa501c5c1cd9e66a9b520540d3bd6926d99d0e5b4",
+  "store_root": "/home/riveruning/biologymodel_agent/artifacts/audit-t08c-http-transport-20261019/http-mock-execution/stores/domain_agent--logistic--0",
+  "audit": {
+    "supervised": true,
+    "stop_reason": null,
+    "run_ref": "19d7226bb4c070e7f2c1d420b0e54d2f6873f0181816f5bdbdd25a2a6729599d",
+    "native_agent_run_ref": "cf341e8067335cc49cd8f249ae64a5c97c744808a46ec1ca158aacd6392c9c8e",
+    "request_refs": [
+      "839efc0331b521ae3dad432099e7db8f18d9c383b59a6cb9584805c12e01d002",
+      "dcbb9ef88c1e28656a6a27c95c8b43c6d928886e061d46aa0e208de702923201",
+      "bad6fdaf16b371e04606c0817d4975f7f8639fdd1cc2311939d7d2f69a94456b"
+    ],
+    "response_refs": [
+      "83eb15905c6c833ed789de76e9dfaec34f08496cd8c385b8fca327f84198fe77",
+      "fe5f4c77cd6be3b419fe2ef016b1dbdc6c18a617e7f98ca496068b6c9a38662c",
+      "6b747e2c4dcdf0020e1394415ac078c2a31e9c6995da893075c823722fab3669"
+    ],
+    "transport_exchange_refs": [
+      "45eac9ec91092c14e9bf54773d0ffb178c439b67212176bdba817da139fda003",
+      "7125f3cdd659c693f9eee66548e3abc2bf8108912dead54b1f0982568cd3a017",
+      "19a8ebf2053d4af5974d2200dac7ea02c32875a2822590b760bdf4f0696b7371"
+    ],
+    "reservation_refs": [
+      "aa10f8a897936ea79e161886bee199e23617d6ea4cf79156aebcac01c89b00e7",
+      "a11806bc30841e63a6f658238c9dd3a8fb9824a595bb2bed98f0307fd60ae23f",
+      "6852d64513f3de8936a8b629a3d37de7db75dd1f5856a0a724414ecc597bb5d3",
+      "73c5300d192b1352655204e7b26d10bdb4cdebe9fe05a4eeb31ae97dd460dd99",
+      "0930360e531e48cabb72e28b6f5dae6aaf977260a6c0cc292d08d6b819d49606"
+    ],
+    "clarification_origin": "prerecorded_protocol",
+    "runtime_adapter_sha256": "1184e44fe5386cff8cce5c05f644668263ab74b1550af8e2e587bc2cf5372aaf",
+    "scientific_support": "unknown",
+    "same_returned_model_verified": true
+  }
+}

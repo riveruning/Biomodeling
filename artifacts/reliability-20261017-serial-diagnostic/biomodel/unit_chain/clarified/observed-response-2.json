@@ -1,0 +1,28 @@
+{
+  "id": "chatcmpl-38edea7b-91f1-4bd1-96cb-6a2723acff96",
+  "created": 1792203671,
+  "model": "qwen3.8-chat",
+  "object": "chat.completion",
+  "choices": [
+    {
+      "finish_reason": "stop",
+      "index": 0,
+      "message": {
+        "content": "{\"action\": \"submit_draft\", \"args\": {\"draft\": {\"id\": \"synthetic_ode_model\", \"time_unit\": \"minutes\", \"states\": [{\"id\": \"U\", \"initial\": 1.0, \"unit\": \"dimensionless\", \"quantity_kind\": \"variable\", \"nonnegative\": true}, {\"id\": \"V\", \"initial\": 0.1, \"unit\": \"dimensionless\", \"quantity_kind\": \"variable\", \"nonnegative\": true}], \"parameters\": [{\"id\": \"k1\", \"value\": 0.2, \"unit\": \"per minute\", \"origin\": \"author clarification\"}, {\"id\": \"k2\", \"value\": 0.15, \"unit\": \"per minute\", \"origin\": \"source\"}], \"compartment\": {\"id\": \"C\", \"size\": 1, \"unit\": \"dimensionless\"}, \"reactions\": [], \"rate_rules\": [{\"state\": \"U\", \"expression\": \"-k1*U\"}, {\"state\": \"V\", \"expression\": \"k1*U-k2*V\"}], \"derived\": []}, \"evidence\": [{\"target\": \"U/initial\", \"source_ref\": \"abbf0fa21cb0f5cb23caee6a414ffb28dc788c2a129184ecb681a769a1112982\", \"page\": 1, \"quote\": \"Initial U = 1.0.\"}, {\"target\": \"V/initial\", \"source_ref\": \"abbf0fa21cb0f5cb23caee6a414ffb28dc788c2a129184ecb681a769a1112982\", \"page\": 1, \"quote\": \"Initial V = 0.1.\"}, {\"target\": \"k1/value\", \"source_ref\": \"abbf0fa21cb0f5cb23caee6a414ffb28dc788c2a129184ecb681a769a1112982\", \"page\": 1, \"quote\": \"The author corrects the table: Parameter k1 = 0.2 per minute; the per-second label was a typo.\"}, {\"target\": \"k2/value\", \"source_ref\": \"abbf0fa21cb0f5cb23caee6a414ffb28dc788c2a129184ecb681a769a1112982\", \"page\": 1, \"quote\": \"Parameter k2 = 0.15.\"}, {\"target\": \"rule:U/expression\", \"source_ref\": \"abbf0fa21cb0f5cb23caee6a414ffb28dc788c2a129184ecb681a769a1112982\", \"page\": 1, \"quote\": \"Equation dU/dt = -k1*U.\"}, {\"target\": \"rule:V/expression\", \"source_ref\": \"abbf0fa21cb0f5cb23caee6a414ffb28dc788c2a129184ecb681a769a1112982\", \"page\": 1, \"quote\": \"Equation dV/dt = k1*U-k2*V.\"}, {\"target\": \"time_unit\", \"source_ref\": \"abbf0fa21cb0f5cb23caee6a414ffb28dc788c2a129184ecb681a769a1112982\", \"page\": 1, \"quote\": \"Time t is in minutes.\"}, {\"target\": \"C/size\", \"source_ref\": \"abbf0fa21cb0f5cb23caee6a414ffb28dc788c2a129184ecb681a769a1112982\", \"page\": 1, \"quote\": \"The fixed compartment has size 1 dimensionless.\"}], \"mechanism\": \"ODE system\"}, \"reason\": \"Source defines ODE model with U,V states, k1,k2 params, and explicit ODEs.\"}}",
+        "role": "assistant",
+        "provider_specific_fields": {
+          "refusal": null
+        }
+      },
+      "provider_specific_fields": {}
+    }
+  ],
+  "usage": {
+    "completion_tokens": 999,
+    "prompt_tokens": 1195,
+    "total_tokens": 2194,
+    "prompt_tokens_details": {
+      "cached_tokens": 0
+    }
+  }
+}

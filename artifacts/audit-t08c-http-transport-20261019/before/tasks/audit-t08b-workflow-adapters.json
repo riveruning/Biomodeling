@@ -1,0 +1,10 @@
+{
+  "task_id": "T08b",
+  "owner": "Codex alone",
+  "objective": "Execute fixed, generic tool and actual product Agent workflows through shared scientific backends and metered provider requests; preserve phase state and produce T08a records.",
+  "read_scope": ["src/biomodel_agent", "benchmarks/development/agent_evaluation.py", "benchmarks/inputs/reliability/decay", "benchmarks/inputs/reliability/translation", "benchmarks/inputs/reliability/logistic", "tests", "docs"],
+  "write_scope": ["benchmarks/development/workflow_adapters.py", "benchmarks/development/run_agent_comparison.py", "tests/test_workflow_adapters.py", "docs/workflow-adapters.md", "docs/agent-evaluation-protocol.md", "docs/optimization-backlog.md", "docs/seven-point-status.md", "artifacts/audit-t08b-workflow-adapters-20261019"],
+  "constraints": ["Existing product source, tests and T08a protocol remain unchanged", "No DSH or subagents", "No real model calls, material transmission, new papers, independent evalset reads or c13/c18 access", "Use actual product Agent for domain arm", "Scientific backend and budgets shared across arms; disclose control-flow differences", "Unreviewed numerical/source/behavior assessments remain unknown"],
+  "acceptance": ["Actual build/SBML/simulation/validation through same backend", "Shared exact provider payload settings, request/output audits and usage handling", "Persisted reservations before effects, cumulative phase budgets and one execution", "Hard supervised wall deadline and child cleanup", "Actual original-task resume; no implicit fresh fallback", "No evaluator rubric or future clarification reaches workflow/transport", "Provider, tool, budget, crash and wrong-parent negative controls", "Full appropriate regression, actual numerical controls, final snapshots and patch"],
+  "remaining_after_T08b": ["Authorized same-model live runs", "Independent task/annotation review and actual comparative results", "Memory/RAG/Skill ablation"]
+}

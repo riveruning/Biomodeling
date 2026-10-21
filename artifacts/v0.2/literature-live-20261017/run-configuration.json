@@ -1,0 +1,19 @@
+{
+  "authorization": "User explicitly approved reusing existing DSH/USTC credentials and account quota for the two real-paper evaluations.",
+  "credential_handling": "Existing reference resolved only into child-process environment; no key value saved in benchmark files.",
+  "model": "qwen3.8-chat",
+  "base_url": "https://api.llm.ustc.edu.cn/v1",
+  "tracks": [
+    "raw",
+    "assisted"
+  ],
+  "per_track_limits": {
+    "max_calls": 8,
+    "max_repairs": 2,
+    "request_timeout_seconds": 90,
+    "max_output_tokens": 4000
+  },
+  "previous_block_record": "artifacts/v0.2/live-evaluation-blocked.json",
+  "gold_exposed_to_agent": false,
+  "exploratory_initials_exposed_to_agent": false
+}

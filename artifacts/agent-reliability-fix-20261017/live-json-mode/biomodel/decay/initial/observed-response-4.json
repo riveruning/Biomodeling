@@ -1,0 +1,28 @@
+{
+  "id": "chatcmpl-dc7a7e79-5a20-441e-84bd-3ad118b2a19a",
+  "created": 1792238868,
+  "model": "qwen3.8-chat",
+  "object": "chat.completion",
+  "choices": [
+    {
+      "finish_reason": "stop",
+      "index": 0,
+      "message": {
+        "content": "{\"action\": \"submit_draft\", \"args\": {\"draft\": {\"compartment\": {\"id\": \"C\", \"size\": 1, \"unit\": \"dimensionless\"}, \"derived\": [], \"id\": \"model\", \"parameters\": [{\"id\": \"k\", \"origin\": \"analyst\", \"unit\": \"1/min\", \"value\": 0.4}], \"rate_rules\": [{\"expression\": \"-k*A\", \"state\": \"A\"}], \"reactions\": [], \"states\": [{\"id\": \"A\", \"initial\": 2.0, \"nonnegative\": false, \"quantity_kind\": \"variable\", \"unit\": \"dimensionless\"}], \"time_unit\": \"minutes\"}, \"evidence\": [{\"page\": 1, \"quote\": \"Time t is in minutes.\", \"source_ref\": \"67668fbf6be1f7923521170a4373f3abee16091d28a76da28be1d682076d3db5\", \"target\": \"time_unit\"}, {\"page\": 1, \"quote\": \"The fixed compartment has size 1 dimensionless.\", \"source_ref\": \"67668fbf6be1f7923521170a4373f3abee16091d28a76da28be1d682076d3db5\", \"target\": \"C/size\"}, {\"page\": 1, \"quote\": \"Initial A = 2.0.\", \"source_ref\": \"67668fbf6be1f7923521170a4373f3abee16091d28a76da28be1d682076d3db5\", \"target\": \"A/initial\"}, {\"page\": 1, \"quote\": \"Parameter k = 0.4.\", \"source_ref\": \"67668fbf6be1f7923521170a4373f3abee16091d28a76da28be1d682076d3db5\", \"target\": \"k/value\"}, {\"page\": 1, \"quote\": \"Equation dA/dt = -k*A.\", \"source_ref\": \"67668fbf6be1f7923521170a4373f3abee16091d28a76da28be1d682076d3db5\", \"target\": \"rule:A/expression\"}], \"mechanism\": \"First-order decay of A\"}}",
+        "role": "assistant",
+        "provider_specific_fields": {
+          "refusal": null
+        }
+      },
+      "provider_specific_fields": {}
+    }
+  ],
+  "usage": {
+    "completion_tokens": 604,
+    "prompt_tokens": 1953,
+    "total_tokens": 2557,
+    "prompt_tokens_details": {
+      "cached_tokens": 0
+    }
+  }
+}

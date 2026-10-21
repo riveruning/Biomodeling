@@ -1,0 +1,135 @@
+[
+  {
+    "action": "submit_draft",
+    "args": {
+      "draft": {
+        "id": "c13_mm_with_inhibitor",
+        "states": [
+          {
+            "id": "S",
+            "initial": 3.0,
+            "unit": "a.u.",
+            "quantity_kind": "variable",
+            "nonnegative": false
+          },
+          {
+            "id": "I",
+            "initial": 2.0,
+            "unit": "a.u.",
+            "quantity_kind": "variable",
+            "nonnegative": false
+          }
+        ],
+        "parameters": [
+          {
+            "id": "Vmax",
+            "value": 1.2,
+            "unit": "a.u. per minute",
+            "origin": "source"
+          },
+          {
+            "id": "Km",
+            "value": 0.9,
+            "unit": "a.u.",
+            "origin": "source"
+          },
+          {
+            "id": "KI",
+            "value": 1.4,
+            "unit": "a.u.",
+            "origin": "source"
+          }
+        ],
+        "compartment": {
+          "id": "C",
+          "size": 1,
+          "unit": "dimensionless"
+        },
+        "reactions": [],
+        "rate_rules": [
+          {
+            "state": "S",
+            "expression": "-Vmax*S/(Km*(1 + I/KI) + S)"
+          },
+          {
+            "state": "I",
+            "expression": "0"
+          }
+        ],
+        "derived": [],
+        "time_unit": "minute"
+      },
+      "evidence": [
+        {
+          "target": "S/initial",
+          "source_ref": "2eae4dd9efbb831d64dac6387a567d8c222be08fd0f1c0f5e3c1b402d8a66da7",
+          "page": 1,
+          "quote": "S(0) = 3.0 a.u.; I(0) = 2.0 a.u."
+        },
+        {
+          "target": "I/initial",
+          "source_ref": "2eae4dd9efbb831d64dac6387a567d8c222be08fd0f1c0f5e3c1b402d8a66da7",
+          "page": 1,
+          "quote": "S(0) = 3.0 a.u.; I(0) = 2.0 a.u."
+        },
+        {
+          "target": "Vmax/value",
+          "source_ref": "2eae4dd9efbb831d64dac6387a567d8c222be08fd0f1c0f5e3c1b402d8a66da7",
+          "page": 1,
+          "quote": "Vmax = 1.2 a.u. per minute; Km = 0.9 a.u.; KI = 1.4 a.u."
+        },
+        {
+          "target": "Km/value",
+          "source_ref": "2eae4dd9efbb831d64dac6387a567d8c222be08fd0f1c0f5e3c1b402d8a66da7",
+          "page": 1,
+          "quote": "Vmax = 1.2 a.u. per minute; Km = 0.9 a.u.; KI = 1.4 a.u."
+        },
+        {
+          "target": "KI/value",
+          "source_ref": "2eae4dd9efbb831d64dac6387a567d8c222be08fd0f1c0f5e3c1b402d8a66da7",
+          "page": 1,
+          "quote": "Vmax = 1.2 a.u. per minute; Km = 0.9 a.u.; KI = 1.4 a.u."
+        },
+        {
+          "target": "rule:S/expression",
+          "source_ref": "2eae4dd9efbb831d64dac6387a567d8c222be08fd0f1c0f5e3c1b402d8a66da7",
+          "page": 1,
+          "quote": "dS/dt = -Vmax*S/(Km*(1 + I/KI) + S)"
+        },
+        {
+          "target": "rule:I/expression",
+          "source_ref": "271db4fb472e7905a0bafbcd26d46c9a7050d3cfcc196823bbb1cb0d905304a0",
+          "page": 1,
+          "quote": "# Pre-written researcher clarification (frozen before any run)\n# case: c13_mm_with_inhibitor_ambiguous\n# blocking target: rule:S/expression\n# This text is appended verbatim to source.txt to form the clarified phase.\n# It was written without observing any system's output.\n\nIn the rate law the symbol I denotes the free inhibitor concentration, i.e. the declared state with dI/dt = 0. It does not include enzyme-bound inhibitor. Use dS/dt = -Vmax*S/(Km*(1 + I/KI) + S) with I constant at I(0).\n"
+        },
+        {
+          "target": "rule:S/expression",
+          "source_ref": "271db4fb472e7905a0bafbcd26d46c9a7050d3cfcc196823bbb1cb0d905304a0",
+          "page": 1,
+          "quote": "Use dS/dt = -Vmax*S/(Km*(1 + I/KI) + S) with I constant at I(0)."
+        },
+        {
+          "target": "time_unit",
+          "source_ref": "2eae4dd9efbb831d64dac6387a567d8c222be08fd0f1c0f5e3c1b402d8a66da7",
+          "page": 1,
+          "quote": "Vmax = 1.2 a.u. per minute"
+        },
+        {
+          "target": "C/size",
+          "source_ref": "2eae4dd9efbb831d64dac6387a567d8c222be08fd0f1c0f5e3c1b402d8a66da7",
+          "page": 1,
+          "quote": "single well-mixed compartment of size 1 (dimensionless)"
+        }
+      ],
+      "mechanism": "Michaelis-Menten substrate consumption with competitive inhibition factor (1 + I/KI) multiplying Km; I is the free inhibitor state held constant (dI/dt=0) per researcher clarification."
+    }
+  },
+  {
+    "action": "run",
+    "args": {}
+  },
+  {
+    "action": "finish",
+    "args": {}
+  }
+]

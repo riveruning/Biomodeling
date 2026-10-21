@@ -1,0 +1,691 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="37" skipped="0" tests="63" time="0.469" timestamp="2026-10-19T10:48:29.639543+08:00" hostname="LAPTOP-2QUP5P60"><testcase classname="tests.test_numeric_contract_acceptance" name="test_invalid_numbers_rejected_by_python_and_json[bool-parameter]" time="0.001"><failure message="Failed: DID NOT RAISE ValueError">case = 'parameter', value = True
+
+    @pytest.mark.parametrize('case', list(CASES))
+    @pytest.mark.parametrize('value', [True, '1.0', 10**400], ids=['bool','string','overflowing_integer'])
+    def test_invalid_numbers_rejected_by_python_and_json(case, value):
+        cls, payload = modified(case, value)
+        for constructor in (lambda:cls(**payload), lambda:from_dict(cls,payload)):
+&gt;           with pytest.raises(ValueError):
+E           Failed: DID NOT RAISE ValueError
+
+tests/test_numeric_contract_acceptance.py:48: Failed</failure></testcase><testcase classname="tests.test_numeric_contract_acceptance" name="test_invalid_numbers_rejected_by_python_and_json[bool-initial]" time="0.001"><failure message="Failed: DID NOT RAISE ValueError">case = 'initial', value = True
+
+    @pytest.mark.parametrize('case', list(CASES))
+    @pytest.mark.parametrize('value', [True, '1.0', 10**400], ids=['bool','string','overflowing_integer'])
+    def test_invalid_numbers_rejected_by_python_and_json(case, value):
+        cls, payload = modified(case, value)
+        for constructor in (lambda:cls(**payload), lambda:from_dict(cls,payload)):
+&gt;           with pytest.raises(ValueError):
+E           Failed: DID NOT RAISE ValueError
+
+tests/test_numeric_contract_acceptance.py:48: Failed</failure></testcase><testcase classname="tests.test_numeric_contract_acceptance" name="test_invalid_numbers_rejected_by_python_and_json[bool-volume]" time="0.001"><failure message="Failed: DID NOT RAISE ValueError">case = 'volume', value = True
+
+    @pytest.mark.parametrize('case', list(CASES))
+    @pytest.mark.parametrize('value', [True, '1.0', 10**400], ids=['bool','string','overflowing_integer'])
+    def test_invalid_numbers_rejected_by_python_and_json(case, value):
+        cls, payload = modified(case, value)
+        for constructor in (lambda:cls(**payload), lambda:from_dict(cls,payload)):
+&gt;           with pytest.raises(ValueError):
+E           Failed: DID NOT RAISE ValueError
+
+tests/test_numeric_contract_acceptance.py:48: Failed</failure></testcase><testcase classname="tests.test_numeric_contract_acceptance" name="test_invalid_numbers_rejected_by_python_and_json[bool-segment_time]" time="0.001"><failure message="Failed: DID NOT RAISE ValueError">case = 'segment_time', value = True
+
+    @pytest.mark.parametrize('case', list(CASES))
+    @pytest.mark.parametrize('value', [True, '1.0', 10**400], ids=['bool','string','overflowing_integer'])
+    def test_invalid_numbers_rejected_by_python_and_json(case, value):
+        cls, payload = modified(case, value)
+        for constructor in (lambda:cls(**payload), lambda:from_dict(cls,payload)):
+&gt;           with pytest.raises(ValueError):
+E           Failed: DID NOT RAISE ValueError
+
+tests/test_numeric_contract_acceptance.py:48: Failed</failure></testcase><testcase classname="tests.test_numeric_contract_acceptance" name="test_invalid_numbers_rejected_by_python_and_json[bool-experiment_time]" time="0.002"><failure message="Failed: DID NOT RAISE ValueError">case = 'experiment_time', value = True
+
+    @pytest.mark.parametrize('case', list(CASES))
+    @pytest.mark.parametrize('value', [True, '1.0', 10**400], ids=['bool','string','overflowing_integer'])
+    def test_invalid_numbers_rejected_by_python_and_json(case, value):
+        cls, payload = modified(case, value)
+        for constructor in (lambda:cls(**payload), lambda:from_dict(cls,payload)):
+&gt;           with pytest.raises(ValueError):
+E           Failed: DID NOT RAISE ValueError
+
+tests/test_numeric_contract_acceptance.py:48: Failed</failure></testcase><testcase classname="tests.test_numeric_contract_acceptance" name="test_invalid_numbers_rejected_by_python_and_json[bool-rtol]" time="0.000"><failure message="Failed: DID NOT RAISE ValueError">case = 'rtol', value = True
+
+    @pytest.mark.parametrize('case', list(CASES))
+    @pytest.mark.parametrize('value', [True, '1.0', 10**400], ids=['bool','string','overflowing_integer'])
+    def test_invalid_numbers_rejected_by_python_and_json(case, value):
+        cls, payload = modified(case, value)
+        for constructor in (lambda:cls(**payload), lambda:from_dict(cls,payload)):
+&gt;           with pytest.raises(ValueError):
+E           Failed: DID NOT RAISE ValueError
+
+tests/test_numeric_contract_acceptance.py:48: Failed</failure></testcase><testcase classname="tests.test_numeric_contract_acceptance" name="test_invalid_numbers_rejected_by_python_and_json[bool-atol]" time="0.000"><failure message="Failed: DID NOT RAISE ValueError">case = 'atol', value = True
+
+    @pytest.mark.parametrize('case', list(CASES))
+    @pytest.mark.parametrize('value', [True, '1.0', 10**400], ids=['bool','string','overflowing_integer'])
+    def test_invalid_numbers_rejected_by_python_and_json(case, value):
+        cls, payload = modified(case, value)
+        for constructor in (lambda:cls(**payload), lambda:from_dict(cls,payload)):
+&gt;           with pytest.raises(ValueError):
+E           Failed: DID NOT RAISE ValueError
+
+tests/test_numeric_contract_acceptance.py:48: Failed</failure></testcase><testcase classname="tests.test_numeric_contract_acceptance" name="test_invalid_numbers_rejected_by_python_and_json[bool-timeout]" time="0.000"><failure message="Failed: DID NOT RAISE ValueError">case = 'timeout', value = True
+
+    @pytest.mark.parametrize('case', list(CASES))
+    @pytest.mark.parametrize('value', [True, '1.0', 10**400], ids=['bool','string','overflowing_integer'])
+    def test_invalid_numbers_rejected_by_python_and_json(case, value):
+        cls, payload = modified(case, value)
+        for constructor in (lambda:cls(**payload), lambda:from_dict(cls,payload)):
+&gt;           with pytest.raises(ValueError):
+E           Failed: DID NOT RAISE ValueError
+
+tests/test_numeric_contract_acceptance.py:48: Failed</failure></testcase><testcase classname="tests.test_numeric_contract_acceptance" name="test_invalid_numbers_rejected_by_python_and_json[bool-result_time]" time="0.001"><failure message="Failed: DID NOT RAISE ValueError">case = 'result_time', value = True
+
+    @pytest.mark.parametrize('case', list(CASES))
+    @pytest.mark.parametrize('value', [True, '1.0', 10**400], ids=['bool','string','overflowing_integer'])
+    def test_invalid_numbers_rejected_by_python_and_json(case, value):
+        cls, payload = modified(case, value)
+        for constructor in (lambda:cls(**payload), lambda:from_dict(cls,payload)):
+&gt;           with pytest.raises(ValueError):
+E           Failed: DID NOT RAISE ValueError
+
+tests/test_numeric_contract_acceptance.py:48: Failed</failure></testcase><testcase classname="tests.test_numeric_contract_acceptance" name="test_invalid_numbers_rejected_by_python_and_json[bool-elapsed]" time="0.001"><failure message="Failed: DID NOT RAISE ValueError">case = 'elapsed', value = True
+
+    @pytest.mark.parametrize('case', list(CASES))
+    @pytest.mark.parametrize('value', [True, '1.0', 10**400], ids=['bool','string','overflowing_integer'])
+    def test_invalid_numbers_rejected_by_python_and_json(case, value):
+        cls, payload = modified(case, value)
+        for constructor in (lambda:cls(**payload), lambda:from_dict(cls,payload)):
+&gt;           with pytest.raises(ValueError):
+E           Failed: DID NOT RAISE ValueError
+
+tests/test_numeric_contract_acceptance.py:48: Failed</failure></testcase><testcase classname="tests.test_numeric_contract_acceptance" name="test_invalid_numbers_rejected_by_python_and_json[bool-result_column]" time="0.001"><failure message="Failed: DID NOT RAISE ValueError">case = 'result_column', value = True
+
+    @pytest.mark.parametrize('case', list(CASES))
+    @pytest.mark.parametrize('value', [True, '1.0', 10**400], ids=['bool','string','overflowing_integer'])
+    def test_invalid_numbers_rejected_by_python_and_json(case, value):
+        cls, payload = modified(case, value)
+        for constructor in (lambda:cls(**payload), lambda:from_dict(cls,payload)):
+&gt;           with pytest.raises(ValueError):
+E           Failed: DID NOT RAISE ValueError
+
+tests/test_numeric_contract_acceptance.py:48: Failed</failure></testcase><testcase classname="tests.test_numeric_contract_acceptance" name="test_invalid_numbers_rejected_by_python_and_json[bool-initial_override]" time="0.001" /><testcase classname="tests.test_numeric_contract_acceptance" name="test_invalid_numbers_rejected_by_python_and_json[bool-stoichiometry]" time="0.001" /><testcase classname="tests.test_numeric_contract_acceptance" name="test_invalid_numbers_rejected_by_python_and_json[string-parameter]" time="0.000"><failure message="Failed: DID NOT RAISE ValueError">case = 'parameter', value = '1.0'
+
+    @pytest.mark.parametrize('case', list(CASES))
+    @pytest.mark.parametrize('value', [True, '1.0', 10**400], ids=['bool','string','overflowing_integer'])
+    def test_invalid_numbers_rejected_by_python_and_json(case, value):
+        cls, payload = modified(case, value)
+        for constructor in (lambda:cls(**payload), lambda:from_dict(cls,payload)):
+&gt;           with pytest.raises(ValueError):
+E           Failed: DID NOT RAISE ValueError
+
+tests/test_numeric_contract_acceptance.py:48: Failed</failure></testcase><testcase classname="tests.test_numeric_contract_acceptance" name="test_invalid_numbers_rejected_by_python_and_json[string-initial]" time="0.000"><failure message="Failed: DID NOT RAISE ValueError">case = 'initial', value = '1.0'
+
+    @pytest.mark.parametrize('case', list(CASES))
+    @pytest.mark.parametrize('value', [True, '1.0', 10**400], ids=['bool','string','overflowing_integer'])
+    def test_invalid_numbers_rejected_by_python_and_json(case, value):
+        cls, payload = modified(case, value)
+        for constructor in (lambda:cls(**payload), lambda:from_dict(cls,payload)):
+&gt;           with pytest.raises(ValueError):
+E           Failed: DID NOT RAISE ValueError
+
+tests/test_numeric_contract_acceptance.py:48: Failed</failure></testcase><testcase classname="tests.test_numeric_contract_acceptance" name="test_invalid_numbers_rejected_by_python_and_json[string-volume]" time="0.000"><failure message="Failed: DID NOT RAISE ValueError">case = 'volume', value = '1.0'
+
+    @pytest.mark.parametrize('case', list(CASES))
+    @pytest.mark.parametrize('value', [True, '1.0', 10**400], ids=['bool','string','overflowing_integer'])
+    def test_invalid_numbers_rejected_by_python_and_json(case, value):
+        cls, payload = modified(case, value)
+        for constructor in (lambda:cls(**payload), lambda:from_dict(cls,payload)):
+&gt;           with pytest.raises(ValueError):
+E           Failed: DID NOT RAISE ValueError
+
+tests/test_numeric_contract_acceptance.py:48: Failed</failure></testcase><testcase classname="tests.test_numeric_contract_acceptance" name="test_invalid_numbers_rejected_by_python_and_json[string-segment_time]" time="0.000"><failure message="Failed: DID NOT RAISE ValueError">case = 'segment_time', value = '1.0'
+
+    @pytest.mark.parametrize('case', list(CASES))
+    @pytest.mark.parametrize('value', [True, '1.0', 10**400], ids=['bool','string','overflowing_integer'])
+    def test_invalid_numbers_rejected_by_python_and_json(case, value):
+        cls, payload = modified(case, value)
+        for constructor in (lambda:cls(**payload), lambda:from_dict(cls,payload)):
+&gt;           with pytest.raises(ValueError):
+E           Failed: DID NOT RAISE ValueError
+
+tests/test_numeric_contract_acceptance.py:48: Failed</failure></testcase><testcase classname="tests.test_numeric_contract_acceptance" name="test_invalid_numbers_rejected_by_python_and_json[string-experiment_time]" time="0.000"><failure message="Failed: DID NOT RAISE ValueError">case = 'experiment_time', value = '1.0'
+
+    @pytest.mark.parametrize('case', list(CASES))
+    @pytest.mark.parametrize('value', [True, '1.0', 10**400], ids=['bool','string','overflowing_integer'])
+    def test_invalid_numbers_rejected_by_python_and_json(case, value):
+        cls, payload = modified(case, value)
+        for constructor in (lambda:cls(**payload), lambda:from_dict(cls,payload)):
+&gt;           with pytest.raises(ValueError):
+E           Failed: DID NOT RAISE ValueError
+
+tests/test_numeric_contract_acceptance.py:48: Failed</failure></testcase><testcase classname="tests.test_numeric_contract_acceptance" name="test_invalid_numbers_rejected_by_python_and_json[string-rtol]" time="0.001"><failure message="Failed: DID NOT RAISE ValueError">case = 'rtol', value = '1.0'
+
+    @pytest.mark.parametrize('case', list(CASES))
+    @pytest.mark.parametrize('value', [True, '1.0', 10**400], ids=['bool','string','overflowing_integer'])
+    def test_invalid_numbers_rejected_by_python_and_json(case, value):
+        cls, payload = modified(case, value)
+        for constructor in (lambda:cls(**payload), lambda:from_dict(cls,payload)):
+&gt;           with pytest.raises(ValueError):
+E           Failed: DID NOT RAISE ValueError
+
+tests/test_numeric_contract_acceptance.py:48: Failed</failure></testcase><testcase classname="tests.test_numeric_contract_acceptance" name="test_invalid_numbers_rejected_by_python_and_json[string-atol]" time="0.002"><failure message="Failed: DID NOT RAISE ValueError">case = 'atol', value = '1.0'
+
+    @pytest.mark.parametrize('case', list(CASES))
+    @pytest.mark.parametrize('value', [True, '1.0', 10**400], ids=['bool','string','overflowing_integer'])
+    def test_invalid_numbers_rejected_by_python_and_json(case, value):
+        cls, payload = modified(case, value)
+        for constructor in (lambda:cls(**payload), lambda:from_dict(cls,payload)):
+&gt;           with pytest.raises(ValueError):
+E           Failed: DID NOT RAISE ValueError
+
+tests/test_numeric_contract_acceptance.py:48: Failed</failure></testcase><testcase classname="tests.test_numeric_contract_acceptance" name="test_invalid_numbers_rejected_by_python_and_json[string-timeout]" time="0.001"><failure message="Failed: DID NOT RAISE ValueError">case = 'timeout', value = '1.0'
+
+    @pytest.mark.parametrize('case', list(CASES))
+    @pytest.mark.parametrize('value', [True, '1.0', 10**400], ids=['bool','string','overflowing_integer'])
+    def test_invalid_numbers_rejected_by_python_and_json(case, value):
+        cls, payload = modified(case, value)
+        for constructor in (lambda:cls(**payload), lambda:from_dict(cls,payload)):
+&gt;           with pytest.raises(ValueError):
+E           Failed: DID NOT RAISE ValueError
+
+tests/test_numeric_contract_acceptance.py:48: Failed</failure></testcase><testcase classname="tests.test_numeric_contract_acceptance" name="test_invalid_numbers_rejected_by_python_and_json[string-result_time]" time="0.001"><failure message="Failed: DID NOT RAISE ValueError">case = 'result_time', value = '1.0'
+
+    @pytest.mark.parametrize('case', list(CASES))
+    @pytest.mark.parametrize('value', [True, '1.0', 10**400], ids=['bool','string','overflowing_integer'])
+    def test_invalid_numbers_rejected_by_python_and_json(case, value):
+        cls, payload = modified(case, value)
+        for constructor in (lambda:cls(**payload), lambda:from_dict(cls,payload)):
+&gt;           with pytest.raises(ValueError):
+E           Failed: DID NOT RAISE ValueError
+
+tests/test_numeric_contract_acceptance.py:48: Failed</failure></testcase><testcase classname="tests.test_numeric_contract_acceptance" name="test_invalid_numbers_rejected_by_python_and_json[string-elapsed]" time="0.000"><failure message="Failed: DID NOT RAISE ValueError">case = 'elapsed', value = '1.0'
+
+    @pytest.mark.parametrize('case', list(CASES))
+    @pytest.mark.parametrize('value', [True, '1.0', 10**400], ids=['bool','string','overflowing_integer'])
+    def test_invalid_numbers_rejected_by_python_and_json(case, value):
+        cls, payload = modified(case, value)
+        for constructor in (lambda:cls(**payload), lambda:from_dict(cls,payload)):
+&gt;           with pytest.raises(ValueError):
+E           Failed: DID NOT RAISE ValueError
+
+tests/test_numeric_contract_acceptance.py:48: Failed</failure></testcase><testcase classname="tests.test_numeric_contract_acceptance" name="test_invalid_numbers_rejected_by_python_and_json[string-result_column]" time="0.001"><failure message="Failed: DID NOT RAISE ValueError">case = 'result_column', value = '1.0'
+
+    @pytest.mark.parametrize('case', list(CASES))
+    @pytest.mark.parametrize('value', [True, '1.0', 10**400], ids=['bool','string','overflowing_integer'])
+    def test_invalid_numbers_rejected_by_python_and_json(case, value):
+        cls, payload = modified(case, value)
+        for constructor in (lambda:cls(**payload), lambda:from_dict(cls,payload)):
+&gt;           with pytest.raises(ValueError):
+E           Failed: DID NOT RAISE ValueError
+
+tests/test_numeric_contract_acceptance.py:48: Failed</failure></testcase><testcase classname="tests.test_numeric_contract_acceptance" name="test_invalid_numbers_rejected_by_python_and_json[string-initial_override]" time="0.001" /><testcase classname="tests.test_numeric_contract_acceptance" name="test_invalid_numbers_rejected_by_python_and_json[string-stoichiometry]" time="0.001" /><testcase classname="tests.test_numeric_contract_acceptance" name="test_invalid_numbers_rejected_by_python_and_json[overflowing_integer-parameter]" time="0.001"><failure message="OverflowError: int too large to convert to float">case = 'parameter', value = 100000000000000000...0000000000000000000
+
+    @pytest.mark.parametrize('case', list(CASES))
+    @pytest.mark.parametrize('value', [True, '1.0', 10**400], ids=['bool','string','overflowing_integer'])
+    def test_invalid_numbers_rejected_by_python_and_json(case, value):
+        cls, payload = modified(case, value)
+        for constructor in (lambda:cls(**payload), lambda:from_dict(cls,payload)):
+            with pytest.raises(ValueError):
+&gt;               constructor()
+
+tests/test_numeric_contract_acceptance.py:49: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test_numeric_contract_acceptance.py:47: in &lt;lambda&gt;
+    for constructor in (lambda:cls(**payload), lambda:from_dict(cls,payload)):
+                               ^^^^^^^^^^^^^^
+&lt;string&gt;:7: in __init__
+    ???
+src/biomodel_agent/domain/contracts.py:171: in __post_init__
+    object.__setattr__(self, "value", finite(self.value, f"parameter {self.id} value", True))
+                                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+value = 100000000000000000...0000000000000000000, what = 'parameter k value'
+allow_none = True
+
+    def finite(value: float | None, what: str, allow_none: bool) -&gt; float | None:
+        if value is None:
+            if not allow_none:
+                raise ValueError(f"{what} must not be None")
+            return None
+&gt;       f = float(value)
+            ^^^^^^^^^^^^
+E       OverflowError: int too large to convert to float
+
+src/biomodel_agent/domain/contracts.py:135: OverflowError</failure></testcase><testcase classname="tests.test_numeric_contract_acceptance" name="test_invalid_numbers_rejected_by_python_and_json[overflowing_integer-initial]" time="0.001"><failure message="OverflowError: int too large to convert to float">case = 'initial', value = 100000000000000000...0000000000000000000
+
+    @pytest.mark.parametrize('case', list(CASES))
+    @pytest.mark.parametrize('value', [True, '1.0', 10**400], ids=['bool','string','overflowing_integer'])
+    def test_invalid_numbers_rejected_by_python_and_json(case, value):
+        cls, payload = modified(case, value)
+        for constructor in (lambda:cls(**payload), lambda:from_dict(cls,payload)):
+            with pytest.raises(ValueError):
+&gt;               constructor()
+
+tests/test_numeric_contract_acceptance.py:49: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test_numeric_contract_acceptance.py:47: in &lt;lambda&gt;
+    for constructor in (lambda:cls(**payload), lambda:from_dict(cls,payload)):
+                               ^^^^^^^^^^^^^^
+&lt;string&gt;:8: in __init__
+    ???
+src/biomodel_agent/domain/contracts.py:184: in __post_init__
+    object.__setattr__(self, "initial", finite(self.initial, f"state {self.id} initial", True))
+                                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+value = 100000000000000000...0000000000000000000, what = 'state x initial'
+allow_none = True
+
+    def finite(value: float | None, what: str, allow_none: bool) -&gt; float | None:
+        if value is None:
+            if not allow_none:
+                raise ValueError(f"{what} must not be None")
+            return None
+&gt;       f = float(value)
+            ^^^^^^^^^^^^
+E       OverflowError: int too large to convert to float
+
+src/biomodel_agent/domain/contracts.py:135: OverflowError</failure></testcase><testcase classname="tests.test_numeric_contract_acceptance" name="test_invalid_numbers_rejected_by_python_and_json[overflowing_integer-volume]" time="0.001"><failure message="OverflowError: int too large to convert to float">case = 'volume', value = 100000000000000000...0000000000000000000
+
+    @pytest.mark.parametrize('case', list(CASES))
+    @pytest.mark.parametrize('value', [True, '1.0', 10**400], ids=['bool','string','overflowing_integer'])
+    def test_invalid_numbers_rejected_by_python_and_json(case, value):
+        cls, payload = modified(case, value)
+        for constructor in (lambda:cls(**payload), lambda:from_dict(cls,payload)):
+            with pytest.raises(ValueError):
+&gt;               constructor()
+
+tests/test_numeric_contract_acceptance.py:49: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test_numeric_contract_acceptance.py:47: in &lt;lambda&gt;
+    for constructor in (lambda:cls(**payload), lambda:from_dict(cls,payload)):
+                               ^^^^^^^^^^^^^^
+&lt;string&gt;:6: in __init__
+    ???
+src/biomodel_agent/domain/contracts.py:200: in __post_init__
+    size = finite(self.size, "compartment size", False)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+value = 100000000000000000...0000000000000000000, what = 'compartment size'
+allow_none = False
+
+    def finite(value: float | None, what: str, allow_none: bool) -&gt; float | None:
+        if value is None:
+            if not allow_none:
+                raise ValueError(f"{what} must not be None")
+            return None
+&gt;       f = float(value)
+            ^^^^^^^^^^^^
+E       OverflowError: int too large to convert to float
+
+src/biomodel_agent/domain/contracts.py:135: OverflowError</failure></testcase><testcase classname="tests.test_numeric_contract_acceptance" name="test_invalid_numbers_rejected_by_python_and_json[overflowing_integer-segment_time]" time="0.001"><failure message="OverflowError: int too large to convert to float">case = 'segment_time', value = 100000000000000000...0000000000000000000
+
+    @pytest.mark.parametrize('case', list(CASES))
+    @pytest.mark.parametrize('value', [True, '1.0', 10**400], ids=['bool','string','overflowing_integer'])
+    def test_invalid_numbers_rejected_by_python_and_json(case, value):
+        cls, payload = modified(case, value)
+        for constructor in (lambda:cls(**payload), lambda:from_dict(cls,payload)):
+            with pytest.raises(ValueError):
+&gt;               constructor()
+
+tests/test_numeric_contract_acceptance.py:49: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test_numeric_contract_acceptance.py:47: in &lt;lambda&gt;
+    for constructor in (lambda:cls(**payload), lambda:from_dict(cls,payload)):
+                               ^^^^^^^^^^^^^^
+&lt;string&gt;:5: in __init__
+    ???
+src/biomodel_agent/domain/contracts.py:319: in __post_init__
+    object.__setattr__(self, "time", finite(self.time, "segment time", False))
+                                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+value = 100000000000000000...0000000000000000000, what = 'segment time'
+allow_none = False
+
+    def finite(value: float | None, what: str, allow_none: bool) -&gt; float | None:
+        if value is None:
+            if not allow_none:
+                raise ValueError(f"{what} must not be None")
+            return None
+&gt;       f = float(value)
+            ^^^^^^^^^^^^
+E       OverflowError: int too large to convert to float
+
+src/biomodel_agent/domain/contracts.py:135: OverflowError</failure></testcase><testcase classname="tests.test_numeric_contract_acceptance" name="test_invalid_numbers_rejected_by_python_and_json[overflowing_integer-experiment_time]" time="0.001"><failure message="OverflowError: int too large to convert to float">case = 'experiment_time', value = 100000000000000000...0000000000000000000
+
+    @pytest.mark.parametrize('case', list(CASES))
+    @pytest.mark.parametrize('value', [True, '1.0', 10**400], ids=['bool','string','overflowing_integer'])
+    def test_invalid_numbers_rejected_by_python_and_json(case, value):
+        cls, payload = modified(case, value)
+        for constructor in (lambda:cls(**payload), lambda:from_dict(cls,payload)):
+            with pytest.raises(ValueError):
+&gt;               constructor()
+
+tests/test_numeric_contract_acceptance.py:49: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test_numeric_contract_acceptance.py:47: in &lt;lambda&gt;
+    for constructor in (lambda:cls(**payload), lambda:from_dict(cls,payload)):
+                               ^^^^^^^^^^^^^^
+&lt;string&gt;:8: in __init__
+    ???
+src/biomodel_agent/domain/contracts.py:340: in __post_init__
+    f = finite(t, "experiment time", False)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+value = 100000000000000000...0000000000000000000, what = 'experiment time'
+allow_none = False
+
+    def finite(value: float | None, what: str, allow_none: bool) -&gt; float | None:
+        if value is None:
+            if not allow_none:
+                raise ValueError(f"{what} must not be None")
+            return None
+&gt;       f = float(value)
+            ^^^^^^^^^^^^
+E       OverflowError: int too large to convert to float
+
+src/biomodel_agent/domain/contracts.py:135: OverflowError</failure></testcase><testcase classname="tests.test_numeric_contract_acceptance" name="test_invalid_numbers_rejected_by_python_and_json[overflowing_integer-rtol]" time="0.001"><failure message="OverflowError: int too large to convert to float">case = 'rtol', value = 100000000000000000...0000000000000000000
+
+    @pytest.mark.parametrize('case', list(CASES))
+    @pytest.mark.parametrize('value', [True, '1.0', 10**400], ids=['bool','string','overflowing_integer'])
+    def test_invalid_numbers_rejected_by_python_and_json(case, value):
+        cls, payload = modified(case, value)
+        for constructor in (lambda:cls(**payload), lambda:from_dict(cls,payload)):
+            with pytest.raises(ValueError):
+&gt;               constructor()
+
+tests/test_numeric_contract_acceptance.py:49: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test_numeric_contract_acceptance.py:47: in &lt;lambda&gt;
+    for constructor in (lambda:cls(**payload), lambda:from_dict(cls,payload)):
+                               ^^^^^^^^^^^^^^
+&lt;string&gt;:7: in __init__
+    ???
+src/biomodel_agent/domain/contracts.py:376: in __post_init__
+    v = finite(getattr(self, name), name, False)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+value = 100000000000000000...0000000000000000000, what = 'rtol'
+allow_none = False
+
+    def finite(value: float | None, what: str, allow_none: bool) -&gt; float | None:
+        if value is None:
+            if not allow_none:
+                raise ValueError(f"{what} must not be None")
+            return None
+&gt;       f = float(value)
+            ^^^^^^^^^^^^
+E       OverflowError: int too large to convert to float
+
+src/biomodel_agent/domain/contracts.py:135: OverflowError</failure></testcase><testcase classname="tests.test_numeric_contract_acceptance" name="test_invalid_numbers_rejected_by_python_and_json[overflowing_integer-atol]" time="0.001"><failure message="OverflowError: int too large to convert to float">case = 'atol', value = 100000000000000000...0000000000000000000
+
+    @pytest.mark.parametrize('case', list(CASES))
+    @pytest.mark.parametrize('value', [True, '1.0', 10**400], ids=['bool','string','overflowing_integer'])
+    def test_invalid_numbers_rejected_by_python_and_json(case, value):
+        cls, payload = modified(case, value)
+        for constructor in (lambda:cls(**payload), lambda:from_dict(cls,payload)):
+            with pytest.raises(ValueError):
+&gt;               constructor()
+
+tests/test_numeric_contract_acceptance.py:49: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test_numeric_contract_acceptance.py:47: in &lt;lambda&gt;
+    for constructor in (lambda:cls(**payload), lambda:from_dict(cls,payload)):
+                               ^^^^^^^^^^^^^^
+&lt;string&gt;:7: in __init__
+    ???
+src/biomodel_agent/domain/contracts.py:376: in __post_init__
+    v = finite(getattr(self, name), name, False)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+value = 100000000000000000...0000000000000000000, what = 'atol'
+allow_none = False
+
+    def finite(value: float | None, what: str, allow_none: bool) -&gt; float | None:
+        if value is None:
+            if not allow_none:
+                raise ValueError(f"{what} must not be None")
+            return None
+&gt;       f = float(value)
+            ^^^^^^^^^^^^
+E       OverflowError: int too large to convert to float
+
+src/biomodel_agent/domain/contracts.py:135: OverflowError</failure></testcase><testcase classname="tests.test_numeric_contract_acceptance" name="test_invalid_numbers_rejected_by_python_and_json[overflowing_integer-timeout]" time="0.001"><failure message="OverflowError: int too large to convert to float">case = 'timeout', value = 100000000000000000...0000000000000000000
+
+    @pytest.mark.parametrize('case', list(CASES))
+    @pytest.mark.parametrize('value', [True, '1.0', 10**400], ids=['bool','string','overflowing_integer'])
+    def test_invalid_numbers_rejected_by_python_and_json(case, value):
+        cls, payload = modified(case, value)
+        for constructor in (lambda:cls(**payload), lambda:from_dict(cls,payload)):
+            with pytest.raises(ValueError):
+&gt;               constructor()
+
+tests/test_numeric_contract_acceptance.py:49: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test_numeric_contract_acceptance.py:47: in &lt;lambda&gt;
+    for constructor in (lambda:cls(**payload), lambda:from_dict(cls,payload)):
+                               ^^^^^^^^^^^^^^
+&lt;string&gt;:7: in __init__
+    ???
+src/biomodel_agent/domain/contracts.py:376: in __post_init__
+    v = finite(getattr(self, name), name, False)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+value = 100000000000000000...0000000000000000000, what = 'timeout_s'
+allow_none = False
+
+    def finite(value: float | None, what: str, allow_none: bool) -&gt; float | None:
+        if value is None:
+            if not allow_none:
+                raise ValueError(f"{what} must not be None")
+            return None
+&gt;       f = float(value)
+            ^^^^^^^^^^^^
+E       OverflowError: int too large to convert to float
+
+src/biomodel_agent/domain/contracts.py:135: OverflowError</failure></testcase><testcase classname="tests.test_numeric_contract_acceptance" name="test_invalid_numbers_rejected_by_python_and_json[overflowing_integer-result_time]" time="0.001"><failure message="OverflowError: int too large to convert to float">case = 'result_time', value = 100000000000000000...0000000000000000000
+
+    @pytest.mark.parametrize('case', list(CASES))
+    @pytest.mark.parametrize('value', [True, '1.0', 10**400], ids=['bool','string','overflowing_integer'])
+    def test_invalid_numbers_rejected_by_python_and_json(case, value):
+        cls, payload = modified(case, value)
+        for constructor in (lambda:cls(**payload), lambda:from_dict(cls,payload)):
+            with pytest.raises(ValueError):
+&gt;               constructor()
+
+tests/test_numeric_contract_acceptance.py:49: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test_numeric_contract_acceptance.py:47: in &lt;lambda&gt;
+    for constructor in (lambda:cls(**payload), lambda:from_dict(cls,payload)):
+                               ^^^^^^^^^^^^^^
+&lt;string&gt;:11: in __init__
+    ???
+src/biomodel_agent/domain/contracts.py:432: in __post_init__
+    checked = tuple(finite(t, "simulation time", False) for t in self.times)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src/biomodel_agent/domain/contracts.py:432: in &lt;genexpr&gt;
+    checked = tuple(finite(t, "simulation time", False) for t in self.times)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+value = 100000000000000000...0000000000000000000, what = 'simulation time'
+allow_none = False
+
+    def finite(value: float | None, what: str, allow_none: bool) -&gt; float | None:
+        if value is None:
+            if not allow_none:
+                raise ValueError(f"{what} must not be None")
+            return None
+&gt;       f = float(value)
+            ^^^^^^^^^^^^
+E       OverflowError: int too large to convert to float
+
+src/biomodel_agent/domain/contracts.py:135: OverflowError</failure></testcase><testcase classname="tests.test_numeric_contract_acceptance" name="test_invalid_numbers_rejected_by_python_and_json[overflowing_integer-elapsed]" time="0.001"><failure message="OverflowError: int too large to convert to float">case = 'elapsed', value = 100000000000000000...0000000000000000000
+
+    @pytest.mark.parametrize('case', list(CASES))
+    @pytest.mark.parametrize('value', [True, '1.0', 10**400], ids=['bool','string','overflowing_integer'])
+    def test_invalid_numbers_rejected_by_python_and_json(case, value):
+        cls, payload = modified(case, value)
+        for constructor in (lambda:cls(**payload), lambda:from_dict(cls,payload)):
+            with pytest.raises(ValueError):
+&gt;               constructor()
+
+tests/test_numeric_contract_acceptance.py:49: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test_numeric_contract_acceptance.py:47: in &lt;lambda&gt;
+    for constructor in (lambda:cls(**payload), lambda:from_dict(cls,payload)):
+                               ^^^^^^^^^^^^^^
+&lt;string&gt;:11: in __init__
+    ???
+src/biomodel_agent/domain/contracts.py:443: in __post_init__
+    object.__setattr__(self, "elapsed_s", finite(self.elapsed_s, "elapsed_s", False))
+                                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+value = 100000000000000000...0000000000000000000, what = 'elapsed_s'
+allow_none = False
+
+    def finite(value: float | None, what: str, allow_none: bool) -&gt; float | None:
+        if value is None:
+            if not allow_none:
+                raise ValueError(f"{what} must not be None")
+            return None
+&gt;       f = float(value)
+            ^^^^^^^^^^^^
+E       OverflowError: int too large to convert to float
+
+src/biomodel_agent/domain/contracts.py:135: OverflowError</failure></testcase><testcase classname="tests.test_numeric_contract_acceptance" name="test_invalid_numbers_rejected_by_python_and_json[overflowing_integer-result_column]" time="0.001"><failure message="OverflowError: int too large to convert to float">case = 'result_column', value = 100000000000000000...0000000000000000000
+
+    @pytest.mark.parametrize('case', list(CASES))
+    @pytest.mark.parametrize('value', [True, '1.0', 10**400], ids=['bool','string','overflowing_integer'])
+    def test_invalid_numbers_rejected_by_python_and_json(case, value):
+        cls, payload = modified(case, value)
+        for constructor in (lambda:cls(**payload), lambda:from_dict(cls,payload)):
+            with pytest.raises(ValueError):
+&gt;               constructor()
+
+tests/test_numeric_contract_acceptance.py:49: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test_numeric_contract_acceptance.py:47: in &lt;lambda&gt;
+    for constructor in (lambda:cls(**payload), lambda:from_dict(cls,payload)):
+                               ^^^^^^^^^^^^^^
+&lt;string&gt;:11: in __init__
+    ???
+src/biomodel_agent/domain/contracts.py:440: in __post_init__
+    cols[k] = tuple(float(x) for x in v)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+.0 = &lt;tuple_iterator object at 0x714d422d0a00&gt;
+
+&gt;   cols[k] = tuple(float(x) for x in v)
+                    ^^^^^^^^
+E   OverflowError: int too large to convert to float
+
+src/biomodel_agent/domain/contracts.py:440: OverflowError</failure></testcase><testcase classname="tests.test_numeric_contract_acceptance" name="test_invalid_numbers_rejected_by_python_and_json[overflowing_integer-initial_override]" time="0.001"><failure message="OverflowError: int too large to convert to float">case = 'initial_override', value = 100000000000000000...0000000000000000000
+
+    @pytest.mark.parametrize('case', list(CASES))
+    @pytest.mark.parametrize('value', [True, '1.0', 10**400], ids=['bool','string','overflowing_integer'])
+    def test_invalid_numbers_rejected_by_python_and_json(case, value):
+        cls, payload = modified(case, value)
+        for constructor in (lambda:cls(**payload), lambda:from_dict(cls,payload)):
+            with pytest.raises(ValueError):
+&gt;               constructor()
+
+tests/test_numeric_contract_acceptance.py:49: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test_numeric_contract_acceptance.py:47: in &lt;lambda&gt;
+    for constructor in (lambda:cls(**payload), lambda:from_dict(cls,payload)):
+                               ^^^^^^^^^^^^^^
+&lt;string&gt;:8: in __init__
+    ???
+src/biomodel_agent/domain/contracts.py:346: in __post_init__
+    object.__setattr__(self, "initial_overrides", copy_finite_map(self.initial_overrides, "initial_overrides"))
+                                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src/biomodel_agent/domain/contracts.py:158: in copy_finite_map
+    walk(k, v)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+key = 'x', v = 100000000000000000...0000000000000000000
+
+    def walk(key: str, v: Any) -&gt; None:
+        if isinstance(v, FrozenMap):
+            for k, x in v.items():
+                walk(f"{key}/{k}" if key else k, x)
+        elif isinstance(v, tuple):
+            for i, x in enumerate(v):
+                walk(f"{key}[{i}]", x)
+        else:
+            if isinstance(v, bool) or not isinstance(v, (int, float)):
+                raise ValueError(f"{what}[{key!r}] must be a number, got {v!r}")
+&gt;           f = float(v)
+                ^^^^^^^^
+E           OverflowError: int too large to convert to float
+
+src/biomodel_agent/domain/contracts.py:153: OverflowError</failure></testcase><testcase classname="tests.test_numeric_contract_acceptance" name="test_invalid_numbers_rejected_by_python_and_json[overflowing_integer-stoichiometry]" time="0.001"><failure message="OverflowError: int too large to convert to float">case = 'stoichiometry', value = 100000000000000000...0000000000000000000
+
+    @pytest.mark.parametrize('case', list(CASES))
+    @pytest.mark.parametrize('value', [True, '1.0', 10**400], ids=['bool','string','overflowing_integer'])
+    def test_invalid_numbers_rejected_by_python_and_json(case, value):
+        cls, payload = modified(case, value)
+        for constructor in (lambda:cls(**payload), lambda:from_dict(cls,payload)):
+            with pytest.raises(ValueError):
+&gt;               constructor()
+
+tests/test_numeric_contract_acceptance.py:49: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test_numeric_contract_acceptance.py:47: in &lt;lambda&gt;
+    for constructor in (lambda:cls(**payload), lambda:from_dict(cls,payload)):
+                               ^^^^^^^^^^^^^^
+&lt;string&gt;:7: in __init__
+    ???
+src/biomodel_agent/domain/contracts.py:215: in __post_init__
+    object.__setattr__(self, "reactants", copy_finite_map(self.reactants, "reactants"))
+                                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src/biomodel_agent/domain/contracts.py:158: in copy_finite_map
+    walk(k, v)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+key = 'x', v = 100000000000000000...0000000000000000000
+
+    def walk(key: str, v: Any) -&gt; None:
+        if isinstance(v, FrozenMap):
+            for k, x in v.items():
+                walk(f"{key}/{k}" if key else k, x)
+        elif isinstance(v, tuple):
+            for i, x in enumerate(v):
+                walk(f"{key}[{i}]", x)
+        else:
+            if isinstance(v, bool) or not isinstance(v, (int, float)):
+                raise ValueError(f"{what}[{key!r}] must be a number, got {v!r}")
+&gt;           f = float(v)
+                ^^^^^^^^
+E           OverflowError: int too large to convert to float
+
+src/biomodel_agent/domain/contracts.py:153: OverflowError</failure></testcase><testcase classname="tests.test_numeric_contract_acceptance" name="test_step_count_never_accepts_bool_float_or_string[True]" time="0.001"><failure message="Failed: DID NOT RAISE ValueError">value = True
+
+    @pytest.mark.parametrize('value', [True, False, 1., '1', None])
+    def test_step_count_never_accepts_bool_float_or_string(value):
+        for constructor in (lambda:c.SolverConfig(max_steps=value),
+                            lambda:from_dict(c.SolverConfig,{'max_steps':value})):
+&gt;           with pytest.raises(ValueError):
+E           Failed: DID NOT RAISE ValueError
+
+tests/test_numeric_contract_acceptance.py:56: Failed</failure></testcase><testcase classname="tests.test_numeric_contract_acceptance" name="test_step_count_never_accepts_bool_float_or_string[False]" time="0.001" /><testcase classname="tests.test_numeric_contract_acceptance" name="test_step_count_never_accepts_bool_float_or_string[1.0]" time="0.001" /><testcase classname="tests.test_numeric_contract_acceptance" name="test_step_count_never_accepts_bool_float_or_string[1]" time="0.001" /><testcase classname="tests.test_numeric_contract_acceptance" name="test_step_count_never_accepts_bool_float_or_string[None]" time="0.000" /><testcase classname="tests.test_numeric_contract_acceptance" name="test_no_implicit_float_protocol_or_decimal_conversion" time="0.000"><failure message="Failed: DID NOT RAISE ValueError">def test_no_implicit_float_protocol_or_decimal_conversion():
+        converted = []
+        class Convertible:
+            def __float__(self):
+                converted.append(True)
+                return 1.
+        for value in (Decimal('1'), Convertible()):
+&gt;           with pytest.raises(ValueError):
+E           Failed: DID NOT RAISE ValueError
+
+tests/test_numeric_contract_acceptance.py:67: Failed</failure></testcase><testcase classname="tests.test_numeric_contract_acceptance" name="test_legal_int_and_float_paths_match_and_roundtrip[parameter]" time="0.001" /><testcase classname="tests.test_numeric_contract_acceptance" name="test_legal_int_and_float_paths_match_and_roundtrip[initial]" time="0.001" /><testcase classname="tests.test_numeric_contract_acceptance" name="test_legal_int_and_float_paths_match_and_roundtrip[volume]" time="0.001" /><testcase classname="tests.test_numeric_contract_acceptance" name="test_legal_int_and_float_paths_match_and_roundtrip[segment_time]" time="0.001" /><testcase classname="tests.test_numeric_contract_acceptance" name="test_legal_int_and_float_paths_match_and_roundtrip[experiment_time]" time="0.001" /><testcase classname="tests.test_numeric_contract_acceptance" name="test_legal_int_and_float_paths_match_and_roundtrip[rtol]" time="0.001" /><testcase classname="tests.test_numeric_contract_acceptance" name="test_legal_int_and_float_paths_match_and_roundtrip[atol]" time="0.001" /><testcase classname="tests.test_numeric_contract_acceptance" name="test_legal_int_and_float_paths_match_and_roundtrip[timeout]" time="0.001" /><testcase classname="tests.test_numeric_contract_acceptance" name="test_legal_int_and_float_paths_match_and_roundtrip[result_time]" time="0.002" /><testcase classname="tests.test_numeric_contract_acceptance" name="test_legal_int_and_float_paths_match_and_roundtrip[elapsed]" time="0.001" /><testcase classname="tests.test_numeric_contract_acceptance" name="test_legal_int_and_float_paths_match_and_roundtrip[result_column]" time="0.002" /><testcase classname="tests.test_numeric_contract_acceptance" name="test_legal_int_and_float_paths_match_and_roundtrip[initial_override]" time="0.001" /><testcase classname="tests.test_numeric_contract_acceptance" name="test_legal_int_and_float_paths_match_and_roundtrip[stoichiometry]" time="0.001" /><testcase classname="tests.test_numeric_contract_acceptance" name="test_missing_values_and_generic_metadata_keep_their_types" time="0.001" /><testcase classname="tests.test_numeric_contract_acceptance" name="test_abnormal_solver_columns_are_preserved_but_never_numeric_evidence[nan]" time="0.001" /><testcase classname="tests.test_numeric_contract_acceptance" name="test_abnormal_solver_columns_are_preserved_but_never_numeric_evidence[inf]" time="0.001" /><testcase classname="tests.test_numeric_contract_acceptance" name="test_abnormal_solver_columns_are_preserved_but_never_numeric_evidence[-inf]" time="0.001" /><testcase classname="tests.test_numeric_contract_acceptance" name="test_t01_persisted_inputs_still_decode_without_rewriting" time="0.003" /></testsuite></testsuites>

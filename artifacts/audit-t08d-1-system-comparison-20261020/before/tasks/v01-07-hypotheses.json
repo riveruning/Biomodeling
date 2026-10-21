@@ -1,0 +1,51 @@
+{
+  "schema_version": "1",
+  "id": "v01-07-hypotheses",
+  "objective": "实现B受约束候选建模、多起点参数估计、干预留出比较和不确定性报告。",
+  "context": "SBML唯一执行真值。拟合初期仅支持constantparameters+parameterstate rate-rules（反应/fundef/derived等拟合明确unsupported，不影响模拟）。根进程拿着holdout，不把它传拟合worker。frozen领域契约和store已定义。所有现成numpy/scipy在.venv，禁shell/todo。",
+  "read_files": [
+    "src/biomodel_agent/__init__.py",
+    "src/biomodel_agent/agent.py",
+    "src/biomodel_agent/application.py",
+    "src/biomodel_agent/domain/__init__.py",
+    "src/biomodel_agent/domain/contracts.py",
+    "src/biomodel_agent/domain/serialization.py",
+    "src/biomodel_agent/evidence.py",
+    "src/biomodel_agent/expressions.py",
+    "src/biomodel_agent/llm.py",
+    "src/biomodel_agent/modeling.py",
+    "src/biomodel_agent/reporting.py",
+    "src/biomodel_agent/simulation.py",
+    "src/biomodel_agent/storage.py",
+    "src/biomodel_agent/validation.py",
+    "tests/test_agent.py",
+    "tests/test_application.py",
+    "tests/test_contracts.py",
+    "tests/test_modeling.py",
+    "tests/test_simulation.py",
+    "tests/test_storage_evidence.py"
+  ],
+  "write_files": [
+    "src/biomodel_agent/fitting.py",
+    "src/biomodel_agent/hypotheses.py",
+    "tests/test_fitting.py"
+  ],
+  "expected_files": [
+    "src/biomodel_agent/fitting.py",
+    "src/biomodel_agent/hypotheses.py",
+    "tests/test_fitting.py"
+  ],
+  "budget": {
+    "idle_ms": 360000,
+    "first_write_ms": 480000,
+    "write_idle_ms": 360000,
+    "total_ms": 900000
+  },
+  "instructions": "fitting.fit_parameters(artifact,training,observations,bounds,starts=3,seed=17,max_nfev=100,timeout_s=90)->dict。training是list[{id,experiment:to_dict(ExperimentSpec),values:{observable_id:list},sigma:{observable_id:positivefloat},role:'training'}]。bounds {param_id:(lo,hi)}有限lo<hi，只constant无assignmenttargetparameters；strictgrid/column长度finite和sigma正，role非training拒绝。多起点保存每start initial/final/cost/status/nfev/error，fixedseed，weighted least_squares((prediction-y)/sigma)，cost用于halfchisquare，显式trainingdata/noiseprotocolhash。派生不支持不删除。成功best fitted values+predictions（按condition），uncertainty={method:'local_sensitivity',rank,parameter_count,condition_number:null ifsingular,global_identifiability:'unknown',confidence_intervals:'not_run',endpoint_spread:...}，bounds不能叫CI。无法收敛/allfailed没有best伪值。\n拟合使用一个spawn进程处理每candidate，父Queue.get(timeout)超时terminatejoin，不为每次residual启动子进程。SciPy solve_ivp从SBML rate-rules编译readonly RHS：libSBML读parameters/raterules和初值，formulaToL3String→expressions safeevaluate，每condition独立初值，constant overrides先应用，times[0]初始无预平衡；stimulussegment准确分段integrate且端点右连续观测。观察表达式统一安全evaluate，不直接state到data隐式映射。拒绝reaction/assignments/functiondefs/initialassignment/dynamiccompartment profile以免假支持。普通inputtimeovers必须static支持。estimatedparameter若conditionparameter_override同键拒绝（不默默忽略）。为抑制失败探索residual数值failed可返大固定罚项但保存失败次数，不能把罚解标成成功（best需重新成功计算）。predict(artifact,experiment,observations,parameters)->dict提供同一个compiler运行输出，只有科研受控API，无任意exec。\nhypotheses.adaptation_candidates()->dict[str,ModelDraft]：反馈feedback states x,z，params k=2,d=1.2,h=.2,u=1,b=1，x'=k*u-d*x-b*z，z'=h*x；前馈iff：x'=k*(u-b*z)-d*x，z'=h*(u-z)，params k=2,d=1,h=.2,u=1,b=1；baseline：x'=k*u-d*x，params k=2,d=1,u=1,b=1（b unused但protocol统一允许干预）。states initial0 quantityvariable，signed readout deviation不能标真实非负concentration。所有unit='dimensionless'（time second意味着d/h单位需unknown或定义反秒，未知诚实记录）；hypothesis_refs保存新的systemconjecture metadata而不是自动paperfact。说明linearization/scenario，仅候选模板不是开放机制发现。\nhypotheses.run_hypothesis_study(store,candidates,training,holdout=(),observations=(),bounds=None,starts=3,seed=17,max_nfev=100,timeout_s=90,separation_threshold=.05)->str。candidates是dict名称→ModelDraft；默认obs=response=x，defaultbounds k(.5,4),d(.6,1.8),h(.1,.4)（baseline仅k,d），bounds每candidate供覆盖。模型从空草案build而非扫描一个model，每candidate保存Hypothesis/ModelDraft/ModelArtifact+fitting对象 refs；真值generator不可在product代码。拟合worker只接受training；所有candidate拟合完后才读holdout role必须holdout，predict冻结bestparams无refit。记录heldout weightedRMSE/scaledRMSE（scale supplied row?默认1明确记录），ranking仅有holdout时按冻结RMSE，差小于threshold返回indistinguishable，不强制赢家。无holdout返回indistinguishable_from_training并明确观测等价/仍可能有不同预测；模型poorallfit/预测error返回none_adequate而非selectbest。3候选统一budget。\n至少对每fitbest的training第一个condition用libRoadRunner simulate一次校验SciPy预测映射scaledmaxerror <=1e-3（scale1预冻）并记录；失败该candidate不能科学可用。保存holdoutprotocol、数据refs/seed/software/numericdiag，数据不确定性local/Jacobian不是globalidentifiabilityproof。建议实验：在当前候选与bestparams下干预b=0，先predict fixedprotocol无用holdout调参，保存候选输出差异与条件限制；若已有b=0 holdout，描述这是验证干预不是新颖建议。研究包输出kind hypothesis_study payload {status,candidates:...,comparison,experiment_suggestion,limitations} refs所有原始data/models/fits。\n测试短解析dx/dt=k-d*x参数恢复小noise/multistart，holdoutrole进入fit拒绝，bounds/column不合法拒绝，timeout超短真进程timedout；两机理模板非相同方程，训练等价candidate(iff k2d1h.2 / feedbackk2d1.2h.2)输出数值一致，b0预测不同；noholdout保持indistinguishable，没有CI不伪造。~350核心行+100tests，每文件一次完整写，禁命令，仅文字完成。\n读接口可以但不要重复读同一文件，自审最多一轮，整文件写比多次edit更可靠。代码文件不要长篇docstring，尽快交付文件。",
+  "acceptance": [
+    "不同机制从空模型构建",
+    "holdout不能参加拟合",
+    "局部诊断不冒充结构可辨识证明"
+  ],
+  "verification_commands": []
+}

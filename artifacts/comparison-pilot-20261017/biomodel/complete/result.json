@@ -1,0 +1,380 @@
+{
+  "agent_ref": "75bc81e1104f2b3e5d9d2e4a904b835423dc0b6209980787077345b857513f08",
+  "state": "completed",
+  "run_ref": "fc272080ca5f5e9b7820f4a186299496a2d09d4041fea0b2f9c267412a1bd219",
+  "calls": 5,
+  "repairs": 1,
+  "elapsed_seconds": 65.32045076299983,
+  "usage_total_tokens": 24756,
+  "questions": [],
+  "environment": {
+    "python": "3.12.3",
+    "python_full": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]",
+    "implementation": "CPython",
+    "platform": "Linux-6.6.87.2-microsoft-standard-WSL2-x86_64-with-glibc2.39",
+    "machine": "x86_64",
+    "packages": {
+      "libroadrunner": "2.10.0",
+      "roadrunner": "absent",
+      "python-libsbml": "5.21.2",
+      "libsbml": "absent",
+      "numpy": "2.5.4",
+      "scipy": "1.18.1",
+      "pypdf": "6.20.1",
+      "biomodel-agent": "0.1.0"
+    },
+    "modules": {
+      "__init__.py": "3ebbb4065141012142168ecc70776886d2a452d80c3c3c1b19fc94665136fd5c",
+      "__main__.py": "11e716d1f66f25a0dd6ee566cb9bff3452624a3f47b8e009c3631ab2a9b01630",
+      "agent.py": "948e6fc4b58cd8f8ea629931713ccfc5d09a13ba467794d84eb0c014b34486e5",
+      "agent_tools.py": "abe06c2c67548389f32d7f47b901407b8463940434e5251678fe17ca691fe905",
+      "application.py": "efdb3812341f794985e5857f0b9c04782a1ec3543022b28c956a2d35cfdc27c1",
+      "bundles.py": "e3d710814a0205fc84fd66e5699ed5335a3bbe4d1910fc3c7f688d7ad6a49acd",
+      "cli.py": "21f4dc409bdf209ab3b42facda51e166a72a3c133da51165b2cc150cc38b17d3",
+      "domain/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "domain/contracts.py": "0c9711fb6500a00cbb4c5be748db77b7b4a8a32a0f54d76d04fc80be424f8366",
+      "domain/serialization.py": "35cd7eac8aa83a8bb7e41e0ea7f568abe34a570d38b8484c017ccf9b37d7e395",
+      "evidence.py": "020c4e0653bdbd9e06734ed060b89984dda013a9e7810ec132b51d5bf794b79f",
+      "expressions.py": "972ce61a74b747af2fcb92893b6c98bf9371408ff9737f68f22fe36e043fc8ea",
+      "fitting.py": "099546d69f8735c6b6357d23e9b4618025fc59f5ac8f655406e52db1325291b1",
+      "hypotheses.py": "22fcc3ecb93e6845b8aa484e396885bf2b56b6eb8d64e47fed7519e717f828b7",
+      "literature_scoring.py": "3e2c20e568de9203dd8e12095627f76046ab6d68b62944e3952dad61a4f70499",
+      "llm.py": "8e47c8eee713c29e40360c70c2076eae2eb30ddbaef4108ffa9200abb4176ab8",
+      "modeling.py": "69cafa82bffe977ee4a0b1e3b77c29c1bb48fd0e48d58f4644fcd045eb43c44e",
+      "reporting.py": "8316c78fa5628b8da82813f07b0c334d92fc3c73c2edbc7b55ba0bec969cf20d",
+      "simulation.py": "5ce58365e6adb77e801719a519aef488a938654bc50ca34c9dd6c2189e509f18",
+      "storage.py": "8fdfff97a2477666515664e71e2122eb2a4885d79f16c8fbb1a04735461a3062",
+      "validation.py": "a358aa2ecf7c460f3f263fbf5eb08188068f493f21f4a2a69bb1afe90faebb86"
+    },
+    "modules_sha256": "446e6f3a01fc692ef8f8da085c81f86a41e75e2b41276be86eb1c5c103c8c47b",
+    "provenance": "content_hash_of_src_biomodel_agent_py (no git metadata available)"
+  },
+  "submission_diagnostics": [
+    {
+      "artifact_refs": [
+        "75a157ad753e7b5e00d56869420549f7fe46f67b112faff5e5270e70ae96402b",
+        null,
+        null
+      ],
+      "call": 2,
+      "checks": [
+        {
+          "code": "state_not_dynamic",
+          "message": "state 'X' is nonnegative but driven by a rate rule; nonnegativity is not representable in the supported profile",
+          "severity": "blocking",
+          "status": "fail"
+        },
+        {
+          "code": "state_not_dynamic",
+          "message": "state 'Y' is nonnegative but driven by a rate rule; nonnegativity is not representable in the supported profile",
+          "severity": "blocking",
+          "status": "fail"
+        },
+        {
+          "code": "state_not_dynamic",
+          "message": "state 'Z' is nonnegative but driven by a rate rule; nonnegativity is not representable in the supported profile",
+          "severity": "blocking",
+          "status": "fail"
+        },
+        {
+          "code": "unit_unknown",
+          "message": "state 'X': unit 'a.u.' is not a supported SBML unit; it is left undeclared rather than assumed dimensionless",
+          "severity": "warning",
+          "status": "unknown"
+        },
+        {
+          "code": "unit_unknown",
+          "message": "state 'Y': unit 'a.u.' is not a supported SBML unit; it is left undeclared rather than assumed dimensionless",
+          "severity": "warning",
+          "status": "unknown"
+        },
+        {
+          "code": "unit_unknown",
+          "message": "state 'Z': unit 'a.u.' is not a supported SBML unit; it is left undeclared rather than assumed dimensionless",
+          "severity": "warning",
+          "status": "unknown"
+        },
+        {
+          "code": "unit_unknown",
+          "message": "parameter 'k1': unit 'a.u.' is not a supported SBML unit; it is left undeclared rather than assumed dimensionless",
+          "severity": "warning",
+          "status": "unknown"
+        },
+        {
+          "code": "unit_unknown",
+          "message": "parameter 'k2': unit 'a.u.' is not a supported SBML unit; it is left undeclared rather than assumed dimensionless",
+          "severity": "warning",
+          "status": "unknown"
+        },
+        {
+          "code": "unit_unknown",
+          "message": "parameter 'k3': unit 'a.u.' is not a supported SBML unit; it is left undeclared rather than assumed dimensionless",
+          "severity": "warning",
+          "status": "unknown"
+        },
+        {
+          "code": "unit_unknown",
+          "message": "parameter 'k4': unit 'a.u.' is not a supported SBML unit; it is left undeclared rather than assumed dimensionless",
+          "severity": "warning",
+          "status": "unknown"
+        },
+        {
+          "code": "unit_unknown",
+          "message": "parameter 'k5': unit 'a.u.' is not a supported SBML unit; it is left undeclared rather than assumed dimensionless",
+          "severity": "warning",
+          "status": "unknown"
+        },
+        {
+          "code": "unit_unknown",
+          "message": "parameter 'k6': unit 'a.u.' is not a supported SBML unit; it is left undeclared rather than assumed dimensionless",
+          "severity": "warning",
+          "status": "unknown"
+        },
+        {
+          "code": "unit_unknown",
+          "message": "parameter 'Ki': unit 'a.u.' is not a supported SBML unit; it is left undeclared rather than assumed dimensionless",
+          "severity": "warning",
+          "status": "unknown"
+        },
+        {
+          "code": "unit_unknown",
+          "message": "parameter 'n': unit 'a.u.' is not a supported SBML unit; it is left undeclared rather than assumed dimensionless",
+          "severity": "warning",
+          "status": "unknown"
+        },
+        {
+          "code": "unit_unknown",
+          "message": "compartment: unit 'a.u.' is not a supported SBML unit; it is left undeclared rather than assumed dimensionless",
+          "severity": "warning",
+          "status": "unknown"
+        },
+        {
+          "code": "unit_unknown",
+          "message": "time: unit 'a.u.' is not a supported SBML unit; it is left undeclared rather than assumed dimensionless",
+          "severity": "warning",
+          "status": "unknown"
+        },
+        {
+          "code": "draft_valid",
+          "message": "3 structural problem(s) found",
+          "severity": "blocking",
+          "status": "fail"
+        }
+      ],
+      "problems": [
+        "state 'X' is nonnegative but driven by a rate rule; nonnegativity is not representable in the supported profile",
+        "state 'Y' is nonnegative but driven by a rate rule; nonnegativity is not representable in the supported profile",
+        "state 'Z' is nonnegative but driven by a rate rule; nonnegativity is not representable in the supported profile",
+        "3 structural problem(s) found"
+      ],
+      "state": "invalid",
+      "tool": "submit_draft",
+      "type": "tool_result"
+    },
+    {
+      "artifact_refs": [
+        "7394b757ae39943ee75fb97abcbfe4de5dbf4c835b8abcaa2525a87f080a7380",
+        "2d5dea76dfe76f74afa6fe48ab46359d4aa6aa7da8568f0d637b20462e6299b9",
+        null
+      ],
+      "call": 3,
+      "checks": [
+        {
+          "code": "unit_unknown",
+          "message": "state 'X': unit 'a.u.' is not a supported SBML unit; it is left undeclared rather than assumed dimensionless",
+          "severity": "warning",
+          "status": "unknown"
+        },
+        {
+          "code": "unit_unknown",
+          "message": "state 'Y': unit 'a.u.' is not a supported SBML unit; it is left undeclared rather than assumed dimensionless",
+          "severity": "warning",
+          "status": "unknown"
+        },
+        {
+          "code": "unit_unknown",
+          "message": "state 'Z': unit 'a.u.' is not a supported SBML unit; it is left undeclared rather than assumed dimensionless",
+          "severity": "warning",
+          "status": "unknown"
+        },
+        {
+          "code": "unit_unknown",
+          "message": "parameter 'k1': unit 'a.u.' is not a supported SBML unit; it is left undeclared rather than assumed dimensionless",
+          "severity": "warning",
+          "status": "unknown"
+        },
+        {
+          "code": "unit_unknown",
+          "message": "parameter 'k2': unit 'a.u.' is not a supported SBML unit; it is left undeclared rather than assumed dimensionless",
+          "severity": "warning",
+          "status": "unknown"
+        },
+        {
+          "code": "unit_unknown",
+          "message": "parameter 'k3': unit 'a.u.' is not a supported SBML unit; it is left undeclared rather than assumed dimensionless",
+          "severity": "warning",
+          "status": "unknown"
+        },
+        {
+          "code": "unit_unknown",
+          "message": "parameter 'k4': unit 'a.u.' is not a supported SBML unit; it is left undeclared rather than assumed dimensionless",
+          "severity": "warning",
+          "status": "unknown"
+        },
+        {
+          "code": "unit_unknown",
+          "message": "parameter 'k5': unit 'a.u.' is not a supported SBML unit; it is left undeclared rather than assumed dimensionless",
+          "severity": "warning",
+          "status": "unknown"
+        },
+        {
+          "code": "unit_unknown",
+          "message": "parameter 'k6': unit 'a.u.' is not a supported SBML unit; it is left undeclared rather than assumed dimensionless",
+          "severity": "warning",
+          "status": "unknown"
+        },
+        {
+          "code": "unit_unknown",
+          "message": "parameter 'Ki': unit 'a.u.' is not a supported SBML unit; it is left undeclared rather than assumed dimensionless",
+          "severity": "warning",
+          "status": "unknown"
+        },
+        {
+          "code": "unit_unknown",
+          "message": "parameter 'n': unit 'a.u.' is not a supported SBML unit; it is left undeclared rather than assumed dimensionless",
+          "severity": "warning",
+          "status": "unknown"
+        },
+        {
+          "code": "unit_unknown",
+          "message": "compartment: unit 'a.u.' is not a supported SBML unit; it is left undeclared rather than assumed dimensionless",
+          "severity": "warning",
+          "status": "unknown"
+        },
+        {
+          "code": "unit_unknown",
+          "message": "time: unit 'a.u.' is not a supported SBML unit; it is left undeclared rather than assumed dimensionless",
+          "severity": "warning",
+          "status": "unknown"
+        },
+        {
+          "code": "draft_valid",
+          "message": "all structural checks passed",
+          "severity": "blocking",
+          "status": "pass"
+        },
+        {
+          "code": "semantic_support",
+          "message": "Exact quote existence and numeric match do not prove semantic support.",
+          "severity": "warning",
+          "status": "unknown"
+        }
+      ],
+      "problems": [],
+      "state": "ready",
+      "tool": "submit_draft",
+      "type": "tool_result"
+    }
+  ],
+  "score": {
+    "items": [
+      {
+        "target": "k1/value",
+        "value_status": "pass",
+        "evidence_status": "pass",
+        "fully_supported": true
+      },
+      {
+        "target": "k2/value",
+        "value_status": "pass",
+        "evidence_status": "pass",
+        "fully_supported": true
+      },
+      {
+        "target": "k3/value",
+        "value_status": "pass",
+        "evidence_status": "pass",
+        "fully_supported": true
+      },
+      {
+        "target": "k4/value",
+        "value_status": "pass",
+        "evidence_status": "pass",
+        "fully_supported": true
+      },
+      {
+        "target": "k5/value",
+        "value_status": "pass",
+        "evidence_status": "pass",
+        "fully_supported": true
+      },
+      {
+        "target": "k6/value",
+        "value_status": "pass",
+        "evidence_status": "pass",
+        "fully_supported": true
+      },
+      {
+        "target": "Ki/value",
+        "value_status": "pass",
+        "evidence_status": "pass",
+        "fully_supported": true
+      },
+      {
+        "target": "n/value",
+        "value_status": "pass",
+        "evidence_status": "pass",
+        "fully_supported": true
+      },
+      {
+        "target": "rule:X/expression",
+        "value_status": "pass",
+        "evidence_status": "pass",
+        "fully_supported": true
+      },
+      {
+        "target": "rule:Y/expression",
+        "value_status": "pass",
+        "evidence_status": "pass",
+        "fully_supported": true
+      },
+      {
+        "target": "rule:Z/expression",
+        "value_status": "pass",
+        "evidence_status": "pass",
+        "fully_supported": true
+      },
+      {
+        "target": "X/initial",
+        "value_status": "pass",
+        "evidence_status": "pass",
+        "fully_supported": true
+      },
+      {
+        "target": "Y/initial",
+        "value_status": "pass",
+        "evidence_status": "pass",
+        "fully_supported": true
+      },
+      {
+        "target": "Z/initial",
+        "value_status": "pass",
+        "evidence_status": "pass",
+        "fully_supported": true
+      }
+    ],
+    "counts": {
+      "total": 14,
+      "expected_present": 14,
+      "value_correct": 14,
+      "evidence_supported": 14,
+      "fully_supported": 14,
+      "expected_missing": 0,
+      "correct_abstentions": 0,
+      "unsupported_completions": 0
+    },
+    "extra_targets": [],
+    "semantic_review": "pending_human_review",
+    "expression_method": "fixed_probe_agreement_not_symbolic_proof"
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "id": "chatcmpl-fa8f8b0b-b5ed-4ff2-88c4-3abd5082b540",
+  "created": 1792238420,
+  "model": "qwen3.8-chat",
+  "object": "chat.completion",
+  "choices": [
+    {
+      "finish_reason": "stop",
+      "index": 0,
+      "message": {
+        "content": "{\"action\": \"submit_draft\", \"args\": {\"draft\": {\"id\": \"synthetic_ode_d\", \"states\": [{\"id\": \"D\", \"initial\": 1.0, \"unit\": \"dimensionless\", \"quantity_kind\": \"variable\", \"nonnegative\": false}], \"parameters\": [{\"id\": \"k\", \"value\": 0.3, \"unit\": \"per minute\", \"origin\": \"author\"}], \"compartment\": {\"id\": \"C\", \"size\": 1, \"unit\": \"dimensionless\"}, \"reactions\": [], \"rate_rules\": [{\"state\": \"D\", \"expression\": \"-k*D\"}], \"derived\": [], \"time_unit\": \"minutes\"}, \"evidence\": [{\"target\": \"D/initial\", \"source_ref\": \"e5a1b58bd9d0b36e7d3dfa9bf75d2da3a8f552b0601e1a2dfeb72e721e15941a\", \"page\": 1, \"quote\": \"Initial D = 1.0.\"}, {\"target\": \"k/value\", \"source_ref\": \"e5a1b58bd9d0b36e7d3dfa9bf75d2da3a8f552b0601e1a2dfeb72e721e15941a\", \"page\": 1, \"quote\": \"Parameter k = 0.3 per minute; the per-second label was a typo.\"}, {\"target\": \"rule:D/expression\", \"source_ref\": \"e5a1b58bd9d0b36e7d3dfa9bf75d2da3a8f552b0601e1a2dfeb72e721e15941a\", \"page\": 1, \"quote\": \"Equation dD/dt = -k*D.\"}, {\"target\": \"time_unit\", \"source_ref\": \"e5a1b58bd9d0b36e7d3dfa9bf75d2da3a8f552b0601e1a2dfeb72e721e15941a\", \"page\": 1, \"quote\": \"Time t is in minutes.\"}, {\"target\": \"C/size\", \"source_ref\": \"e5a1b58bd9d0b36e7d3dfa9bf75d2da3a8f552b0601e1a2dfeb72e721e15941a\", \"page\": 1, \"quote\": \"The fixed compartment has size 1 dimensionless.\"}], \"mechanism\": \"First-order decay of D with rate constant k.\"}, \"reason\": \"Source gives explicit ODE, initial, parameter, compartment, and time unit; author clarification resolves the unit conflict.\"}}",
+        "role": "assistant",
+        "provider_specific_fields": {
+          "refusal": null
+        }
+      },
+      "provider_specific_fields": {}
+    }
+  ],
+  "usage": {
+    "completion_tokens": 659,
+    "prompt_tokens": 1263,
+    "total_tokens": 1922,
+    "prompt_tokens_details": {
+      "cached_tokens": 0
+    }
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "protocol": "native_system_comparison_v1",
+  "status": "prepared_only_no_authorization",
+  "manifest_sha256": "6c97c6c6462b4a6598c1580d5a2863fc70e3977466c7693c4cc3112dff99348b",
+  "trial": {
+    "id": "biomodel--translation--1--initial",
+    "system_id": "biomodel",
+    "runtime": "biomodel_agent",
+    "case_id": "translation",
+    "repeat": 1,
+    "phase": "initial",
+    "parent_trial_id": null
+  },
+  "continuation": "none",
+  "parent_record_sha256": null,
+  "remaining_elapsed_seconds": 180.0,
+  "runtime_files": {
+    "source.txt": "ce02704af04e7ff8101dd646bd1dcfdbbae0e1df853de87135fc359c9793bed2",
+    "experiment.json": "b02dcbbcc35baa81d4b4fa7af89388193f5b73bc17af2be38e19c515fd3e41ad",
+    "TASK.md": "308aaabcebecd10fc90ace4bb352b949d1a25a462e934c07d2ade683ede46e33"
+  },
+  "isolation_status": "bundle_projection_only_not_an_OS_sandbox",
+  "service_configuration": "deferred",
+  "online_calls": 0
+}

@@ -1,0 +1,107 @@
+{
+  "frozen_at_utc": "2026-10-17T15:47:12.262055+00:00",
+  "holdout_contents_accessed_before_freeze": false,
+  "environment": {
+    "python": "3.12.3",
+    "python_full": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]",
+    "implementation": "CPython",
+    "platform": "Linux-6.6.87.2-microsoft-standard-WSL2-x86_64-with-glibc2.39",
+    "machine": "x86_64",
+    "packages": {
+      "libroadrunner": "2.10.0",
+      "roadrunner": "absent",
+      "python-libsbml": "5.21.2",
+      "libsbml": "absent",
+      "numpy": "2.5.4",
+      "scipy": "1.18.1",
+      "pypdf": "6.20.1",
+      "biomodel-agent": "0.1.0"
+    },
+    "modules": {
+      "__init__.py": "3ebbb4065141012142168ecc70776886d2a452d80c3c3c1b19fc94665136fd5c",
+      "__main__.py": "11e716d1f66f25a0dd6ee566cb9bff3452624a3f47b8e009c3631ab2a9b01630",
+      "agent.py": "e91cf0d473c112cd0b1d865d92c0d75db9e3b489366a6b687d51f637efa2eb6f",
+      "agent_tools.py": "694654c33f39b83cc2f1cd44d93c8f4ee87c081b9320f9041db414f9d33c5e5e",
+      "application.py": "1da1d5fbab5d7c5281fc55449723c95b335ca144e0cbc57ab2440ff7316490a9",
+      "bundles.py": "e3d710814a0205fc84fd66e5699ed5335a3bbe4d1910fc3c7f688d7ad6a49acd",
+      "cli.py": "d150ca828e5c829ff6f8acb827e196ad907662f654a421b02df6974881d3b8f0",
+      "domain/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "domain/contracts.py": "0c9711fb6500a00cbb4c5be748db77b7b4a8a32a0f54d76d04fc80be424f8366",
+      "domain/serialization.py": "35cd7eac8aa83a8bb7e41e0ea7f568abe34a570d38b8484c017ccf9b37d7e395",
+      "evidence.py": "020c4e0653bdbd9e06734ed060b89984dda013a9e7810ec132b51d5bf794b79f",
+      "expressions.py": "972ce61a74b747af2fcb92893b6c98bf9371408ff9737f68f22fe36e043fc8ea",
+      "fitting.py": "099546d69f8735c6b6357d23e9b4618025fc59f5ac8f655406e52db1325291b1",
+      "hypotheses.py": "22fcc3ecb93e6845b8aa484e396885bf2b56b6eb8d64e47fed7519e717f828b7",
+      "literature_scoring.py": "3e2c20e568de9203dd8e12095627f76046ab6d68b62944e3952dad61a4f70499",
+      "llm.py": "bdeae49bf8045859ec661158186675d1ccf380c19e2bd090947bb925c77a7452",
+      "modeling.py": "69cafa82bffe977ee4a0b1e3b77c29c1bb48fd0e48d58f4644fcd045eb43c44e",
+      "reporting.py": "cbd032b08b2398f71cdeebef9ce466a075d066a9c8d4ac05f64c0388aa3ab506",
+      "simulation.py": "5ce58365e6adb77e801719a519aef488a938654bc50ca34c9dd6c2189e509f18",
+      "source_review.py": "233b3e4919139bfb6964d369bb0a5ff63b57678b20f033248f8a12f9e4572e7f",
+      "storage.py": "8fdfff97a2477666515664e71e2122eb2a4885d79f16c8fbb1a04735461a3062",
+      "validation.py": "a358aa2ecf7c460f3f263fbf5eb08188068f493f21f4a2a69bb1afe90faebb86"
+    },
+    "modules_sha256": "247383f706a0ccfdb63c84e45360d79be7c44cf3beb52d6477ba4a63a38cc0de",
+    "provenance": "content_hash_of_src_biomodel_agent_py (no git metadata available)"
+  },
+  "candidate_files": {
+    "pyproject.toml": "205f9a4d1030c809661d7117eaba067caa211bb4fa7ec5f293e3827091cb8619",
+    "requirements.lock": "0e49554486764e4ccd8dc4a194ecbf87b58e4c7f4407fd08ed4567ce2e954aef",
+    "src/biomodel_agent/__init__.py": "3ebbb4065141012142168ecc70776886d2a452d80c3c3c1b19fc94665136fd5c",
+    "src/biomodel_agent/__main__.py": "11e716d1f66f25a0dd6ee566cb9bff3452624a3f47b8e009c3631ab2a9b01630",
+    "src/biomodel_agent/agent.py": "e91cf0d473c112cd0b1d865d92c0d75db9e3b489366a6b687d51f637efa2eb6f",
+    "src/biomodel_agent/agent_tools.py": "694654c33f39b83cc2f1cd44d93c8f4ee87c081b9320f9041db414f9d33c5e5e",
+    "src/biomodel_agent/application.py": "1da1d5fbab5d7c5281fc55449723c95b335ca144e0cbc57ab2440ff7316490a9",
+    "src/biomodel_agent/bundles.py": "e3d710814a0205fc84fd66e5699ed5335a3bbe4d1910fc3c7f688d7ad6a49acd",
+    "src/biomodel_agent/cli.py": "d150ca828e5c829ff6f8acb827e196ad907662f654a421b02df6974881d3b8f0",
+    "src/biomodel_agent/domain/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "src/biomodel_agent/domain/contracts.py": "0c9711fb6500a00cbb4c5be748db77b7b4a8a32a0f54d76d04fc80be424f8366",
+    "src/biomodel_agent/domain/serialization.py": "35cd7eac8aa83a8bb7e41e0ea7f568abe34a570d38b8484c017ccf9b37d7e395",
+    "src/biomodel_agent/evidence.py": "020c4e0653bdbd9e06734ed060b89984dda013a9e7810ec132b51d5bf794b79f",
+    "src/biomodel_agent/expressions.py": "972ce61a74b747af2fcb92893b6c98bf9371408ff9737f68f22fe36e043fc8ea",
+    "src/biomodel_agent/fitting.py": "099546d69f8735c6b6357d23e9b4618025fc59f5ac8f655406e52db1325291b1",
+    "src/biomodel_agent/hypotheses.py": "22fcc3ecb93e6845b8aa484e396885bf2b56b6eb8d64e47fed7519e717f828b7",
+    "src/biomodel_agent/literature_scoring.py": "3e2c20e568de9203dd8e12095627f76046ab6d68b62944e3952dad61a4f70499",
+    "src/biomodel_agent/llm.py": "bdeae49bf8045859ec661158186675d1ccf380c19e2bd090947bb925c77a7452",
+    "src/biomodel_agent/modeling.py": "69cafa82bffe977ee4a0b1e3b77c29c1bb48fd0e48d58f4644fcd045eb43c44e",
+    "src/biomodel_agent/reporting.py": "cbd032b08b2398f71cdeebef9ce466a075d066a9c8d4ac05f64c0388aa3ab506",
+    "src/biomodel_agent/simulation.py": "5ce58365e6adb77e801719a519aef488a938654bc50ca34c9dd6c2189e509f18",
+    "src/biomodel_agent/source_review.py": "233b3e4919139bfb6964d369bb0a5ff63b57678b20f033248f8a12f9e4572e7f",
+    "src/biomodel_agent/storage.py": "8fdfff97a2477666515664e71e2122eb2a4885d79f16c8fbb1a04735461a3062",
+    "src/biomodel_agent/validation.py": "a358aa2ecf7c460f3f263fbf5eb08188068f493f21f4a2a69bb1afe90faebb86"
+  },
+  "configuration": {
+    "model": "qwen3.8-chat",
+    "base_url": "https://api.llm.ustc.edu.cn/v1",
+    "json_mode": true,
+    "max_calls": 8,
+    "max_repairs": 2,
+    "max_retries": 2,
+    "max_tokens": 4000,
+    "timeout_s": 90
+  },
+  "planned_comparisons": [
+    "frozen BioModel agent",
+    "native general coding agent, isolated source-only workspace"
+  ],
+  "primary_metrics": [
+    "correct completion on sufficient-information inputs",
+    "unsupported executable delivery on unresolved inputs",
+    "targeted gap identification",
+    "false blocking on sufficient-information inputs",
+    "same-task recovery after clarification"
+  ],
+  "secondary_metrics": [
+    "numeric error",
+    "call and token usage",
+    "elapsed time",
+    "provider and protocol failures"
+  ],
+  "constraints": [
+    "no product changes after holdout access",
+    "case sources only to systems; no gold or reference paths",
+    "clarification revealed only after pause; within original budget",
+    "no selective retries or replacing initial failures",
+    "reference audit separately labeled; no claim of independent human review"
+  ]
+}

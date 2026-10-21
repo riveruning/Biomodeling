@@ -1,0 +1,23 @@
+........................................................................ [ 17%]
+........................................................................ [ 35%]
+........................................................................ [ 53%]
+............................F........................................... [ 71%]
+........................................................................ [ 89%]
+..........................................                               [100%]
+=================================== FAILURES ===================================
+_________ test_fit_constants_not_state_initials_and_holdout_protected __________
+
+    def test_fit_constants_not_state_initials_and_holdout_protected():
+        obs=(ObservationSpec('signal','x'),)
+        fit=fitting.fit_parameters(decay(),training_data(),obs,{'d':(.1,1.5)},starts=2,max_nfev=40)
+>       assert fit['status']=='succeeded',fit
+E       AssertionError: {'status': 'failed', 'best': None, 'starts': [{'start': 0, 'initial': {'d': 0.8}, 'status': 'failed', 'error': "Schema...', 'error': "SchemaError: ExperimentSpec: unknown field(s) ['time_unit']"}], 'diagnostics': ['all starts failed'], ...}
+E       assert 'failed' == 'succeeded'
+E         
+E         - succeeded
+E         + failed
+
+tests/test_research_workflows.py:82: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_research_workflows.py::test_fit_constants_not_state_initials_and_holdout_protected
+1 failed, 401 passed in 46.61s

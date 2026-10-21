@@ -1,0 +1,15 @@
+{
+  "status": "failed",
+  "calls": 2,
+  "tokens": 3284,
+  "questions": [],
+  "problems": [],
+  "model_ref": null,
+  "run_ref": null,
+  "agent_ref": "6cf5d19eae9e304763060fcfea078bc56f119bed516ae445e0f44f9b212749a4",
+  "product_modules_sha256": "446e6f3a01fc692ef8f8da085c81f86a41e75e2b41276be86eb1c5c103c8c47b",
+  "system": "biomodel",
+  "case": "translation",
+  "phase": "initial",
+  "elapsed_seconds": 40.074134116002824
+}

@@ -1,0 +1,126 @@
+from pathlib import Path
+from hashlib import sha256
+from datetime import datetime,timezone
+import json
+import sys
+
+ROOT=Path('/home/riveruning/biologymodel_agent')
+OUT=ROOT/'artifacts/holdout-evaluation-20261017'
+sys.path.insert(0,str(ROOT/'benchmarks/development'))
+from run_holdout_pilot import verify
+from biomodel_agent.application import environment_fingerprint
+
+
+def main():
+    verify()
+    assert (OUT/'biomodel-completed.json').exists()
+    assert (OUT/'codex-transport-diagnostic/completed.json').exists()
+    freeze=json.loads((OUT/'candidate-freeze.json').read_text())
+    assert environment_fingerprint()['modules_sha256']==freeze['environment']['modules_sha256']
+    data=json.loads((OUT/'results.json').read_text());summary=data['summary'];rows=data['rows']
+    assert all(r['status']!='not_run' for r in rows),rows
+    assert not any(r.get('replay')=='awaiting_operator_code_review' for r in rows)
+    fresh=[r for r in rows if r['phase']!='resume'];resumes=[r for r in rows if r['phase']=='resume']
+    assert len(fresh)==18 and len(resumes)==4
+    def ratio(system,key):
+        item=summary[system][key];return f"{item['count']}/{item['denominator']}"
+    metrics=[('完整初始材料完成','complete_success'),('准确指出缺口','gap_identification'),
+             ('提出针对性追问','targeted_clarification'),('缺口未补齐却交付可执行模型','unsupported_executable_delivery'),
+             ('新会话补全材料后完成','fresh_clarified_success'),('全部充分材料完成','sufficient_success'),
+             ('充分材料上再次请求补充','false_blocking_sufficient')]
+    lines=['# 冻结版本的独立材料小测与通用 Agent 对照','',
+      '2026-10-18（北京时间）。本轮完成候选冻结、DSH 材料审核、五类合成小测、原生 Codex 对照及真实任务恢复验证。',
+      '', '**这是待领域专家审核的探索性诊断，尚未建立相对通用 Agent 的优势。** 两个系统的底层模型和推理预算不同；完整案例存在符号命名争议，样本也很小。',
+      '', '## 版本和隔离','',
+      f"候选源码 SHA-256：`{freeze['environment']['modules_sha256']}`。",
+      '读取测试集内容之前已复制候选源码与依赖锁定文件，并保存时间戳和逐文件哈希。运行器从冻结副本加载产品；评测中没有修改产品代码或提示，也没有覆盖第一次输出。冻结时继承上一轮 303 项通过的 Python 测试，本轮只增加外部评测代码和报告。',
+      '', '每阶段仅提供 source.txt、experiment.json 和 TASK.md。DSH 运行包中的 allowed.json 含预期行为与目标，已排除。运行时使用 Bubblewrap 的独立挂载与进程命名空间：答案目录、其他案例和宿主产品源码没有挂载。负控制确认 evaluator canary、测试集根目录和宿主源码均不可见。产品运行另只读挂载冻结源码；Codex 运行只另挂载原生可执行文件和必要认证。认证内容、请求头及代理值未写入产物。',
+      '', 'Codex 按现有官方非交互方式运行，忽略用户配置、规则与历史并使用临时会话。实际隔离结论来自本机探针，不仅依赖工作目录或提示约定。[官方非交互说明](https://learn.chatgpt.com/docs/non-interactive-mode)。',
+      '', '## 材料审核','',
+      '没有导入 DSH 的参考生成器或产品求解代码。根据源材料和预写澄清手写全部 20 例方程，用 Radau 独立复算；20/20 与提交参考一致，最大按物种缩放误差为 4.27e-8，审计阈值为 1e-6。数值一致性不等于领域或人员独立的人类审核。原始测试集及其审核状态保持原样。',
+      '', '六例在正式比较前单列为边界案例：',
+      '', '| 案例 | 问题 |','|---|---|',
+      '| c06、c07、c08 | 制备说明支持相应初值为零，有依据推断不能直接判成编造。 |',
+      '| c15 | 一条备选公式与声明单位不一致，应允许区分量纲论证与随意选公式。 |',
+      '| c16 | 速率 0.4 与时间常数 2.5 互为倒数，未必构成方程歧义。 |',
+      '| c17 | 0.05/秒与 3/分是等价换算，图例与秒制采样一致，没有两种冲突物理速率。 |',
+      '', '另发现 c03 关于 Michaelis-Menten 有限时间耗竭的说法不正确；正 Km 下正浓度渐近衰减。该案例数值参考仍正确。c01 的机制段使用 S1/S2、方程和报告使用 A/B，符号对应是否需要额外确认仍有解释空间。',
+      '', '在任何系统输出出现前，按各类别首个无上述边界争议的编号选定 c01、c05、c09、c13、c18。每系统 9 个全新阶段，另对产品 4 个初始暂停点各释放一次预写澄清并实际恢复。没有因某次结果而换案例。c01 已知命名问题保留在原分母中，不事后改判来抬高任何系统成绩。',
+      '', '## 运行设置','',
+      '| 系统 | 设置 |','|---|---|',
+      '| BioModel | qwen3.8-chat；JSON 模式；总调用 8、修订 2、重试 2；每次最多 4000 tokens、超时 90 秒；请求前间隔 5 秒。恢复沿用累计预算。 |',
+      '| 原生 Codex | gpt-6.1-sol；medium reasoning；每阶段上限 240 秒；原生工具与 token 预算，未宣称和我方等额。 |',
+      '', 'Codex 首次启动因继承的非终端 stdin 未关闭及未带宿主代理而超时，原始 240 秒失败单独保留。随后预先声明全组 9 阶段的传输诊断：只关闭 stdin、沿用已有代理，任务、模型、材料、时限及隔离方式保持不变。下表 Codex 是这个独立保存的全组诊断结果，不把原始环境失败算成科学错误。',
+      '', 'Codex 的 9 份 simulate.py 已逐份检查并记录哈希，再在无网络沙箱独立执行；未修改其代码。产品直接评分其真实模拟产物。数值比较要求全部指定物种、原采样网格和有限值；逐物种误差除以 max(1,参考绝对最大值)，阈值为 1e-3，不允许插值。采样网格、非有限值、错物种及泛泛拒绝另做负控制。',
+      '', '指标定义在推理前冻结，外部评分实现于运行期间完成；针对性追问使用透明的目标/类别词表，并保留原话供复核。它是小样本确定性评分，不等同于完备语义判分。',
+      '', '## 实际结果','', '| 指标 | BioModel | 原生 Codex 传输诊断 |','|---|---:|---:|']
+    lines.extend(f"| {label} | {ratio('biomodel',key)} | {ratio('codex',key)} |" for label,key in metrics)
+    lines.extend(['',f"产品的同任务恢复：**{ratio('biomodel','same_task_resume_all')}**。四个缺口均在初始任务暂停后收到一次预写澄清；不是重新开会话。Codex 的同会话恢复本轮未测，不能据此声称它没有恢复能力。",
+       '', '分案例结果：','', '| 案例 | 我方初始 | 我方补全新会话 | 我方原任务恢复 | Codex 初始 | Codex 补全新会话 |','|---|---|---|---|---|---|'])
+    def cell(system,case,phase):
+        row=next((r for r in rows if r['system']==system and r['case']==case and r['phase']==phase),None)
+        if row is None:return '—'
+        if row.get('successful_execution'):return '完成，数值通过'
+        if row.get('unsupported_executable_delivery'):return '缺口未解却执行'
+        if row.get('status')=='awaiting_input' or row.get('answer_status')=='needs_input':return '暂停并追问'
+        return str(row['status'])
+    cases=json.loads((OUT/'pilot-protocol.json').read_text())['cases']
+    for case in cases:
+        lines.append('| '+case[:3]+' | '+' | '.join(cell(s,case,p) for s,p in [('biomodel','incomplete'),('biomodel','clarified'),('biomodel','resume'),('codex','incomplete'),('codex','clarified')])+' |')
+    lines.extend(['', '## 需要保留的失败与解释','',
+      'c01：Codex 因机制段的 S1/S2 与方程段 A/B 未显式对应而追问。按冻结口径这属于充分材料未完成；原文确有命名不一致，不能单凭这个单例证明我方推理更强。',
+      '', 'c13 新会话补全：产品连续三次草稿修订失败，依次为引用片段重复、引用目标 compartment/size 与实际 c1/size 不匹配、以及浓度型状态使用了只接受 variable 的速率规则。任务停在 incomplete，尚未进入求解器。该失败按原预算保留。',
+      '', 'c13 原任务恢复：澄清为了定义 I 的含义，重述了原本不变的 dI/dt=0。校验器把它也视为需要从补充材料重新引用的目标，返回 rule:I/expression 的引用要求并再次暂停。已有信息足以继续，这暴露了过于严格的证据门控和错误分类。没有再补一句话或增大预算来替换失败。',
+      '', 'c18 单位澄清：原任务恢复与新会话均被误阻断。解析器把求和声明 kf + kg = 0.30 中的末项误读为 kg = 0.30，与真实 kg = 0.12 构造出虚假的参数冲突。新会话还未识别研究者澄清对旧 kf 单位的裁决。这是来源解析和澄清识别问题，原结果保留。',
+      '', '其余任何未完成阶段的原始状态、问题、错误和数值结果均列在 results.json 与对应 agent.json 中。所有已完成的产品执行仍保留 unknown 语义支持和 not_verified 科学解释；外部合成参考通过不等于真实论文复现成功。',
+      '', '## 资源与结论边界',''])
+    own=[r for r in fresh if r['system']=='biomodel'];native=[r for r in fresh if r['system']=='codex']
+    original_by_case={r['case']:r for r in own if r['phase']=='incomplete'}
+    stats={'biomodel_fresh_calls':sum(r.get('calls',0) for r in own),
+           'biomodel_fresh_tokens':sum(r.get('tokens_cumulative',0) for r in own),
+           'biomodel_resume_incremental_calls':sum(r.get('calls',0)-original_by_case[r['case']]['calls'] for r in resumes),
+           'biomodel_resume_incremental_tokens':sum(r.get('tokens_cumulative',0)-original_by_case[r['case']]['tokens_cumulative'] for r in resumes),
+           'biomodel_fresh_elapsed_s':sum(r.get('elapsed_seconds',0) for r in own),
+           'biomodel_resume_elapsed_s':sum(r.get('elapsed_seconds',0) for r in resumes),
+           'codex_fresh_elapsed_s':sum(r.get('elapsed_seconds',0) for r in native),
+           'codex_input_tokens':sum(r.get('usage',{}).get('input_tokens',0) for r in native),
+           'codex_cached_input_tokens':sum(r.get('usage',{}).get('cached_input_tokens',0) for r in native),
+           'codex_output_tokens':sum(r.get('usage',{}).get('output_tokens',0) for r in native)}
+    (OUT/'resource-summary.json').write_text(json.dumps(stats,indent=2))
+    lines.extend([f"我方全新阶段共 {stats['biomodel_fresh_calls']} 次调用、服务报告 {stats['biomodel_fresh_tokens']} tokens；恢复额外 {stats['biomodel_resume_incremental_calls']} 次调用、{stats['biomodel_resume_incremental_tokens']} tokens，已扣除历史累计部分。",
+      '',f"我方全新阶段耗时合计 {stats['biomodel_fresh_elapsed_s']:.1f} 秒（含请求间隔），恢复额外 {stats['biomodel_resume_elapsed_s']:.1f} 秒；Codex 全新阶段合计 {stats['codex_fresh_elapsed_s']:.1f} 秒。",
+      '', 'Codex 输入含大量原生系统提示与缓存命中，模型 tokenizer 和预算也不同。原始 usage 单列保存，不据这些 token 数换算费用或宣称成本优势。',
+      '', '这轮证据支持：我方能在新材料上指出缺口并阻断执行，部分真实澄清流程可在原预算内完成；引用和结构化草稿问题仍会阻止正确完成。尚无依据宣称超过 Codex。后续优先讨论澄清目标与重复事实的区分、把可自修的引用问题交还模型、避免把求和表达式误当单参数赋值，以及提高符合模型契约的草稿成功率。',
+      '', '冻结版对照只验证整体使用效果。证明领域架构增益还需要相同底层模型、相近预算的通用工具基线及消融实验；审计便利性也需要在给双方相同证据要求后独立衡量。',
+      '', '本轮已读取这组材料，后续改进后重跑应标为已见材料回归。新增未见材料和人类领域审核仍有必要。没有改动 DSH 原数据或把待审核状态改成审核通过。',
+      '', '## 证据入口','',
+      '- artifacts/holdout-evaluation-20261017/candidate-freeze.json：候选冻结与时间戳。',
+      '- operator-audit.json：20 例独立数值复算、六例边界和预先选样。',
+      '- pilot-protocol.json：五类小测协议及预算。',
+      '- isolation-probe.json：外部目录不可见的负控制。',
+      '- results.json / results.csv：逐阶段结果与分母。',
+      '- reviewed-programs.json：九份原生程序审核哈希。',
+      '- runs/biomodel/：原始响应、工具记录、存储与真实轨迹。',
+      '- codex-transport-diagnostic/：独立保存的全组原生对照；runs/codex/ 保留首次环境失败。',
+      '- acceptance-evaluation.json：最终证据哈希与候选未变化核对。'])
+    report='\n'.join(lines)+'\n'
+    (ROOT/'docs/holdout-pilot-evaluation.md').write_text(report)
+    (OUT/'report.md').write_text(report)
+    readme=ROOT/'README.md';text=readme.read_text()
+    paragraph='2026-10-18 冻结版外部诊断：[独立材料审核与五类小测对照](docs/holdout-pilot-evaluation.md)。复算 20 例参考，单列 6 例评分边界；完成五类材料的原生 Codex 对照和实际任务恢复。属于待领域专家审核的小样本诊断，未建立领先结论。\n\n'
+    if paragraph not in text:text=text.replace('## 阅读顺序',paragraph+'## 阅读顺序');readme.write_text(text)
+    files=[p for p in sorted(OUT.rglob('*')) if p.is_file() and '__pycache__' not in p.parts and p.name not in ['acceptance-evaluation.json','final-summary.log'] and p.suffix not in ['.sqlite','.sqlite-shm','.sqlite-wal']]
+    evidence_hashes={str(p.relative_to(ROOT)):sha256(p.read_bytes()).hexdigest() for p in files}
+    acceptance={'completed_utc':datetime.now(timezone.utc).isoformat(),'type':'exploratory pilot; not formal comparative validation',
+       'candidate_unchanged':True,'current_product_matches_frozen_candidate':True,
+       'dataset_original_files_unchanged':True,'human_reviewed':False,'independent_numerical_audit_cases':20,
+       'predeclared_boundary_cases':6,'fresh_phases':18,'product_resumes':4,'reviewed_native_programs':9,
+       'original_native_transport_failure_preserved':True,'native_transport_diagnostic_fresh_phases':9,
+       'previous_product_tests':303,'selective_capability_reruns':False,'all_case_native_transport_diagnostic_recorded':True,
+       'summary':summary,'resources':stats,'evidence_sha256':evidence_hashes,
+       'helper_sha256':{str(p.relative_to(ROOT)):sha256(p.read_bytes()).hexdigest() for p in (ROOT/'benchmarks/development').glob('*holdout*.py')}}
+    (OUT/'acceptance-evaluation.json').write_text(json.dumps(acceptance,indent=2,ensure_ascii=False))
+    print(json.dumps({'summary':summary,'resources':stats,'evidence_files':len(evidence_hashes)},indent=2,ensure_ascii=False))
+
+
+if __name__=='__main__':main()

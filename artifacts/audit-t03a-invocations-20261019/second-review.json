@@ -1,0 +1,9 @@
+{
+  "decision": "changes_requested",
+  "checks": 38,
+  "passed": 33,
+  "failed": 5,
+  "dsh_outcome": "needs_review: malformed edit request missing replacement text; request not executed",
+  "localized_fix": "finish_session now forwards execution_ref and invocation_refs; nonlocal declaration moved and lambda variable clarified",
+  "module_fix": "interrupted details now include error_type"
+}

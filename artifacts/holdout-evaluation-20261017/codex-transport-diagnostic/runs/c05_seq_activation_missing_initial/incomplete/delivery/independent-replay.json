@@ -1,0 +1,8 @@
+{
+  "exit_code": 0,
+  "stdout": "{\"status\": \"needs_input\", \"reason\": \"The initial concentration Es(0) of the complex E* is explicitly missing from source.txt. What is Es(0) in a.u.?\"}\n",
+  "stderr": "",
+  "reviewed_sha256": "8b7e907b323102b6e821924fe30499455f160139571ee8206c95fc52dfa91ee2",
+  "status": "declined",
+  "reason": "The initial concentration Es(0) of the complex E* is explicitly missing from source.txt. What is Es(0) in a.u.?"
+}

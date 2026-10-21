@@ -1,0 +1,22 @@
+{
+  "schema_version": "1",
+  "id": "audit-t01-review-fix",
+  "objective": "修复T01首批审查中的通过状态丢失、未知数值误判及测试构造错误，完成一轮有限修订。",
+  "context": "先前DSH已完成4文件实现，600秒时限后停止，当前无其他DSH写入。独立检查8过3失败，新增测试12过3失败。确切修订清单在review-fixes.md。Codex已保存首批源码快照和日志。本轮只改2文件，不做其他工作。",
+  "read_files": [
+    "artifacts/audit-t01-verdict-20261019/review-fixes.md",
+    "src/biomodel_agent/agent.py",
+    "src/biomodel_agent/cli.py"
+  ],
+  "write_files": ["src/biomodel_agent/application.py", "tests/test_run_verdict.py"],
+  "expected_files": ["src/biomodel_agent/application.py", "tests/test_run_verdict.py"],
+  "instructions": "先直接读review-fixes.md、application.py、test_run_verdict.py，再立刻按明确修订小步编辑。不要重复探索其他文件。保持helper接口，initial包装统一内核，缓存使用完整candidate，修正已定位的测试构造错误并保留有区分力的正负控制。不运行测试/shell/网络/子Agent/目录搜索。文件范围不可扩大。交付后简述改动，验收由Codex执行。",
+  "acceptance": [
+    "明确失败不能被未知状态掩盖",
+    "实际参考通过在运行、缓存、Agent摘要中保留",
+    "空或unknown数值检查既不升级pass也不变failed",
+    "新增测试构造正确，Agent用例确实触达目标路径"
+  ],
+  "verification_commands": [],
+  "budget": {"first_activity_ms":120000,"idle_ms":180000,"first_write_ms":180000,"write_idle_ms":180000,"total_ms":420000}
+}

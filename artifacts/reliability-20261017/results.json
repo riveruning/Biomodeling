@@ -1,0 +1,1237 @@
+{
+  "rows": [
+    {
+      "system": "biomodel",
+      "case": "decay",
+      "phase": "initial",
+      "category": "complete",
+      "expected_execution": true,
+      "status": "failed",
+      "elapsed_seconds": 16.18590312300512,
+      "calls": 2,
+      "tokens": 2631,
+      "executable_artifact": false,
+      "actual_trajectory": false,
+      "gap_evidence": "",
+      "numeric": {
+        "status": "not_run"
+      },
+      "successful_execution": false
+    },
+    {
+      "system": "biomodel",
+      "case": "turnover",
+      "phase": "initial",
+      "category": "complete",
+      "expected_execution": true,
+      "status": "failed",
+      "elapsed_seconds": 0.17154556899913587,
+      "calls": 1,
+      "tokens": 0,
+      "executable_artifact": false,
+      "actual_trajectory": false,
+      "gap_evidence": "",
+      "numeric": {
+        "status": "not_run"
+      },
+      "successful_execution": false
+    },
+    {
+      "system": "biomodel",
+      "case": "reversible",
+      "phase": "initial",
+      "category": "missing_initial",
+      "expected_execution": false,
+      "status": "failed",
+      "elapsed_seconds": 0.19880872900102986,
+      "calls": 1,
+      "tokens": 0,
+      "executable_artifact": false,
+      "actual_trajectory": false,
+      "gap_evidence": "",
+      "numeric": {
+        "status": "not_run"
+      },
+      "successful_execution": false,
+      "unsupported_proposal": false,
+      "unsupported_completion": false,
+      "gap_detected": false
+    },
+    {
+      "system": "biomodel",
+      "case": "reversible",
+      "phase": "clarified",
+      "category": "missing_initial",
+      "expected_execution": true,
+      "status": "failed",
+      "elapsed_seconds": 0.22794846299802884,
+      "calls": 1,
+      "tokens": 0,
+      "executable_artifact": false,
+      "actual_trajectory": false,
+      "gap_evidence": "",
+      "numeric": {
+        "status": "not_run"
+      },
+      "successful_execution": false
+    },
+    {
+      "system": "biomodel",
+      "case": "translation",
+      "phase": "initial",
+      "category": "missing_initial",
+      "expected_execution": false,
+      "status": "failed",
+      "elapsed_seconds": 0.20685771999706049,
+      "calls": 1,
+      "tokens": 0,
+      "executable_artifact": false,
+      "actual_trajectory": false,
+      "gap_evidence": "",
+      "numeric": {
+        "status": "not_run"
+      },
+      "successful_execution": false,
+      "unsupported_proposal": false,
+      "unsupported_completion": false,
+      "gap_detected": false
+    },
+    {
+      "system": "biomodel",
+      "case": "translation",
+      "phase": "clarified",
+      "category": "missing_initial",
+      "expected_execution": true,
+      "status": "failed",
+      "elapsed_seconds": 0.19455984299565898,
+      "calls": 1,
+      "tokens": 0,
+      "executable_artifact": false,
+      "actual_trajectory": false,
+      "gap_evidence": "",
+      "numeric": {
+        "status": "not_run"
+      },
+      "successful_execution": false
+    },
+    {
+      "system": "biomodel",
+      "case": "binding",
+      "phase": "initial",
+      "category": "missing_parameter",
+      "expected_execution": false,
+      "status": "failed",
+      "elapsed_seconds": 25.248646558000473,
+      "calls": 2,
+      "tokens": 3233,
+      "executable_artifact": false,
+      "actual_trajectory": false,
+      "gap_evidence": "",
+      "numeric": {
+        "status": "not_run"
+      },
+      "successful_execution": false,
+      "unsupported_proposal": false,
+      "unsupported_completion": false,
+      "gap_detected": false
+    },
+    {
+      "system": "biomodel",
+      "case": "binding",
+      "phase": "clarified",
+      "category": "missing_parameter",
+      "expected_execution": true,
+      "status": "failed",
+      "elapsed_seconds": 23.035601046998636,
+      "calls": 2,
+      "tokens": 3138,
+      "executable_artifact": false,
+      "actual_trajectory": false,
+      "gap_evidence": "",
+      "numeric": {
+        "status": "not_run"
+      },
+      "successful_execution": false
+    },
+    {
+      "system": "biomodel",
+      "case": "saturation",
+      "phase": "initial",
+      "category": "missing_parameter",
+      "expected_execution": false,
+      "status": "failed",
+      "elapsed_seconds": 0.27007474299898604,
+      "calls": 1,
+      "tokens": 0,
+      "executable_artifact": false,
+      "actual_trajectory": false,
+      "gap_evidence": "",
+      "numeric": {
+        "status": "not_run"
+      },
+      "successful_execution": false,
+      "unsupported_proposal": false,
+      "unsupported_completion": false,
+      "gap_detected": false
+    },
+    {
+      "system": "biomodel",
+      "case": "saturation",
+      "phase": "clarified",
+      "category": "missing_parameter",
+      "expected_execution": true,
+      "status": "failed",
+      "elapsed_seconds": 0.1697613270007423,
+      "calls": 1,
+      "tokens": 0,
+      "executable_artifact": false,
+      "actual_trajectory": false,
+      "gap_evidence": "",
+      "numeric": {
+        "status": "not_run"
+      },
+      "successful_execution": false
+    },
+    {
+      "system": "biomodel",
+      "case": "logistic",
+      "phase": "initial",
+      "category": "ambiguous_equation",
+      "expected_execution": false,
+      "status": "failed",
+      "elapsed_seconds": 0.17339107600128045,
+      "calls": 1,
+      "tokens": 0,
+      "executable_artifact": false,
+      "actual_trajectory": false,
+      "gap_evidence": "",
+      "numeric": {
+        "status": "not_run"
+      },
+      "successful_execution": false,
+      "unsupported_proposal": false,
+      "unsupported_completion": false,
+      "gap_detected": false
+    },
+    {
+      "system": "biomodel",
+      "case": "logistic",
+      "phase": "clarified",
+      "category": "ambiguous_equation",
+      "expected_execution": true,
+      "status": "failed",
+      "elapsed_seconds": 0.2260519750052481,
+      "calls": 1,
+      "tokens": 0,
+      "executable_artifact": false,
+      "actual_trajectory": false,
+      "gap_evidence": "",
+      "numeric": {
+        "status": "not_run"
+      },
+      "successful_execution": false
+    },
+    {
+      "system": "biomodel",
+      "case": "feedback",
+      "phase": "initial",
+      "category": "ambiguous_equation",
+      "expected_execution": false,
+      "status": "failed",
+      "elapsed_seconds": 0.16624021800089395,
+      "calls": 1,
+      "tokens": 0,
+      "executable_artifact": false,
+      "actual_trajectory": false,
+      "gap_evidence": "",
+      "numeric": {
+        "status": "not_run"
+      },
+      "successful_execution": false,
+      "unsupported_proposal": false,
+      "unsupported_completion": false,
+      "gap_detected": false
+    },
+    {
+      "system": "biomodel",
+      "case": "feedback",
+      "phase": "clarified",
+      "category": "ambiguous_equation",
+      "expected_execution": true,
+      "status": "failed",
+      "elapsed_seconds": 28.918765761998657,
+      "calls": 3,
+      "tokens": 3526,
+      "executable_artifact": false,
+      "actual_trajectory": false,
+      "gap_evidence": "state 'R' is nonnegative but driven by a rate rule; nonnegativity is not representable in the supported profile\nstate 'P' is nonnegative but driven by a rate rule; nonnegativity is not representable in the supported profile\n2 structural problem(s) found",
+      "numeric": {
+        "status": "not_run"
+      },
+      "successful_execution": false
+    },
+    {
+      "system": "biomodel",
+      "case": "unit_decay",
+      "phase": "initial",
+      "category": "unit_conflict",
+      "expected_execution": false,
+      "status": "failed",
+      "elapsed_seconds": 0.22344141299981857,
+      "calls": 1,
+      "tokens": 0,
+      "executable_artifact": false,
+      "actual_trajectory": false,
+      "gap_evidence": "",
+      "numeric": {
+        "status": "not_run"
+      },
+      "successful_execution": false,
+      "unsupported_proposal": false,
+      "unsupported_completion": false,
+      "gap_detected": false
+    },
+    {
+      "system": "biomodel",
+      "case": "unit_decay",
+      "phase": "clarified",
+      "category": "unit_conflict",
+      "expected_execution": true,
+      "status": "failed",
+      "elapsed_seconds": 0.19348632699984591,
+      "calls": 1,
+      "tokens": 0,
+      "executable_artifact": false,
+      "actual_trajectory": false,
+      "gap_evidence": "",
+      "numeric": {
+        "status": "not_run"
+      },
+      "successful_execution": false
+    },
+    {
+      "system": "biomodel",
+      "case": "unit_chain",
+      "phase": "initial",
+      "category": "unit_conflict",
+      "expected_execution": false,
+      "status": "failed",
+      "elapsed_seconds": 0.20138398199924268,
+      "calls": 1,
+      "tokens": 0,
+      "executable_artifact": false,
+      "actual_trajectory": false,
+      "gap_evidence": "",
+      "numeric": {
+        "status": "not_run"
+      },
+      "successful_execution": false,
+      "unsupported_proposal": false,
+      "unsupported_completion": false,
+      "gap_detected": false
+    },
+    {
+      "system": "biomodel",
+      "case": "unit_chain",
+      "phase": "clarified",
+      "category": "unit_conflict",
+      "expected_execution": true,
+      "status": "failed",
+      "elapsed_seconds": 0.1836851670013857,
+      "calls": 1,
+      "tokens": 0,
+      "executable_artifact": false,
+      "actual_trajectory": false,
+      "gap_evidence": "",
+      "numeric": {
+        "status": "not_run"
+      },
+      "successful_execution": false
+    },
+    {
+      "system": "codex",
+      "case": "decay",
+      "phase": "initial",
+      "category": "complete",
+      "expected_execution": true,
+      "status": "delivered",
+      "elapsed_seconds": 57.50733888099785,
+      "calls": null,
+      "tokens": null,
+      "answer_status": "ready",
+      "replay": {
+        "status": "executed"
+      },
+      "executable_artifact": true,
+      "actual_trajectory": true,
+      "gap_evidence": "A is dimensionless and t is in minutes; the unit min^-1 for k follows from the supplied equation.\nThe fixed compartment size is 1 dimensionless.",
+      "numeric": {
+        "status": "pass",
+        "max_scaled_error": 3.61666252501891e-12,
+        "threshold": 0.001
+      },
+      "successful_execution": true
+    },
+    {
+      "system": "codex",
+      "case": "turnover",
+      "phase": "initial",
+      "category": "complete",
+      "expected_execution": true,
+      "status": "delivered",
+      "elapsed_seconds": 30.84708563899767,
+      "calls": null,
+      "tokens": null,
+      "answer_status": "ready",
+      "replay": {
+        "status": "executed"
+      },
+      "executable_artifact": true,
+      "actual_trajectory": true,
+      "gap_evidence": "Parameter units are inferred by dimensional consistency from dimensionless M and time in minutes.",
+      "numeric": {
+        "status": "pass",
+        "max_scaled_error": 2.3063773113563002e-11,
+        "threshold": 0.001
+      },
+      "successful_execution": true
+    },
+    {
+      "system": "codex",
+      "case": "reversible",
+      "phase": "initial",
+      "category": "missing_initial",
+      "expected_execution": false,
+      "status": "delivered",
+      "elapsed_seconds": 26.874441227002535,
+      "calls": null,
+      "tokens": null,
+      "answer_status": "needs_input",
+      "replay": {
+        "status": "declined",
+        "reason": "Initial B is not reported. What is the initial value of B at the same initial time as A = 1.0?"
+      },
+      "executable_artifact": false,
+      "actual_trajectory": false,
+      "gap_evidence": "What is the initial value of B at the same initial time as A = 1.0?\nThe initial value of B is not reported; a unique trajectory cannot be simulated.\nParameter units min^-1 are inferred from the supplied equations, dimensionless states, and time in minutes.\nInitial B is not reported. What is the initial value of B at the same initial time as A = 1.0?",
+      "numeric": {
+        "status": "not_run"
+      },
+      "successful_execution": false,
+      "unsupported_proposal": false,
+      "unsupported_completion": false,
+      "gap_detected": true
+    },
+    {
+      "system": "codex",
+      "case": "reversible",
+      "phase": "clarified",
+      "category": "missing_initial",
+      "expected_execution": true,
+      "status": "delivered",
+      "elapsed_seconds": 52.02837072600232,
+      "calls": null,
+      "tokens": null,
+      "answer_status": "ready",
+      "replay": {
+        "status": "executed"
+      },
+      "executable_artifact": true,
+      "actual_trajectory": true,
+      "gap_evidence": "Initial B = 0.25 follows the author clarification, which explicitly supersedes the earlier missing initial condition.\nRate constant units min^-1 are inferred dimensionally from the supplied equations, dimensionless states, and time in minutes.",
+      "numeric": {
+        "status": "pass",
+        "max_scaled_error": 3.4753311339841275e-12,
+        "threshold": 0.001
+      },
+      "successful_execution": true
+    },
+    {
+      "system": "codex",
+      "case": "translation",
+      "phase": "initial",
+      "category": "missing_initial",
+      "expected_execution": false,
+      "status": "delivered",
+      "elapsed_seconds": 33.50901897199947,
+      "calls": null,
+      "tokens": null,
+      "answer_status": "needs_input",
+      "replay": {
+        "status": "declined",
+        "reason": "Initial P is not reported. What is the initial dimensionless activity P at t = 0 minutes?"
+      },
+      "executable_artifact": false,
+      "actual_trajectory": false,
+      "gap_evidence": "What is the initial dimensionless activity P at t = 0 minutes?\nThe initial value of P is not reported; a unique simulation of the complete system cannot be justified.\nParameter units are inferred from the supplied equations, dimensionless states, and time in minutes.\nInitial P is not reported. What is the initial dimensionless activity P at t = 0 minutes?",
+      "numeric": {
+        "status": "not_run"
+      },
+      "successful_execution": false,
+      "unsupported_proposal": false,
+      "unsupported_completion": false,
+      "gap_detected": true
+    },
+    {
+      "system": "codex",
+      "case": "translation",
+      "phase": "clarified",
+      "category": "missing_initial",
+      "expected_execution": true,
+      "status": "delivered",
+      "elapsed_seconds": 58.65783743499924,
+      "calls": null,
+      "tokens": null,
+      "answer_status": "ready",
+      "replay": {
+        "status": "executed"
+      },
+      "executable_artifact": true,
+      "actual_trajectory": true,
+      "gap_evidence": "Parameter units are inferred from the equations, dimensionless states, and time in minutes.\nInitial P = 0.2 follows the author clarification, which explicitly supersedes the earlier missing initial condition.",
+      "numeric": {
+        "status": "pass",
+        "max_scaled_error": 2.2283508371856442e-11,
+        "threshold": 0.001
+      },
+      "successful_execution": true
+    },
+    {
+      "system": "codex",
+      "case": "binding",
+      "phase": "initial",
+      "category": "missing_parameter",
+      "expected_execution": false,
+      "status": "delivered",
+      "elapsed_seconds": 27.90386667200073,
+      "calls": null,
+      "tokens": null,
+      "answer_status": "needs_input",
+      "replay": {
+        "status": "declined",
+        "reason": "The source does not report ka. What is the value of ka in min^-1? Numerical trajectories require this parameter."
+      },
+      "executable_artifact": false,
+      "actual_trajectory": false,
+      "gap_evidence": "What is the value of ka in min^-1?\nThe source explicitly states that ka is not reported; numerical trajectories cannot be determined without its value.\nThe unit min^-1 for ka is inferred from the stated dimensionless activities and time in minutes.\nThe source does not report ka. What is the value of ka in min^-1? Numerical trajectories require this parameter.",
+      "numeric": {
+        "status": "not_run"
+      },
+      "successful_execution": false,
+      "unsupported_proposal": false,
+      "unsupported_completion": false,
+      "gap_detected": true
+    },
+    {
+      "system": "codex",
+      "case": "binding",
+      "phase": "clarified",
+      "category": "missing_parameter",
+      "expected_execution": true,
+      "status": "delivered",
+      "elapsed_seconds": 32.77305486899422,
+      "calls": null,
+      "tokens": null,
+      "answer_status": "ready",
+      "replay": {
+        "status": "executed"
+      },
+      "executable_artifact": true,
+      "actual_trajectory": true,
+      "gap_evidence": "The author clarification supplies ka = 0.15 and explicitly supersedes the earlier statement that ka is unreported.\nThe unit min^-1 for ka follows from dimensionless states and time in minutes.",
+      "numeric": {
+        "status": "pass",
+        "max_scaled_error": 1.2418732708852076e-11,
+        "threshold": 0.001
+      },
+      "successful_execution": true
+    },
+    {
+      "system": "codex",
+      "case": "saturation",
+      "phase": "initial",
+      "category": "missing_parameter",
+      "expected_execution": false,
+      "status": "delivered",
+      "elapsed_seconds": 48.161114225003985,
+      "calls": null,
+      "tokens": null,
+      "answer_status": "needs_input",
+      "replay": {
+        "status": "declined",
+        "reason": "source.txt does not report the dimensionless parameter K in dS/dt = -V*S/(K+S). Supply its numerical value to simulate S at experiment.json times; S initially equals 2.0 and V = 0.9 min^-1."
+      },
+      "executable_artifact": false,
+      "actual_trajectory": false,
+      "gap_evidence": "What is the numerical value of the dimensionless parameter K in dS/dt = -V*S/(K+S)?\nK is not reported in source.txt; its value cannot be inferred or assumed, so the trajectory at experiment.json times cannot be determined.\nParameter units follow dimensionally from dimensionless S and time in minutes: K is dimensionless and V has units min^-1.\nsource.txt does not report the dimensionless parameter K in dS/dt = -V*S/(K+S). Supply its numerical value to simulate S at experiment.json times; S initially equals 2.0 and V = 0.9 min^-1.",
+      "numeric": {
+        "status": "not_run"
+      },
+      "successful_execution": false,
+      "unsupported_proposal": false,
+      "unsupported_completion": false,
+      "gap_detected": true
+    },
+    {
+      "system": "codex",
+      "case": "saturation",
+      "phase": "clarified",
+      "category": "missing_parameter",
+      "expected_execution": true,
+      "status": "delivered",
+      "elapsed_seconds": 23.35922889199719,
+      "calls": null,
+      "tokens": null,
+      "answer_status": "ready",
+      "replay": {
+        "status": "executed"
+      },
+      "executable_artifact": true,
+      "actual_trajectory": true,
+      "gap_evidence": "The author clarification supplies K = 0.7 and supersedes the earlier missing-parameter statement.\nV has units min^-1 and K is dimensionless by dimensional consistency of the supplied equation and state units.",
+      "numeric": {
+        "status": "pass",
+        "max_scaled_error": 1.8979318117118282e-11,
+        "threshold": 0.001
+      },
+      "successful_execution": true
+    },
+    {
+      "system": "codex",
+      "case": "logistic",
+      "phase": "initial",
+      "category": "ambiguous_equation",
+      "expected_execution": false,
+      "status": "delivered",
+      "elapsed_seconds": 70.9658716269987,
+      "calls": null,
+      "tokens": null,
+      "answer_status": "needs_input",
+      "replay": {
+        "status": "declined",
+        "reason": "The source supplies two equally authoritative alternatives and does not specify which was used. Which equation was used: dX/dt = r*X*(1-X/K) or dX/dt = r*X*(1-X)/K?"
+      },
+      "executable_artifact": false,
+      "actual_trajectory": false,
+      "gap_evidence": "Which equation was used: dX/dt = r*X*(1-X/K) or dX/dt = r*X*(1-X)/K?\nThe source explicitly gives two equally authoritative alternatives for dX/dt and does not select one; simulation is blocked until that choice is supplied.\nTime is in minutes, X is dimensionless, and the fixed compartment size is 1 dimensionless. Parameter units are inferred by dimensional consistency of both supplied alternatives.\nThe source supplies two equally authoritative alternatives and does not specify which was used. Which equation was used: dX/dt = r*X*(1-X/K) or dX/dt = r*X*(1-X)/K?",
+      "numeric": {
+        "status": "not_run"
+      },
+      "successful_execution": false,
+      "unsupported_proposal": false,
+      "unsupported_completion": false,
+      "gap_detected": true
+    },
+    {
+      "system": "codex",
+      "case": "logistic",
+      "phase": "clarified",
+      "category": "ambiguous_equation",
+      "expected_execution": true,
+      "status": "delivered",
+      "elapsed_seconds": 25.93027225699916,
+      "calls": null,
+      "tokens": null,
+      "answer_status": "ready",
+      "replay": {
+        "status": "executed"
+      },
+      "executable_artifact": true,
+      "actual_trajectory": true,
+      "gap_evidence": "The author clarification explicitly selects the logistic equation and rejects the alternative.\nThe unit of r is inferred by dimensional consistency from time in minutes and dimensionless X and K.",
+      "numeric": {
+        "status": "pass",
+        "max_scaled_error": 1.2277512340119756e-11,
+        "threshold": 0.001
+      },
+      "successful_execution": true
+    },
+    {
+      "system": "codex",
+      "case": "feedback",
+      "phase": "initial",
+      "category": "ambiguous_equation",
+      "expected_execution": false,
+      "status": "delivered",
+      "elapsed_seconds": 63.26907405700331,
+      "calls": null,
+      "tokens": null,
+      "answer_status": "needs_input",
+      "replay": {
+        "status": "declined",
+        "reason": "The source gives two equally authoritative alternatives: dR/dt = s/(1+(P/K)**2)-dr*R or dR/dt = s/(1+(P/K))-dr*R. Which equation should be used? A unique simulation is not justified until this is specified."
+      },
+      "executable_artifact": false,
+      "actual_trajectory": false,
+      "gap_evidence": "Which equation should be used: dR/dt = s/(1+(P/K)**2)-dr*R or dR/dt = s/(1+(P/K))-dr*R?\nThe two alternatives for dR/dt are equally authoritative; the source does not select one, so a unique simulation is not justified.\nParameter units are inferred by dimensional consistency from dimensionless states and time in minutes.\nThe source gives two equally authoritative alternatives: dR/dt = s/(1+(P/K)**2)-dr*R or dR/dt = s/(1+(P/K))-dr*R. Which equation should be used? A unique simulation is not justified until this is specified.",
+      "numeric": {
+        "status": "not_run"
+      },
+      "successful_execution": false,
+      "unsupported_proposal": false,
+      "unsupported_completion": false,
+      "gap_detected": true
+    },
+    {
+      "system": "codex",
+      "case": "feedback",
+      "phase": "clarified",
+      "category": "ambiguous_equation",
+      "expected_execution": true,
+      "status": "delivered",
+      "elapsed_seconds": 69.11995595799817,
+      "calls": null,
+      "tokens": null,
+      "answer_status": "ready",
+      "replay": {
+        "status": "executed"
+      },
+      "executable_artifact": true,
+      "actual_trajectory": true,
+      "gap_evidence": "The author clarification selects the exponent-two R equation and supersedes the earlier unresolved alternatives.\nParameter units are inferred dimensionally from dimensionless states and time in minutes.\nNumerical simulation code has not been executed during this task.",
+      "numeric": {
+        "status": "pass",
+        "max_scaled_error": 1.0851386456067758e-10,
+        "threshold": 0.001
+      },
+      "successful_execution": true
+    },
+    {
+      "system": "codex",
+      "case": "unit_decay",
+      "phase": "initial",
+      "category": "unit_conflict",
+      "expected_execution": false,
+      "status": "delivered",
+      "elapsed_seconds": 35.50423285099532,
+      "calls": null,
+      "tokens": null,
+      "answer_status": "needs_input",
+      "replay": {
+        "status": "declined",
+        "reason": "The source gives k = 0.3 but labels it per second in the parameter table and per minute in the equally authoritative equation legend. With t in minutes, these imply k = 18 per minute and k = 0.3 per minute, respectively. Is k = 0.3 per second or 0.3 per minute? Simulation requires resolution of this conflict."
+      },
+      "executable_artifact": false,
+      "actual_trajectory": false,
+      "gap_evidence": "Is k = 0.3 per second, as labeled in the parameter table, or 0.3 per minute, as labeled in the equation legend? Time t is in minutes; these imply k = 18 per minute and k = 0.3 per minute, respectively.\nThe two unit labels for k are equally authoritative and no correction is supplied. Simulation is blocked until its unit is resolved; neither interpretation has been selected.\nD is dimensionless, t is in minutes, and the fixed compartment size is 1 dimensionless.\nThe source gives k = 0.3 but labels it per second in the parameter table and per minute in the equally authoritative equation legend. With t in minutes, these imply k = 18 per minute and k = 0.3 per minute, respectively. Is k = 0.3 per second or 0.3 per minute? Simulation requires resolution of this conflict.",
+      "numeric": {
+        "status": "not_run"
+      },
+      "successful_execution": false,
+      "unsupported_proposal": false,
+      "unsupported_completion": false,
+      "gap_detected": true
+    },
+    {
+      "system": "codex",
+      "case": "unit_decay",
+      "phase": "clarified",
+      "category": "unit_conflict",
+      "expected_execution": true,
+      "status": "delivered",
+      "elapsed_seconds": 42.16663965800399,
+      "calls": null,
+      "tokens": null,
+      "answer_status": "ready",
+      "replay": {
+        "status": "executed"
+      },
+      "executable_artifact": true,
+      "actual_trajectory": true,
+      "gap_evidence": "The author clarification supersedes the conflicting table label: k is 0.3 per minute, with no conversion.\nTime is in minutes; D and the fixed compartment size of 1 are dimensionless.",
+      "numeric": {
+        "status": "pass",
+        "max_scaled_error": 8.26783086438354e-12,
+        "threshold": 0.001
+      },
+      "successful_execution": true
+    },
+    {
+      "system": "codex",
+      "case": "unit_chain",
+      "phase": "initial",
+      "category": "unit_conflict",
+      "expected_execution": false,
+      "status": "delivered",
+      "elapsed_seconds": 43.96418565099884,
+      "calls": null,
+      "tokens": null,
+      "answer_status": "needs_input",
+      "replay": {
+        "status": "declined",
+        "reason": "The source gives equally authoritative conflicting units for k1 = 0.2: per second in the parameter table and per minute in the equation legend. Time t is in minutes. Is k1 0.2 per second (12 per minute), or 0.2 per minute? Simulation requires this conflict to be resolved."
+      },
+      "executable_artifact": false,
+      "actual_trajectory": false,
+      "gap_evidence": "Is k1 = 0.2 per second (equivalent to 12 per minute), or k1 = 0.2 per minute? The parameter table and equally authoritative equation legend conflict.\nSimulation is blocked until the conflicting units of k1 are resolved; neither interpretation has been selected.\nThe source does not explicitly label the units of k2; min^-1 follows from the supplied equations, dimensionless states, and time in minutes.\nThe source gives equally authoritative conflicting units for k1 = 0.2: per second in the parameter table and per minute in the equation legend. Time t is in minutes. Is k1 0.2 per second (12 per minute), or 0.2 per minute? Simulation requires this conflict to be resolved.",
+      "numeric": {
+        "status": "not_run"
+      },
+      "successful_execution": false,
+      "unsupported_proposal": false,
+      "unsupported_completion": false,
+      "gap_detected": true
+    },
+    {
+      "system": "codex",
+      "case": "unit_chain",
+      "phase": "clarified",
+      "category": "unit_conflict",
+      "expected_execution": true,
+      "status": "delivered",
+      "elapsed_seconds": 47.03272702999675,
+      "calls": null,
+      "tokens": null,
+      "answer_status": "ready",
+      "replay": {
+        "status": "executed"
+      },
+      "executable_artifact": true,
+      "actual_trajectory": true,
+      "gap_evidence": "The author clarification supersedes the erroneous per-second table label for k1; no conversion is applied.\nThe unit of k2 is inferred as per minute from the supplied equations, dimensionless states, and time in minutes.",
+      "numeric": {
+        "status": "pass",
+        "max_scaled_error": 3.0853652965845413e-12,
+        "threshold": 0.001
+      },
+      "successful_execution": true
+    },
+    {
+      "system": "kinmodgpt",
+      "case": "decay",
+      "phase": "initial",
+      "category": "complete",
+      "expected_execution": true,
+      "status": "executed",
+      "elapsed_seconds": 3.435759449006582,
+      "calls": 1,
+      "tokens": 768,
+      "executable_artifact": true,
+      "actual_trajectory": true,
+      "gap_evidence": "",
+      "numeric": {
+        "status": "pass",
+        "max_scaled_error": 3.0377653876811905e-06,
+        "threshold": 0.001
+      },
+      "successful_execution": true
+    },
+    {
+      "system": "kinmodgpt",
+      "case": "turnover",
+      "phase": "initial",
+      "category": "complete",
+      "expected_execution": true,
+      "status": "failed",
+      "elapsed_seconds": 0.10154832599801011,
+      "calls": 0,
+      "tokens": 0,
+      "executable_artifact": false,
+      "actual_trajectory": false,
+      "gap_evidence": "",
+      "numeric": {
+        "status": "not_run"
+      },
+      "successful_execution": false
+    },
+    {
+      "system": "kinmodgpt",
+      "case": "reversible",
+      "phase": "initial",
+      "category": "missing_initial",
+      "expected_execution": false,
+      "status": "executed",
+      "elapsed_seconds": 2.747028356003284,
+      "calls": 1,
+      "tokens": 815,
+      "executable_artifact": true,
+      "actual_trajectory": true,
+      "gap_evidence": "",
+      "numeric": {
+        "status": "not_scored_unresolved_source"
+      },
+      "successful_execution": false,
+      "unsupported_proposal": false,
+      "unsupported_completion": true,
+      "gap_detected": false
+    },
+    {
+      "system": "kinmodgpt",
+      "case": "reversible",
+      "phase": "clarified",
+      "category": "missing_initial",
+      "expected_execution": true,
+      "status": "failed",
+      "elapsed_seconds": 2.3006698600001982,
+      "calls": 1,
+      "tokens": 852,
+      "executable_artifact": false,
+      "actual_trajectory": false,
+      "gap_evidence": "",
+      "numeric": {
+        "status": "not_run"
+      },
+      "successful_execution": false
+    },
+    {
+      "system": "kinmodgpt",
+      "case": "translation",
+      "phase": "initial",
+      "category": "missing_initial",
+      "expected_execution": false,
+      "status": "failed",
+      "elapsed_seconds": 0.10382329200365348,
+      "calls": 0,
+      "tokens": 0,
+      "executable_artifact": false,
+      "actual_trajectory": false,
+      "gap_evidence": "",
+      "numeric": {
+        "status": "not_run"
+      },
+      "successful_execution": false,
+      "unsupported_proposal": false,
+      "unsupported_completion": false,
+      "gap_detected": false
+    },
+    {
+      "system": "kinmodgpt",
+      "case": "translation",
+      "phase": "clarified",
+      "category": "missing_initial",
+      "expected_execution": true,
+      "status": "executed",
+      "elapsed_seconds": 2.4917435009992914,
+      "calls": 1,
+      "tokens": 890,
+      "executable_artifact": true,
+      "actual_trajectory": true,
+      "gap_evidence": "",
+      "numeric": {
+        "status": "pass",
+        "max_scaled_error": 1.3610318102763586e-05,
+        "threshold": 0.001
+      },
+      "successful_execution": true
+    },
+    {
+      "system": "kinmodgpt",
+      "case": "binding",
+      "phase": "initial",
+      "category": "missing_parameter",
+      "expected_execution": false,
+      "status": "executed",
+      "elapsed_seconds": 2.863640764997399,
+      "calls": 1,
+      "tokens": 834,
+      "executable_artifact": true,
+      "actual_trajectory": true,
+      "gap_evidence": "",
+      "numeric": {
+        "status": "not_scored_unresolved_source"
+      },
+      "successful_execution": false,
+      "unsupported_proposal": false,
+      "unsupported_completion": true,
+      "gap_detected": false
+    },
+    {
+      "system": "kinmodgpt",
+      "case": "binding",
+      "phase": "clarified",
+      "category": "missing_parameter",
+      "expected_execution": true,
+      "status": "executed",
+      "elapsed_seconds": 5.384194225000101,
+      "calls": 1,
+      "tokens": 859,
+      "executable_artifact": true,
+      "actual_trajectory": true,
+      "gap_evidence": "",
+      "numeric": {
+        "status": "pass",
+        "max_scaled_error": 2.3589582203165094e-06,
+        "threshold": 0.001
+      },
+      "successful_execution": true
+    },
+    {
+      "system": "kinmodgpt",
+      "case": "saturation",
+      "phase": "initial",
+      "category": "missing_parameter",
+      "expected_execution": false,
+      "status": "executed",
+      "elapsed_seconds": 3.446260569995502,
+      "calls": 1,
+      "tokens": 781,
+      "executable_artifact": true,
+      "actual_trajectory": true,
+      "gap_evidence": "",
+      "numeric": {
+        "status": "not_scored_unresolved_source"
+      },
+      "successful_execution": false,
+      "unsupported_proposal": false,
+      "unsupported_completion": true,
+      "gap_detected": false
+    },
+    {
+      "system": "kinmodgpt",
+      "case": "saturation",
+      "phase": "clarified",
+      "category": "missing_parameter",
+      "expected_execution": true,
+      "status": "executed",
+      "elapsed_seconds": 3.0169612739991862,
+      "calls": 1,
+      "tokens": 804,
+      "executable_artifact": true,
+      "actual_trajectory": true,
+      "gap_evidence": "",
+      "numeric": {
+        "status": "fail",
+        "max_scaled_error": 1.0,
+        "threshold": 0.001
+      },
+      "successful_execution": false
+    },
+    {
+      "system": "kinmodgpt",
+      "case": "logistic",
+      "phase": "initial",
+      "category": "ambiguous_equation",
+      "expected_execution": false,
+      "status": "executed",
+      "elapsed_seconds": 1.4356986979983049,
+      "calls": 1,
+      "tokens": 809,
+      "executable_artifact": true,
+      "actual_trajectory": true,
+      "gap_evidence": "",
+      "numeric": {
+        "status": "not_scored_unresolved_source"
+      },
+      "successful_execution": false,
+      "unsupported_proposal": false,
+      "unsupported_completion": true,
+      "gap_detected": false
+    },
+    {
+      "system": "kinmodgpt",
+      "case": "logistic",
+      "phase": "clarified",
+      "category": "ambiguous_equation",
+      "expected_execution": true,
+      "status": "executed",
+      "elapsed_seconds": 2.1764688990006107,
+      "calls": 1,
+      "tokens": 870,
+      "executable_artifact": true,
+      "actual_trajectory": true,
+      "gap_evidence": "",
+      "numeric": {
+        "status": "pass",
+        "max_scaled_error": 1.3517244162430941e-05,
+        "threshold": 0.001
+      },
+      "successful_execution": true
+    },
+    {
+      "system": "kinmodgpt",
+      "case": "feedback",
+      "phase": "initial",
+      "category": "ambiguous_equation",
+      "expected_execution": false,
+      "status": "executed",
+      "elapsed_seconds": 4.01003235400276,
+      "calls": 1,
+      "tokens": 946,
+      "executable_artifact": true,
+      "actual_trajectory": true,
+      "gap_evidence": "",
+      "numeric": {
+        "status": "not_scored_unresolved_source"
+      },
+      "successful_execution": false,
+      "unsupported_proposal": false,
+      "unsupported_completion": true,
+      "gap_detected": false
+    },
+    {
+      "system": "kinmodgpt",
+      "case": "feedback",
+      "phase": "clarified",
+      "category": "ambiguous_equation",
+      "expected_execution": true,
+      "status": "executed",
+      "elapsed_seconds": 4.792220710995025,
+      "calls": 1,
+      "tokens": 1012,
+      "executable_artifact": true,
+      "actual_trajectory": true,
+      "gap_evidence": "",
+      "numeric": {
+        "status": "pass",
+        "max_scaled_error": 2.541089332064317e-06,
+        "threshold": 0.001
+      },
+      "successful_execution": true
+    },
+    {
+      "system": "kinmodgpt",
+      "case": "unit_decay",
+      "phase": "initial",
+      "category": "unit_conflict",
+      "expected_execution": false,
+      "status": "failed",
+      "elapsed_seconds": 0.14305280899861827,
+      "calls": 0,
+      "tokens": 0,
+      "executable_artifact": false,
+      "actual_trajectory": false,
+      "gap_evidence": "",
+      "numeric": {
+        "status": "not_run"
+      },
+      "successful_execution": false,
+      "unsupported_proposal": false,
+      "unsupported_completion": false,
+      "gap_detected": false
+    },
+    {
+      "system": "kinmodgpt",
+      "case": "unit_decay",
+      "phase": "clarified",
+      "category": "unit_conflict",
+      "expected_execution": true,
+      "status": "failed",
+      "elapsed_seconds": 0.11695049700210802,
+      "calls": 0,
+      "tokens": 0,
+      "executable_artifact": false,
+      "actual_trajectory": false,
+      "gap_evidence": "",
+      "numeric": {
+        "status": "not_run"
+      },
+      "successful_execution": false
+    },
+    {
+      "system": "kinmodgpt",
+      "case": "unit_chain",
+      "phase": "initial",
+      "category": "unit_conflict",
+      "expected_execution": false,
+      "status": "failed",
+      "elapsed_seconds": 0.35162048199708806,
+      "calls": 0,
+      "tokens": 0,
+      "executable_artifact": false,
+      "actual_trajectory": false,
+      "gap_evidence": "",
+      "numeric": {
+        "status": "not_run"
+      },
+      "successful_execution": false,
+      "unsupported_proposal": false,
+      "unsupported_completion": false,
+      "gap_detected": false
+    },
+    {
+      "system": "kinmodgpt",
+      "case": "unit_chain",
+      "phase": "clarified",
+      "category": "unit_conflict",
+      "expected_execution": true,
+      "status": "failed",
+      "elapsed_seconds": 0.10346983800263843,
+      "calls": 0,
+      "tokens": 0,
+      "executable_artifact": false,
+      "actual_trajectory": false,
+      "gap_evidence": "",
+      "numeric": {
+        "status": "not_run"
+      },
+      "successful_execution": false
+    }
+  ],
+  "summary": {
+    "biomodel": {
+      "complete_success": {
+        "count": 0,
+        "denominator": 2
+      },
+      "unsupported_completion": {
+        "count": 0,
+        "denominator": 8
+      },
+      "gap_detection": {
+        "count": 0,
+        "denominator": 8
+      },
+      "clarified_rebuild": {
+        "count": 0,
+        "denominator": 8
+      },
+      "conditional_rebuild": {
+        "count": 0,
+        "denominator": 0
+      },
+      "wall_seconds_sum": 96.19615304200124,
+      "provider_tokens_sum": 12528,
+      "incomplete_or_failed_trials": 18
+    },
+    "codex": {
+      "complete_success": {
+        "count": 2,
+        "denominator": 2
+      },
+      "unsupported_completion": {
+        "count": 0,
+        "denominator": 8
+      },
+      "gap_detection": {
+        "count": 8,
+        "denominator": 8
+      },
+      "clarified_rebuild": {
+        "count": 8,
+        "denominator": 8
+      },
+      "conditional_rebuild": {
+        "count": 8,
+        "denominator": 8
+      },
+      "wall_seconds_sum": 789.5743166269895,
+      "provider_tokens_sum": null,
+      "incomplete_or_failed_trials": 0
+    },
+    "kinmodgpt": {
+      "complete_success": {
+        "count": 1,
+        "denominator": 2
+      },
+      "unsupported_completion": {
+        "count": 5,
+        "denominator": 8
+      },
+      "gap_detection": {
+        "count": 0,
+        "denominator": 8
+      },
+      "clarified_rebuild": {
+        "count": 4,
+        "denominator": 8
+      },
+      "conditional_rebuild": {
+        "count": 0,
+        "denominator": 0
+      },
+      "wall_seconds_sum": 39.02114390600036,
+      "provider_tokens_sum": 10240,
+      "incomplete_or_failed_trials": 7
+    }
+  }
+}

@@ -1,0 +1,139 @@
+{
+  "task_id": "T08b",
+  "status": "engineering_accepted",
+  "parent_task": "T08",
+  "parent_status": "actual_model_comparison_and_independent_review_pending",
+  "accepted_at_utc": "2026-10-19T13:30:42.407859+00:00",
+  "implementation_owner": "Codex alone",
+  "dsh_or_subagents_used": false,
+  "previous_accepted_full_tests": 1122,
+  "new_test_cases": 50,
+  "verification": {
+    "baseline": {
+      "tests": 4,
+      "failures": 0,
+      "errors": 4,
+      "skipped": 0,
+      "time": 0.092
+    },
+    "first": {
+      "tests": 20,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "time": 15.612
+    },
+    "parity-baseline": {
+      "tests": 6,
+      "failures": 3,
+      "errors": 0,
+      "skipped": 0,
+      "time": 8.659
+    },
+    "parity-fixed": {
+      "tests": 23,
+      "failures": 22,
+      "errors": 0,
+      "skipped": 0,
+      "time": 2.958
+    },
+    "expanded": {
+      "tests": 23,
+      "failures": 3,
+      "errors": 0,
+      "skipped": 0,
+      "time": 18.22
+    },
+    "stabilized": {
+      "tests": 23,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "time": 18.793
+    },
+    "extended": {
+      "tests": 44,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "time": 30.129
+    },
+    "focused-final": {
+      "tests": 97,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "time": 35.872
+    },
+    "full": {
+      "tests": 1172,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "time": 278.904
+    }
+  },
+  "frozen_original_files_unchanged": 116,
+  "modified_original_product_tests_or_T08a_code": [],
+  "product_implementation_sha256": "149e4a7e2d5c300cf8f180a388a99c103b257c03413ac97b60c3605f955f57bf",
+  "actual_execution": {
+    "status": "adapter_execution_complete",
+    "planned_trials": 30,
+    "finished_records": 30,
+    "operational_statuses": {
+      "finished": 30
+    },
+    "observed_states": {
+      "completed": 12,
+      "awaiting_input": 18
+    },
+    "provider_requests": 58,
+    "online_inference_calls": 0,
+    "scientific_execution_attempts": 12,
+    "evidence_kind": "scripted_control",
+    "scientific_support": "unknown",
+    "note": "Adapter execution evidence; scripted decisions and unreviewed assessments are not model capability scores."
+  },
+  "scientific_diagnostics": "scientific-results.json",
+  "analytic_exploratory_absolute_check_passed": false,
+  "analytic_check_failure_retained": "scientific-results-first.log",
+  "new_precision_pass_threshold_adopted": false,
+  "native_domain_agent_and_resume_used": true,
+  "injected_script_decisions_not_model_capability": true,
+  "all_assessments_unreviewed": true,
+  "actual_human_review_decisions": 0,
+  "followup": "T08b-F1: bounded intended-equation declaration grammar; then shared authorized online transport and actual model comparison",
+  "execution_plan": "execution-plan.md",
+  "frozen_control_inputs": "control-inputs",
+  "execution_artifacts": "development-execution",
+  "diff": "changes.patch",
+  "changed_files": [
+    "benchmarks/development/workflow_adapters.py",
+    "benchmarks/development/run_agent_comparison.py",
+    "tests/test_workflow_adapters.py",
+    "docs/workflow-adapters.md",
+    "docs/agent-evaluation-protocol.md",
+    "docs/optimization-backlog.md",
+    "docs/seven-point-status.md",
+    "tasks/audit-t08b-workflow-adapters.json"
+  ],
+  "final_hashes": {
+    "benchmarks/development/workflow_adapters.py": "bc5684016fa4131bfc91e8db16386adacdbedc644e7e9b4bd68763a66722e1b4",
+    "benchmarks/development/run_agent_comparison.py": "1903a950e86427416cf3e9459e93550a363c71cabb046eb0c6ba66465e2a91f5",
+    "tests/test_workflow_adapters.py": "dac30b48c7c22771b80d97897bfdbccf2f39ca3baa74e9598c6244626b76e91a",
+    "docs/workflow-adapters.md": "8d3177a7ebd47f13d187800ad40190565335ecfea9d993bf7250919a47ef5f4c",
+    "docs/agent-evaluation-protocol.md": "5ecce603d62d48c92d4e76d671c8b3a2bc3e5c7b03ee4b0f04dd66ba26d5813b",
+    "docs/optimization-backlog.md": "c0c49e1d867b462d8170509217d4e74d7def8550c940fa4769d7b4d86ff95f17",
+    "docs/seven-point-status.md": "7a68702399c7cb8eca1b671bd4fcabca310888a5a5ca72ae1b04cf98e7236547",
+    "tasks/audit-t08b-workflow-adapters.json": "fdf5eac0789d087974448a808a4f79bb1784eba134024b82272080edbf9806dd"
+  },
+  "limits": [
+    "No online model client created or called; injected transports receive exact common payloads, but provider identity is not independently authenticated.",
+    "All material remains seen synthetic development data with pending independent review; T07/T08 are not scientifically complete.",
+    "Six clarified logistic phases preserve a shared binding grammar limit; no material rewriting, rule relaxation or positive relabeling.",
+    "Literal scripted decisions, actual numeric/backend checks and independently reviewed model performance are separate evidence.",
+    "Initial exploratory 2e-6 absolute analytic check failed on translation; actual coarse/refined errors reported with no post hoc replacement pass threshold.",
+    "POSIX fork supervision, reported/unknown tokens, trusted Python transports and operation-level tool charging have the documented bounds.",
+    "No new papers, dependencies, credentials, independent evalset or c13/c18 access; no rejected USTC transmission retried."
+  ]
+}

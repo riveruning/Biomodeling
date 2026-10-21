@@ -1,0 +1,17 @@
+{
+  "status": "awaiting_input",
+  "calls": 2,
+  "tokens": 2319,
+  "questions": [
+    "The source reports 'Initial B is not reported.' What is the initial value of state B (and its unit) for this model?"
+  ],
+  "problems": [],
+  "model_ref": null,
+  "run_ref": null,
+  "agent_ref": "04be6654fda02cf75e1b076af2bb786003fd304af38c62ebb7bde3a0cb93f22b",
+  "product_modules_sha256": "3223ecf97ad97509bffb78ca21f44c9c525a139ca5c56bdcb4d13b1870ef0ccc",
+  "system": "biomodel",
+  "case": "reversible",
+  "phase": "initial",
+  "elapsed_seconds": 19.137360815999273
+}

@@ -1,0 +1,69 @@
+{
+  "status": "accepted",
+  "created_at": "2026-10-18T09:12:34.501202+00:00",
+  "scope": "source assignment parsing and budgeted citation repair",
+  "files": [
+    {
+      "path": "src/biomodel_agent/source_review.py",
+      "staged": "src/biomodel_agent/source_review.py",
+      "before_sha256": "233b3e4919139bfb6964d369bb0a5ff63b57678b20f033248f8a12f9e4572e7f",
+      "after_sha256": "830d4ba09c44d52e2397f3c012abaee0cc4e443e1b83c49ef0a7e15ce0ef35aa"
+    },
+    {
+      "path": "src/biomodel_agent/agent_tools.py",
+      "staged": "src/biomodel_agent/agent_tools.py",
+      "before_sha256": "694654c33f39b83cc2f1cd44d93c8f4ee87c081b9320f9041db414f9d33c5e5e",
+      "after_sha256": "4e6b0bb1f5553dcfbbe77c5ce1a84ebe46c630b01040bfb4f93ac896804f0e70"
+    },
+    {
+      "path": "tests/test_research_workflows.py",
+      "staged": "tests/test_research_workflows.py",
+      "before_sha256": "48d3d89e1a51296552bff88e38f84ea8147f3321e941bf4b1a4ed4fd775ede78",
+      "after_sha256": "f65fd1a78abc308ee803932caafcddb5d49b131c97bac8faf15472f00ec5e2f5"
+    },
+    {
+      "path": "tests/test_source_and_citation_regressions.py",
+      "staged": "tests/test_source_and_citation_regressions.py",
+      "before_sha256": null,
+      "after_sha256": "f66308206581f39c073333b272a85165ab660ff144eca0407180501302a5d0d5"
+    },
+    {
+      "path": "README.md",
+      "staged": "README.md",
+      "before_sha256": "7d30d35c0ffbcd9140a00ca59d0a683a3ae1a7563df18495a2881c0668ff8de5",
+      "after_sha256": "f1e39ae12af0570de626251a3d92301fb1b8376215b860544d7c3082262fbe2d"
+    },
+    {
+      "path": "docs/source-and-citation-recovery.md",
+      "staged": "docs/source-and-citation-recovery.md",
+      "before_sha256": null,
+      "after_sha256": "8542f09cdbb71ebc2e5604b9fde9ab607f5882bfd6bdc058289a09ef357ae290"
+    },
+    {
+      "path": "benchmarks/development/check_agent_source_recovery.py",
+      "staged": "check_observed_failures.py",
+      "before_sha256": null,
+      "after_sha256": "5282f4e1d403dae34b031d447936bf533a662f5d7f7d52250498d9b8f45a379d"
+    }
+  ],
+  "baseline_tests": 303,
+  "tests": {
+    "tests": 323,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "validation": "existing project suite with staged modified modules, updated classification assertion and 20 new development regressions",
+  "pytest_log": "pytest.log",
+  "pytest_xml": "pytest.xml",
+  "offline_original_proposals": 3,
+  "new_model_calls": 0,
+  "full_agent_benchmark_success_measured": false,
+  "original_evaluation_modified": false,
+  "independent_holdout": false,
+  "known_limitations": [
+    "original proposals still require citation repair",
+    "no new live LLM performance measurement",
+    "bounded source parser, no general semantic proof"
+  ]
+}

@@ -1,0 +1,27 @@
+{
+  "manifest_identical_to_F1": true,
+  "scripts_identical_to_F1": true,
+  "scripts_sha256": "9f74d42b63e36eec35ead0fb364961e590cbb976ad8f80cec4a0ac5269b147ed",
+  "product_toolchain_sha256": "abad7db107b62cb942b96ec88df701d47c8eb236275d0cf17216f37da6686252",
+  "transport_identity": {
+    "profile": "chat_completions_comparison_v1",
+    "mode": "mock_http",
+    "config": {
+      "base_url": "https://comparison.invalid/v1",
+      "api_key_env": "BIOMODEL_API_KEY",
+      "request_timeout_s": 30.0,
+      "max_response_bytes": 2000000
+    },
+    "model_config_sha256": "7555793fabfaea32ad92872f4d8b07f8c27ae628f4723622a9c82d043cc3c8da",
+    "implementation": {
+      "toolchain_sha256": "abad7db107b62cb942b96ec88df701d47c8eb236275d0cf17216f37da6686252",
+      "httpx_version": "0.28.1",
+      "comparison_transport.py": "47e2d383a75d56bffe52c0858c24a026775a45d866fea9d58102b21b2c83b6c4",
+      "workflow_adapters.py": "1184e44fe5386cff8cce5c05f644668263ab74b1550af8e2e587bc2cf5372aaf",
+      "run_agent_comparison.py": "1903a950e86427416cf3e9459e93550a363c71cabb046eb0c6ba66465e2a91f5",
+      "agent_evaluation.py": "2c0a41c137bfbf678fcada3dd6f97a720fb0f56954f8d4e344890a26259d686c"
+    }
+  },
+  "mock_endpoint": "https://comparison.invalid/v1",
+  "online_inference_calls": 0
+}

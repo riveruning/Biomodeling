@@ -1,0 +1,43 @@
+{
+  "state": "completed",
+  "facts": {
+    "V/value": {
+      "value": 0.9,
+      "evidence": [
+        {
+          "source_id": "case",
+          "quote": "Parameter V = 0.9."
+        }
+      ]
+    },
+    "K/value": {
+      "value": 0.7,
+      "evidence": [
+        {
+          "source_id": "case",
+          "quote": "Parameter K = 0.7."
+        }
+      ]
+    },
+    "S/initial": {
+      "value": 2.0,
+      "evidence": [
+        {
+          "source_id": "case",
+          "quote": "Initial S = 2.0."
+        }
+      ]
+    },
+    "rule:S/expression": {
+      "value": "-V*S/(K+S)",
+      "evidence": [
+        {
+          "source_id": "case",
+          "quote": "Equation dS/dt = -V*S/(K+S)."
+        }
+      ]
+    }
+  },
+  "proposal_status": "last_attempt_not_necessarily_accepted",
+  "duplicate_targets": []
+}

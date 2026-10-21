@@ -1,0 +1,15 @@
+{
+  "agent_ref": "c2399ac73822d1d7db154f896d35aad315edba7e71f0c46ea2f143211645af53",
+  "status": "awaiting_input",
+  "calls": 2,
+  "retries": 0,
+  "repairs": 0,
+  "model_ref": null,
+  "run_ref": null,
+  "questions": [
+    "The source defines the rate law dS/dt = -Vmax*S/(Km + S + S^2/KI) and states KI is a required input, but the parameter table gives numeric entries only for Vmax (0.9) and Km (1.5). The supplementary note says to 'take the inhibition constant from the standard characterisation as usual' but no numeric value for KI is provided anywhere in the source. What numeric value (and unit) should be used for KI?"
+  ],
+  "tokens_cumulative": 2791,
+  "elapsed_seconds": 19.957792960005463,
+  "modules_sha256": "247383f706a0ccfdb63c84e45360d79be7c44cf3beb52d6477ba4a63a38cc0de"
+}

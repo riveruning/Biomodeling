@@ -1,0 +1,1 @@
+{"kind":"evaluation_response","payload":{"content":"{\"action\": \"run\", \"args\": {}}","returned_model":"scripted-fixture","trial_id":"generic_tool_agent--decay--0--initial","usage":{}},"refs":["07a372e2dcea2b5648a4b123ba4166121a4b096f7b620a5c06d65363c0c030e6"],"schema_version":"1"}

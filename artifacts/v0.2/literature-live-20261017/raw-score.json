@@ -1,0 +1,101 @@
+{
+  "items": [
+    {
+      "target": "k1/value",
+      "value_status": "correct_abstention",
+      "evidence_status": "not_applicable",
+      "fully_supported": false
+    },
+    {
+      "target": "k2/value",
+      "value_status": "correct_abstention",
+      "evidence_status": "not_applicable",
+      "fully_supported": false
+    },
+    {
+      "target": "k3/value",
+      "value_status": "correct_abstention",
+      "evidence_status": "not_applicable",
+      "fully_supported": false
+    },
+    {
+      "target": "k4/value",
+      "value_status": "correct_abstention",
+      "evidence_status": "not_applicable",
+      "fully_supported": false
+    },
+    {
+      "target": "k5/value",
+      "value_status": "correct_abstention",
+      "evidence_status": "not_applicable",
+      "fully_supported": false
+    },
+    {
+      "target": "k6/value",
+      "value_status": "correct_abstention",
+      "evidence_status": "not_applicable",
+      "fully_supported": false
+    },
+    {
+      "target": "Ki/value",
+      "value_status": "correct_abstention",
+      "evidence_status": "not_applicable",
+      "fully_supported": false
+    },
+    {
+      "target": "n/value",
+      "value_status": "correct_abstention",
+      "evidence_status": "not_applicable",
+      "fully_supported": false
+    },
+    {
+      "target": "rule:X/expression",
+      "value_status": "correct_abstention",
+      "evidence_status": "not_applicable",
+      "fully_supported": false
+    },
+    {
+      "target": "rule:Y/expression",
+      "value_status": "correct_abstention",
+      "evidence_status": "not_applicable",
+      "fully_supported": false
+    },
+    {
+      "target": "rule:Z/expression",
+      "value_status": "correct_abstention",
+      "evidence_status": "not_applicable",
+      "fully_supported": false
+    },
+    {
+      "target": "X/initial",
+      "value_status": "correct_abstention",
+      "evidence_status": "not_applicable",
+      "fully_supported": false
+    },
+    {
+      "target": "Y/initial",
+      "value_status": "correct_abstention",
+      "evidence_status": "not_applicable",
+      "fully_supported": false
+    },
+    {
+      "target": "Z/initial",
+      "value_status": "correct_abstention",
+      "evidence_status": "not_applicable",
+      "fully_supported": false
+    }
+  ],
+  "counts": {
+    "total": 14,
+    "expected_present": 0,
+    "value_correct": 0,
+    "evidence_supported": 0,
+    "fully_supported": 0,
+    "expected_missing": 14,
+    "correct_abstentions": 14,
+    "unsupported_completions": 0
+  },
+  "extra_targets": [],
+  "semantic_review": "pending_human_review",
+  "expression_method": "fixed_probe_agreement_not_symbolic_proof"
+}

@@ -1,0 +1,23 @@
+✔ quiet polling backs off, requests no full histories, prints only changes (5.0212ms)
+✔ verified in-scope file request gets review once, not blanket approve (1.673158ms)
+✔ waiting/unknown policy stops and preserves evidence without override (0.390524ms)
+✔ gateway allows workspace path but task scope forbids unrelated edits (0.651407ms)
+✔ stale permission session and duplicate requests fail closed (1.242744ms)
+✔ policy changes at final review do not become approvals (0.478111ms)
+✔ no initial activity expires early rather than polling full task deadline (0.316308ms)
+✔ repeated text without files cannot indefinitely extend implementation task (0.329655ms)
+✔ DSH completion without actual files is not delivery (0.36071ms)
+✔ unchanged existing files do not count as implementation (0.658719ms)
+✔ cancellation failure is explicit and closes the connection (0.843933ms)
+✔ task switch cannot silently reuse another task permission scope (0.185216ms)
+✔ task paths protect supervisor, reject traversal and symlink escape (2.433907ms)
+✔ missing structured tool evidence refuses review (0.258561ms)
+✔ task prompt is specific and never includes executable test command (0.219228ms)
+ℹ tests 15
+ℹ suites 0
+ℹ pass 15
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 27.624634

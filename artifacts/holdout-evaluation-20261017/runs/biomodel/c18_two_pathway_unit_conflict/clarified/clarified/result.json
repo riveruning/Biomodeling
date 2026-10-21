@@ -1,0 +1,15 @@
+{
+  "agent_ref": "4174c10b1b86be8a8bc379bbf5b2c7b1c31fb6ab44b20a2afa2a8da9f66597b5",
+  "status": "awaiting_input",
+  "calls": 2,
+  "retries": 0,
+  "repairs": 0,
+  "model_ref": null,
+  "run_ref": null,
+  "questions": [
+    "Please resolve: kf/value: please clarify conflicting declared values; kg/value: please clarify conflicting declared values"
+  ],
+  "tokens_cumulative": 3680,
+  "elapsed_seconds": 35.6775820049952,
+  "modules_sha256": "247383f706a0ccfdb63c84e45360d79be7c44cf3beb52d6477ba4a63a38cc0de"
+}

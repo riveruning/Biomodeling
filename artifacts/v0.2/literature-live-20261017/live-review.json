@@ -1,0 +1,153 @@
+{
+  "date": "2026-10-17",
+  "decision": "live_pilot_completed_partial_extraction_not_end_to_end_reproduction",
+  "configuration": {
+    "authorization": "User explicitly approved reusing existing DSH/USTC credentials and account quota for the two real-paper evaluations.",
+    "credential_handling": "Existing reference resolved only into child-process environment; no key value saved in benchmark files.",
+    "model": "qwen3.8-chat",
+    "base_url": "https://api.llm.ustc.edu.cn/v1",
+    "tracks": [
+      "raw",
+      "assisted"
+    ],
+    "per_track_limits": {
+      "max_calls": 8,
+      "max_repairs": 2,
+      "request_timeout_seconds": 90,
+      "max_output_tokens": 4000
+    },
+    "previous_block_record": "artifacts/v0.2/live-evaluation-blocked.json",
+    "gold_exposed_to_agent": false,
+    "exploratory_initials_exposed_to_agent": false
+  },
+  "tracks": {
+    "raw": {
+      "state": "awaiting_input",
+      "calls": 2,
+      "repairs": 0,
+      "run_ref": null,
+      "counts": {
+        "total": 14,
+        "expected_present": 0,
+        "value_correct": 0,
+        "evidence_supported": 0,
+        "fully_supported": 0,
+        "expected_missing": 14,
+        "correct_abstentions": 14,
+        "unsupported_completions": 0
+      },
+      "questions": [
+        "The source text contains only image placeholders for the actual equations (1)-(3), the Hill function (4), and the parameter values in Figure 2B (e013-e025). I cannot read the ODEs, parameter values, or initial conditions from the text. Please provide: (1) the explicit ODEs for dX/dt, dY/dt, dZ/dt; (2) the Hill function form; (3) the parameter values used in Fig 2B (k1, k2, k3, n, K, etc.); (4) initial conditions for X, Y, Z."
+      ],
+      "submission_diagnostics": []
+    },
+    "assisted": {
+      "state": "awaiting_input",
+      "calls": 4,
+      "repairs": 2,
+      "run_ref": null,
+      "counts": {
+        "total": 14,
+        "expected_present": 11,
+        "value_correct": 11,
+        "evidence_supported": 11,
+        "fully_supported": 11,
+        "expected_missing": 3,
+        "correct_abstentions": 3,
+        "unsupported_completions": 0
+      },
+      "questions": [],
+      "submission_diagnostics": [
+        {
+          "call": 2,
+          "state": "invalid",
+          "problems": [
+            "Parameter.unit: expected str, got NoneType"
+          ],
+          "blocking_checks": []
+        },
+        {
+          "call": 3,
+          "state": "invalid",
+          "problems": [
+            "Compartment.size: expected finite number, got None"
+          ],
+          "blocking_checks": []
+        },
+        {
+          "call": 4,
+          "state": "awaiting_input",
+          "problems": [
+            "X/initial",
+            "Y/initial",
+            "Z/initial",
+            "X/initial: citation missing",
+            "Y/initial: citation missing",
+            "Z/initial: citation missing"
+          ],
+          "blocking_checks": [
+            {
+              "code": "initial_missing",
+              "message": "state 'X' has no initial value",
+              "severity": "blocking",
+              "status": "fail"
+            },
+            {
+              "code": "initial_missing",
+              "message": "state 'Y' has no initial value",
+              "severity": "blocking",
+              "status": "fail"
+            },
+            {
+              "code": "initial_missing",
+              "message": "state 'Z' has no initial value",
+              "severity": "blocking",
+              "status": "fail"
+            },
+            {
+              "code": "state_not_dynamic",
+              "message": "state 'X' is nonnegative but driven by a rate rule; nonnegativity is not representable in the supported profile",
+              "severity": "blocking",
+              "status": "fail"
+            },
+            {
+              "code": "state_not_dynamic",
+              "message": "state 'Y' is nonnegative but driven by a rate rule; nonnegativity is not representable in the supported profile",
+              "severity": "blocking",
+              "status": "fail"
+            },
+            {
+              "code": "state_not_dynamic",
+              "message": "state 'Z' is nonnegative but driven by a rate rule; nonnegativity is not representable in the supported profile",
+              "severity": "blocking",
+              "status": "fail"
+            },
+            {
+              "code": "draft_valid",
+              "message": "6 structural problem(s) found",
+              "severity": "blocking",
+              "status": "fail"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "usage_total_tokens": 19407,
+  "independent_human_review": "pending_human_review",
+  "limitations": [
+    "one development paper section, not a success-rate estimate",
+    "assisted source was prepared by assistant visual transcription",
+    "numeric and equation scoring excludes unit correctness, compartment semantics and nonnegative profile compatibility",
+    "assisted final draft still has blocking nonnegative rate-rule profile errors",
+    "schema repairs consumed two attempts; no interactive resume or actual paper simulation completed"
+  ],
+  "evidence_sha256": {
+    "evaluation.json": "badb0ad58d3ab885bca8e96cce3a20e82ed4c02a4b5711a74270a271cbc84009",
+    "raw-prediction.json": "72f66fc86bbf3e90c592d57269bde1952e9b0305b30e5ee63d60b0a6109175a3",
+    "assisted-prediction.json": "ee885380a608d43ce824ef7f4ba2251266d44efdd8536deec37f74a15bbabf60",
+    "raw-score.json": "9d2dbd231074c29d720f49d2778153df7d59d8712fbe7ac5714f6e014a09369c",
+    "assisted-score.json": "abca41b7ad05e32147a2ac91160b1af5781b7d4ecd28f289a1f82d7de48669e4",
+    "run-configuration.json": "f8f3f168c803b543fd86aa7c0a3de3463655509ee3ae6350fec09a9b1222e012"
+  }
+}

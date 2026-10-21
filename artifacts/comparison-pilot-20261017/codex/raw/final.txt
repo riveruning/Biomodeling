@@ -1,0 +1,5 @@
+Created [answer.json](answer.json) and [simulate.py](simulate.py).
+
+Status: `needs_input`. The source hides the equations and parameter values in image placeholders and supplies no initial conditions. Missing values remain `null`; nothing was inferred.
+
+Verified that `simulate.py` prints only the required `needs_input` JSON object.

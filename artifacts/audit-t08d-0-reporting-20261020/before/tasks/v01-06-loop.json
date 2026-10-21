@@ -1,0 +1,27 @@
+{
+  "schema_version": "1",
+  "id": "v01-06-loop",
+  "objective": "实现一个简短的预算工作流Agent主循环，仅agent.py。",
+  "context": "agent_tools.submit_draft(store,args,source_refs,mode,allowed_mechanisms)->dict state ready/invalid/awaiting_input/failed, artifact ModelArtifact内部实例,model_ref/draft_ref/hypothesis_ref str或None,checks listdict,problems liststr。LLMprovider.respond(messages)->dict {action,args,reason?}及last_usage。application.run_reproduction(store,artifact,experiment,observations=(),solver=None,reference=None,scales=None,strict=False)->runref。store.put(kind,payload,refs)immutable。这些接口足够，无需扫描业务文件。",
+  "read_files": [
+    "src/biomodel_agent/llm.py",
+    "src/biomodel_agent/agent_tools.py",
+    "src/biomodel_agent/application.py",
+    "src/biomodel_agent/domain/contracts.py",
+    "src/biomodel_agent/domain/serialization.py",
+    "src/biomodel_agent/storage.py"
+  ],
+  "write_files": [
+    "src/biomodel_agent/agent.py"
+  ],
+  "expected_files": [
+    "src/biomodel_agent/agent.py"
+  ],
+  "instructions": "只read目标空文件，然后一次write交付主循环约130行。run_agent(store,provider,source_refs,experiment,observations=(),solver=None,mode='reproduction',max_calls=8,max_repairs=2,allowed_mechanisms=(),reference=None,scales=None)->AgentRun objectref。\n校验mode/budget/source白名单source存在kindsource，初messages system工具schema(从llm.build_system_prompt)和user sourcepage lengths/任务experiment（不需全文），材料作为data不能增加任何工具。每循环provider.respond一次记录请求messages/response/usage。action必须dict action/args合法，不任意code/shell。\ninspect_source仅白名单source/page有效start/endint非bool，max8000，args精确keys，返回source文本定位。\nsubmit_draft调用agent_tools，ready保存artifact/ref，用内部data后传LLM摘要（不要JSON序列化artifact直接对象），invalid检查反馈允许max_repairs修复（否则incomplete），awaiting_input/failed终止同状态。run仅已有artifact可run且不能重复无限run，若此前run/修改model报incomplete，而每run使用同领域校验；返回execution/numeric/comparison事实摘要，不能LLM覆盖passed。finish只有run已succeeded才completed否则incomplete；科学sourceunknown仍显示notverified不改事实。ask_researcher questionstr且只有keyquestion→awaiting_input。\n保存逐action agent_checkpoint和final agent_run payload{state,mode,source_refs,model_ref,run_ref,events,call_count,repair_count,limitations:['source quote existence does not prove semantic support','no arbitrary paper extraction guarantee']} refs包含source/生成draft/model/run/checkpoint，unknown/outside/tool或providererrorfailed，max_calls exhausted incomplete。每个实际response保存event，每tool输出追加user角色JSON到messages，响应action作为assistantJSON。无hiddenreasoning/no credentials日志。LLM没有任意filesystem和networktool。只这个file，不读取其它module/tests，不跑命令/todo，最后文字完成。",
+  "acceptance": [
+    "工具白名单和预算有限",
+    "保存失败/弃权",
+    "结果pass仅来自工具"
+  ],
+  "verification_commands": []
+}

@@ -1,0 +1,395 @@
+--- before/src/biomodel_agent/domain/contracts.py
++++ after/src/biomodel_agent/domain/contracts.py
+@@ -422,8 +422,11 @@
+     diagnostics: tuple[str, ...] = ()
+     backend: str = ""
+     elapsed_s: float = 0.0
+-
+-    def __post_init__(self) -> None:
++    time_unit: str = 'unknown'
++
++    def __post_init__(self) -> None:
++        from ..time_units import normalize_time_unit
++        object.__setattr__(self, 'time_unit', normalize_time_unit(self.time_unit))
+         if self.status not in _SIM_STATUSES:
+             raise ValueError(f"SimulationResult.status must be one of {sorted(_SIM_STATUSES)}, got {self.status!r}")
+         checked = tuple(finite(t, "simulation time", False) for t in self.times)
+--- before/src/biomodel_agent/time_units.py
++++ after/src/biomodel_agent/time_units.py
+@@ -72,3 +72,13 @@
+     # a model's unit names or importing a numerical backend.
+     unit = normalize_time_unit(requested)
+     return time_unit_check(unit, None if unit == 'unknown' else model_time_scale(sbml))
++
++
++def comparison_time_unit(actual, reference):
++    """Same labelled clock, or an explicitly unverified legacy comparison."""
++    left, right = normalize_time_unit(actual), normalize_time_unit(reference)
++    if left == right:
++        return {'time_unit': left, 'time_unit_status': 'unknown' if left == 'unknown' else 'pass'}
++    if 'unknown' in (left, right):
++        raise ValueError('Both series must declare time_unit when either is explicit; an unknown clock is not assumed to match.')
++    raise ValueError(f'Time units differ: actual={left!r}, reference={right!r}; no automatic time conversion is applied.')
+--- before/src/biomodel_agent/simulation.py
++++ after/src/biomodel_agent/simulation.py
+@@ -572,6 +572,7 @@
+         )
+     return SimulationResult(
+         status="succeeded",
++        time_unit=experiment.time_unit,
+         times=tuple(float(t) for t in data["times"]),
+         values=FrozenMap({k: tuple(float(v) for v in col) for k, col in values.items()}),
+         checks=ValidationReport((clock, *_finite_check("all output values are finite").checks)),
+--- before/src/biomodel_agent/fitting.py
++++ after/src/biomodel_agent/fitting.py
+@@ -115,7 +115,7 @@
+                 if not math.isfinite(v):
+                     raise ValueError('nonfinite observable')
+                 observed[name].append(v)
+-        return {'status':'succeeded','times':list(spec.times),'states':columns,'observables':observed,'parameters':dict(parameters)}
++        return {'status':'succeeded','times':list(spec.times),'time_unit':spec.time_unit,'states':columns,'observables':observed,'parameters':dict(parameters)}
+ 
+ 
+ def predict(artifact, experiment, observations, parameters):
+--- before/src/biomodel_agent/validation.py
++++ after/src/biomodel_agent/validation.py
+@@ -125,6 +125,10 @@
+     threshold: float = 1e-3,
+ ) -> dict:
+     """Max scaled absolute error between two series on an identical grid."""
++    from .time_units import comparison_time_unit
++    actual_unit = actual.time_unit if isinstance(actual, SimulationResult) else actual.get('time_unit', 'unknown')
++    reference_unit = reference.time_unit if isinstance(reference, SimulationResult) else reference.get('time_unit', 'unknown')
++    clock = comparison_time_unit(actual_unit, reference_unit)
+     if isinstance(actual, SimulationResult):
+         times, values = actual.times, actual.values
+     else:
+@@ -167,6 +171,7 @@
+             if error > worst:
+                 worst, where = error, f"{key}[{i}]"
+     return {
++        **clock,
+         "max_scaled_error": worst,
+         "status": "pass" if worst <= threshold else "fail",
+         "threshold": threshold,
+--- before/src/biomodel_agent/application.py
++++ after/src/biomodel_agent/application.py
+@@ -337,6 +337,8 @@
+     clock = time_units.check_experiment_time(artifact.sbml, experiment.time_unit)
+     if clock.status == 'fail':
+         raise ValueError(clock.message)
++    if reference is not None:
++        time_units.comparison_time_unit(experiment.time_unit, reference.time_unit)
+     source_preflight = _source_validation(store, artifact)
+     if strict and source_preflight['source_review']['issues']:
+         raise ValueError('Unresolved source conflicts: ' + '; '.join(
+@@ -417,6 +419,7 @@
+             try:
+                 outcome = validation.compare_series(result, reference, scales_for_compare, float(threshold))
+                 comparison = {"status": outcome["status"], "protocol": "fixed_scales",
++                              "time_unit": outcome['time_unit'], "time_unit_status": outcome['time_unit_status'],
+                               "max_scaled_error": outcome["max_scaled_error"],
+                               "threshold": outcome["threshold"], "scales": outcome["scales"],
+                               "worst": outcome["worst"], "columns": outcome["columns"]}
+--- before/src/biomodel_agent/agent.py
++++ after/src/biomodel_agent/agent.py
+@@ -118,6 +118,8 @@
+         return _final(store, "failed", str(mode), source_refs, None, None, [], 0, 0, [], None)
+     if not all(isinstance(r, str) and REF_RE.fullmatch(r) for r in source_refs):
+         raise ValueError("invalid or unavailable source refs")
++    if reference is not None:
++        time_units.comparison_time_unit(experiment.time_unit, reference.time_unit)
+     try:
+         for ref in source_refs:
+             if store.get(ref)["kind"] != "source":
+@@ -191,6 +193,8 @@
+     observations = tuple(from_dict(ObservationSpec, o) for o in task['observations'])
+     solver = from_dict(SolverConfig, task['solver'])
+     reference = from_dict(SimulationResult, task['reference']) if task['reference'] is not None else None
++    if reference is not None:
++        time_units.comparison_time_unit(experiment.time_unit, reference.time_unit)
+     # Preserve bytes and identity exactly. This assertion is not a verified paper correction.
+     blob_ref = store.put_blob(reply.encode('utf-8'))
+     clarification_ref = store.put('researcher_clarification', {
+--- before/src/biomodel_agent/cli.py
++++ after/src/biomodel_agent/cli.py
+@@ -95,7 +95,8 @@
+         values = ref_data.get("values")
+         if times is None or values is None:
+             raise ValueError("reference must be a full SimulationResult or curated {times, values}")
+-        return SimulationResult(status="succeeded", times=tuple(times), values=dict(values))
++        return SimulationResult(status="succeeded", times=tuple(times), values=dict(values),
++                                time_unit=ref_data.get('time_unit', 'unknown'))
+ 
+ 
+ def _print_run_result(ref, store, strict: bool) -> int:
+--- before/src/biomodel_agent/reporting.py
++++ after/src/biomodel_agent/reporting.py
+@@ -43,7 +43,7 @@
+         lines.extend(_model_summary(frozen['artifact']))
+         comp = p['comparison']
+         lines.extend(['## Frozen comparison','',f'Status: **{comp["status"]}**'])
+-        for key in ('max_scaled_error','threshold','scales','reason'):
++        for key in ('max_scaled_error','threshold','scales','time_unit','time_unit_status','reason'):
+             if key in comp:
+                 lines.append(f'- {key}: `{json.dumps(comp[key],ensure_ascii=False)}`')
+         for field in ('static_validation','numeric_validation'):
+--- before/tests/test_reference_time_units.py
++++ after/tests/test_reference_time_units.py
+@@ -0,0 +1,191 @@
++"""Declared reference clocks cannot be silently dropped or compared by numbers alone."""
++from copy import deepcopy
++import json
++import math
++import pickle
++
++import pytest
++
++from biomodel_agent import agent, application, cli, evidence, fitting, modeling, reporting, simulation, time_units, validation
++from biomodel_agent.domain.contracts import ExperimentSpec, ModelDraft, ObservationSpec, Parameter, RateRule, SimulationResult, State
++from biomodel_agent.domain.serialization import from_dict, to_dict
++from biomodel_agent.storage import ArtifactStore
++
++
++def series(unit='unknown'):
++    return SimulationResult('succeeded', (0., 1.), {'x': (1., math.exp(-.4))}, time_unit=unit)
++
++
++def decay(unit='minute'):
++    return modeling.build_model(ModelDraft('decay', (State('x', 1.),), (Parameter('k', .4),),
++                       rate_rules=(RateRule('x', '-k*x'),), time_unit=unit))
++
++
++def test_simulation_result_clock_survives_round_trip_and_old_json_omission():
++    result = series('min')
++    assert result.time_unit == 'minute'
++    assert from_dict(SimulationResult, to_dict(result)) == result
++    assert pickle.loads(pickle.dumps(result)) == result
++    old = to_dict(result); old.pop('time_unit')
++    assert from_dict(SimulationResult, old).time_unit == 'unknown'
++
++
++@pytest.mark.parametrize('unit', [None, '', 60, 'day'])
++def test_result_does_not_coerce_invalid_clock_metadata(unit):
++    with pytest.raises(ValueError, match='time_unit'):
++        series(unit)
++
++
++@pytest.mark.parametrize('left, right', [('second', 'minute'), ('minute', 'second'), ('hour', 'minute'),
++                                      ('minute', 'unknown'), ('unknown', 'minute')])
++@pytest.mark.parametrize('as_dict', [False, True])
++def test_identical_numbers_do_not_make_incompatible_clocks_comparable(left, right, as_dict):
++    actual, reference = series(left), series(right)
++    if as_dict:
++        actual, reference = to_dict(actual), to_dict(reference)
++    with pytest.raises(ValueError, match='[Tt]ime_unit|[Tt]ime units'):
++        validation.compare_series(actual, reference, {'x': 1.})
++
++
++def test_aliases_match_and_comparison_records_verified_clock():
++    result = validation.compare_series(series('mins'), series('minute'), {'x': 1.})
++    assert result['status'] == 'pass' and result['time_unit'] == 'minute'
++    assert result['time_unit_status'] == 'pass'
++
++
++def test_both_legacy_unlabelled_dicts_keep_numeric_comparison_explicitly_unknown():
++    old = {'times': [0., 1.], 'values': {'x': [1., .5]}}
++    result = validation.compare_series(old, old, {'x': 1.})
++    assert result['status'] == 'pass' and result['time_unit_status'] == 'unknown'
++    assert result['time_unit'] == 'unknown'
++
++
++def test_simulation_and_fitting_keep_the_requested_clock():
++    spec = ExperimentSpec((0., 1.), time_unit='minute')
++    actual = simulation.simulate(decay(), spec)
++    assert actual.status == 'succeeded' and actual.time_unit == 'minute'
++    predicted = fitting.predict(decay(), spec, (ObservationSpec('signal', 'x'),), {'k': .4})
++    assert predicted['time_unit'] == 'minute'
++    assert predicted['observables']['signal'][-1] == pytest.approx(actual.values['x'][-1], rel=1e-6)
++
++
++@pytest.mark.parametrize('reference_unit', ['second', 'hour', 'unknown'])
++def test_reference_protocol_fails_before_cache_store_or_solver(tmp_path, monkeypatch, reference_unit):
++    store = ArtifactStore(tmp_path / 'store')
++    before = store.list()
++    monkeypatch.setattr(store, 'list', lambda *a: pytest.fail('mismatched reference reached cache'))
++    monkeypatch.setattr(simulation, 'simulate', lambda *a, **kw: pytest.fail('mismatched reference reached solver'))
++    with pytest.raises(ValueError):
++        application.run_reproduction(store, decay(), ExperimentSpec((0., 1.), time_unit='minute'),
++                                     reference=series(reference_unit), scales={'x': 1.})
++    monkeypatch.undo()
++    assert store.list() == before
++
++
++def test_matched_reference_records_clock_in_result_report_and_replay(tmp_path):
++    store = ArtifactStore(tmp_path / 'store')
++    ref = application.run_reproduction(store, decay(), ExperimentSpec((0., 1.), time_unit='minute'),
++                                       reference=series('minute'), scales={'x': 1.})
++    run = store.get(ref)['payload']
++    assert run['comparison']['status'] == 'pass'
++    assert run['comparison']['time_unit_status'] == 'pass'
++    assert run['simulation']['time_unit'] == 'minute'
++    report = reporting.render_report(store, ref)
++    assert 'time_unit_status' in report and 'minute' in report
++    replay = store.get(application.replay_run(store, ref))['payload']
++    assert replay['comparison']['time_unit_status'] == 'pass'
++    frozen = store.get(replay['input_ref'])['payload']
++    assert frozen['reference']['time_unit'] == frozen['experiment']['time_unit'] == 'minute'
++
++
++def test_legacy_numerical_reference_does_not_claim_clock_verified(tmp_path):
++    store = ArtifactStore(tmp_path / 'store')
++    ref = application.run_reproduction(store, decay(), ExperimentSpec((0., 1.)),
++                                       reference=series(), scales={'x': 1.})
++    result = store.get(ref)['payload']
++    assert result['comparison']['status'] == 'pass'
++    assert result['comparison']['time_unit_status'] == 'unknown'
++    assert result['simulation']['time_unit'] == 'unknown'
++
++
++def test_cli_shorthand_reference_preserves_unit_even_with_scoring_metadata():
++    payload = {'times': [0., 1.], 'values': {'x': [1., .5]},
++               'scales': {'x': 1.}, 'threshold': .001, 'time_unit': 'min'}
++    built = cli._build_reference(payload)
++    assert built.time_unit == 'minute'
++
++
++def test_cli_does_not_discard_reference_clock_to_allow_a_mismatch(tmp_path, capsys):
++    model = tmp_path / 'model.xml'; model.write_text(decay().sbml)
++    experiment = tmp_path / 'experiment.json'
++    experiment.write_text(json.dumps({'times': [0., 1.], 'time_unit': 'minute'}))
++    reference = tmp_path / 'reference.json'
++    reference.write_text(json.dumps({'times': [0., 1.], 'values': {'x': [1., .5]},
++                                     'time_unit': 'second', 'scales': {'x': 1.}}))
++    code = cli.main(['run', str(model), '--experiment', str(experiment), '--reference', str(reference),
++                     '--store', str(tmp_path / 'store')])
++    assert code != 0 and 'Time units differ' in capsys.readouterr().err
++    assert not ArtifactStore(tmp_path / 'store').list('run')
++
++
++class Scripted:
++    last_usage = {}
++    def __init__(self):
++        self.calls = []
++    def respond(self, messages):
++        self.calls.append(deepcopy(messages))
++        return {'action': 'ask_researcher', 'args': {'question': 'Please clarify the mechanism.'}}
++
++
++def test_agent_rejects_mismatched_reference_before_model_calls_or_task_write(tmp_path):
++    store = ArtifactStore(tmp_path / 'store')
++    path = tmp_path / 'source.txt'; path.write_text('Synthetic model source.')
++    source = evidence.ingest_source(store, path)
++    before = store.list(); provider = Scripted()
++    with pytest.raises(ValueError, match='Time units differ'):
++        agent.run_agent(store, provider, [source], ExperimentSpec((0., 1.), time_unit='minute'),
++                        reference=series('second'), scales={'x': 1.})
++    assert not provider.calls and store.list() == before
++
++
++def test_agent_frozen_reference_unit_does_not_enter_model_context(tmp_path):
++    store = ArtifactStore(tmp_path / 'store')
++    path = tmp_path / 'source.txt'; path.write_text('Synthetic model source.')
++    source = evidence.ingest_source(store, path)
++    provider = Scripted()
++    ref = agent.run_agent(store, provider, [source], ExperimentSpec((0., 1.), time_unit='minute'),
++                          reference=series('minute'), scales={'x': 1.})
++    result = store.get(ref)['payload']; task = store.get(result['task_ref'])['payload']
++    assert task['reference']['time_unit'] == 'minute'
++    assert 'reference' not in json.dumps(provider.calls)
++
++
++def test_old_ambiguous_reference_checkpoint_refuses_resume_before_reply_write(tmp_path, monkeypatch):
++    store = ArtifactStore(tmp_path / 'store')
++    path = tmp_path / 'source.txt'; path.write_text('Synthetic model source.')
++    source = evidence.ingest_source(store, path)
++    # Reproduce the old behavior, which did not check the reference clock when
++    # creating a paused task. The checkpoint is otherwise made by the real agent.
++    with monkeypatch.context() as legacy:
++        legacy.setattr(time_units, 'comparison_time_unit', lambda *a: {})
++        parent = agent.run_agent(store, Scripted(), [source], ExperimentSpec((0., 1.), time_unit='minute'),
++                                 reference=series(), scales={'x': 1.})
++    before = store.list(); provider = Scripted()
++    with pytest.raises(ValueError, match='Both series must declare time_unit'):
++        agent.resume_agent(store, provider, parent, 'Clarification text.', respondent='Researcher A')
++    assert not provider.calls and store.list() == before
++
++
++def test_resume_preserves_matched_reference_clock_and_keeps_it_internal(tmp_path):
++    store = ArtifactStore(tmp_path / 'store')
++    path = tmp_path / 'source.txt'; path.write_text('Synthetic model source.')
++    source = evidence.ingest_source(store, path)
++    parent = agent.run_agent(store, Scripted(), [source], ExperimentSpec((0., 1.), time_unit='minute'),
++                             reference=series('minute'), scales={'x': 1.})
++    original = store.get(parent); provider = Scripted()
++    resumed = agent.resume_agent(store, provider, parent, 'Clarification text.', respondent='Researcher A')
++    result = store.get(resumed)['payload']; task = store.get(result['task_ref'])['payload']
++    assert result['task_ref'] == original['payload']['task_ref']
++    assert task['reference']['time_unit'] == task['experiment']['time_unit'] == 'minute'
++    assert 'reference' not in json.dumps(provider.calls)
++    assert store.get(parent) == original
+--- before/docs/reference-time-units.md
++++ after/docs/reference-time-units.md
+@@ -0,0 +1,51 @@
++# 结果与参考轨迹时间单位
++
++2026-10-18（北京时间）。承接显式实验时间约束，本轮补齐模拟结果和参考轨迹的时钟标签，继续离线开发，没有外部模型请求。
++
++## 行为变化
++
++之前比较器仅检查数字时间网格与数值。两个相同的 [0, 1] 网格，即使一个表示分钟、另一个表示秒，也没有独立元数据可用于拒绝比较。
++
++现在 SimulationResult 增加可选 `time_unit`，规范化规则与 ExperimentSpec 相同：second、minute、hour 及已支持别名；旧记录缺少字段时为 unknown。成功模拟沿用实验声明并已通过的时钟标签；SciPy 预测也返回该字段。实验未声明时，结果继续记为 unknown，不用模型单位名替用户补写实验协议。
++
++参考结果可以使用完整 SimulationResult JSON，也可以使用带 times、values、scales 等字段的现有 CLI 简写。两种形式都保留 time_unit，不能因简写转换而把冲突单位丢掉。
++
++```json
++{
++  "times": [0.0, 1.0],
++  "values": {"x": [1.0, 0.670320046]},
++  "time_unit": "minute",
++  "scales": {"x": 1.0},
++  "threshold": 0.001
++}
++```
++
++## 比较规则
++
++| 实际轨迹单位 | 参考单位 | 行为 |
++|---|---|---|
++| minute | min / minute | 检查原网格与数值，单位核对为 pass |
++| minute | second | 拒绝，不自动换算或插值 |
++| minute | unknown / 未声明 | 拒绝，不能假定未知单位与分钟一致 |
++| unknown / 未声明 | minute | 拒绝，需明确实验与参考的同一时钟 |
++| unknown | unknown | 保留旧数值比较口径，time_unit_status=unknown |
++
++compare_series 同时支持结果对象和现有字典输入，输出 time_unit 与 time_unit_status。应用在缓存和求解前核对实验与参考标签，避免仅因某条缓存的数字吻合就通过。Agent 在首次调用模型前检查，并在恢复时、保存研究者回复前复查冻结的参考协议。
++
++缓存输入与重放保留实验和参考的单位；比较报告显示标签及核验状态。恢复不能通过研究者回复改变被冻结的参考时钟。历史上若某个暂停点已带显式实验单位、却没有相应参考单位，新代码会明确拒绝继续该不完整比较协议，不静默改写旧任务；原记录仍可读取，需建立显式、相符的新任务。
++
++## 验证
++
++新增 29 项回归：结果 JSON/pickle 与旧字段省略、非法标签、对象/字典跨单位拒绝、未知单位边界、单位别名、模拟和独立预测的标签、缓存/求解前拒绝、带单位参考的真实执行与报告和重放、CLI 简写字段保留、模型调用前拒绝、冻结参考不进入模型上下文，以及旧不完整协议在恢复保存回复前阻断。
++
++首轮针对性组合 95 项通过；补入两项恢复兼容性检查后，完整预验收 **431 项通过**，基线为 402 项。全量预验收沿用同字节存储测试副本以保持派生工作进程加载候选源码，原存储测试未改动。正确分钟衰减轨迹与解析参考核对通过。
++
++这轮跨结果契约、数值比较、应用、Agent 与 CLI 保留同一个字段，连同模拟、预测和报告做同次验收，防止中间接口静默丢失单位。没有改写任何冻结评测结果或新增模型成绩。
++
++源码快照、补丁、哈希、测试日志/XML 在 `artifacts/reference-time-units-20261018/`；安装后验证与旧任务的脚本恢复演练另存于同目录。脚本演练不是新的模型能力测量。
++
++## 范围
++
++单位标签是输入协议的声明，不是论文或研究者真实性认证；不进行自动换算、任意单位推理或物种量纲核验。历史双 unknown 的数值比较行为保持兼容，既有 passed_structured_reference 枚举仍只表达原有数值协议通过；它与 time_unit_status=unknown 同时出现时，不表示时间单位已核验。
++
++本轮仅补时钟协议，不把数值一致自动升级为科学解释成立。真实模型修订验证仍等待此前的外发授权。
+--- before/README.md
++++ after/README.md
+@@ -23,6 +23,8 @@
+ 2026-10-18 引用诊断：[多处引文诊断与离线恢复演练](docs/citation-diagnostics.md)。一次反馈多处重复/缺失引文，给出有限候选位置；引用预检失败不创建部分 claim。完整回归 364 项通过，另用明确标注的脚本修订演练旧任务恢复，不计为新的模型成绩。
+ 
+ 2026-10-18 实验时间：[显式实验时间单位约束](docs/experiment-time-units.md)。实验可声明秒、分或小时；模型时间单位不一致时，在缓存、求解或拟合前阻断，Agent 可在原预算内修正。旧输入保持 unknown，不自动补单位或换算。
++
++2026-10-18 参考时间：[结果与参考轨迹时间单位](docs/reference-time-units.md)。模拟和预测保留时钟标签；比较拒绝明确冲突或单边缺失的单位。CLI、缓存、重放及任务恢复保留该协议，完整预验收 431 项通过。
+ 
+ ## 阅读顺序
+ 

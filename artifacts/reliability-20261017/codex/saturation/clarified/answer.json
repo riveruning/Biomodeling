@@ -1,0 +1,18 @@
+{
+  "status": "ready",
+  "parameters": [
+    {"id": "V", "value": 0.9, "unit": "min^-1"},
+    {"id": "K", "value": 0.7, "unit": "dimensionless"}
+  ],
+  "states": [
+    {"id": "S", "initial": 2.0}
+  ],
+  "equations": [
+    {"state": "S", "expression": "-V*S/(K+S)"}
+  ],
+  "questions": [],
+  "limitations": [
+    "The author clarification supplies K = 0.7 and supersedes the earlier missing-parameter statement.",
+    "V has units min^-1 and K is dimensionless by dimensional consistency of the supplied equation and state units."
+  ]
+}

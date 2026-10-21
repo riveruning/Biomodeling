@@ -1,0 +1,256 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="12" skipped="0" tests="35" time="14.036" timestamp="2026-10-19T11:22:35.461520+08:00" hostname="LAPTOP-2QUP5P60"><testcase classname="tests.test_invocation_journal" name="test_reservation_is_visible_before_callback_and_has_stable_operation_id" time="0.088" /><testcase classname="tests.test_invocation_journal" name="test_errors_and_interruptions_never_release_attempt_budget_or_record_raw_exception" time="0.160"><failure message="KeyError: 'error_type'">tmp_path = PosixPath('/tmp/biomodel-t03a-first/test_errors_and_interruptions_0')
+
+    def test_errors_and_interruptions_never_release_attempt_budget_or_record_raw_exception(tmp_path):
+        store=ArtifactStore(tmp_path)
+        ledger=journal(store)
+        secret='hidden-provider-credential'
+        def fail():
+            raise RuntimeError(secret)
+        with pytest.raises(RuntimeError,match=secret):
+            ledger.invoke('respond',fail)
+        assert ledger.calls==1 and rows(store)[-1]['payload']['phase']=='error'
+        assert secret not in json.dumps(rows(store))
+        def interrupt():
+            raise KeyboardInterrupt()
+        with pytest.raises(KeyboardInterrupt):
+            ledger.invoke('respond',interrupt)
+        assert ledger.calls==2 and rows(store)[-1]['payload']['phase']=='interrupted'
+&gt;       assert rows(store)[-1]['payload']['details']['error_type']=='KeyboardInterrupt'
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       KeyError: 'error_type'
+
+tests/test_invocation_journal.py:54: KeyError</failure></testcase><testcase classname="tests.test_invocation_journal" name="test_compute_budget_is_reserved_once_before_callback_and_never_reset_after_failure" time="0.085" /><testcase classname="tests.test_invocation_journal" name="test_inherited_budget_fields_are_strict[kwargs0]" time="0.044" /><testcase classname="tests.test_invocation_journal" name="test_inherited_budget_fields_are_strict[kwargs1]" time="0.045" /><testcase classname="tests.test_invocation_journal" name="test_inherited_budget_fields_are_strict[kwargs2]" time="0.042" /><testcase classname="tests.test_invocation_journal" name="test_inherited_budget_fields_are_strict[kwargs3]" time="0.066" /><testcase classname="tests.test_invocation_journal" name="test_inherited_budget_fields_are_strict[kwargs4]" time="0.043" /><testcase classname="tests.test_invocation_journal" name="test_inherited_budget_fields_are_strict[kwargs5]" time="0.045" /><testcase classname="tests.test_invocation_journal" name="test_unknown_operation_cannot_execute_or_create_record" time="0.056" /><testcase classname="tests.test_invocation_journal" name="test_failed_terminal_write_keeps_only_reservation_and_no_duplicate_callback" time="0.176" /><testcase classname="tests.test_invocation_journal" name="test_tool_result_references_are_explicit_and_exportable" time="0.094" /><testcase classname="tests.test_invocation_journal" name="test_failed_reservation_does_not_advance_local_counter" time="0.063" /><testcase classname="tests.test_invocation_journal" name="test_frozen_call_limit_is_strict[True]" time="0.048" /><testcase classname="tests.test_invocation_journal" name="test_frozen_call_limit_is_strict[0]" time="0.047" /><testcase classname="tests.test_invocation_journal" name="test_frozen_call_limit_is_strict[51]" time="0.044" /><testcase classname="tests.test_invocation_journal" name="test_frozen_call_limit_is_strict[2]" time="0.043" /><testcase classname="tests.test_invocation_acceptance" name="test_crash_at_provider_entry_retains_attempt_reservation" time="0.210" /><testcase classname="tests.test_invocation_acceptance" name="test_provider_return_journal_boundary_precedes_action_handling" time="0.109" /><testcase classname="tests.test_invocation_acceptance" name="test_post_run_boundary_preserves_result_ref_and_compute_reservation" time="1.421"><failure message="assert 0 == 1&#10; +  where 0 = len([])">tmp_path = PosixPath('/tmp/biomodel-t03a-first/test_post_run_boundary_preserv0')
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x7d3c8145c4a0&gt;
+
+    def test_post_run_boundary_preserves_result_ref_and_compute_reservation(tmp_path, monkeypatch):
+        store, source, proposal = fixture(tmp_path)
+        provider = Scripted([{'action':'submit_draft', 'args':proposal}, act('run')])
+        def crash(*args):
+            raise SystemExit('after result saved before feedback/checkpoint')
+        monkeypatch.setattr(agent, '_run_facts', crash)
+        with pytest.raises(SystemExit):
+            run(store, source, provider)
+        result_refs = store.list('run')
+        assert len(result_refs) == 1 and len(provider.calls) == 2
+        returned = phase(store, 'run', 'returned')
+&gt;       assert len(returned) == 1
+E       assert 0 == 1
+E        +  where 0 = len([])
+
+tests/test_invocation_acceptance.py:102: AssertionError</failure></testcase><testcase classname="tests.test_invocation_acceptance" name="test_failed_reservation_never_calls_provider" time="0.079" /><testcase classname="tests.test_invocation_acceptance" name="test_failed_response_record_does_not_execute_or_retry" time="0.083" /><testcase classname="tests.test_invocation_acceptance" name="test_saved_run_with_failed_terminal_record_is_not_recomputed" time="1.329"><failure message="AssertionError: assert ('completed' == 'incomplete'&#10;  &#10;  - incomplete&#10;  ? --&#10;  + completed&#10;  ?         +)">tmp_path = PosixPath('/tmp/biomodel-t03a-first/test_saved_run_with_failed_ter0')
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x7d3c8148ed80&gt;
+
+    def test_saved_run_with_failed_terminal_record_is_not_recomputed(tmp_path, monkeypatch):
+        store, source, proposal = fixture(tmp_path)
+        provider = Scripted([{'action':'submit_draft', 'args':proposal}, act('run'), act('finish')])
+        original = store.put
+        def fail(kind, payload, refs=None):
+            if kind == 'agent_invocation' and payload['name'] == 'run' and payload['phase'] == 'returned':
+                raise OSError('result journal write failed')
+            return original(kind, payload, refs)
+        monkeypatch.setattr(store, 'put', fail)
+        result = store.get(run(store, source, provider))['payload']
+&gt;       assert result['state'] == 'incomplete' and len(provider.calls) == 2
+E       AssertionError: assert ('completed' == 'incomplete'
+E         
+E         - incomplete
+E         ? --
+E         + completed
+E         ?         +)
+
+tests/test_invocation_acceptance.py:151: AssertionError</failure></testcase><testcase classname="tests.test_invocation_acceptance" name="test_interrupt_inside_tool_with_partial_result_is_not_claimed_returned" time="1.198"><failure message="assert (0 == 1)&#10; +  where 0 = len([])">tmp_path = PosixPath('/tmp/biomodel-t03a-first/test_interrupt_inside_tool_wit0')
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x7d3c8145c980&gt;
+
+    def test_interrupt_inside_tool_with_partial_result_is_not_claimed_returned(tmp_path, monkeypatch):
+        store, source, proposal = fixture(tmp_path)
+        original = application.run_reproduction
+        def interrupted(*args, **kwargs):
+            original(*args, **kwargs)
+            raise SystemExit('tool saved a result then interrupted before returning')
+        monkeypatch.setattr(application, 'run_reproduction', interrupted)
+        with pytest.raises(SystemExit):
+            run(store, source, Scripted([{'action':'submit_draft', 'args':proposal},act('run')]))
+        assert len(store.list('run')) == 1
+        terminal = phase(store, 'run', 'interrupted')
+&gt;       assert len(terminal) == 1 and terminal[0][1]['payload']['run_count'] == 1
+E       assert (0 == 1)
+E        +  where 0 = len([])
+
+tests/test_invocation_acceptance.py:168: AssertionError</failure></testcase><testcase classname="tests.test_invocation_acceptance" name="test_actual_read_tools_have_observational_journal_entries[search_sources-args0]" time="0.189"><failure message="AssertionError: assert 0 == 1&#10; +  where 0 = len([])&#10; +    where [] = phase(&lt;biomodel_agent.storage.ArtifactStore object at 0x7d3c8148e210&gt;, 'search_sources', 'returned')">tmp_path = PosixPath('/tmp/biomodel-t03a-first/test_actual_read_tools_have_ob0')
+name = 'search_sources', args = {'query': 'parameter k'}
+
+    @pytest.mark.parametrize('name,args', [
+        ('search_sources', {'query':'parameter k'}), ('inspect_source', {'page':1,'start':0,'end':10}),
+        ('load_skill', {'name':'ode_reproduction'}), ('recall_memory', {'query':'initial x'})])
+    def test_actual_read_tools_have_observational_journal_entries(tmp_path, name, args):
+        store, source, _ = fixture(tmp_path)
+        args = dict(args)
+        if name == 'inspect_source':
+            args['source_ref'] = source
+        provider = Scripted([{'action':name, 'args':args},act('ask_researcher',question='Continue?')])
+        root = run(store, source, provider, memory_project='journal-read-test', max_calls=2)
+        assert store.get(root)['payload']['state'] == 'awaiting_input'
+&gt;       assert len(phase(store,name,'reserved')) == len(phase(store,name,'returned')) == 1
+E       AssertionError: assert 0 == 1
+E        +  where 0 = len([])
+E        +    where [] = phase(&lt;biomodel_agent.storage.ArtifactStore object at 0x7d3c8148e210&gt;, 'search_sources', 'returned')
+
+tests/test_invocation_acceptance.py:183: AssertionError</failure></testcase><testcase classname="tests.test_invocation_acceptance" name="test_actual_read_tools_have_observational_journal_entries[inspect_source-args1]" time="0.154"><failure message="AssertionError: assert 0 == 1&#10; +  where 0 = len([])&#10; +    where [] = phase(&lt;biomodel_agent.storage.ArtifactStore object at 0x7d3c8148e240&gt;, 'inspect_source', 'returned')">tmp_path = PosixPath('/tmp/biomodel-t03a-first/test_actual_read_tools_have_ob1')
+name = 'inspect_source'
+args = {'page': 1, 'start': 0, 'end': 10, 'source_ref': '16cacb5a96961324fcb1407de1dd16c8e7291426b0180b0db16a645d673a3dc6'}
+
+    @pytest.mark.parametrize('name,args', [
+        ('search_sources', {'query':'parameter k'}), ('inspect_source', {'page':1,'start':0,'end':10}),
+        ('load_skill', {'name':'ode_reproduction'}), ('recall_memory', {'query':'initial x'})])
+    def test_actual_read_tools_have_observational_journal_entries(tmp_path, name, args):
+        store, source, _ = fixture(tmp_path)
+        args = dict(args)
+        if name == 'inspect_source':
+            args['source_ref'] = source
+        provider = Scripted([{'action':name, 'args':args},act('ask_researcher',question='Continue?')])
+        root = run(store, source, provider, memory_project='journal-read-test', max_calls=2)
+        assert store.get(root)['payload']['state'] == 'awaiting_input'
+&gt;       assert len(phase(store,name,'reserved')) == len(phase(store,name,'returned')) == 1
+E       AssertionError: assert 0 == 1
+E        +  where 0 = len([])
+E        +    where [] = phase(&lt;biomodel_agent.storage.ArtifactStore object at 0x7d3c8148e240&gt;, 'inspect_source', 'returned')
+
+tests/test_invocation_acceptance.py:183: AssertionError</failure></testcase><testcase classname="tests.test_invocation_acceptance" name="test_actual_read_tools_have_observational_journal_entries[load_skill-args2]" time="0.180"><failure message="AssertionError: assert 0 == 1&#10; +  where 0 = len([])&#10; +    where [] = phase(&lt;biomodel_agent.storage.ArtifactStore object at 0x7d3c8148d4c0&gt;, 'load_skill', 'returned')">tmp_path = PosixPath('/tmp/biomodel-t03a-first/test_actual_read_tools_have_ob2')
+name = 'load_skill', args = {'name': 'ode_reproduction'}
+
+    @pytest.mark.parametrize('name,args', [
+        ('search_sources', {'query':'parameter k'}), ('inspect_source', {'page':1,'start':0,'end':10}),
+        ('load_skill', {'name':'ode_reproduction'}), ('recall_memory', {'query':'initial x'})])
+    def test_actual_read_tools_have_observational_journal_entries(tmp_path, name, args):
+        store, source, _ = fixture(tmp_path)
+        args = dict(args)
+        if name == 'inspect_source':
+            args['source_ref'] = source
+        provider = Scripted([{'action':name, 'args':args},act('ask_researcher',question='Continue?')])
+        root = run(store, source, provider, memory_project='journal-read-test', max_calls=2)
+        assert store.get(root)['payload']['state'] == 'awaiting_input'
+&gt;       assert len(phase(store,name,'reserved')) == len(phase(store,name,'returned')) == 1
+E       AssertionError: assert 0 == 1
+E        +  where 0 = len([])
+E        +    where [] = phase(&lt;biomodel_agent.storage.ArtifactStore object at 0x7d3c8148d4c0&gt;, 'load_skill', 'returned')
+
+tests/test_invocation_acceptance.py:183: AssertionError</failure></testcase><testcase classname="tests.test_invocation_acceptance" name="test_actual_read_tools_have_observational_journal_entries[recall_memory-args3]" time="0.183"><failure message="AssertionError: assert 0 == 1&#10; +  where 0 = len([])&#10; +    where [] = phase(&lt;biomodel_agent.storage.ArtifactStore object at 0x7d3c8145f410&gt;, 'recall_memory', 'returned')">tmp_path = PosixPath('/tmp/biomodel-t03a-first/test_actual_read_tools_have_ob3')
+name = 'recall_memory', args = {'query': 'initial x'}
+
+    @pytest.mark.parametrize('name,args', [
+        ('search_sources', {'query':'parameter k'}), ('inspect_source', {'page':1,'start':0,'end':10}),
+        ('load_skill', {'name':'ode_reproduction'}), ('recall_memory', {'query':'initial x'})])
+    def test_actual_read_tools_have_observational_journal_entries(tmp_path, name, args):
+        store, source, _ = fixture(tmp_path)
+        args = dict(args)
+        if name == 'inspect_source':
+            args['source_ref'] = source
+        provider = Scripted([{'action':name, 'args':args},act('ask_researcher',question='Continue?')])
+        root = run(store, source, provider, memory_project='journal-read-test', max_calls=2)
+        assert store.get(root)['payload']['state'] == 'awaiting_input'
+&gt;       assert len(phase(store,name,'reserved')) == len(phase(store,name,'returned')) == 1
+E       AssertionError: assert 0 == 1
+E        +  where 0 = len([])
+E        +    where [] = phase(&lt;biomodel_agent.storage.ArtifactStore object at 0x7d3c8145f410&gt;, 'recall_memory', 'returned')
+
+tests/test_invocation_acceptance.py:183: AssertionError</failure></testcase><testcase classname="tests.test_invocation_acceptance" name="test_resume_and_alternative_branch_keep_distinct_executions_and_cumulative_calls" time="0.143"><failure message="ValueError: run and checkpoint history do not match">tmp_path = PosixPath('/tmp/biomodel-t03a-first/test_resume_and_alternative_br0')
+
+    def test_resume_and_alternative_branch_keep_distinct_executions_and_cumulative_calls(tmp_path):
+        store, source, _ = fixture(tmp_path)
+        first = run(store,source,Scripted([act('ask_researcher',question='Initial x?')]),max_calls=3)
+        parent = deepcopy(store.get(first))
+&gt;       children = [agent.resume_agent(store,Scripted([act('ask_researcher',question='Confirm?')]),
+                    first,'Initial x = 1.',respondent='A') for _ in range(2)]
+
+tests/test_invocation_acceptance.py:192: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+store = &lt;biomodel_agent.storage.ArtifactStore object at 0x7d3c8148d550&gt;
+provider = &lt;test_invocation_acceptance.Scripted object at 0x7d3c8145d280&gt;
+run_ref = 'efd629d2de3da277be4cfccf927cc6b51beca3e3fb22a6d5d7abcdea23240347'
+reply = 'Initial x = 1.', respondent = 'A'
+
+    def resume_agent(store: Any, provider: Any, run_ref: str, reply: str, *, respondent: str) -&gt; str:
+        """Resume an awaiting-input run with an attributed, immutable researcher assertion.
+    
+        Budgets and scientific configuration are inherited. Reusing a parent explicitly
+        creates an alternative branch; it does not replace the parent's history.
+        Legacy checkpoints without a complete resume contract are refused.
+        """
+        if not isinstance(reply, str) or not reply.strip() or len(reply) &gt; READ_LIMIT:
+            raise ValueError("reply must contain 1..8000 characters")
+        if not isinstance(respondent, str) or not respondent.strip() or len(respondent) &gt; 200:
+            raise ValueError("respondent must contain 1..200 characters")
+        record = store.get(run_ref)
+        previous = record['payload']
+        if record['kind'] != 'agent_run' or previous.get('state') != 'awaiting_input':
+            raise ValueError("only an awaiting_input agent_run can be resumed")
+        if not previous.get('task_ref') or not previous.get('checkpoint_ref'):
+            raise ValueError("legacy run has no complete resume checkpoint; start a new task")
+        task_record = store.get(previous['task_ref'])
+        cp_record = store.get(previous['checkpoint_ref'])
+        task, cp = task_record['payload'], cp_record['payload']
+        if (task_record['kind'] != 'agent_task' or cp_record['kind'] != 'agent_checkpoint'
+                or task.get('resume_version') != RESUME_VERSION
+                or cp.get('resume_version') != RESUME_VERSION
+                or cp.get('task_ref') != previous['task_ref'] or cp.get('state') != 'awaiting_input'):
+            raise ValueError("incompatible resume checkpoint")
+        if any(cp.get(k) != previous.get(k) for k in
+               ('call_count', 'repair_count', 'retry_count', 'events', 'source_refs', 'model_ref', 'run_ref',
+                 'execution_ref', 'invocation_refs')):
+&gt;           raise ValueError("run and checkpoint history do not match")
+E           ValueError: run and checkpoint history do not match
+
+src/biomodel_agent/agent.py:237: ValueError</failure></testcase><testcase classname="tests.test_invocation_acceptance" name="test_retry_attempts_each_reserve_budget_and_keep_existing_limit" time="0.177" /><testcase classname="tests.test_invocation_acceptance" name="test_normal_export_keeps_all_flat_journal_refs_and_no_credentials" time="1.200"><failure message="AssertionError: assert 0 == 6&#10; +  where 0 = len([])&#10; +  and   6 = len([('eab633d726fb82531c53125ac60fd9a6b3dea6c9904761a07b36e22a06b6b5db', {'kind': 'agent_invocation', 'payload': {'call_c...635aa9f325a9a40c884da82', '38e3b72354d03f246d7a3be2051d26096ed960d29ba7706ed06c78761055d9ac'], 'schema_version': '1'})])&#10; +    where [('eab633d726fb82531c53125ac60fd9a6b3dea6c9904761a07b36e22a06b6b5db', {'kind': 'agent_invocation', 'payload': {'call_c...635aa9f325a9a40c884da82', '38e3b72354d03f246d7a3be2051d26096ed960d29ba7706ed06c78761055d9ac'], 'schema_version': '1'})] = records(&lt;biomodel_agent.storage.ArtifactStore object at 0x7d3c8148ede0&gt;)">tmp_path = PosixPath('/tmp/biomodel-t03a-first/test_normal_export_keeps_all_f0')
+
+    def test_normal_export_keeps_all_flat_journal_refs_and_no_credentials(tmp_path):
+        store, source, proposal = fixture(tmp_path)
+        provider = Scripted([{'action':'submit_draft','args':proposal},act('run'),act('finish')])
+        root = run(store,source,provider)
+        result = store.get(root)['payload']
+        assert result['state'] == 'completed' and result['call_count'] == 3
+        refs = result['invocation_refs']
+&gt;       assert len(refs) == len(records(store)) == 10
+E       AssertionError: assert 0 == 6
+E        +  where 0 = len([])
+E        +  and   6 = len([('eab633d726fb82531c53125ac60fd9a6b3dea6c9904761a07b36e22a06b6b5db', {'kind': 'agent_invocation', 'payload': {'call_c...635aa9f325a9a40c884da82', '38e3b72354d03f246d7a3be2051d26096ed960d29ba7706ed06c78761055d9ac'], 'schema_version': '1'})])
+E        +    where [('eab633d726fb82531c53125ac60fd9a6b3dea6c9904761a07b36e22a06b6b5db', {'kind': 'agent_invocation', 'payload': {'call_c...635aa9f325a9a40c884da82', '38e3b72354d03f246d7a3be2051d26096ed960d29ba7706ed06c78761055d9ac'], 'schema_version': '1'})] = records(&lt;biomodel_agent.storage.ArtifactStore object at 0x7d3c8148ede0&gt;)
+
+tests/test_invocation_acceptance.py:223: AssertionError</failure></testcase><testcase classname="tests.test_invocation_acceptance" name="test_long_task_remains_under_storage_reference_depth_limit" time="1.160"><failure message="assert (21 == 21 and 0 == 82)&#10; +  where 0 = len([])">tmp_path = PosixPath('/tmp/biomodel-t03a-first/test_long_task_remains_under_s0')
+
+    def test_long_task_remains_under_storage_reference_depth_limit(tmp_path):
+        store, source, _ = fixture(tmp_path)
+        query = act('search_sources',query='parameter k')
+        root = run(store,source,Scripted([query]*20+[act('ask_researcher',question='Continue?')]),max_calls=21)
+        result = store.get(root)['payload']
+&gt;       assert result['call_count'] == 21 and len(result['invocation_refs']) == 82
+E       assert (21 == 21 and 0 == 82)
+E        +  where 0 = len([])
+
+tests/test_invocation_acceptance.py:238: AssertionError</failure></testcase><testcase classname="tests.test_invocation_acceptance" name="test_frozen_study_execution_is_reserved_before_entering_tool" time="0.154" /><testcase classname="tests.test_invocation_acceptance" name="test_abrupt_process_exit_leaves_durable_boundary[provider-23]" time="1.016" /><testcase classname="tests.test_invocation_acceptance" name="test_abrupt_process_exit_leaves_durable_boundary[post_result-24]" time="2.065"><failure message="IndexError: list index out of range">tmp_path = PosixPath('/tmp/biomodel-t03a-first/test_abrupt_process_exit_leave1')
+point = 'post_result', code = 24
+
+    @pytest.mark.parametrize('point,code',[('provider',23),('post_result',24)])
+    def test_abrupt_process_exit_leaves_durable_boundary(tmp_path, point, code):
+        store,source,proposal = fixture(tmp_path)
+        process=mp.get_context('spawn').Process(target=_hard_exit_child,
+            args=(str(store.root),source,proposal,point))
+        process.start()
+        process.join(timeout=20)
+        if process.is_alive():
+            process.terminate();process.join(timeout=3)
+            pytest.fail('fault-injection child exceeded bounded wait')
+        assert process.exitcode==code
+        reopened=ArtifactStore(store.root)
+        assert len(reopened.list('agent_execution'))==1
+        if point=='provider':
+            assert len(phase(reopened,'respond','reserved'))==1
+            assert len(records(reopened))==1  # os._exit cannot run the exception handler
+        else:
+            result=reopened.list('run')
+            assert len(result)==1
+&gt;           assert result[0] in phase(reopened,'run','returned')[0][1]['refs']
+                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           IndexError: list index out of range
+
+tests/test_invocation_acceptance.py:296: IndexError</failure></testcase></testsuite></testsuites>

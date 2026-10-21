@@ -1,0 +1,1025 @@
+--- before/src/biomodel_agent/agent.py
++++ after/src/biomodel_agent/agent.py
+@@ -15,6 +15,7 @@
+ from .llm import ProviderError, build_system_prompt
+ from .storage import REF_RE, ArtifactError
+ from .retrieval import validate_method
++from .invocations import InvocationJournal
+ 
+ MODES = ("reproduction", "hypothesis")
+ ACTIONS = ("inspect_source", "search_sources", "recall_memory", "load_skill", "run_study", "submit_draft", "run", "finish", "ask_researcher")
+@@ -93,10 +94,13 @@
+            run_ref: str | None, events: list[dict], calls: int, repairs: int,
+            checkpoints: list[str], draft_ref: str | None, *,
+            task_ref: str | None = None, parent_run_ref: str | None = None,
+-           clarification_refs: tuple = ()) -> str:
++           clarification_refs: tuple = (),
++           execution_ref: str | None = None,
++           invocation_refs: tuple | list = ()) -> str:
+     refs = [r for r in source_refs + [r for r in (draft_ref, model_ref, run_ref, *checkpoints) if r]]
+     refs.extend(r for r in (task_ref, parent_run_ref, *clarification_refs) if r)
+     refs.extend(r for e in events for r in e.get('artifact_refs',[]) if r)
++    refs.extend(r for r in (execution_ref, *invocation_refs) if r)
+     ref = store.put("agent_run", {
+         "state": state, "mode": mode, "source_refs": list(source_refs),
+         "model_ref": model_ref, "run_ref": run_ref, "events": events,
+@@ -106,6 +110,8 @@
+         "clarification_refs": list(clarification_refs),
+         "checkpoint_ref": checkpoints[-1] if checkpoints else None,
+         "checkpoint_refs": list(checkpoints),
++        "execution_ref": execution_ref,
++        "invocation_refs": list(invocation_refs),
+     }, refs=tuple(dict.fromkeys(refs)))
+     return ref
+ 
+@@ -226,7 +232,8 @@
+             or cp.get('task_ref') != previous['task_ref'] or cp.get('state') != 'awaiting_input'):
+         raise ValueError("incompatible resume checkpoint")
+     if any(cp.get(k) != previous.get(k) for k in
+-           ('call_count', 'repair_count', 'retry_count', 'events', 'source_refs', 'model_ref', 'run_ref')):
++           ('call_count', 'repair_count', 'retry_count', 'events', 'source_refs', 'model_ref', 'run_ref',
++             'execution_ref', 'invocation_refs')):
+         raise ValueError("run and checkpoint history do not match")
+     if task['provider'] != _provider_identity(provider):
+         raise ValueError("resume requires the original provider endpoint, class, model and generation settings")
+@@ -322,6 +329,18 @@
+         # A pre-reply draft cannot skip revalidation against the additional source.
+         if not run_count:
+             artifact = model_ref = None
++    journal = InvocationJournal(store, task_ref, parent_run_ref=parent_run_ref,
++                                calls=calls, runs=run_count)
++
++    def invoke(name, callback, **kwargs):
++        nonlocal calls, run_count
++        # Every real provider/tool call goes through the journal; the finally
++        # syncs the local counts in every outcome (return, error, interruption)
++        # so budget accounting never drifts from the persisted journal.
++        try:
++            return journal.invoke(name, callback, **kwargs)
++        finally:
++            calls, run_count = journal.calls, journal.runs
+ 
+     def save_checkpoint(_store, current_state, call, repair, history, model, run, sources, draft):
+         refs = [task_ref, *sources, *clarification_refs]
+@@ -333,11 +352,13 @@
+             'run_count': run_count, 'messages': history, 'events': events,
+             'source_refs': list(sources), 'model_ref': model, 'run_ref': run,
+             'draft_ref': draft, 'clarification_refs': list(clarification_refs),
+-        }, refs=tuple(dict.fromkeys(refs)))
++            'execution_ref': journal.execution_ref, 'invocation_refs': list(journal.refs),
++        }, refs=tuple(dict.fromkeys(refs + [journal.execution_ref, *journal.refs])))
+ 
+     def finish_session(*args):
+         return _final(*args, task_ref=task_ref, parent_run_ref=parent_run_ref,
+-                      clarification_refs=tuple(clarification_refs))
++                      clarification_refs=tuple(clarification_refs),
++                      execution_ref=journal.execution_ref, invocation_refs=journal.refs)
+ 
+     while calls < max_calls:
+         if memory_scope is not None:
+@@ -362,9 +383,16 @@
+             state = 'incomplete'
+             break
+         request_trace = [dict(m) for m in request_messages]
+-        calls += 1
+         try:
+-            response = provider.respond(request_messages)
++            # Budget reservation is persisted before the provider call; the
++            # local call count advances in lockstep with the journal.
++            response = invoke(
++                'respond',
++                lambda: provider.respond(request_messages),
++                details={'request_messages': request_trace, 'context': context_audit},
++                summarize=lambda r: {'response_json': _json(r),
++                                     'usage': {k: v for k, v in (getattr(provider, 'last_usage', {}) or {}).items() if _is_int(v)}},
++            )
+         except ProviderError as exc:
+             kind = getattr(exc, 'kind', 'provider_error')
+             delay = getattr(exc, 'retry_after_s', None)
+@@ -438,12 +466,14 @@
+                 events.append({'type': 'tool_error', 'call': calls, **feedback})
+                 messages.append(_user(_json(feedback)))
+                 continue
+-            run_count += 1
+-            # Save the consumed execution budget before potentially long fitting.
+-            checkpoints.append(save_checkpoint(store, state, calls, repairs, messages,
+-                                               model_ref, run_ref, source_refs, draft_ref))
+             try:
+-                run_ref = studies.execute_study(store, study_plan_ref)
++                # The journal's scientific-execution reservation is persisted
++                # before the fitting begins; on failure the journal records
++                # error/interrupted and the original exception propagates.
++                run_ref = invoke('run_study', lambda: studies.execute_study(store, study_plan_ref),
++                                 details={'plan_ref': study_plan_ref},
++                                 summarize=lambda r: {'result_ref': r},
++                                 result_refs=lambda r: [r])
+                 facts = studies.result_summary(store, run_ref)
+             except Exception as exc:
+                 failure_ref = store.put('study_execution_failure',
+@@ -467,14 +497,19 @@
+                     raise ValueError(f'{action} requires exactly {sorted(expected)}')
+                 if action == 'search_sources':
+                     from .retrieval import search_sources
+-                    out = search_sources(store, source_refs, args['query'], method=retrieval_method)
++                    out = invoke(action, lambda: search_sources(store, source_refs, args['query'],
++                                                                method=retrieval_method),
++                                 details={'args': args})
+                 elif action == 'recall_memory':
+                     if memory_scope is None:
+                         raise ValueError('memory is not enabled for this task')
+-                    out = memory.recall(store, memory_scope, args['query'], source_refs=source_refs)
++                    out = invoke(action, lambda: memory.recall(store, memory_scope, args['query'],
++                                                               source_refs=source_refs),
++                                 details={'args': args})
+                 else:
+                     advertised = {item['name']: item['version'] for item in skill_catalog}
+-                    out = skills.load_skill(args['name'])
++                    out = invoke('load_skill', lambda: skills.load_skill(args['name']),
++                                 details={'args': args})
+                     if advertised.get(out['name']) != out['version']:
+                         raise ValueError('skill is not in the frozen task catalog; start a new task')
+                 feedback = {'tool': action, 'ok': True, **out}
+@@ -507,7 +542,9 @@
+                                              "error": "source/page/start/end outside task bounds"})))
+                 state = "failed"
+                 break
+-            text = _source_text(store, ref, page)
++            text = invoke('inspect_source', lambda: _source_text(store, ref, page),
++                             details={'args': args},
++                             summarize=lambda t: {'page_found': t is not None})
+             if text is None or page < 1 or end > len(text):
+                 error = {'type':'tool_error','tool':action,'error':'invalid source span',
+                          'available_pages': [{'page':p['number'],'chars':len(p['text'])}
+@@ -530,7 +567,15 @@
+                 break
+             artifact = None
+             model_ref = None
+-            result = agent_tools.submit_draft(store, args, source_refs, mode, tuple(allowed_mechanisms))
++            result = invoke('submit_draft', lambda: agent_tools.submit_draft(store, args, source_refs, mode, tuple(allowed_mechanisms)),
++                         details={'args': args},
++                         summarize=lambda r: {'state': r['state'], 'problems': list(r['problems']),
++                                              'checks': r['checks'],
++                                              'draft_ref': r.get('draft_ref'), 'model_ref': r.get('model_ref'),
++                                              'hypothesis_ref': r.get('hypothesis_ref'),
++                                              'source_review_ref': r.get('source_review_ref')},
++                         result_refs=lambda r: [ref for ref in (r.get('draft_ref'), r.get('model_ref'),
++                                                              r.get('hypothesis_ref'), r.get('source_review_ref')) if ref])
+             if result['state'] == 'ready':
+                 clock = time_units.check_experiment_time(result['artifact'].sbml, experiment.time_unit)
+                 result['checks'].append(to_dict(clock))
+@@ -583,13 +628,17 @@
+                                              "error": "run requires exactly one ready draft and cannot repeat after a prior run or draft change"})))
+                 state = "incomplete"
+                 break
+-            run_count += 1
+             try:
+                 draft_data = store.get(draft_ref)['payload']
+                 nonnegative = tuple(s['id'] for s in draft_data['states'] if s.get('nonnegative'))
+-                run_ref = application.run_reproduction(store, artifact, experiment, observations,
+-                                                       solver, reference, scales, strict=(mode == "reproduction"),
+-                                                       nonnegative=nonnegative)
++                # The journal's scientific-execution reservation is persisted
++                # before the evaluation; let it account the run budget.
++                run_ref = invoke('run', lambda: application.run_reproduction(store, artifact, experiment, observations,
++                                                                             solver, reference, scales, strict=(mode == "reproduction"),
++                                                                             nonnegative=nonnegative),
++                                 details={'model_ref': model_ref, 'draft_ref': draft_ref},
++                                 summarize=lambda r: {'result_ref': r},
++                                 result_refs=lambda r: [r])
+                 run = store.get(run_ref)["payload"]
+             except Exception as exc:
+                 events.append({"type": "tool_error", "call": calls, "tool": action,
+--- /dev/null
++++ after/src/biomodel_agent/invocations.py
+@@ -0,0 +1,208 @@
++"""Persistent invocation journal: bounded budgets, flat refs, no auto-recovery.
++
++Design rules (task T03a):
++
++- Each execution/resume/alternative branch creates exactly one
++  ``agent_execution`` record; it inherits the already-accounted call and run
++  counts and never re-registers history from a previous execution.
++- Every invocation persists a ``reserved`` record *before* its side effect;
++  budgets are checked and reserved up-front, and errors/interruptions never
++  refund budget.  A failed reservation must never let the callback run.
++- The callback's stable ``operation_id`` is generated once and reused verbatim
++  on the reserved record and on exactly one terminal record (returned /
++  error / interrupted), so replays can match work without re-executing it.
++- Every record refs only the execution record (reserved) or the execution
++  record plus this operation's reserved record plus explicitly supplied
++  result refs (terminal).  Refs never chain between operations, so export
++  closure depth stays constant as call counts grow.
++- No provider credentials, headers, transport objects or raw exception text
++  ever enter the journal; ``details`` is explicit caller-supplied JSON and
++  invalid JSON is rejected.
++"""
++
++from __future__ import annotations
++
++import uuid
++from typing import Any, Callable, Iterable
++
++from .storage import ArtifactError, canonical_bytes
++
++
++def _is_count(value: Any, max_value: int) -> bool:
++    """Strict int (bool rejected) within [0, max_value]."""
++    return type(value) is int and 0 <= value <= max_value
++
++
++def _require_json(value: Any, label: str) -> None:
++    """Reject non-JSON data up front; the store rejects it too, but failing
++    here keeps the rejection deterministic and outside any callback path."""
++    try:
++        canonical_bytes(value)
++    except ArtifactError as exc:
++        raise ValueError(f"{label} is not JSON-safe: {exc}") from exc
++
++
++# name -> replay class (audit-only; never drives automatic retry)
++REPLAY_CLASSES: dict[str, str] = {
++    "respond": "external_unknown",
++    "submit_draft": "artifact_write",
++    "run": "scientific_execution",
++    "run_study": "scientific_execution",
++    "search_sources": "read_only",
++    "inspect_source": "read_only",
++    "recall_memory": "read_only",
++    "load_skill": "read_only",
++}
++
++
++class InvocationJournal:
++    """Records reserved/returned/error/interrupted invocations for one run.
++
++    ``store`` is the shared :class:`ArtifactStore`; ``task_ref`` the existing
++    ``agent_task`` ref.  Inherited ``calls``/``runs`` must already be
++    accounted elsewhere (checkpoint/agent_run); they are inherited, not
++    re-derived.  Every execution/resume/alternative branch creates a new
++    execution record and starts from its inherited counts.
++    """
++
++    def __init__(self, store: Any, task_ref: str, *, parent_run_ref: str | None = None,
++                 calls: int = 0, runs: int = 0) -> None:
++        self._store = store
++        self._task_ref = task_ref
++        record = store.get(task_ref)
++        if record["kind"] != "agent_task":
++            raise ValueError("journal task_ref must name an agent_task record")
++        payload = record["payload"]
++        max_calls = payload.get("max_calls")
++        if type(max_calls) is not int or not 1 <= max_calls <= 50:
++            raise ValueError("agent_task max_calls must be an int in 1..50")
++        if not _is_count(calls, max_calls):
++            raise ValueError(f"inherited calls must be an int in 0..{max_calls}, not a bool")
++        if not _is_count(runs, 1):
++            raise ValueError("inherited runs must be an int in 0..1, not a bool")
++        if parent_run_ref is not None:
++            parent_record = store.get(parent_run_ref)
++            if parent_record["kind"] != "agent_run":
++                raise ValueError("parent_run_ref must name an agent_run record")
++        self._max_calls = max_calls
++        self._max_runs = 1
++        refs: list[str] = [task_ref]
++        if parent_run_ref is not None:
++            refs.append(parent_run_ref)
++        self.execution_ref: str = store.put("agent_execution", {
++            "version": 1,
++            "id": str(uuid.uuid4()),
++            "task_ref": task_ref,
++            "parent_run_ref": parent_run_ref,
++            "base_call_count": calls,
++            "base_run_count": runs,
++            "max_calls": max_calls,
++            "max_runs": 1,
++        }, refs=tuple(dict.fromkeys(refs)))
++        self.refs: list[str] = []
++        self.calls: int = calls
++        self.runs: int = runs
++
++    # -- budget ---------------------------------------------------------------
++
++    def _reserve(self, name: str, details: dict) -> tuple[str, str, int, int]:
++        """Check budgets, persist the reserved record, then bump local counts.
++
++        The persist happens before the local mutation, so a failed
++        reservation raises before the caller's callback runs, and a crash
++        between reserve and callback loses no budget accounting.
++        """
++        if name == "respond":
++            if self.calls >= self._max_calls:
++                raise ValueError("LLM call budget is exhausted; start a separate task")
++            call_count, run_count = self.calls + 1, self.runs
++        elif name in ("run", "run_study"):
++            if self.runs >= self._max_runs:
++                raise ValueError("scientific execution budget is exhausted; start a separate task")
++            call_count, run_count = self.calls, self.runs + 1
++        else:
++            call_count, run_count = self.calls, self.runs
++        operation_id = str(uuid.uuid4())
++        reserved_ref = self._store.put("agent_invocation", {
++            "version": 1,
++            "execution_ref": self.execution_ref,
++            "operation_id": operation_id,
++            "name": name,
++            "phase": "reserved",
++            "call_count": call_count,
++            "run_count": run_count,
++            "replay_class": REPLAY_CLASSES[name],
++            "details": details,
++        }, refs=(self.execution_ref,))
++        self.calls, self.runs = call_count, run_count
++        self.refs.append(reserved_ref)
++        return reserved_ref, operation_id, call_count, run_count
++
++    # -- public API ------------------------------------------------------------
++
++    def invoke(self, name: str, callback: Callable[[], Any], *, details: Any = None,
++               summarize: Callable[[Any], Any] | None = None,
++               result_refs: Callable[[Any], Iterable[Any]] | None = None) -> Any:
++        """Reserve budget, run ``callback`` once, persist a terminal record.
++
++        - unknown ``name`` is rejected without executing the callback;
++        - the reserved record is persisted before the callback runs;
++        - after a normal return the ``returned`` record is persisted with the
++          same operation_id and counts; if that persistence fails the error
++          propagates -- the record is never faked and the callback never
++          reruns;
++        - ``Exception`` yields an ``error`` record and other
++          ``BaseException`` (SystemExit, KeyboardInterrupt, ...) an
++          ``interrupted`` record; details carry only the error type and the
++          original exception is re-raised unchanged.
++        """
++        if name not in REPLAY_CLASSES:
++            raise ValueError(f"unknown invocation name: {name!r}")
++        _require_json(details if details is not None else {}, "details")
++        reserved_ref, operation_id, call_count, run_count = self._reserve(
++            name, {} if details is None else details)
++        try:
++            result = callback()
++        except Exception as exc:
++            self._terminal(name, operation_id, "error", call_count, run_count,
++                           {"error_type": type(exc).__name__}, reserved_ref, ())
++            raise
++        except BaseException as exc:
++            self._terminal(name, operation_id, "interrupted", call_count, run_count,
++                           {"error_type": type(exc).__name__}, reserved_ref, ())
++            raise
++        summary = summarize(result) if summarize is not None else result
++        if summary is None:
++            summary = {}
++        _require_json(summary, "returned details")
++        refs = tuple(r for r in (result_refs(result) if result_refs is not None else ()) if r)
++        self._terminal(name, operation_id, "returned", call_count, run_count,
++                       summary, reserved_ref, refs)
++        return result
++
++    # -- terminal records -------------------------------------------------------
++
++    def _terminal(self, name: str, operation_id: str, phase: str,
++                  call_count: int, run_count: int, details: Any,
++                  reserved_ref: str, result_refs: tuple[str, ...]) -> None:
++        """Persist the single terminal record for an operation.
++
++        Refs stay flat and shallow: the execution record, this operation's
++        reserved record and the explicitly trusted result refs -- never the
++        previous operation, so depth does not grow with operation count.
++        Failure here propagates to the caller (no fake record, no retry).
++        """
++        refs = [self.execution_ref, reserved_ref]
++        refs.extend(result_refs)
++        terminal_ref = self._store.put("agent_invocation", {
++            "version": 1,
++            "execution_ref": self.execution_ref,
++            "operation_id": operation_id,
++            "name": name,
++            "phase": phase,
++            "call_count": call_count,
++            "run_count": run_count,
++            "replay_class": REPLAY_CLASSES[name],
++            "details": details,
++        }, refs=tuple(dict.fromkeys(refs)))
++        self.refs.append(terminal_ref)
+--- /dev/null
++++ after/tests/test_invocation_acceptance.py
+@@ -0,0 +1,345 @@
++"""Codex-owned journal boundary checks; scripted inference, real scientific tools."""
++from copy import deepcopy
++import json
++import multiprocessing as mp
++import os
++
++import pytest
++
++from biomodel_agent import agent, agent_tools, application, bundles, studies
++from biomodel_agent.domain.contracts import ExperimentSpec, ModelDraft, Parameter, RateRule, State
++from biomodel_agent.domain.serialization import to_dict
++from biomodel_agent.llm import ModelResponseError
++from biomodel_agent.storage import ArtifactStore
++
++
++class Scripted:
++    last_usage = {'total_tokens': 3}
++    api_key = 'private-key-never-journal-this'
++    def __init__(self, actions):
++        self.actions = iter(actions)
++        self.calls = []
++    def respond(self, messages):
++        self.calls.append(deepcopy(messages))
++        value = next(self.actions)
++        if isinstance(value, BaseException):
++            raise value
++        return deepcopy(value)
++
++
++def act(name, **args):
++    return {'action': name, 'args': args}
++
++
++def fixture(tmp_path):
++    store = ArtifactStore(tmp_path / 'store')
++    quotes = ('Initial x = 1.', 'Parameter k = 0.4.', 'Equation dx/dt = -k*x.')
++    source = store.put('source', {'pages': [{'number': 1, 'text': '\n'.join(quotes)}]})
++    draft = ModelDraft('decay', (State('x', 1.),), (Parameter('k', .4),),
++                       rate_rules=(RateRule('x', '-k*x'),))
++    args = {'draft': to_dict(draft), 'evidence': [
++        {'target': target, 'source_ref': source, 'page': 1, 'quote': quote}
++        for target, quote in zip(('x/initial', 'k/value', 'rule:x/expression'), quotes)]}
++    return store, source, args
++
++
++def records(store, name=None):
++    rows = [(ref, store.get(ref)) for ref in store.list('agent_invocation')]
++    return [(ref, env) for ref, env in rows if name is None or env['payload']['name'] == name]
++
++
++def phase(store, name, state):
++    return [(ref, env) for ref, env in records(store, name) if env['payload']['phase'] == state]
++
++
++def run(store, source, provider, **kwargs):
++    return agent.run_agent(store, provider, [source], ExperimentSpec((0., 1.)), **kwargs)
++
++
++def test_crash_at_provider_entry_retains_attempt_reservation(tmp_path):
++    store, source, _ = fixture(tmp_path)
++    provider = Scripted([SystemExit('injected at provider entry')])
++    with pytest.raises(SystemExit):
++        run(store, source, provider, max_calls=1)
++    reopened = ArtifactStore(tmp_path / 'store')
++    reserved = phase(reopened, 'respond', 'reserved')
++    assert len(provider.calls) == len(reserved) == 1
++    data = reserved[0][1]['payload']
++    assert data['call_count'] == 1 and data['run_count'] == 0
++    assert data['details']['request_messages'] == provider.calls[0]
++    interrupted = phase(reopened, 'respond', 'interrupted')
++    assert len(interrupted) == 1
++    assert interrupted[0][1]['payload']['operation_id'] == data['operation_id']
++    assert not reopened.list('agent_run')
++
++
++def test_provider_return_journal_boundary_precedes_action_handling(tmp_path, monkeypatch):
++    store, source, _ = fixture(tmp_path)
++    response = act('ask_researcher', question='Confirm initial x?')
++    provider = Scripted([response])
++    def crash(*args):
++        raise SystemExit('after service return before action handling')
++    monkeypatch.setattr(agent, '_assistant', crash)
++    with pytest.raises(SystemExit):
++        run(store, source, provider)
++    returned = phase(store, 'respond', 'returned')
++    assert len(returned) == 1 and len(provider.calls) == 1
++    assert json.loads(returned[0][1]['payload']['details']['response_json']) == response
++    assert not store.list('agent_run')
++
++
++def test_post_run_boundary_preserves_result_ref_and_compute_reservation(tmp_path, monkeypatch):
++    store, source, proposal = fixture(tmp_path)
++    provider = Scripted([{'action':'submit_draft', 'args':proposal}, act('run')])
++    def crash(*args):
++        raise SystemExit('after result saved before feedback/checkpoint')
++    monkeypatch.setattr(agent, '_run_facts', crash)
++    with pytest.raises(SystemExit):
++        run(store, source, provider)
++    result_refs = store.list('run')
++    assert len(result_refs) == 1 and len(provider.calls) == 2
++    returned = phase(store, 'run', 'returned')
++    assert len(returned) == 1
++    env = returned[0][1]
++    assert env['payload']['call_count'] == 2 and env['payload']['run_count'] == 1
++    assert env['payload']['details']['result_ref'] == result_refs[0]
++    assert result_refs[0] in env['refs']
++    assert store.get(result_refs[0])['payload']['simulation']['values']['x'][-1] == pytest.approx(.670320046, abs=1e-6)
++    assert not store.list('agent_run')
++
++
++def test_failed_reservation_never_calls_provider(tmp_path, monkeypatch):
++    store, source, _ = fixture(tmp_path)
++    provider = Scripted([act('ask_researcher', question='Initial x?')])
++    original = store.put
++    def fail(kind, payload, refs=None):
++        if kind == 'agent_invocation' and payload['phase'] == 'reserved':
++            raise OSError('reservation storage unavailable')
++        return original(kind, payload, refs)
++    monkeypatch.setattr(store, 'put', fail)
++    with pytest.raises(OSError):
++        run(store, source, provider)
++    assert not provider.calls
++
++
++def test_failed_response_record_does_not_execute_or_retry(tmp_path, monkeypatch):
++    store, source, proposal = fixture(tmp_path)
++    provider = Scripted([{'action':'submit_draft', 'args':proposal}])
++    original = store.put
++    def fail(kind, payload, refs=None):
++        if kind == 'agent_invocation' and payload['phase'] == 'returned':
++            raise OSError('response record write failed')
++        return original(kind, payload, refs)
++    monkeypatch.setattr(store, 'put', fail)
++    with pytest.raises(OSError):
++        run(store, source, provider)
++    assert len(provider.calls) == 1 and not store.list('model')
++    assert len(phase(store, 'respond', 'reserved')) == 1
++    assert not phase(store, 'respond', 'returned')
++
++
++def test_saved_run_with_failed_terminal_record_is_not_recomputed(tmp_path, monkeypatch):
++    store, source, proposal = fixture(tmp_path)
++    provider = Scripted([{'action':'submit_draft', 'args':proposal}, act('run'), act('finish')])
++    original = store.put
++    def fail(kind, payload, refs=None):
++        if kind == 'agent_invocation' and payload['name'] == 'run' and payload['phase'] == 'returned':
++            raise OSError('result journal write failed')
++        return original(kind, payload, refs)
++    monkeypatch.setattr(store, 'put', fail)
++    result = store.get(run(store, source, provider))['payload']
++    assert result['state'] == 'incomplete' and len(provider.calls) == 2
++    assert len(store.list('run')) == 1
++    assert len(phase(store, 'run', 'reserved')) == 1 and not phase(store, 'run', 'returned')
++    assert phase(store, 'run', 'reserved')[0][1]['payload']['run_count'] == 1
++
++
++def test_interrupt_inside_tool_with_partial_result_is_not_claimed_returned(tmp_path, monkeypatch):
++    store, source, proposal = fixture(tmp_path)
++    original = application.run_reproduction
++    def interrupted(*args, **kwargs):
++        original(*args, **kwargs)
++        raise SystemExit('tool saved a result then interrupted before returning')
++    monkeypatch.setattr(application, 'run_reproduction', interrupted)
++    with pytest.raises(SystemExit):
++        run(store, source, Scripted([{'action':'submit_draft', 'args':proposal},act('run')]))
++    assert len(store.list('run')) == 1
++    terminal = phase(store, 'run', 'interrupted')
++    assert len(terminal) == 1 and terminal[0][1]['payload']['run_count'] == 1
++    assert not phase(store, 'run', 'returned')
++
++
++@pytest.mark.parametrize('name,args', [
++    ('search_sources', {'query':'parameter k'}), ('inspect_source', {'page':1,'start':0,'end':10}),
++    ('load_skill', {'name':'ode_reproduction'}), ('recall_memory', {'query':'initial x'})])
++def test_actual_read_tools_have_observational_journal_entries(tmp_path, name, args):
++    store, source, _ = fixture(tmp_path)
++    args = dict(args)
++    if name == 'inspect_source':
++        args['source_ref'] = source
++    provider = Scripted([{'action':name, 'args':args},act('ask_researcher',question='Continue?')])
++    root = run(store, source, provider, memory_project='journal-read-test', max_calls=2)
++    assert store.get(root)['payload']['state'] == 'awaiting_input'
++    assert len(phase(store,name,'reserved')) == len(phase(store,name,'returned')) == 1
++    row = phase(store,name,'returned')[0][1]['payload']
++    assert row['replay_class'] == 'read_only' and row['run_count'] == 0
++
++
++def test_resume_and_alternative_branch_keep_distinct_executions_and_cumulative_calls(tmp_path):
++    store, source, _ = fixture(tmp_path)
++    first = run(store,source,Scripted([act('ask_researcher',question='Initial x?')]),max_calls=3)
++    parent = deepcopy(store.get(first))
++    children = [agent.resume_agent(store,Scripted([act('ask_researcher',question='Confirm?')]),
++                first,'Initial x = 1.',respondent='A') for _ in range(2)]
++    rows = [store.get(ref)['payload'] for ref in [first,*children]]
++    assert len({row['execution_ref'] for row in rows}) == 3
++    for row in rows[1:]:
++        assert row['call_count'] == 2
++        execution = store.get(row['execution_ref'])['payload']
++        assert execution['base_call_count'] == 1 and execution['parent_run_ref'] == first
++        assert all(store.get(r)['payload']['call_count'] == 2 for r in row['invocation_refs'])
++    assert store.get(first) == parent
++
++
++def test_retry_attempts_each_reserve_budget_and_keep_existing_limit(tmp_path):
++    store, source, _ = fixture(tmp_path)
++    provider = Scripted([ModelResponseError('bad response'),act('ask_researcher',question='Initial x?')])
++    root = run(store,source,provider,max_calls=2)
++    data = store.get(root)['payload']
++    assert data['call_count'] == 2 and data['retry_count'] == 1
++    reserved = phase(store,'respond','reserved')
++    assert [row['payload']['call_count'] for _,row in reserved] == [1,2]
++    assert len({row['payload']['operation_id'] for _,row in reserved}) == 2
++    assert len(phase(store,'respond','error')) == 1
++
++
++def test_normal_export_keeps_all_flat_journal_refs_and_no_credentials(tmp_path):
++    store, source, proposal = fixture(tmp_path)
++    provider = Scripted([{'action':'submit_draft','args':proposal},act('run'),act('finish')])
++    root = run(store,source,provider)
++    result = store.get(root)['payload']
++    assert result['state'] == 'completed' and result['call_count'] == 3
++    refs = result['invocation_refs']
++    assert len(refs) == len(records(store)) == 10
++    checkpoint = store.get(result['checkpoint_ref'])['payload']
++    assert checkpoint['execution_ref'] == result['execution_ref']
++    assert checkpoint['invocation_refs'] == refs
++    manifest = bundles.export_bundle(store,root,tmp_path/'bundle')
++    assert set(refs+[result['execution_ref']]).issubset(manifest['objects_and_blobs'])
++    raw = json.dumps([store.get(ref) for ref in refs+[result['execution_ref']]])
++    assert provider.api_key not in raw
++
++
++def test_long_task_remains_under_storage_reference_depth_limit(tmp_path):
++    store, source, _ = fixture(tmp_path)
++    query = act('search_sources',query='parameter k')
++    root = run(store,source,Scripted([query]*20+[act('ask_researcher',question='Continue?')]),max_calls=21)
++    result = store.get(root)['payload']
++    assert result['call_count'] == 21 and len(result['invocation_refs']) == 82
++    assert store.verify(root)
++    for ref,env in records(store):
++        linked = [store.get(r)['kind'] for r in env['refs']]
++        assert linked.count('agent_invocation') <= 1
++
++
++def test_frozen_study_execution_is_reserved_before_entering_tool(tmp_path, monkeypatch):
++    store,source,_ = fixture(tmp_path)
++    config = {'training':[{'id':'train','role':'training','experiment':{'times':[0.,1.]},
++              'values':{'response':[0.,1.]},'sigma':{'response':1.}}],
++              'candidates':['cand_baseline'],'starts':1,'max_nfev':1,'timeout_s':1.}
++    plan = studies.prepare_study(store,config)
++    entered = []
++    def interrupted(*args):
++        entered.append(True)
++        assert phase(store,'run_study','reserved')[0][1]['payload']['run_count'] == 1
++        raise SystemExit('controlled study boundary, no fitting performed')
++    monkeypatch.setattr(studies,'execute_study',interrupted)
++    with pytest.raises(SystemExit):
++        agent.run_agent(store,Scripted([act('run_study')]),[source],ExperimentSpec((0.,1.)),
++                        mode='hypothesis',study_plan_ref=plan)
++    assert entered == [True] and len(phase(store,'run_study','interrupted')) == 1
++
++
++def _hard_exit_child(store_path, source, proposal, point):
++    store = ArtifactStore(store_path)
++    if point == 'provider':
++        class ExitProvider:
++            def respond(self, messages):
++                os._exit(23)
++        run(store,source,ExitProvider())
++    else:
++        def exit_after_result(*args):
++            os._exit(24)
++        agent._run_facts = exit_after_result
++        run(store,source,Scripted([{'action':'submit_draft','args':proposal},act('run')]))
++
++
++@pytest.mark.parametrize('point,code',[('provider',23),('post_result',24)])
++def test_abrupt_process_exit_leaves_durable_boundary(tmp_path, point, code):
++    store,source,proposal = fixture(tmp_path)
++    process=mp.get_context('spawn').Process(target=_hard_exit_child,
++        args=(str(store.root),source,proposal,point))
++    process.start()
++    process.join(timeout=20)
++    if process.is_alive():
++        process.terminate();process.join(timeout=3)
++        pytest.fail('fault-injection child exceeded bounded wait')
++    assert process.exitcode==code
++    reopened=ArtifactStore(store.root)
++    assert len(reopened.list('agent_execution'))==1
++    if point=='provider':
++        assert len(phase(reopened,'respond','reserved'))==1
++        assert len(records(reopened))==1  # os._exit cannot run the exception handler
++    else:
++        result=reopened.list('run')
++        assert len(result)==1
++        assert result[0] in phase(reopened,'run','returned')[0][1]['refs']
++    assert not reopened.list('agent_run')
++
++
++def test_legacy_pause_without_journal_fields_can_start_a_new_recorded_execution(tmp_path):
++    store,source,_=fixture(tmp_path)
++    parent=run(store,source,Scripted([act('ask_researcher',question='Initial x?')]))
++    previous=store.get(parent)
++    cp=store.get(previous['payload']['checkpoint_ref'])
++    for payload in (previous['payload'],cp['payload']):
++        payload.pop('execution_ref',None);payload.pop('invocation_refs',None)
++    cp_refs=[r for r in cp['refs'] if store.get(r)['kind'] not in ('agent_execution','agent_invocation')]
++    legacy_cp=store.put('agent_checkpoint',cp['payload'],refs=cp_refs)
++    previous['payload']['checkpoint_ref']=legacy_cp
++    previous['payload']['checkpoint_refs']=[legacy_cp]
++    run_refs=[r for r in previous['refs'] if store.get(r)['kind'] not in
++              ('agent_execution','agent_invocation','agent_checkpoint')]
++    legacy=store.put('agent_run',previous['payload'],refs=[*run_refs,legacy_cp])
++    original=store.get(legacy)
++    result=store.get(agent.resume_agent(store,Scripted([act('ask_researcher',question='Confirm?')]),
++                legacy,'Initial x = 1.',respondent='A'))['payload']
++    assert result['call_count']==2 and result['execution_ref']
++    assert store.get(result['execution_ref'])['payload']['base_call_count']==1
++    assert len(result['invocation_refs'])==2  # no invented records for the historical call
++    assert store.get(legacy)==original
++
++
++def test_journal_metadata_mismatch_blocks_resume_before_reply_or_provider(tmp_path):
++    store,source,_=fixture(tmp_path)
++    parent=run(store,source,Scripted([act('ask_researcher',question='Initial x?')]))
++    record=store.get(parent)
++    record['payload']['invocation_refs']=[]
++    inconsistent=store.put('agent_run',record['payload'],refs=record['refs'])
++    before=store.list()
++    provider=Scripted([])
++    with pytest.raises(ValueError,match='history'):
++        agent.resume_agent(store,provider,inconsistent,'Initial x = 1.',respondent='A')
++    assert not provider.calls and store.list()==before
++
++
++def test_consumed_scientific_budget_is_inherited_after_pause(tmp_path):
++    store,source,proposal=fixture(tmp_path)
++    parent=run(store,source,Scripted([{'action':'submit_draft','args':proposal},act('run'),
++                                      act('ask_researcher',question='Confirm result?')]))
++    assert len(store.list('run'))==1
++    result=store.get(agent.resume_agent(store,Scripted([act('run')]),parent,
++                    'Initial x = 1.',respondent='A'))['payload']
++    assert result['state']=='incomplete' and result['call_count']==4
++    assert len(store.list('run'))==1 and len(phase(store,'run','reserved'))==1
++    assert store.get(result['execution_ref'])['payload']['base_run_count']==1
+--- /dev/null
++++ after/tests/test_invocation_journal.py
+@@ -0,0 +1,142 @@
++"""Pure journal boundary tests; no Agent, external model or numerical work."""
++import importlib
++import json
++
++import pytest
++
++from biomodel_agent.storage import ArtifactStore
++
++
++def journal(store, **kwargs):
++    cls = importlib.import_module('biomodel_agent.invocations').InvocationJournal
++    task = store.put('agent_task', {'max_calls': kwargs.pop('max_calls',2)})
++    return cls(store,task,**kwargs)
++
++
++def rows(store):
++    return [store.get(ref) for ref in store.list('agent_invocation')]
++
++
++def test_reservation_is_visible_before_callback_and_has_stable_operation_id(tmp_path):
++    store=ArtifactStore(tmp_path)
++    ledger=journal(store)
++    details={'request_messages':[{'role':'user','content':'task data'}]}
++    def callback():
++        record=rows(store)[0]['payload']
++        assert record['phase']=='reserved' and record['call_count']==1
++        assert ledger.calls==1 and ledger.runs==0
++        details['request_messages'][0]['content']='changed later'
++        return {'action':'finish','args':{}}
++    assert ledger.invoke('respond',callback,details=details)['action']=='finish'
++    reserved,returned=rows(store)
++    assert reserved['payload']['operation_id']==returned['payload']['operation_id']
++    assert [r['payload']['phase'] for r in (reserved,returned)]==['reserved','returned']
++    assert reserved['payload']['details']['request_messages'][0]['content']=='task data'
++    assert reserved['payload']['execution_ref']==ledger.execution_ref
++    assert all(ref in ledger.refs for ref in store.list('agent_invocation'))
++
++
++def test_errors_and_interruptions_never_release_attempt_budget_or_record_raw_exception(tmp_path):
++    store=ArtifactStore(tmp_path)
++    ledger=journal(store)
++    secret='hidden-provider-credential'
++    def fail():
++        raise RuntimeError(secret)
++    with pytest.raises(RuntimeError,match=secret):
++        ledger.invoke('respond',fail)
++    assert ledger.calls==1 and rows(store)[-1]['payload']['phase']=='error'
++    assert secret not in json.dumps(rows(store))
++    def interrupt():
++        raise KeyboardInterrupt()
++    with pytest.raises(KeyboardInterrupt):
++        ledger.invoke('respond',interrupt)
++    assert ledger.calls==2 and rows(store)[-1]['payload']['phase']=='interrupted'
++    assert rows(store)[-1]['payload']['details']['error_type']=='KeyboardInterrupt'
++    seen=[]
++    with pytest.raises(ValueError):
++        ledger.invoke('respond',lambda:seen.append(True))
++    assert seen==[] and len(rows(store))==4
++
++
++def test_compute_budget_is_reserved_once_before_callback_and_never_reset_after_failure(tmp_path):
++    store=ArtifactStore(tmp_path)
++    ledger=journal(store)
++    def fail():
++        assert ledger.runs==1
++        assert rows(store)[0]['payload']['run_count']==1
++        raise ValueError('controlled failure')
++    with pytest.raises(ValueError):
++        ledger.invoke('run',fail)
++    assert ledger.runs==1
++    seen=[]
++    with pytest.raises(ValueError):
++        ledger.invoke('run_study',lambda:seen.append(True))
++    assert seen==[] and len(rows(store))==2
++
++
++@pytest.mark.parametrize('kwargs',[{'calls':True},{'calls':-1},{'calls':3},
++                                  {'runs':True},{'runs':-1},{'runs':2}])
++def test_inherited_budget_fields_are_strict(kwargs,tmp_path):
++    store=ArtifactStore(tmp_path)
++    with pytest.raises(ValueError):
++        journal(store,**kwargs)
++    assert not store.list('agent_execution')
++
++
++def test_unknown_operation_cannot_execute_or_create_record(tmp_path):
++    store=ArtifactStore(tmp_path)
++    ledger=journal(store)
++    seen=[]
++    with pytest.raises(ValueError):
++        ledger.invoke('arbitrary_python',lambda:seen.append(True))
++    assert not seen and not rows(store)
++
++
++def test_failed_terminal_write_keeps_only_reservation_and_no_duplicate_callback(tmp_path,monkeypatch):
++    store=ArtifactStore(tmp_path)
++    ledger=journal(store)
++    original=store.put
++    def fail(kind,payload,refs=None):
++        if kind=='agent_invocation' and payload['phase']=='returned':
++            raise OSError('terminal write failed')
++        return original(kind,payload,refs)
++    monkeypatch.setattr(store,'put',fail)
++    entered=[]
++    with pytest.raises(OSError):
++        ledger.invoke('respond',lambda:entered.append(True))
++    assert entered==[True] and ledger.calls==1
++    assert [r['payload']['phase'] for r in rows(store)]==['reserved']
++
++
++def test_tool_result_references_are_explicit_and_exportable(tmp_path):
++    store=ArtifactStore(tmp_path)
++    ledger=journal(store)
++    result_ref=store.put('run',{'status':'failed'})
++    ledger.invoke('run',lambda:result_ref,summarize=lambda ref:{'result_ref':ref},result_refs=lambda ref:[ref])
++    returned=rows(store)[-1]
++    assert result_ref in returned['refs']
++    assert returned['payload']['phase']=='returned'  # technical return, not scientific pass
++    assert returned['payload']['replay_class']=='scientific_execution'
++
++
++def test_failed_reservation_does_not_advance_local_counter(tmp_path,monkeypatch):
++    store=ArtifactStore(tmp_path)
++    ledger=journal(store)
++    original=store.put
++    def fail(kind,payload,refs=None):
++        if kind=='agent_invocation':
++            raise OSError('reservation unavailable')
++        return original(kind,payload,refs)
++    monkeypatch.setattr(store,'put',fail)
++    seen=[]
++    with pytest.raises(OSError):
++        ledger.invoke('respond',lambda:seen.append(True))
++    assert not seen and ledger.calls==0 and ledger.refs==[]
++
++
++@pytest.mark.parametrize('limit',[True,0,51,'2'])
++def test_frozen_call_limit_is_strict(tmp_path,limit):
++    store=ArtifactStore(tmp_path)
++    with pytest.raises(ValueError):
++        journal(store,max_calls=limit)
++    assert not store.list('agent_execution')
+--- /dev/null
++++ after/docs/invocation-journal.md
+@@ -0,0 +1,63 @@
++# 调用记录与预算持久化（T03a）
++
++2026-10-19，已验收。任务来源：[优化任务队列](optimization-backlog.md)。本轮给单Agent增加持久调用边界，自动恢复、结果认领和并发所有者仍由T03b处理。
++
++## 问题与实现
++
++原版本在第一次服务调用期间中断时，没有持久化的调用预留；服务返回后或模拟结果保存后中断，可能没有可恢复的Agent检查点，调用计数和结果关联随进程丢失。三个独立故障基线均复现了记录缺失。
++
++新增invocations.InvocationJournal，Agent的实际服务、草稿提交、模拟、研究执行及读工具调用均经过它；动作权限、材料范围、科学门槛、模型消息和原有重试上限沿用原协议。流程控制finish/ask_researcher仍由原events和checkpoint记录。
++
++| 记录 | 字段与含义 |
++|---|---|
++| agent_execution | version=1、唯一执行id、冻结task_ref、父run、继承call/run计数、原max_calls、max_runs=1；每次正常执行/恢复/替代分支有独立记录 |
++| agent_invocation / reserved | 执行引用、稳定operation_id、操作名、调用/科学执行累计计数、类别、明确请求数据；在callback之前保存 |
++| returned | callback已正常返回且摘要保存；与reserved共享operation_id；真实工具产物以refs关联；不表示科学验证通过 |
++| error / interrupted | callback抛异常或可捕获中断；仅记录异常类型并重抛原异常；不能据此认定没有产生部分副作用 |
++
++服务请求在调用前保留实际messages/context，服务返回在动作处理前保留原始JSON文本和整数usage。草稿记录保留校验摘要及实际模型/草稿/来源检查引用；模拟和研究记录保留真实结果引用。inspect_source只保留读参数及页面是否找到，不再重复保存整页。
++
++```mermaid
++flowchart LR
++    A[预留预算并保存reserved] --> B[执行一次callback]
++    B --> C[保存returned与结果引用]
++    B --> D[记录error或可捕获中断]
++    B -.进程直接退出.-> E[保留reserved，结果可能未知]
++```
++
++reserved写入失败不执行callback；结果记录写入失败不重新执行callback。调用和计算次数只在预留成功后推进，错误/中断不退回；Agent通过finally同步其本地计数。记录的call_count/run_count是累计快照，不能把reserved和terminal里的数字相加当作费用。
++
++## 引用、恢复与兼容
++
++存储引用深度上限为64，所以日志没有跨操作的逐条链。reserved只引用执行记录；terminal只引用执行记录、本次reserved及实际结果。checkpoint和最终agent_run使用平坦invocation_refs并引用execution_ref，正常export带出日志闭包。21次脚本调用、82条记录验证了引用深度不随操作数量线性增长。
++
++正常追问恢复继承既有计数，新建执行记录；替代分支保持不同执行id。新run/checkpoint的日志元数据不一致时，在写入研究者回复或调用模型之前拒绝恢复。兼容测试覆盖旧格式两边均无日志字段的暂停点：继续时只记录新增调用，不补造旧记录。已消费的科学次数不会因恢复重置。
++
++类别respond/external_unknown、读工具/read_only、草稿/artifact_write、模拟或拟合/scientific_execution仅用于审计分类，不是自动重试授权。原有ProviderError重试仍逐次消费原调用预算，没有新增重试。
++
++## 实施与实际结果
++
++DSH完成记录模块和Agent主体集成。第一次连接在498.7秒后异常terminated，交付仍有遗漏；保存快照后，派发一次仅写agent.py的修订。修订已补大部分调用点，但最后一条编辑缺少新文本参数，权限策略返回wait/missing_edit，监督脚本停止；该不完整编辑请求未执行，没有修改权限策略。
++
++Codex独立审查后做了局部修正：interrupted记录补异常类型；finish_session转发执行/调用引用；将nonlocal声明移到函数开头，并澄清列表变量名。未重写DSH主体，也未反复重派。原有测试文件没有修改。
++
++验证记录：
++
++- 旧版三个中断位置：3项失败；实际复现记录缺口。
++- 记录模块初审：17项中16通过、1失败；首批完整交付：35项中23通过、12失败。
++- 有界修订初审：38项中33通过、5失败，剩余问题同源于最终引用遗漏。
++- 最终定向：233项通过，90.10秒；最终完整Python回归：849项通过，156.09秒，无失败、错误或跳过。
++- 故障注入覆盖预留写失败、返回记录写失败、部分工具产物后中断、服务返回后动作处理前中断、重试预算、分支与兼容、恢复元数据拒绝及导出闭包。
++- 子进程os._exit直接退出：服务入口只留下reserved；模拟结果保存后退出，留下实际结果引用；均没有伪造最终agent_run。
++- 正常合成ODE用3次脚本动作完成，保留10条调用记录并全部导出；终点约0.670320283，科学状态仍not_verified。
++
++源码快照、两批DSH交付与监督结果、Codex修正、原始失败、完整差异和实际存储样本见 [T03a验收记录](../artifacts/audit-t03a-invocations-20261019/acceptance.json)；具体中断与正常案例见 [fault-results.json](../artifacts/audit-t03a-invocations-20261019/fault-results.json)。
++
++## 本轮的实际边界
++
++- 尚无任意中断后的自动恢复入口；留下日志不等于能够自动续跑。进程直接退出可能只留下预留，外部请求是否收到及是否收费仍可能未知。
++- returned只证明技术返回和记录完成；错误/中断也可能已有部分产物。没有exactly-once保证，没有自动认领结果或盲目重发。
++- 预算按原执行分支及继承计数约束，不是跨分支全局费用锁或token/金额上限；本轮没有并发所有者锁。
++- 正常最终run可导出日志；崩溃只有执行记录时，需按execution_ref人工检查存储中的相关记录。单独导出execution记录不会反向收集后续调用，T03b再提供收集与恢复控制。
++- 测试覆盖进程退出和受控存储异常，不声称覆盖操作系统断电；日志增加I/O，未进行独立规模/延迟评价。
++- 这是脚本动作、真实确定性工具与故障回归，不是模型自主科研能力提升。DSH开发通道与产品模型评价分开，本轮未发送c13/c18材料或重试此前被拒绝的在线回归。
+--- before/docs/optimization-backlog.md
++++ after/docs/optimization-backlog.md
+@@ -8,8 +8,8 @@
+ |---|---|---|---|
+ | T01 | 严格模式中明确数值失败被归为 not_verified，Agent 仍 completed；统一失败裁决 | **已验收**：[结果与限制](run-verdict.md) | 实际负值模拟、收敛/比较失败和旧记录检查已覆盖；定向45通过，完整748通过，原有测试保留 |
+ | T02 | Python 构造器与 JSON 数值校验不一致 | **已验收**：[结果与限制](strict-numeric-contracts.md) | DSH两文件实现，独立审查无生产修正；定向189通过，完整811通过，保留异常结果诊断与合法历史读取 |
+-| T03a | 工具调用与调用预算缺少一致的持久化边界 | **下一项** | T01/T02已完成；记录调用 ID、预算预留和执行前后阶段；故障注入保留明确状态 |
+-| T03b | 任意中断恢复、结果认领、执行所有者与重试分类 | 待实施 | T03a；已存结果不重复计算，外部结果未知不盲目重发，冲突执行拒绝，显式分支可追溯 |
++| T03a | 工具调用与调用预算缺少一致的持久化边界 | **已验收**：[结果与限制](invocation-journal.md) | 版本化预留/返回/错误/中断、平坦引用及继承计数；定向233通过，完整849通过；尚无自动恢复 |
++| T03b | 任意中断恢复、结果认领、执行所有者与重试分类 | **下一项** | T03a已完成；已存结果不重复计算，外部结果未知不盲目重发，冲突执行拒绝，显式分支可追溯 |
+ | T04 | 旧 hypothesis / study-run / Agent 研究入口不同，预测不受统一期限控制 | 待实施 | T01、T03a；共享冻结用例，区分所有计算失败与科学负结果，整个研究有 deadline |
+ | T05 | 引文中的数值可错绑目标，公式可不对应草稿 | 待实施 | T01；新增结构化证据记录，先覆盖直接赋值、简单公式和符号映射；未知语法待审核 |
+ | T06 | PDF 只有 pypdf 逐页文本，尚未接入成熟解析结果 | 待实施 | T05 位置契约；薄适配成熟解析输出，保留原 PDF、版本和页/块定位，失败不伪造内容 |
+@@ -25,7 +25,9 @@
+ 
+ T02已归档[任务卡](../tasks/audit-t02-strict-inputs.json)，DSH正常交付两个生产文件；独立63例矩阵由37失败/26通过转为全部通过，最终完整811项通过。Codex没有修改本轮DSH生产代码，原有测试保留；详情见结果记录。
+ 
+-下一项T03a步骤：先复现调用前、服务返回后、工具结果落盘后的中断；列清工具副作用与可安全重试类别；冻结调用记录/预算预留的最小协议；派发有限文件范围给DSH；独立故障注入验证调用次数与阶段持久化。T03a先建立记录与边界，T03b再接异常恢复、结果认领和执行所有者，不能把记录存在称为任意崩溃可恢复。
++T03a已归档[实现任务卡](../tasks/audit-t03a-invocations.json)与[一次有界修订](../tasks/audit-t03a-complete-integration.json)。DSH交付主体，连接异常及不完整编辑暂停均留档；Codex补齐已定位的异常类型/最终引用转发，并独立验证。子进程直接退出证据、平坦导出与预算继承已覆盖，不把持久记录称为自动恢复。
++
++下一项T03b先定义兼容版本、冻结输入、日志完整性和执行所有者预检；从中断日志收集状态，优先认领已返回的真实产物；对外部请求结果未知或部分产物不能定位的情况明确停留待处置，不盲目重发。分开实现只读恢复诊断、受控继续、并发所有者/显式分支，每步都有跨进程故障和重复执行负控制；不一次引入全套通用工作流框架。
+ 
+ 任务不涉及 c13/c18 材料、独立评测材料、密钥或外部模型评价。此前四次 USTC 外发审批拒绝仍有效，不重试或改道。
+ 
+--- before/docs/seven-point-status.md
++++ after/docs/seven-point-status.md
+@@ -18,4 +18,4 @@
+ 
+ 此前四次 c13/c18 USTC 在线回归仍待明确的材料外发授权，未用新的工具改道重试。当前离线开发没有更新原冻结版模型成绩或把已见材料当作新留出集。
+ 
+-2026-10-19 架构复审发现验证失败聚合、证据目标绑定及异常恢复缺口，已保存[审计后的优化任务队列](optimization-backlog.md)。按单项任务卡由 DSH 实现，Codex 独立审查与验收；[T01 运行裁决已验收](run-verdict.md)，明确失败不会再被未知状态掩盖，完整回归748项通过；[T02 输入契约一致性已验收](strict-numeric-contracts.md)，完整回归811项通过。下一项为T03a调用记录与预算持久化，其他任务仍按队列推进；这些结果不表示真实模型科研能力提升。
++2026-10-19 架构复审发现验证失败聚合、证据目标绑定及异常恢复缺口，已保存[审计后的优化任务队列](optimization-backlog.md)。按单项任务卡由 DSH 实现，Codex 独立审查与验收；[T01 运行裁决](run-verdict.md)、[T02 输入契约](strict-numeric-contracts.md)已验收；[T03a 调用记录与预算持久化](invocation-journal.md)已验收，完整回归849项通过，覆盖平坦调用引用、预算继承与进程退出记录。下一项为T03b受控恢复与结果认领；目前仍没有任意中断自动恢复，这些结果不表示真实模型科研能力提升。
+--- /dev/null
++++ after/tasks/audit-t03a-invocations.json
+@@ -0,0 +1,13 @@
++{
++  "schema_version": "1",
++  "id": "audit-t03a-invocations",
++  "objective": "给Agent增加持久调用预留/返回/错误/中断记录，统一LLM与科学工具的预算边界，不实现自动恢复。",
++  "context": "用户明确继续T03a，T02完整回归811通过且源码一致。Codex已写独立故障注入和模块测试。新invocations.py已创建为空文件，主体代码由DSH实现。只涉及两个生产文件，具体API、字段与集成点已冻结在契约中。",
++  "read_files": ["artifacts/audit-t03a-invocations-20261019/implementation-contract.md", "src/biomodel_agent/storage.py"],
++  "write_files": ["src/biomodel_agent/invocations.py", "src/biomodel_agent/agent.py"],
++  "expected_files": ["src/biomodel_agent/invocations.py", "src/biomodel_agent/agent.py"],
++  "instructions": "先读implementation-contract、invocations.py、storage.py和agent.py。按固定API先实现Journal，再在列明调用点小步集成；平坦refs避免深度上限，保存先于副作用，returned先于反馈，旧events与消息协议保留。不改测试；Codex独立验证。只允许明确文件read/edit/write，不用shell/目录扫描/网络/子Agent，不改任务卡或监督程序。遇到阻塞指出精确位置，不反复探索。最后简述接口和限制。",
++  "acceptance": ["预算预留在provider/科学工具执行前持久化", "返回/报错/中断有稳定操作ID且不重复执行", "检查点/最终记录引用可导出，深度不随操作数增长", "恢复继承计数且分支区分，原科学/权限/预算/模型消息不变"],
++  "verification_commands": [],
++  "budget": {"first_activity_ms":120000,"idle_ms":180000,"first_write_ms":240000,"write_idle_ms":240000,"total_ms":600000}
++}
+--- /dev/null
++++ after/tasks/audit-t03a-complete-integration.json
+@@ -0,0 +1,13 @@
++{
++  "schema_version": "1",
++  "id": "audit-t03a-complete-integration",
++  "objective": "只在agent.py补齐已交付Journal的剩余集成，修正异常计数与最终引用，不重新实现模块。",
++  "context": "上一DSH异常terminated已关闭，模块和Agent部分集成已保存。独立检查23通过12失败，明确遗漏点已写review-completion.md；Codex已修正Journal的interrupted异常类型字段，本轮该模块只读。当前任务只有一个可写文件。",
++  "read_files": ["artifacts/audit-t03a-invocations-20261019/review-completion.md", "src/biomodel_agent/invocations.py"],
++  "write_files": ["src/biomodel_agent/agent.py"],
++  "expected_files": ["src/biomodel_agent/agent.py"],
++  "instructions": "先读review-completion、Journal接口和当前agent.py，直接按8个已定位步骤补齐。用finally统一同步计数，所有实际provider/工具调用进入包装；保留messages/events/科学协议。不要重新设计或探索其他文件，不跑shell/测试/网络/子Agent。只用明确路径edit/read/write。最后简述改动。",
++  "acceptance": ["所有实际调用点有预留/返回边界且异常计数一致", "最终run与checkpoint引用一致且可导出", "已消费计算次数不因暂停恢复重置", "不改变旧模型请求或科学门槛"],
++  "verification_commands": [],
++  "budget": {"first_activity_ms":120000,"idle_ms":180000,"first_write_ms":180000,"write_idle_ms":180000,"total_ms":480000}
++}

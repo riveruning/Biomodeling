@@ -1,0 +1,1883 @@
+{
+  "evidence_kind": "scripted_control",
+  "trials": {
+    "fixed_workflow--decay--0--initial": [
+      {
+        "action": "submit_draft",
+        "args": {
+          "draft": {
+            "id": "decay",
+            "states": [
+              {
+                "id": "A",
+                "initial": 2.0,
+                "unit": "unknown",
+                "quantity_kind": "variable",
+                "nonnegative": false
+              }
+            ],
+            "parameters": [
+              {
+                "id": "k",
+                "value": 0.4,
+                "unit": "unknown",
+                "origin": "unknown"
+              }
+            ],
+            "compartment": {
+              "id": "cell",
+              "size": 1.0,
+              "unit": "dimensionless"
+            },
+            "reactions": [],
+            "rate_rules": [
+              {
+                "state": "A",
+                "expression": "-k*A"
+              }
+            ],
+            "derived": [],
+            "time_unit": "minute",
+            "element_map": {},
+            "hypothesis_refs": [],
+            "parent_ref": null
+          },
+          "evidence": [
+            {
+              "target": "A/initial",
+              "source_ref": "$main",
+              "page": 1,
+              "quote": "Initial A = 2.0."
+            },
+            {
+              "target": "k/value",
+              "source_ref": "$main",
+              "page": 1,
+              "quote": "Parameter k = 0.4."
+            },
+            {
+              "target": "rule:A/expression",
+              "source_ref": "$main",
+              "page": 1,
+              "quote": "Equation dA/dt = -k*A."
+            }
+          ]
+        }
+      }
+    ],
+    "fixed_workflow--translation--0--initial": [
+      {
+        "action": "ask_researcher",
+        "args": {
+          "question": "What is the initial P value?"
+        }
+      }
+    ],
+    "fixed_workflow--translation--0--clarified": [
+      {
+        "action": "submit_draft",
+        "args": {
+          "draft": {
+            "id": "translation",
+            "states": [
+              {
+                "id": "M",
+                "initial": 1.0,
+                "unit": "unknown",
+                "quantity_kind": "variable",
+                "nonnegative": false
+              },
+              {
+                "id": "P",
+                "initial": 0.2,
+                "unit": "unknown",
+                "quantity_kind": "variable",
+                "nonnegative": false
+              }
+            ],
+            "parameters": [
+              {
+                "id": "s",
+                "value": 0.8,
+                "unit": "unknown",
+                "origin": "unknown"
+              },
+              {
+                "id": "dm",
+                "value": 0.4,
+                "unit": "unknown",
+                "origin": "unknown"
+              },
+              {
+                "id": "kp",
+                "value": 0.6,
+                "unit": "unknown",
+                "origin": "unknown"
+              },
+              {
+                "id": "dp",
+                "value": 0.2,
+                "unit": "unknown",
+                "origin": "unknown"
+              }
+            ],
+            "compartment": {
+              "id": "cell",
+              "size": 1.0,
+              "unit": "dimensionless"
+            },
+            "reactions": [],
+            "rate_rules": [
+              {
+                "state": "M",
+                "expression": "s-dm*M"
+              },
+              {
+                "state": "P",
+                "expression": "kp*M-dp*P"
+              }
+            ],
+            "derived": [],
+            "time_unit": "minute",
+            "element_map": {},
+            "hypothesis_refs": [],
+            "parent_ref": null
+          },
+          "evidence": [
+            {
+              "target": "M/initial",
+              "source_ref": "$main",
+              "page": 1,
+              "quote": "Initial M = 1.0."
+            },
+            {
+              "target": "P/initial",
+              "source_ref": "$reply",
+              "page": 1,
+              "quote": "Initial P = 0.2."
+            },
+            {
+              "target": "s/value",
+              "source_ref": "$main",
+              "page": 1,
+              "quote": "Parameter s = 0.8."
+            },
+            {
+              "target": "dm/value",
+              "source_ref": "$main",
+              "page": 1,
+              "quote": "Parameter dm = 0.4."
+            },
+            {
+              "target": "kp/value",
+              "source_ref": "$main",
+              "page": 1,
+              "quote": "Parameter kp = 0.6."
+            },
+            {
+              "target": "dp/value",
+              "source_ref": "$main",
+              "page": 1,
+              "quote": "Parameter dp = 0.2."
+            },
+            {
+              "target": "rule:M/expression",
+              "source_ref": "$main",
+              "page": 1,
+              "quote": "Equation dM/dt = s-dm*M."
+            },
+            {
+              "target": "rule:P/expression",
+              "source_ref": "$main",
+              "page": 1,
+              "quote": "Equation dP/dt = kp*M-dp*P."
+            }
+          ]
+        }
+      }
+    ],
+    "fixed_workflow--logistic--0--initial": [
+      {
+        "action": "ask_researcher",
+        "args": {
+          "question": "Which reported dX/dt alternative was actually used?"
+        }
+      }
+    ],
+    "fixed_workflow--logistic--0--clarified": [
+      {
+        "action": "submit_draft",
+        "args": {
+          "draft": {
+            "id": "logistic",
+            "states": [
+              {
+                "id": "X",
+                "initial": 0.2,
+                "unit": "unknown",
+                "quantity_kind": "variable",
+                "nonnegative": false
+              }
+            ],
+            "parameters": [
+              {
+                "id": "r",
+                "value": 0.8,
+                "unit": "unknown",
+                "origin": "unknown"
+              },
+              {
+                "id": "K",
+                "value": 2.0,
+                "unit": "unknown",
+                "origin": "unknown"
+              }
+            ],
+            "compartment": {
+              "id": "cell",
+              "size": 1.0,
+              "unit": "dimensionless"
+            },
+            "reactions": [],
+            "rate_rules": [
+              {
+                "state": "X",
+                "expression": "r*X*(1-X/K)"
+              }
+            ],
+            "derived": [],
+            "time_unit": "minute",
+            "element_map": {},
+            "hypothesis_refs": [],
+            "parent_ref": null
+          },
+          "evidence": [
+            {
+              "target": "X/initial",
+              "source_ref": "$main",
+              "page": 1,
+              "quote": "Initial X = 0.2."
+            },
+            {
+              "target": "r/value",
+              "source_ref": "$main",
+              "page": 1,
+              "quote": "Parameter r = 0.8."
+            },
+            {
+              "target": "K/value",
+              "source_ref": "$main",
+              "page": 1,
+              "quote": "Parameter K = 2.0."
+            },
+            {
+              "target": "rule:X/expression",
+              "source_ref": "$reply",
+              "page": 1,
+              "quote": "The author confirms the intended equation is dX/dt = r*X*(1-X/K)."
+            }
+          ]
+        }
+      }
+    ],
+    "fixed_workflow--decay--1--initial": [
+      {
+        "action": "submit_draft",
+        "args": {
+          "draft": {
+            "id": "decay",
+            "states": [
+              {
+                "id": "A",
+                "initial": 2.0,
+                "unit": "unknown",
+                "quantity_kind": "variable",
+                "nonnegative": false
+              }
+            ],
+            "parameters": [
+              {
+                "id": "k",
+                "value": 0.4,
+                "unit": "unknown",
+                "origin": "unknown"
+              }
+            ],
+            "compartment": {
+              "id": "cell",
+              "size": 1.0,
+              "unit": "dimensionless"
+            },
+            "reactions": [],
+            "rate_rules": [
+              {
+                "state": "A",
+                "expression": "-k*A"
+              }
+            ],
+            "derived": [],
+            "time_unit": "minute",
+            "element_map": {},
+            "hypothesis_refs": [],
+            "parent_ref": null
+          },
+          "evidence": [
+            {
+              "target": "A/initial",
+              "source_ref": "$main",
+              "page": 1,
+              "quote": "Initial A = 2.0."
+            },
+            {
+              "target": "k/value",
+              "source_ref": "$main",
+              "page": 1,
+              "quote": "Parameter k = 0.4."
+            },
+            {
+              "target": "rule:A/expression",
+              "source_ref": "$main",
+              "page": 1,
+              "quote": "Equation dA/dt = -k*A."
+            }
+          ]
+        }
+      }
+    ],
+    "fixed_workflow--translation--1--initial": [
+      {
+        "action": "ask_researcher",
+        "args": {
+          "question": "What is the initial P value?"
+        }
+      }
+    ],
+    "fixed_workflow--translation--1--clarified": [
+      {
+        "action": "submit_draft",
+        "args": {
+          "draft": {
+            "id": "translation",
+            "states": [
+              {
+                "id": "M",
+                "initial": 1.0,
+                "unit": "unknown",
+                "quantity_kind": "variable",
+                "nonnegative": false
+              },
+              {
+                "id": "P",
+                "initial": 0.2,
+                "unit": "unknown",
+                "quantity_kind": "variable",
+                "nonnegative": false
+              }
+            ],
+            "parameters": [
+              {
+                "id": "s",
+                "value": 0.8,
+                "unit": "unknown",
+                "origin": "unknown"
+              },
+              {
+                "id": "dm",
+                "value": 0.4,
+                "unit": "unknown",
+                "origin": "unknown"
+              },
+              {
+                "id": "kp",
+                "value": 0.6,
+                "unit": "unknown",
+                "origin": "unknown"
+              },
+              {
+                "id": "dp",
+                "value": 0.2,
+                "unit": "unknown",
+                "origin": "unknown"
+              }
+            ],
+            "compartment": {
+              "id": "cell",
+              "size": 1.0,
+              "unit": "dimensionless"
+            },
+            "reactions": [],
+            "rate_rules": [
+              {
+                "state": "M",
+                "expression": "s-dm*M"
+              },
+              {
+                "state": "P",
+                "expression": "kp*M-dp*P"
+              }
+            ],
+            "derived": [],
+            "time_unit": "minute",
+            "element_map": {},
+            "hypothesis_refs": [],
+            "parent_ref": null
+          },
+          "evidence": [
+            {
+              "target": "M/initial",
+              "source_ref": "$main",
+              "page": 1,
+              "quote": "Initial M = 1.0."
+            },
+            {
+              "target": "P/initial",
+              "source_ref": "$reply",
+              "page": 1,
+              "quote": "Initial P = 0.2."
+            },
+            {
+              "target": "s/value",
+              "source_ref": "$main",
+              "page": 1,
+              "quote": "Parameter s = 0.8."
+            },
+            {
+              "target": "dm/value",
+              "source_ref": "$main",
+              "page": 1,
+              "quote": "Parameter dm = 0.4."
+            },
+            {
+              "target": "kp/value",
+              "source_ref": "$main",
+              "page": 1,
+              "quote": "Parameter kp = 0.6."
+            },
+            {
+              "target": "dp/value",
+              "source_ref": "$main",
+              "page": 1,
+              "quote": "Parameter dp = 0.2."
+            },
+            {
+              "target": "rule:M/expression",
+              "source_ref": "$main",
+              "page": 1,
+              "quote": "Equation dM/dt = s-dm*M."
+            },
+            {
+              "target": "rule:P/expression",
+              "source_ref": "$main",
+              "page": 1,
+              "quote": "Equation dP/dt = kp*M-dp*P."
+            }
+          ]
+        }
+      }
+    ],
+    "fixed_workflow--logistic--1--initial": [
+      {
+        "action": "ask_researcher",
+        "args": {
+          "question": "Which reported dX/dt alternative was actually used?"
+        }
+      }
+    ],
+    "fixed_workflow--logistic--1--clarified": [
+      {
+        "action": "submit_draft",
+        "args": {
+          "draft": {
+            "id": "logistic",
+            "states": [
+              {
+                "id": "X",
+                "initial": 0.2,
+                "unit": "unknown",
+                "quantity_kind": "variable",
+                "nonnegative": false
+              }
+            ],
+            "parameters": [
+              {
+                "id": "r",
+                "value": 0.8,
+                "unit": "unknown",
+                "origin": "unknown"
+              },
+              {
+                "id": "K",
+                "value": 2.0,
+                "unit": "unknown",
+                "origin": "unknown"
+              }
+            ],
+            "compartment": {
+              "id": "cell",
+              "size": 1.0,
+              "unit": "dimensionless"
+            },
+            "reactions": [],
+            "rate_rules": [
+              {
+                "state": "X",
+                "expression": "r*X*(1-X/K)"
+              }
+            ],
+            "derived": [],
+            "time_unit": "minute",
+            "element_map": {},
+            "hypothesis_refs": [],
+            "parent_ref": null
+          },
+          "evidence": [
+            {
+              "target": "X/initial",
+              "source_ref": "$main",
+              "page": 1,
+              "quote": "Initial X = 0.2."
+            },
+            {
+              "target": "r/value",
+              "source_ref": "$main",
+              "page": 1,
+              "quote": "Parameter r = 0.8."
+            },
+            {
+              "target": "K/value",
+              "source_ref": "$main",
+              "page": 1,
+              "quote": "Parameter K = 2.0."
+            },
+            {
+              "target": "rule:X/expression",
+              "source_ref": "$reply",
+              "page": 1,
+              "quote": "The author confirms the intended equation is dX/dt = r*X*(1-X/K)."
+            }
+          ]
+        }
+      }
+    ],
+    "generic_tool_agent--decay--0--initial": [
+      {
+        "action": "inspect_source",
+        "args": {
+          "source_ref": "$main",
+          "page": 1,
+          "start": 0,
+          "end": "$main_length"
+        }
+      },
+      {
+        "action": "submit_draft",
+        "args": {
+          "draft": {
+            "id": "decay",
+            "states": [
+              {
+                "id": "A",
+                "initial": 2.0,
+                "unit": "unknown",
+                "quantity_kind": "variable",
+                "nonnegative": false
+              }
+            ],
+            "parameters": [
+              {
+                "id": "k",
+                "value": 0.4,
+                "unit": "unknown",
+                "origin": "unknown"
+              }
+            ],
+            "compartment": {
+              "id": "cell",
+              "size": 1.0,
+              "unit": "dimensionless"
+            },
+            "reactions": [],
+            "rate_rules": [
+              {
+                "state": "A",
+                "expression": "-k*A"
+              }
+            ],
+            "derived": [],
+            "time_unit": "minute",
+            "element_map": {},
+            "hypothesis_refs": [],
+            "parent_ref": null
+          },
+          "evidence": [
+            {
+              "target": "A/initial",
+              "source_ref": "$main",
+              "page": 1,
+              "quote": "Initial A = 2.0."
+            },
+            {
+              "target": "k/value",
+              "source_ref": "$main",
+              "page": 1,
+              "quote": "Parameter k = 0.4."
+            },
+            {
+              "target": "rule:A/expression",
+              "source_ref": "$main",
+              "page": 1,
+              "quote": "Equation dA/dt = -k*A."
+            }
+          ]
+        }
+      },
+      {
+        "action": "run",
+        "args": {}
+      },
+      {
+        "action": "finish",
+        "args": {}
+      }
+    ],
+    "generic_tool_agent--translation--0--initial": [
+      {
+        "action": "inspect_source",
+        "args": {
+          "source_ref": "$main",
+          "page": 1,
+          "start": 0,
+          "end": "$main_length"
+        }
+      },
+      {
+        "action": "ask_researcher",
+        "args": {
+          "question": "What is the initial P value?"
+        }
+      }
+    ],
+    "generic_tool_agent--translation--0--clarified": [
+      {
+        "action": "submit_draft",
+        "args": {
+          "draft": {
+            "id": "translation",
+            "states": [
+              {
+                "id": "M",
+                "initial": 1.0,
+                "unit": "unknown",
+                "quantity_kind": "variable",
+                "nonnegative": false
+              },
+              {
+                "id": "P",
+                "initial": 0.2,
+                "unit": "unknown",
+                "quantity_kind": "variable",
+                "nonnegative": false
+              }
+            ],
+            "parameters": [
+              {
+                "id": "s",
+                "value": 0.8,
+                "unit": "unknown",
+                "origin": "unknown"
+              },
+              {
+                "id": "dm",
+                "value": 0.4,
+                "unit": "unknown",
+                "origin": "unknown"
+              },
+              {
+                "id": "kp",
+                "value": 0.6,
+                "unit": "unknown",
+                "origin": "unknown"
+              },
+              {
+                "id": "dp",
+                "value": 0.2,
+                "unit": "unknown",
+                "origin": "unknown"
+              }
+            ],
+            "compartment": {
+              "id": "cell",
+              "size": 1.0,
+              "unit": "dimensionless"
+            },
+            "reactions": [],
+            "rate_rules": [
+              {
+                "state": "M",
+                "expression": "s-dm*M"
+              },
+              {
+                "state": "P",
+                "expression": "kp*M-dp*P"
+              }
+            ],
+            "derived": [],
+            "time_unit": "minute",
+            "element_map": {},
+            "hypothesis_refs": [],
+            "parent_ref": null
+          },
+          "evidence": [
+            {
+              "target": "M/initial",
+              "source_ref": "$main",
+              "page": 1,
+              "quote": "Initial M = 1.0."
+            },
+            {
+              "target": "P/initial",
+              "source_ref": "$reply",
+              "page": 1,
+              "quote": "Initial P = 0.2."
+            },
+            {
+              "target": "s/value",
+              "source_ref": "$main",
+              "page": 1,
+              "quote": "Parameter s = 0.8."
+            },
+            {
+              "target": "dm/value",
+              "source_ref": "$main",
+              "page": 1,
+              "quote": "Parameter dm = 0.4."
+            },
+            {
+              "target": "kp/value",
+              "source_ref": "$main",
+              "page": 1,
+              "quote": "Parameter kp = 0.6."
+            },
+            {
+              "target": "dp/value",
+              "source_ref": "$main",
+              "page": 1,
+              "quote": "Parameter dp = 0.2."
+            },
+            {
+              "target": "rule:M/expression",
+              "source_ref": "$main",
+              "page": 1,
+              "quote": "Equation dM/dt = s-dm*M."
+            },
+            {
+              "target": "rule:P/expression",
+              "source_ref": "$main",
+              "page": 1,
+              "quote": "Equation dP/dt = kp*M-dp*P."
+            }
+          ]
+        }
+      },
+      {
+        "action": "run",
+        "args": {}
+      },
+      {
+        "action": "finish",
+        "args": {}
+      }
+    ],
+    "generic_tool_agent--logistic--0--initial": [
+      {
+        "action": "inspect_source",
+        "args": {
+          "source_ref": "$main",
+          "page": 1,
+          "start": 0,
+          "end": "$main_length"
+        }
+      },
+      {
+        "action": "ask_researcher",
+        "args": {
+          "question": "Which reported dX/dt alternative was actually used?"
+        }
+      }
+    ],
+    "generic_tool_agent--logistic--0--clarified": [
+      {
+        "action": "submit_draft",
+        "args": {
+          "draft": {
+            "id": "logistic",
+            "states": [
+              {
+                "id": "X",
+                "initial": 0.2,
+                "unit": "unknown",
+                "quantity_kind": "variable",
+                "nonnegative": false
+              }
+            ],
+            "parameters": [
+              {
+                "id": "r",
+                "value": 0.8,
+                "unit": "unknown",
+                "origin": "unknown"
+              },
+              {
+                "id": "K",
+                "value": 2.0,
+                "unit": "unknown",
+                "origin": "unknown"
+              }
+            ],
+            "compartment": {
+              "id": "cell",
+              "size": 1.0,
+              "unit": "dimensionless"
+            },
+            "reactions": [],
+            "rate_rules": [
+              {
+                "state": "X",
+                "expression": "r*X*(1-X/K)"
+              }
+            ],
+            "derived": [],
+            "time_unit": "minute",
+            "element_map": {},
+            "hypothesis_refs": [],
+            "parent_ref": null
+          },
+          "evidence": [
+            {
+              "target": "X/initial",
+              "source_ref": "$main",
+              "page": 1,
+              "quote": "Initial X = 0.2."
+            },
+            {
+              "target": "r/value",
+              "source_ref": "$main",
+              "page": 1,
+              "quote": "Parameter r = 0.8."
+            },
+            {
+              "target": "K/value",
+              "source_ref": "$main",
+              "page": 1,
+              "quote": "Parameter K = 2.0."
+            },
+            {
+              "target": "rule:X/expression",
+              "source_ref": "$reply",
+              "page": 1,
+              "quote": "The author confirms the intended equation is dX/dt = r*X*(1-X/K)."
+            }
+          ]
+        }
+      },
+      {
+        "action": "run",
+        "args": {}
+      },
+      {
+        "action": "finish",
+        "args": {}
+      }
+    ],
+    "generic_tool_agent--decay--1--initial": [
+      {
+        "action": "inspect_source",
+        "args": {
+          "source_ref": "$main",
+          "page": 1,
+          "start": 0,
+          "end": "$main_length"
+        }
+      },
+      {
+        "action": "submit_draft",
+        "args": {
+          "draft": {
+            "id": "decay",
+            "states": [
+              {
+                "id": "A",
+                "initial": 2.0,
+                "unit": "unknown",
+                "quantity_kind": "variable",
+                "nonnegative": false
+              }
+            ],
+            "parameters": [
+              {
+                "id": "k",
+                "value": 0.4,
+                "unit": "unknown",
+                "origin": "unknown"
+              }
+            ],
+            "compartment": {
+              "id": "cell",
+              "size": 1.0,
+              "unit": "dimensionless"
+            },
+            "reactions": [],
+            "rate_rules": [
+              {
+                "state": "A",
+                "expression": "-k*A"
+              }
+            ],
+            "derived": [],
+            "time_unit": "minute",
+            "element_map": {},
+            "hypothesis_refs": [],
+            "parent_ref": null
+          },
+          "evidence": [
+            {
+              "target": "A/initial",
+              "source_ref": "$main",
+              "page": 1,
+              "quote": "Initial A = 2.0."
+            },
+            {
+              "target": "k/value",
+              "source_ref": "$main",
+              "page": 1,
+              "quote": "Parameter k = 0.4."
+            },
+            {
+              "target": "rule:A/expression",
+              "source_ref": "$main",
+              "page": 1,
+              "quote": "Equation dA/dt = -k*A."
+            }
+          ]
+        }
+      },
+      {
+        "action": "run",
+        "args": {}
+      },
+      {
+        "action": "finish",
+        "args": {}
+      }
+    ],
+    "generic_tool_agent--translation--1--initial": [
+      {
+        "action": "inspect_source",
+        "args": {
+          "source_ref": "$main",
+          "page": 1,
+          "start": 0,
+          "end": "$main_length"
+        }
+      },
+      {
+        "action": "ask_researcher",
+        "args": {
+          "question": "What is the initial P value?"
+        }
+      }
+    ],
+    "generic_tool_agent--translation--1--clarified": [
+      {
+        "action": "submit_draft",
+        "args": {
+          "draft": {
+            "id": "translation",
+            "states": [
+              {
+                "id": "M",
+                "initial": 1.0,
+                "unit": "unknown",
+                "quantity_kind": "variable",
+                "nonnegative": false
+              },
+              {
+                "id": "P",
+                "initial": 0.2,
+                "unit": "unknown",
+                "quantity_kind": "variable",
+                "nonnegative": false
+              }
+            ],
+            "parameters": [
+              {
+                "id": "s",
+                "value": 0.8,
+                "unit": "unknown",
+                "origin": "unknown"
+              },
+              {
+                "id": "dm",
+                "value": 0.4,
+                "unit": "unknown",
+                "origin": "unknown"
+              },
+              {
+                "id": "kp",
+                "value": 0.6,
+                "unit": "unknown",
+                "origin": "unknown"
+              },
+              {
+                "id": "dp",
+                "value": 0.2,
+                "unit": "unknown",
+                "origin": "unknown"
+              }
+            ],
+            "compartment": {
+              "id": "cell",
+              "size": 1.0,
+              "unit": "dimensionless"
+            },
+            "reactions": [],
+            "rate_rules": [
+              {
+                "state": "M",
+                "expression": "s-dm*M"
+              },
+              {
+                "state": "P",
+                "expression": "kp*M-dp*P"
+              }
+            ],
+            "derived": [],
+            "time_unit": "minute",
+            "element_map": {},
+            "hypothesis_refs": [],
+            "parent_ref": null
+          },
+          "evidence": [
+            {
+              "target": "M/initial",
+              "source_ref": "$main",
+              "page": 1,
+              "quote": "Initial M = 1.0."
+            },
+            {
+              "target": "P/initial",
+              "source_ref": "$reply",
+              "page": 1,
+              "quote": "Initial P = 0.2."
+            },
+            {
+              "target": "s/value",
+              "source_ref": "$main",
+              "page": 1,
+              "quote": "Parameter s = 0.8."
+            },
+            {
+              "target": "dm/value",
+              "source_ref": "$main",
+              "page": 1,
+              "quote": "Parameter dm = 0.4."
+            },
+            {
+              "target": "kp/value",
+              "source_ref": "$main",
+              "page": 1,
+              "quote": "Parameter kp = 0.6."
+            },
+            {
+              "target": "dp/value",
+              "source_ref": "$main",
+              "page": 1,
+              "quote": "Parameter dp = 0.2."
+            },
+            {
+              "target": "rule:M/expression",
+              "source_ref": "$main",
+              "page": 1,
+              "quote": "Equation dM/dt = s-dm*M."
+            },
+            {
+              "target": "rule:P/expression",
+              "source_ref": "$main",
+              "page": 1,
+              "quote": "Equation dP/dt = kp*M-dp*P."
+            }
+          ]
+        }
+      },
+      {
+        "action": "run",
+        "args": {}
+      },
+      {
+        "action": "finish",
+        "args": {}
+      }
+    ],
+    "generic_tool_agent--logistic--1--initial": [
+      {
+        "action": "inspect_source",
+        "args": {
+          "source_ref": "$main",
+          "page": 1,
+          "start": 0,
+          "end": "$main_length"
+        }
+      },
+      {
+        "action": "ask_researcher",
+        "args": {
+          "question": "Which reported dX/dt alternative was actually used?"
+        }
+      }
+    ],
+    "generic_tool_agent--logistic--1--clarified": [
+      {
+        "action": "submit_draft",
+        "args": {
+          "draft": {
+            "id": "logistic",
+            "states": [
+              {
+                "id": "X",
+                "initial": 0.2,
+                "unit": "unknown",
+                "quantity_kind": "variable",
+                "nonnegative": false
+              }
+            ],
+            "parameters": [
+              {
+                "id": "r",
+                "value": 0.8,
+                "unit": "unknown",
+                "origin": "unknown"
+              },
+              {
+                "id": "K",
+                "value": 2.0,
+                "unit": "unknown",
+                "origin": "unknown"
+              }
+            ],
+            "compartment": {
+              "id": "cell",
+              "size": 1.0,
+              "unit": "dimensionless"
+            },
+            "reactions": [],
+            "rate_rules": [
+              {
+                "state": "X",
+                "expression": "r*X*(1-X/K)"
+              }
+            ],
+            "derived": [],
+            "time_unit": "minute",
+            "element_map": {},
+            "hypothesis_refs": [],
+            "parent_ref": null
+          },
+          "evidence": [
+            {
+              "target": "X/initial",
+              "source_ref": "$main",
+              "page": 1,
+              "quote": "Initial X = 0.2."
+            },
+            {
+              "target": "r/value",
+              "source_ref": "$main",
+              "page": 1,
+              "quote": "Parameter r = 0.8."
+            },
+            {
+              "target": "K/value",
+              "source_ref": "$main",
+              "page": 1,
+              "quote": "Parameter K = 2.0."
+            },
+            {
+              "target": "rule:X/expression",
+              "source_ref": "$reply",
+              "page": 1,
+              "quote": "The author confirms the intended equation is dX/dt = r*X*(1-X/K)."
+            }
+          ]
+        }
+      },
+      {
+        "action": "run",
+        "args": {}
+      },
+      {
+        "action": "finish",
+        "args": {}
+      }
+    ],
+    "domain_agent--decay--0--initial": [
+      {
+        "action": "inspect_source",
+        "args": {
+          "source_ref": "$main",
+          "page": 1,
+          "start": 0,
+          "end": "$main_length"
+        }
+      },
+      {
+        "action": "submit_draft",
+        "args": {
+          "draft": {
+            "id": "decay",
+            "states": [
+              {
+                "id": "A",
+                "initial": 2.0,
+                "unit": "unknown",
+                "quantity_kind": "variable",
+                "nonnegative": false
+              }
+            ],
+            "parameters": [
+              {
+                "id": "k",
+                "value": 0.4,
+                "unit": "unknown",
+                "origin": "unknown"
+              }
+            ],
+            "compartment": {
+              "id": "cell",
+              "size": 1.0,
+              "unit": "dimensionless"
+            },
+            "reactions": [],
+            "rate_rules": [
+              {
+                "state": "A",
+                "expression": "-k*A"
+              }
+            ],
+            "derived": [],
+            "time_unit": "minute",
+            "element_map": {},
+            "hypothesis_refs": [],
+            "parent_ref": null
+          },
+          "evidence": [
+            {
+              "target": "A/initial",
+              "source_ref": "$main",
+              "page": 1,
+              "quote": "Initial A = 2.0."
+            },
+            {
+              "target": "k/value",
+              "source_ref": "$main",
+              "page": 1,
+              "quote": "Parameter k = 0.4."
+            },
+            {
+              "target": "rule:A/expression",
+              "source_ref": "$main",
+              "page": 1,
+              "quote": "Equation dA/dt = -k*A."
+            }
+          ]
+        }
+      },
+      {
+        "action": "run",
+        "args": {}
+      },
+      {
+        "action": "finish",
+        "args": {}
+      }
+    ],
+    "domain_agent--translation--0--initial": [
+      {
+        "action": "inspect_source",
+        "args": {
+          "source_ref": "$main",
+          "page": 1,
+          "start": 0,
+          "end": "$main_length"
+        }
+      },
+      {
+        "action": "ask_researcher",
+        "args": {
+          "question": "What is the initial P value?"
+        }
+      }
+    ],
+    "domain_agent--translation--0--clarified": [
+      {
+        "action": "submit_draft",
+        "args": {
+          "draft": {
+            "id": "translation",
+            "states": [
+              {
+                "id": "M",
+                "initial": 1.0,
+                "unit": "unknown",
+                "quantity_kind": "variable",
+                "nonnegative": false
+              },
+              {
+                "id": "P",
+                "initial": 0.2,
+                "unit": "unknown",
+                "quantity_kind": "variable",
+                "nonnegative": false
+              }
+            ],
+            "parameters": [
+              {
+                "id": "s",
+                "value": 0.8,
+                "unit": "unknown",
+                "origin": "unknown"
+              },
+              {
+                "id": "dm",
+                "value": 0.4,
+                "unit": "unknown",
+                "origin": "unknown"
+              },
+              {
+                "id": "kp",
+                "value": 0.6,
+                "unit": "unknown",
+                "origin": "unknown"
+              },
+              {
+                "id": "dp",
+                "value": 0.2,
+                "unit": "unknown",
+                "origin": "unknown"
+              }
+            ],
+            "compartment": {
+              "id": "cell",
+              "size": 1.0,
+              "unit": "dimensionless"
+            },
+            "reactions": [],
+            "rate_rules": [
+              {
+                "state": "M",
+                "expression": "s-dm*M"
+              },
+              {
+                "state": "P",
+                "expression": "kp*M-dp*P"
+              }
+            ],
+            "derived": [],
+            "time_unit": "minute",
+            "element_map": {},
+            "hypothesis_refs": [],
+            "parent_ref": null
+          },
+          "evidence": [
+            {
+              "target": "M/initial",
+              "source_ref": "$main",
+              "page": 1,
+              "quote": "Initial M = 1.0."
+            },
+            {
+              "target": "P/initial",
+              "source_ref": "$reply",
+              "page": 1,
+              "quote": "Initial P = 0.2."
+            },
+            {
+              "target": "s/value",
+              "source_ref": "$main",
+              "page": 1,
+              "quote": "Parameter s = 0.8."
+            },
+            {
+              "target": "dm/value",
+              "source_ref": "$main",
+              "page": 1,
+              "quote": "Parameter dm = 0.4."
+            },
+            {
+              "target": "kp/value",
+              "source_ref": "$main",
+              "page": 1,
+              "quote": "Parameter kp = 0.6."
+            },
+            {
+              "target": "dp/value",
+              "source_ref": "$main",
+              "page": 1,
+              "quote": "Parameter dp = 0.2."
+            },
+            {
+              "target": "rule:M/expression",
+              "source_ref": "$main",
+              "page": 1,
+              "quote": "Equation dM/dt = s-dm*M."
+            },
+            {
+              "target": "rule:P/expression",
+              "source_ref": "$main",
+              "page": 1,
+              "quote": "Equation dP/dt = kp*M-dp*P."
+            }
+          ]
+        }
+      },
+      {
+        "action": "run",
+        "args": {}
+      },
+      {
+        "action": "finish",
+        "args": {}
+      }
+    ],
+    "domain_agent--logistic--0--initial": [
+      {
+        "action": "inspect_source",
+        "args": {
+          "source_ref": "$main",
+          "page": 1,
+          "start": 0,
+          "end": "$main_length"
+        }
+      },
+      {
+        "action": "ask_researcher",
+        "args": {
+          "question": "Which reported dX/dt alternative was actually used?"
+        }
+      }
+    ],
+    "domain_agent--logistic--0--clarified": [
+      {
+        "action": "submit_draft",
+        "args": {
+          "draft": {
+            "id": "logistic",
+            "states": [
+              {
+                "id": "X",
+                "initial": 0.2,
+                "unit": "unknown",
+                "quantity_kind": "variable",
+                "nonnegative": false
+              }
+            ],
+            "parameters": [
+              {
+                "id": "r",
+                "value": 0.8,
+                "unit": "unknown",
+                "origin": "unknown"
+              },
+              {
+                "id": "K",
+                "value": 2.0,
+                "unit": "unknown",
+                "origin": "unknown"
+              }
+            ],
+            "compartment": {
+              "id": "cell",
+              "size": 1.0,
+              "unit": "dimensionless"
+            },
+            "reactions": [],
+            "rate_rules": [
+              {
+                "state": "X",
+                "expression": "r*X*(1-X/K)"
+              }
+            ],
+            "derived": [],
+            "time_unit": "minute",
+            "element_map": {},
+            "hypothesis_refs": [],
+            "parent_ref": null
+          },
+          "evidence": [
+            {
+              "target": "X/initial",
+              "source_ref": "$main",
+              "page": 1,
+              "quote": "Initial X = 0.2."
+            },
+            {
+              "target": "r/value",
+              "source_ref": "$main",
+              "page": 1,
+              "quote": "Parameter r = 0.8."
+            },
+            {
+              "target": "K/value",
+              "source_ref": "$main",
+              "page": 1,
+              "quote": "Parameter K = 2.0."
+            },
+            {
+              "target": "rule:X/expression",
+              "source_ref": "$reply",
+              "page": 1,
+              "quote": "The author confirms the intended equation is dX/dt = r*X*(1-X/K)."
+            }
+          ]
+        }
+      },
+      {
+        "action": "run",
+        "args": {}
+      },
+      {
+        "action": "finish",
+        "args": {}
+      }
+    ],
+    "domain_agent--decay--1--initial": [
+      {
+        "action": "inspect_source",
+        "args": {
+          "source_ref": "$main",
+          "page": 1,
+          "start": 0,
+          "end": "$main_length"
+        }
+      },
+      {
+        "action": "submit_draft",
+        "args": {
+          "draft": {
+            "id": "decay",
+            "states": [
+              {
+                "id": "A",
+                "initial": 2.0,
+                "unit": "unknown",
+                "quantity_kind": "variable",
+                "nonnegative": false
+              }
+            ],
+            "parameters": [
+              {
+                "id": "k",
+                "value": 0.4,
+                "unit": "unknown",
+                "origin": "unknown"
+              }
+            ],
+            "compartment": {
+              "id": "cell",
+              "size": 1.0,
+              "unit": "dimensionless"
+            },
+            "reactions": [],
+            "rate_rules": [
+              {
+                "state": "A",
+                "expression": "-k*A"
+              }
+            ],
+            "derived": [],
+            "time_unit": "minute",
+            "element_map": {},
+            "hypothesis_refs": [],
+            "parent_ref": null
+          },
+          "evidence": [
+            {
+              "target": "A/initial",
+              "source_ref": "$main",
+              "page": 1,
+              "quote": "Initial A = 2.0."
+            },
+            {
+              "target": "k/value",
+              "source_ref": "$main",
+              "page": 1,
+              "quote": "Parameter k = 0.4."
+            },
+            {
+              "target": "rule:A/expression",
+              "source_ref": "$main",
+              "page": 1,
+              "quote": "Equation dA/dt = -k*A."
+            }
+          ]
+        }
+      },
+      {
+        "action": "run",
+        "args": {}
+      },
+      {
+        "action": "finish",
+        "args": {}
+      }
+    ],
+    "domain_agent--translation--1--initial": [
+      {
+        "action": "inspect_source",
+        "args": {
+          "source_ref": "$main",
+          "page": 1,
+          "start": 0,
+          "end": "$main_length"
+        }
+      },
+      {
+        "action": "ask_researcher",
+        "args": {
+          "question": "What is the initial P value?"
+        }
+      }
+    ],
+    "domain_agent--translation--1--clarified": [
+      {
+        "action": "submit_draft",
+        "args": {
+          "draft": {
+            "id": "translation",
+            "states": [
+              {
+                "id": "M",
+                "initial": 1.0,
+                "unit": "unknown",
+                "quantity_kind": "variable",
+                "nonnegative": false
+              },
+              {
+                "id": "P",
+                "initial": 0.2,
+                "unit": "unknown",
+                "quantity_kind": "variable",
+                "nonnegative": false
+              }
+            ],
+            "parameters": [
+              {
+                "id": "s",
+                "value": 0.8,
+                "unit": "unknown",
+                "origin": "unknown"
+              },
+              {
+                "id": "dm",
+                "value": 0.4,
+                "unit": "unknown",
+                "origin": "unknown"
+              },
+              {
+                "id": "kp",
+                "value": 0.6,
+                "unit": "unknown",
+                "origin": "unknown"
+              },
+              {
+                "id": "dp",
+                "value": 0.2,
+                "unit": "unknown",
+                "origin": "unknown"
+              }
+            ],
+            "compartment": {
+              "id": "cell",
+              "size": 1.0,
+              "unit": "dimensionless"
+            },
+            "reactions": [],
+            "rate_rules": [
+              {
+                "state": "M",
+                "expression": "s-dm*M"
+              },
+              {
+                "state": "P",
+                "expression": "kp*M-dp*P"
+              }
+            ],
+            "derived": [],
+            "time_unit": "minute",
+            "element_map": {},
+            "hypothesis_refs": [],
+            "parent_ref": null
+          },
+          "evidence": [
+            {
+              "target": "M/initial",
+              "source_ref": "$main",
+              "page": 1,
+              "quote": "Initial M = 1.0."
+            },
+            {
+              "target": "P/initial",
+              "source_ref": "$reply",
+              "page": 1,
+              "quote": "Initial P = 0.2."
+            },
+            {
+              "target": "s/value",
+              "source_ref": "$main",
+              "page": 1,
+              "quote": "Parameter s = 0.8."
+            },
+            {
+              "target": "dm/value",
+              "source_ref": "$main",
+              "page": 1,
+              "quote": "Parameter dm = 0.4."
+            },
+            {
+              "target": "kp/value",
+              "source_ref": "$main",
+              "page": 1,
+              "quote": "Parameter kp = 0.6."
+            },
+            {
+              "target": "dp/value",
+              "source_ref": "$main",
+              "page": 1,
+              "quote": "Parameter dp = 0.2."
+            },
+            {
+              "target": "rule:M/expression",
+              "source_ref": "$main",
+              "page": 1,
+              "quote": "Equation dM/dt = s-dm*M."
+            },
+            {
+              "target": "rule:P/expression",
+              "source_ref": "$main",
+              "page": 1,
+              "quote": "Equation dP/dt = kp*M-dp*P."
+            }
+          ]
+        }
+      },
+      {
+        "action": "run",
+        "args": {}
+      },
+      {
+        "action": "finish",
+        "args": {}
+      }
+    ],
+    "domain_agent--logistic--1--initial": [
+      {
+        "action": "inspect_source",
+        "args": {
+          "source_ref": "$main",
+          "page": 1,
+          "start": 0,
+          "end": "$main_length"
+        }
+      },
+      {
+        "action": "ask_researcher",
+        "args": {
+          "question": "Which reported dX/dt alternative was actually used?"
+        }
+      }
+    ],
+    "domain_agent--logistic--1--clarified": [
+      {
+        "action": "submit_draft",
+        "args": {
+          "draft": {
+            "id": "logistic",
+            "states": [
+              {
+                "id": "X",
+                "initial": 0.2,
+                "unit": "unknown",
+                "quantity_kind": "variable",
+                "nonnegative": false
+              }
+            ],
+            "parameters": [
+              {
+                "id": "r",
+                "value": 0.8,
+                "unit": "unknown",
+                "origin": "unknown"
+              },
+              {
+                "id": "K",
+                "value": 2.0,
+                "unit": "unknown",
+                "origin": "unknown"
+              }
+            ],
+            "compartment": {
+              "id": "cell",
+              "size": 1.0,
+              "unit": "dimensionless"
+            },
+            "reactions": [],
+            "rate_rules": [
+              {
+                "state": "X",
+                "expression": "r*X*(1-X/K)"
+              }
+            ],
+            "derived": [],
+            "time_unit": "minute",
+            "element_map": {},
+            "hypothesis_refs": [],
+            "parent_ref": null
+          },
+          "evidence": [
+            {
+              "target": "X/initial",
+              "source_ref": "$main",
+              "page": 1,
+              "quote": "Initial X = 0.2."
+            },
+            {
+              "target": "r/value",
+              "source_ref": "$main",
+              "page": 1,
+              "quote": "Parameter r = 0.8."
+            },
+            {
+              "target": "K/value",
+              "source_ref": "$main",
+              "page": 1,
+              "quote": "Parameter K = 2.0."
+            },
+            {
+              "target": "rule:X/expression",
+              "source_ref": "$reply",
+              "page": 1,
+              "quote": "The author confirms the intended equation is dX/dt = r*X*(1-X/K)."
+            }
+          ]
+        }
+      },
+      {
+        "action": "run",
+        "args": {}
+      },
+      {
+        "action": "finish",
+        "args": {}
+      }
+    ]
+  }
+}

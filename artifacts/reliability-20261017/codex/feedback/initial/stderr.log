@@ -1,0 +1,12 @@
+Reading additional input from stdin...
+2026-10-17T02:07:32.766299Z  WARN codex_rollout::list: state db discrepancy during find_thread_path_by_id_str_in_subdir: falling_back
+2026-10-17T02:07:33.106497Z  WARN codex_rollout::list: state db discrepancy during find_thread_path_by_id_str_in_subdir: falling_back
+2026-10-17T02:07:33.412737Z  WARN codex_rollout::list: state db discrepancy during find_thread_path_by_id_str_in_subdir: falling_back
+2026-10-17T02:07:33.747015Z  WARN codex_rollout::list: state db discrepancy during find_thread_path_by_id_str_in_subdir: falling_back
+2026-10-17T02:07:34.088833Z  WARN codex_rollout::list: state db discrepancy during find_thread_path_by_id_str_in_subdir: falling_back
+2026-10-17T02:07:34.395247Z  WARN codex_rollout::list: state db discrepancy during find_thread_path_by_id_str_in_subdir: falling_back
+2026-10-17T02:07:34.693207Z  WARN codex_rollout::list: state db discrepancy during find_thread_path_by_id_str_in_subdir: falling_back
+2026-10-17T02:07:35.023012Z  WARN codex_rollout::list: state db discrepancy during find_thread_path_by_id_str_in_subdir: falling_back
+2026-10-17T02:07:35.333410Z  WARN codex_rollout::list: state db discrepancy during find_thread_path_by_id_str_in_subdir: falling_back
+2026-10-17T02:07:42.602288Z  WARN codex_core_plugins::remote::remote_installed_plugin_sync: failed to download remote installed plugin bundle remote_plugin_id=plugin_connector_1p_ab21a553bfbc81919ea8fd1858e3ffa7 plugin=google-drive marketplace=openai-curated-remote error=plugin manifest is missing after installation staging
+2026-10-17T02:08:32.962725Z  WARN codex_core::shell_snapshot: Failed to delete shell snapshot at AbsolutePathBuf("/mnt/c/Users/Lenovo/.codex/shell_snapshots/01a1479d-47cb-7fe0-89e0-39b7a7dc48d5.1792202852335474365.sh"): Os { code: 2, kind: NotFound, message: "No such file or directory" }

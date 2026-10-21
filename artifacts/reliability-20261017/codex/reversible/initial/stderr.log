@@ -1,0 +1,12 @@
+Reading additional input from stdin...
+2026-10-17T02:09:28.220689Z  WARN codex_rollout::list: state db discrepancy during find_thread_path_by_id_str_in_subdir: falling_back
+2026-10-17T02:09:28.551909Z  WARN codex_rollout::list: state db discrepancy during find_thread_path_by_id_str_in_subdir: falling_back
+2026-10-17T02:09:28.859667Z  WARN codex_rollout::list: state db discrepancy during find_thread_path_by_id_str_in_subdir: falling_back
+2026-10-17T02:09:29.178917Z  WARN codex_rollout::list: state db discrepancy during find_thread_path_by_id_str_in_subdir: falling_back
+2026-10-17T02:09:29.475448Z  WARN codex_rollout::list: state db discrepancy during find_thread_path_by_id_str_in_subdir: falling_back
+2026-10-17T02:09:29.850418Z  WARN codex_rollout::list: state db discrepancy during find_thread_path_by_id_str_in_subdir: falling_back
+2026-10-17T02:09:30.249407Z  WARN codex_rollout::list: state db discrepancy during find_thread_path_by_id_str_in_subdir: falling_back
+2026-10-17T02:09:30.567411Z  WARN codex_rollout::list: state db discrepancy during find_thread_path_by_id_str_in_subdir: falling_back
+2026-10-17T02:09:30.852312Z  WARN codex_rollout::list: state db discrepancy during find_thread_path_by_id_str_in_subdir: falling_back
+2026-10-17T02:09:40.418131Z  WARN codex_core_plugins::remote::remote_installed_plugin_sync: failed to remove stale remote plugin cache entries error=failed to remove stale remote plugin cache entry /mnt/c/Users/Lenovo/.codex/plugins/cache/openai-curated-remote/plugin-install-DSKvyU: No such file or directory (os error 2)
+2026-10-17T02:09:51.046218Z  WARN codex_core::shell_snapshot: Failed to delete shell snapshot at AbsolutePathBuf("/mnt/c/Users/Lenovo/.codex/shell_snapshots/01a1479f-0b34-77f3-b7ca-442fb8b8ff2f.1792202967884687321.sh"): Os { code: 2, kind: NotFound, message: "No such file or directory" }

@@ -1,0 +1,13 @@
+{
+  "agent_ref": "ff08f1c8b8cfc162869fc39d92561e5b80d1c28621f6dff14641b460de54bc9b",
+  "status": "completed",
+  "calls": 4,
+  "retries": 0,
+  "repairs": 0,
+  "model_ref": "e6920df7f0029cdf9a74344e9d7cc6d3da0f518a4153924fbe30860aff2723c5",
+  "run_ref": "9b9f2a9a6e5fcaab984b013b328d07e2c90e695c27e74dc990f2ff2dee696c86",
+  "questions": [],
+  "tokens_cumulative": 11332,
+  "elapsed_seconds": 57.20363669899962,
+  "modules_sha256": "247383f706a0ccfdb63c84e45360d79be7c44cf3beb52d6477ba4a63a38cc0de"
+}

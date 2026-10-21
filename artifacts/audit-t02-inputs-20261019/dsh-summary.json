@@ -1,0 +1,16 @@
+{
+  "taskId": "audit-t02-strict-inputs",
+  "bridgeTaskId": "7d79c8e6-c846-4535-80f2-dfc8f2251d08",
+  "outcome": "ready_for_review",
+  "elapsedMs": 282196,
+  "polls": 59,
+  "reviews": 17,
+  "changedFiles": [
+    "src/biomodel_agent/domain/contracts.py",
+    "src/biomodel_agent/domain/serialization.py"
+  ],
+  "missingFiles": [],
+  "delivered": true,
+  "acceptance": "not_run",
+  "outputDirectory": "/home/riveruning/biologymodel_agent/.workflow/runs/audit-t02-strict-inputs-1792378264150-8968f562"
+}

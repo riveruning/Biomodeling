@@ -1,0 +1,6 @@
+{
+  "file": "talk2biomodels-source.zip",
+  "bytes": 354690594,
+  "sha256": "f4c6f8c27297b71166898a3e1e8e0578438beec9f4036a649231bfa6397f5c96",
+  "source_archive_retention": "Removed bulky download archive after extracting pinned module source and license; complete source manifest retained."
+}

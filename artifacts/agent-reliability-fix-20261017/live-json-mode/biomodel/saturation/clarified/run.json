@@ -1,0 +1,274 @@
+{
+  "cache_key": "27becfd2c33905fd1ea154041787c714e89a2215553c07e70e815eb1c715c138",
+  "cached_from": null,
+  "comparison": {
+    "reason": "no reference result: self-comparison is not a reproduction",
+    "status": "not_run"
+  },
+  "convergence": {
+    "coarse_maxabs": {
+      "S": 2.0
+    },
+    "comparison": {
+      "columns": [
+        "S"
+      ],
+      "max_scaled_error": 1.1896737044381211e-06,
+      "scales": {
+        "S": 2.0
+      },
+      "status": "pass",
+      "threshold": 0.001,
+      "worst": "S[4]"
+    },
+    "declaration": "scales are a numerical-stability scale, not the paper's reference scale",
+    "fine_status": "succeeded",
+    "protocol": "numerical_stability_not_paper_baseline",
+    "requested": {
+      "atol": 1.0000000000000001e-11,
+      "rtol": 1e-08
+    },
+    "scales_source": "coarse_maxabs_per_variable",
+    "status": "pass"
+  },
+  "convergence_ref": "3b565afd6bb5e7e2f89e07b6f1d8b1b02fbbfd71ade340678a8b096553ef98c1",
+  "environment": {
+    "implementation": "CPython",
+    "machine": "x86_64",
+    "modules": {
+      "__init__.py": "3ebbb4065141012142168ecc70776886d2a452d80c3c3c1b19fc94665136fd5c",
+      "__main__.py": "11e716d1f66f25a0dd6ee566cb9bff3452624a3f47b8e009c3631ab2a9b01630",
+      "agent.py": "4fd88a93e2cfff3acae457fddd08d0b5185d8223dbadd47f6887e8f559161b45",
+      "agent_tools.py": "ea6118321f64dcd22df90db817ecbec5a7835818d0a5be584f1e02ca18b455d0",
+      "application.py": "1da1d5fbab5d7c5281fc55449723c95b335ca144e0cbc57ab2440ff7316490a9",
+      "bundles.py": "e3d710814a0205fc84fd66e5699ed5335a3bbe4d1910fc3c7f688d7ad6a49acd",
+      "cli.py": "1cf8f7b873426291c703336fc620d98956c762fa0f88b8cfa28c49775c3b54e8",
+      "domain/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "domain/contracts.py": "0c9711fb6500a00cbb4c5be748db77b7b4a8a32a0f54d76d04fc80be424f8366",
+      "domain/serialization.py": "35cd7eac8aa83a8bb7e41e0ea7f568abe34a570d38b8484c017ccf9b37d7e395",
+      "evidence.py": "020c4e0653bdbd9e06734ed060b89984dda013a9e7810ec132b51d5bf794b79f",
+      "expressions.py": "972ce61a74b747af2fcb92893b6c98bf9371408ff9737f68f22fe36e043fc8ea",
+      "fitting.py": "099546d69f8735c6b6357d23e9b4618025fc59f5ac8f655406e52db1325291b1",
+      "hypotheses.py": "22fcc3ecb93e6845b8aa484e396885bf2b56b6eb8d64e47fed7519e717f828b7",
+      "literature_scoring.py": "3e2c20e568de9203dd8e12095627f76046ab6d68b62944e3952dad61a4f70499",
+      "llm.py": "bdeae49bf8045859ec661158186675d1ccf380c19e2bd090947bb925c77a7452",
+      "modeling.py": "69cafa82bffe977ee4a0b1e3b77c29c1bb48fd0e48d58f4644fcd045eb43c44e",
+      "reporting.py": "a31c59f4a1f456d6eeb74e196dbfe85cf344ec685996aa4a7e89d16cb113490e",
+      "simulation.py": "5ce58365e6adb77e801719a519aef488a938654bc50ca34c9dd6c2189e509f18",
+      "source_review.py": "0f261381cff693105be52dd5b6c06190ddcc870ea19be95026b9ef74b24694d4",
+      "storage.py": "8fdfff97a2477666515664e71e2122eb2a4885d79f16c8fbb1a04735461a3062",
+      "validation.py": "a358aa2ecf7c460f3f263fbf5eb08188068f493f21f4a2a69bb1afe90faebb86"
+    },
+    "modules_sha256": "6576b32fccfcdeb47f6de998db003859c0ba3f9c9da831e42eb3155fbbe54775",
+    "packages": {
+      "biomodel-agent": "0.1.0",
+      "libroadrunner": "2.10.0",
+      "libsbml": "absent",
+      "numpy": "2.5.4",
+      "pypdf": "6.20.1",
+      "python-libsbml": "5.21.2",
+      "roadrunner": "absent",
+      "scipy": "1.18.1"
+    },
+    "platform": "Linux-6.6.87.2-microsoft-standard-WSL2-x86_64-with-glibc2.39",
+    "provenance": "content_hash_of_src_biomodel_agent_py (no git metadata available)",
+    "python": "3.12.3",
+    "python_full": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]"
+  },
+  "input_ref": "27becfd2c33905fd1ea154041787c714e89a2215553c07e70e815eb1c715c138",
+  "mode": "strict_reproduction",
+  "numeric_validation": {
+    "checks": [
+      {
+        "code": "finite",
+        "message": "all output values are finite",
+        "severity": "blocking",
+        "status": "pass"
+      },
+      {
+        "code": "nonnegative",
+        "message": "no nonnegative variables requested",
+        "severity": "informational",
+        "status": "not_applicable"
+      },
+      {
+        "code": "conservation",
+        "message": "conservation/mass-balance checking is not implemented; not a pass",
+        "severity": "informational",
+        "status": "not_run"
+      },
+      {
+        "code": "convergence",
+        "message": "solver refinement (rtol/atol / 10): 1.1896737044381211e-06 vs threshold 0.001",
+        "severity": "blocking",
+        "status": "pass"
+      }
+    ]
+  },
+  "replay_of": null,
+  "run_id": "c8202893-62d3-48da-8322-d4c9e7f793cf",
+  "scientific_status": "not_verified",
+  "simulation": {
+    "backend": "libRoadRunner/cvode",
+    "checks": {
+      "checks": [
+        {
+          "code": "finite",
+          "message": "all output values are finite",
+          "severity": "blocking",
+          "status": "pass"
+        }
+      ]
+    },
+    "diagnostics": [
+      "backend=libRoadRunner/cvode",
+      "roadrunner=2.10.0",
+      "rtol=1e-07 atol=1e-10 max_steps=100000"
+    ],
+    "elapsed_s": 0.7435818159974588,
+    "status": "succeeded",
+    "times": [
+      0.0,
+      0.5,
+      1.0,
+      1.5,
+      2.0,
+      2.5,
+      3.0,
+      3.5,
+      4.0,
+      4.5,
+      5.0,
+      5.5,
+      6.0,
+      6.5,
+      7.0,
+      7.5,
+      8.0,
+      8.5,
+      9.0,
+      9.5,
+      10.0
+    ],
+    "values": {
+      "S": [
+        2.0,
+        1.6743900842149202,
+        1.3665851413220178,
+        1.0808097228850022,
+        0.8222261112057658,
+        0.5966755131222878,
+        0.4097514544453679,
+        0.2649521743696078,
+        0.16149666255325043,
+        0.09356626322510032,
+        0.05219155161510297,
+        0.028390800949967633,
+        0.01521125916531416,
+        0.008079795574311327,
+        0.004271435657235424,
+        0.002252357184132659,
+        0.0011860678454457222,
+        0.0006241211500656142,
+        0.0003282941649623482,
+        0.0001726515394876816,
+        9.078873663034957e-05
+      ]
+    }
+  },
+  "source_validation": {
+    "claims_review_status": {
+      "0665ac68f801f2f9eddac750f0f275e2945e3bdac036a9764396bab23f0b9d6f": "unverified",
+      "07c70334d8d1d11a2a6d271f0e16dc3aa97330afabdba1874624cff01fa7724d": "unverified",
+      "07c7e897f2c1d0a43dd7bd2577150f436cc3c956a23e29adf264845819172f26": "unverified",
+      "1f1497cf57dde9814030a181f65bbdac4a617ccb221f02194cf6c868fb32097c": "unverified",
+      "4dda9022ce69f4d3728c4867f919512ed71b1a0e70eaf55cfe79dd1def8d4297": "unverified",
+      "f4301bd934f761eb04b13fc147031bee0fc4e8fe2abd3e8a7129e8f0856aa7ba": "unverified"
+    },
+    "coverage": 1.0,
+    "human_review_present": false,
+    "invalid": [],
+    "missing": [],
+    "note": "source_checked means the quote is faithful to the source text; it does not establish that the quoted claim supports the equation. Unknown units are not assumed dimensionless, so no math-level pass is claimed.",
+    "required_targets": [
+      "K/value",
+      "S/initial",
+      "V/value",
+      "rule:S/expression"
+    ],
+    "semantic_support": "unknown",
+    "source_review": {
+      "issues": [],
+      "limitations": [
+        "bounded explicit English declaration checks, not arbitrary-language or paper understanding",
+        "author corrections are source assertions, not independent human approval",
+        "no detected conflict does not establish semantic support"
+      ],
+      "resolutions": [
+        {
+          "evidence": {
+            "end": 370,
+            "page": 1,
+            "quote": "Parameter K = 0.7.",
+            "source_ref": "5d7fc717b5e4e5be0199f269a2c770e24e6bb65ad6b379b451e79eb17eec6141",
+            "start": 352,
+            "unit": null,
+            "value": 0.7
+          },
+          "target": "K/value"
+        }
+      ],
+      "semantic_support": "unknown",
+      "status": "no_explicit_conflict_detected"
+    },
+    "status": "complete",
+    "units_status": "unknown",
+    "units_unknown": true,
+    "units_unknown_for": [
+      "parameter 'K'",
+      "parameter 'V'"
+    ]
+  },
+  "static_validation": {
+    "can_execute": true,
+    "checks": [
+      {
+        "code": "units_consistency",
+        "message": "libSBML reported unit diagnostics; dimensional correctness is not claimed: In situations where a mathematical expression refers to a compartment, species or parameter, it is necessary to know the units of the object to establish unit consistency. In models where the units of an object have not been declared, libSBML does not yet have the functionality to accurately verify the consistency of the units in mathematical expressions referring to that object. \n The units of the <parameter> 'V' cannot be fully checked. Unit consistency reported as either no errors or further unit errors related to this object may not be accurate.\n | If the attribute 'units' on a given Parameter object has not been set, then the unit of measurement associated with that parameter's value is undefined.\nReference: L3V2 Section 4.7.3\n The <parameter> with id 'V' does not have a 'units' attribute.\n | In situations where a mathematical expression refers to a compartment, species or parameter, it is necessary to know the units of the object to establish unit consistency. In models where the units of an object have not been declared, libSBML does not yet have the functionality to accurately verify the consistency of the units in mathematical expressions referring to that object. \n The units of the <parameter> 'K' cannot be fully checked. Unit consistency reported as either no errors or further unit errors related to this object may not be accurate.\n | If the attribute 'units' on a given Parameter object has not been set, then the unit of measurement associated with that parameter's value is undefined.\nReference: L3V2 Section 4.7.3\n The <parameter> with id 'K' does not have a 'units' attribute.\n | In situations where a mathematical expression contains literal numbers or parameters whose units have not been declared, it is not possible to verify accurately the consistency of the units in the expression. \n The units of the <rateRule> <math> expression '-V * S / (K + S)' cannot be fully checked. Unit consistency reported as either no errors or further unit errors related to this object may not be accurate.\n",
+        "severity": "warning",
+        "status": "unknown"
+      },
+      {
+        "code": "sbml_parse",
+        "message": "document parsed",
+        "severity": "blocking",
+        "status": "pass"
+      },
+      {
+        "code": "sbml_structure",
+        "message": "no structural errors at or above ERROR",
+        "severity": "blocking",
+        "status": "pass"
+      },
+      {
+        "code": "units_consistency",
+        "message": "libSBML reported unit diagnostics; dimensional correctness is not claimed: In situations where a mathematical expression refers to a compartment, species or parameter, it is necessary to know the units of the object to establish unit consistency. In models where the units of an object have not been declared, libSBML does not yet have the functionality to accurately verify the consistency of the units in mathematical expressions referring to that object. \n The units of the <parameter> 'V' cannot be fully checked. Unit consistency reported as either no errors or further unit errors related to this object may not be accurate.\n | If the attribute 'units' on a given Parameter object has not been set, then the unit of measurement associated with that parameter's value is undefined.\nReference: L3V2 Section 4.7.3\n The <parameter> with id 'V' does not have a 'units' attribute.\n | In situations where a mathematical expression refers to a compartment, species or parameter, it is necessary to know the units of the object to establish unit consistency. In models where the units of an object have not been declared, libSBML does not yet have the functionality to accurately verify the consistency of the units in mathematical expressions referring to that object. \n The units of the <parameter> 'K' cannot be fully checked. Unit consistency reported as either no errors or further unit errors related to this object may not be accurate.\n | If the attribute 'units' on a given Parameter object has not been set, then the unit of measurement associated with that parameter's value is undefined.\nReference: L3V2 Section 4.7.3\n The <parameter> with id 'K' does not have a 'units' attribute.\n | In situations where a mathematical expression contains literal numbers or parameters whose units have not been declared, it is not possible to verify accurately the consistency of the units in the expression. \n The units of the <rateRule> <math> expression '-V * S / (K + S)' cannot be fully checked. Unit consistency reported as either no errors or further unit errors related to this object may not be accurate.\n",
+        "severity": "warning",
+        "status": "unknown"
+      },
+      {
+        "code": "units_missing",
+        "message": "units not declared for: parameter 'V', parameter 'K' (unknown, not assumed dimensionless)",
+        "severity": "warning",
+        "status": "unknown"
+      },
+      {
+        "code": "artifact_valid",
+        "message": "artifact is a supported ODE/SBML model",
+        "severity": "blocking",
+        "status": "pass"
+      }
+    ]
+  },
+  "status": "succeeded"
+}

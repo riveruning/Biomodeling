@@ -1,0 +1,302 @@
+[
+  {
+    "name": "v1.49.1",
+    "zipball_url": "https://api.github.com/repos/VirtualPatientEngine/AIAgents4Pharma/zipball/refs/tags/v1.49.1",
+    "tarball_url": "https://api.github.com/repos/VirtualPatientEngine/AIAgents4Pharma/tarball/refs/tags/v1.49.1",
+    "commit": {
+      "sha": "ef8d146a5922cbad4f0685163d41b4090bc363cd",
+      "url": "https://api.github.com/repos/VirtualPatientEngine/AIAgents4Pharma/commits/ef8d146a5922cbad4f0685163d41b4090bc363cd"
+    },
+    "node_id": "REF_kwDONIFsIrFyZWZzL3RhZ3MvdjEuNDkuMQ"
+  },
+  {
+    "name": "v1.49.0",
+    "zipball_url": "https://api.github.com/repos/VirtualPatientEngine/AIAgents4Pharma/zipball/refs/tags/v1.49.0",
+    "tarball_url": "https://api.github.com/repos/VirtualPatientEngine/AIAgents4Pharma/tarball/refs/tags/v1.49.0",
+    "commit": {
+      "sha": "27509b1d01a9f6e27ad22a0bb013b9cefe339770",
+      "url": "https://api.github.com/repos/VirtualPatientEngine/AIAgents4Pharma/commits/27509b1d01a9f6e27ad22a0bb013b9cefe339770"
+    },
+    "node_id": "REF_kwDONIFsIrFyZWZzL3RhZ3MvdjEuNDkuMA"
+  },
+  {
+    "name": "v1.48.1",
+    "zipball_url": "https://api.github.com/repos/VirtualPatientEngine/AIAgents4Pharma/zipball/refs/tags/v1.48.1",
+    "tarball_url": "https://api.github.com/repos/VirtualPatientEngine/AIAgents4Pharma/tarball/refs/tags/v1.48.1",
+    "commit": {
+      "sha": "045bc847ff96053e7a3941e2bf6a008eb1fbca2c",
+      "url": "https://api.github.com/repos/VirtualPatientEngine/AIAgents4Pharma/commits/045bc847ff96053e7a3941e2bf6a008eb1fbca2c"
+    },
+    "node_id": "REF_kwDONIFsIrFyZWZzL3RhZ3MvdjEuNDguMQ"
+  },
+  {
+    "name": "v1.48.0",
+    "zipball_url": "https://api.github.com/repos/VirtualPatientEngine/AIAgents4Pharma/zipball/refs/tags/v1.48.0",
+    "tarball_url": "https://api.github.com/repos/VirtualPatientEngine/AIAgents4Pharma/tarball/refs/tags/v1.48.0",
+    "commit": {
+      "sha": "d4f19677fc5cc3e7dc8780457ad85fcf03113d23",
+      "url": "https://api.github.com/repos/VirtualPatientEngine/AIAgents4Pharma/commits/d4f19677fc5cc3e7dc8780457ad85fcf03113d23"
+    },
+    "node_id": "REF_kwDONIFsIrFyZWZzL3RhZ3MvdjEuNDguMA"
+  },
+  {
+    "name": "v1.47.0",
+    "zipball_url": "https://api.github.com/repos/VirtualPatientEngine/AIAgents4Pharma/zipball/refs/tags/v1.47.0",
+    "tarball_url": "https://api.github.com/repos/VirtualPatientEngine/AIAgents4Pharma/tarball/refs/tags/v1.47.0",
+    "commit": {
+      "sha": "957a6d5097a17e5f7a24c83aeb40e0b109206d0b",
+      "url": "https://api.github.com/repos/VirtualPatientEngine/AIAgents4Pharma/commits/957a6d5097a17e5f7a24c83aeb40e0b109206d0b"
+    },
+    "node_id": "REF_kwDONIFsIrFyZWZzL3RhZ3MvdjEuNDcuMA"
+  },
+  {
+    "name": "v1.46.5",
+    "zipball_url": "https://api.github.com/repos/VirtualPatientEngine/AIAgents4Pharma/zipball/refs/tags/v1.46.5",
+    "tarball_url": "https://api.github.com/repos/VirtualPatientEngine/AIAgents4Pharma/tarball/refs/tags/v1.46.5",
+    "commit": {
+      "sha": "af0e0ceced7c56e187672ef54b0642c1f86d9a07",
+      "url": "https://api.github.com/repos/VirtualPatientEngine/AIAgents4Pharma/commits/af0e0ceced7c56e187672ef54b0642c1f86d9a07"
+    },
+    "node_id": "REF_kwDONIFsIrFyZWZzL3RhZ3MvdjEuNDYuNQ"
+  },
+  {
+    "name": "v1.46.4",
+    "zipball_url": "https://api.github.com/repos/VirtualPatientEngine/AIAgents4Pharma/zipball/refs/tags/v1.46.4",
+    "tarball_url": "https://api.github.com/repos/VirtualPatientEngine/AIAgents4Pharma/tarball/refs/tags/v1.46.4",
+    "commit": {
+      "sha": "719a79443824c30f9d4a874e03ed40fa15c87058",
+      "url": "https://api.github.com/repos/VirtualPatientEngine/AIAgents4Pharma/commits/719a79443824c30f9d4a874e03ed40fa15c87058"
+    },
+    "node_id": "REF_kwDONIFsIrFyZWZzL3RhZ3MvdjEuNDYuNA"
+  },
+  {
+    "name": "v1.46.3",
+    "zipball_url": "https://api.github.com/repos/VirtualPatientEngine/AIAgents4Pharma/zipball/refs/tags/v1.46.3",
+    "tarball_url": "https://api.github.com/repos/VirtualPatientEngine/AIAgents4Pharma/tarball/refs/tags/v1.46.3",
+    "commit": {
+      "sha": "60a7007f3aafa27705daba0837dbaba57a8281d1",
+      "url": "https://api.github.com/repos/VirtualPatientEngine/AIAgents4Pharma/commits/60a7007f3aafa27705daba0837dbaba57a8281d1"
+    },
+    "node_id": "REF_kwDONIFsIrFyZWZzL3RhZ3MvdjEuNDYuMw"
+  },
+  {
+    "name": "v1.46.2",
+    "zipball_url": "https://api.github.com/repos/VirtualPatientEngine/AIAgents4Pharma/zipball/refs/tags/v1.46.2",
+    "tarball_url": "https://api.github.com/repos/VirtualPatientEngine/AIAgents4Pharma/tarball/refs/tags/v1.46.2",
+    "commit": {
+      "sha": "cc2d8f083e3e72a7a4fe15f7314861a91cab9218",
+      "url": "https://api.github.com/repos/VirtualPatientEngine/AIAgents4Pharma/commits/cc2d8f083e3e72a7a4fe15f7314861a91cab9218"
+    },
+    "node_id": "REF_kwDONIFsIrFyZWZzL3RhZ3MvdjEuNDYuMg"
+  },
+  {
+    "name": "v1.46.1",
+    "zipball_url": "https://api.github.com/repos/VirtualPatientEngine/AIAgents4Pharma/zipball/refs/tags/v1.46.1",
+    "tarball_url": "https://api.github.com/repos/VirtualPatientEngine/AIAgents4Pharma/tarball/refs/tags/v1.46.1",
+    "commit": {
+      "sha": "c25ca4e47bca267612a4c92d5f6966c0c32f3cc3",
+      "url": "https://api.github.com/repos/VirtualPatientEngine/AIAgents4Pharma/commits/c25ca4e47bca267612a4c92d5f6966c0c32f3cc3"
+    },
+    "node_id": "REF_kwDONIFsIrFyZWZzL3RhZ3MvdjEuNDYuMQ"
+  },
+  {
+    "name": "v1.46.0",
+    "zipball_url": "https://api.github.com/repos/VirtualPatientEngine/AIAgents4Pharma/zipball/refs/tags/v1.46.0",
+    "tarball_url": "https://api.github.com/repos/VirtualPatientEngine/AIAgents4Pharma/tarball/refs/tags/v1.46.0",
+    "commit": {
+      "sha": "7d38506178cde07b873249d181dd5a9d5e50d186",
+      "url": "https://api.github.com/repos/VirtualPatientEngine/AIAgents4Pharma/commits/7d38506178cde07b873249d181dd5a9d5e50d186"
+    },
+    "node_id": "REF_kwDONIFsIrFyZWZzL3RhZ3MvdjEuNDYuMA"
+  },
+  {
+    "name": "v1.45.1",
+    "zipball_url": "https://api.github.com/repos/VirtualPatientEngine/AIAgents4Pharma/zipball/refs/tags/v1.45.1",
+    "tarball_url": "https://api.github.com/repos/VirtualPatientEngine/AIAgents4Pharma/tarball/refs/tags/v1.45.1",
+    "commit": {
+      "sha": "42cd4142aafe83e19385a582e3c3cfaadd40a86c",
+      "url": "https://api.github.com/repos/VirtualPatientEngine/AIAgents4Pharma/commits/42cd4142aafe83e19385a582e3c3cfaadd40a86c"
+    },
+    "node_id": "REF_kwDONIFsIrFyZWZzL3RhZ3MvdjEuNDUuMQ"
+  },
+  {
+    "name": "v1.45.0",
+    "zipball_url": "https://api.github.com/repos/VirtualPatientEngine/AIAgents4Pharma/zipball/refs/tags/v1.45.0",
+    "tarball_url": "https://api.github.com/repos/VirtualPatientEngine/AIAgents4Pharma/tarball/refs/tags/v1.45.0",
+    "commit": {
+      "sha": "0df92c2179bef0a558dec699025dc8a377b8ef19",
+      "url": "https://api.github.com/repos/VirtualPatientEngine/AIAgents4Pharma/commits/0df92c2179bef0a558dec699025dc8a377b8ef19"
+    },
+    "node_id": "REF_kwDONIFsIrFyZWZzL3RhZ3MvdjEuNDUuMA"
+  },
+  {
+    "name": "v1.44.0",
+    "zipball_url": "https://api.github.com/repos/VirtualPatientEngine/AIAgents4Pharma/zipball/refs/tags/v1.44.0",
+    "tarball_url": "https://api.github.com/repos/VirtualPatientEngine/AIAgents4Pharma/tarball/refs/tags/v1.44.0",
+    "commit": {
+      "sha": "8a0a34f64136cab3dfeb8083d0419047ecfd4fce",
+      "url": "https://api.github.com/repos/VirtualPatientEngine/AIAgents4Pharma/commits/8a0a34f64136cab3dfeb8083d0419047ecfd4fce"
+    },
+    "node_id": "REF_kwDONIFsIrFyZWZzL3RhZ3MvdjEuNDQuMA"
+  },
+  {
+    "name": "v1.43.0",
+    "zipball_url": "https://api.github.com/repos/VirtualPatientEngine/AIAgents4Pharma/zipball/refs/tags/v1.43.0",
+    "tarball_url": "https://api.github.com/repos/VirtualPatientEngine/AIAgents4Pharma/tarball/refs/tags/v1.43.0",
+    "commit": {
+      "sha": "f7bce7931fdc310096eca25777e8ad4e27b58752",
+      "url": "https://api.github.com/repos/VirtualPatientEngine/AIAgents4Pharma/commits/f7bce7931fdc310096eca25777e8ad4e27b58752"
+    },
+    "node_id": "REF_kwDONIFsIrFyZWZzL3RhZ3MvdjEuNDMuMA"
+  },
+  {
+    "name": "v1.42.0",
+    "zipball_url": "https://api.github.com/repos/VirtualPatientEngine/AIAgents4Pharma/zipball/refs/tags/v1.42.0",
+    "tarball_url": "https://api.github.com/repos/VirtualPatientEngine/AIAgents4Pharma/tarball/refs/tags/v1.42.0",
+    "commit": {
+      "sha": "69a174207d0c4430c088606ac0e24f641a56f276",
+      "url": "https://api.github.com/repos/VirtualPatientEngine/AIAgents4Pharma/commits/69a174207d0c4430c088606ac0e24f641a56f276"
+    },
+    "node_id": "REF_kwDONIFsIrFyZWZzL3RhZ3MvdjEuNDIuMA"
+  },
+  {
+    "name": "v1.41.0",
+    "zipball_url": "https://api.github.com/repos/VirtualPatientEngine/AIAgents4Pharma/zipball/refs/tags/v1.41.0",
+    "tarball_url": "https://api.github.com/repos/VirtualPatientEngine/AIAgents4Pharma/tarball/refs/tags/v1.41.0",
+    "commit": {
+      "sha": "31c1759ba77646271b90cb90bce2f03980668a6c",
+      "url": "https://api.github.com/repos/VirtualPatientEngine/AIAgents4Pharma/commits/31c1759ba77646271b90cb90bce2f03980668a6c"
+    },
+    "node_id": "REF_kwDONIFsIrFyZWZzL3RhZ3MvdjEuNDEuMA"
+  },
+  {
+    "name": "v1.40.1",
+    "zipball_url": "https://api.github.com/repos/VirtualPatientEngine/AIAgents4Pharma/zipball/refs/tags/v1.40.1",
+    "tarball_url": "https://api.github.com/repos/VirtualPatientEngine/AIAgents4Pharma/tarball/refs/tags/v1.40.1",
+    "commit": {
+      "sha": "a175625a1ab75db08c3050ed67f4be7c6fea3edf",
+      "url": "https://api.github.com/repos/VirtualPatientEngine/AIAgents4Pharma/commits/a175625a1ab75db08c3050ed67f4be7c6fea3edf"
+    },
+    "node_id": "REF_kwDONIFsIrFyZWZzL3RhZ3MvdjEuNDAuMQ"
+  },
+  {
+    "name": "v1.40.0",
+    "zipball_url": "https://api.github.com/repos/VirtualPatientEngine/AIAgents4Pharma/zipball/refs/tags/v1.40.0",
+    "tarball_url": "https://api.github.com/repos/VirtualPatientEngine/AIAgents4Pharma/tarball/refs/tags/v1.40.0",
+    "commit": {
+      "sha": "d4544655093c01b8709ea26d8eafcf38481e0dd5",
+      "url": "https://api.github.com/repos/VirtualPatientEngine/AIAgents4Pharma/commits/d4544655093c01b8709ea26d8eafcf38481e0dd5"
+    },
+    "node_id": "REF_kwDONIFsIrFyZWZzL3RhZ3MvdjEuNDAuMA"
+  },
+  {
+    "name": "v1.39.5",
+    "zipball_url": "https://api.github.com/repos/VirtualPatientEngine/AIAgents4Pharma/zipball/refs/tags/v1.39.5",
+    "tarball_url": "https://api.github.com/repos/VirtualPatientEngine/AIAgents4Pharma/tarball/refs/tags/v1.39.5",
+    "commit": {
+      "sha": "0b9e2e244bc51cdd9b7cca562dec84e2ead16ac5",
+      "url": "https://api.github.com/repos/VirtualPatientEngine/AIAgents4Pharma/commits/0b9e2e244bc51cdd9b7cca562dec84e2ead16ac5"
+    },
+    "node_id": "REF_kwDONIFsIrFyZWZzL3RhZ3MvdjEuMzkuNQ"
+  },
+  {
+    "name": "v1.39.4",
+    "zipball_url": "https://api.github.com/repos/VirtualPatientEngine/AIAgents4Pharma/zipball/refs/tags/v1.39.4",
+    "tarball_url": "https://api.github.com/repos/VirtualPatientEngine/AIAgents4Pharma/tarball/refs/tags/v1.39.4",
+    "commit": {
+      "sha": "895c4e531bb96e1aa37c9bc4d5ffc5f2537bf6b0",
+      "url": "https://api.github.com/repos/VirtualPatientEngine/AIAgents4Pharma/commits/895c4e531bb96e1aa37c9bc4d5ffc5f2537bf6b0"
+    },
+    "node_id": "REF_kwDONIFsIrFyZWZzL3RhZ3MvdjEuMzkuNA"
+  },
+  {
+    "name": "v1.39.3",
+    "zipball_url": "https://api.github.com/repos/VirtualPatientEngine/AIAgents4Pharma/zipball/refs/tags/v1.39.3",
+    "tarball_url": "https://api.github.com/repos/VirtualPatientEngine/AIAgents4Pharma/tarball/refs/tags/v1.39.3",
+    "commit": {
+      "sha": "03857ae5815f38a868b56302009de9df27db7263",
+      "url": "https://api.github.com/repos/VirtualPatientEngine/AIAgents4Pharma/commits/03857ae5815f38a868b56302009de9df27db7263"
+    },
+    "node_id": "REF_kwDONIFsIrFyZWZzL3RhZ3MvdjEuMzkuMw"
+  },
+  {
+    "name": "v1.39.2",
+    "zipball_url": "https://api.github.com/repos/VirtualPatientEngine/AIAgents4Pharma/zipball/refs/tags/v1.39.2",
+    "tarball_url": "https://api.github.com/repos/VirtualPatientEngine/AIAgents4Pharma/tarball/refs/tags/v1.39.2",
+    "commit": {
+      "sha": "296a6eb031b8743d6d934365eb86869d2bda1725",
+      "url": "https://api.github.com/repos/VirtualPatientEngine/AIAgents4Pharma/commits/296a6eb031b8743d6d934365eb86869d2bda1725"
+    },
+    "node_id": "REF_kwDONIFsIrFyZWZzL3RhZ3MvdjEuMzkuMg"
+  },
+  {
+    "name": "v1.39.1",
+    "zipball_url": "https://api.github.com/repos/VirtualPatientEngine/AIAgents4Pharma/zipball/refs/tags/v1.39.1",
+    "tarball_url": "https://api.github.com/repos/VirtualPatientEngine/AIAgents4Pharma/tarball/refs/tags/v1.39.1",
+    "commit": {
+      "sha": "0917f3b69647bfbf653d559b9830c3c30e9ecd2e",
+      "url": "https://api.github.com/repos/VirtualPatientEngine/AIAgents4Pharma/commits/0917f3b69647bfbf653d559b9830c3c30e9ecd2e"
+    },
+    "node_id": "REF_kwDONIFsIrFyZWZzL3RhZ3MvdjEuMzkuMQ"
+  },
+  {
+    "name": "v1.39.0",
+    "zipball_url": "https://api.github.com/repos/VirtualPatientEngine/AIAgents4Pharma/zipball/refs/tags/v1.39.0",
+    "tarball_url": "https://api.github.com/repos/VirtualPatientEngine/AIAgents4Pharma/tarball/refs/tags/v1.39.0",
+    "commit": {
+      "sha": "4ff2740a672740adb9c5c4d9d686d8e6d29ab5ee",
+      "url": "https://api.github.com/repos/VirtualPatientEngine/AIAgents4Pharma/commits/4ff2740a672740adb9c5c4d9d686d8e6d29ab5ee"
+    },
+    "node_id": "REF_kwDONIFsIrFyZWZzL3RhZ3MvdjEuMzkuMA"
+  },
+  {
+    "name": "v1.38.0",
+    "zipball_url": "https://api.github.com/repos/VirtualPatientEngine/AIAgents4Pharma/zipball/refs/tags/v1.38.0",
+    "tarball_url": "https://api.github.com/repos/VirtualPatientEngine/AIAgents4Pharma/tarball/refs/tags/v1.38.0",
+    "commit": {
+      "sha": "0f3e6bbac9b7361a1c8dcedf4f85420ece33b44e",
+      "url": "https://api.github.com/repos/VirtualPatientEngine/AIAgents4Pharma/commits/0f3e6bbac9b7361a1c8dcedf4f85420ece33b44e"
+    },
+    "node_id": "REF_kwDONIFsIrFyZWZzL3RhZ3MvdjEuMzguMA"
+  },
+  {
+    "name": "v1.37.0",
+    "zipball_url": "https://api.github.com/repos/VirtualPatientEngine/AIAgents4Pharma/zipball/refs/tags/v1.37.0",
+    "tarball_url": "https://api.github.com/repos/VirtualPatientEngine/AIAgents4Pharma/tarball/refs/tags/v1.37.0",
+    "commit": {
+      "sha": "593cffe832f12813a164661719059ebf6ce5c547",
+      "url": "https://api.github.com/repos/VirtualPatientEngine/AIAgents4Pharma/commits/593cffe832f12813a164661719059ebf6ce5c547"
+    },
+    "node_id": "REF_kwDONIFsIrFyZWZzL3RhZ3MvdjEuMzcuMA"
+  },
+  {
+    "name": "v1.36.0",
+    "zipball_url": "https://api.github.com/repos/VirtualPatientEngine/AIAgents4Pharma/zipball/refs/tags/v1.36.0",
+    "tarball_url": "https://api.github.com/repos/VirtualPatientEngine/AIAgents4Pharma/tarball/refs/tags/v1.36.0",
+    "commit": {
+      "sha": "40ee55b9d6d3609b2098b679a8edede17f3f4b8b",
+      "url": "https://api.github.com/repos/VirtualPatientEngine/AIAgents4Pharma/commits/40ee55b9d6d3609b2098b679a8edede17f3f4b8b"
+    },
+    "node_id": "REF_kwDONIFsIrFyZWZzL3RhZ3MvdjEuMzYuMA"
+  },
+  {
+    "name": "v1.35.0",
+    "zipball_url": "https://api.github.com/repos/VirtualPatientEngine/AIAgents4Pharma/zipball/refs/tags/v1.35.0",
+    "tarball_url": "https://api.github.com/repos/VirtualPatientEngine/AIAgents4Pharma/tarball/refs/tags/v1.35.0",
+    "commit": {
+      "sha": "3eea84bdb14f580e94b8b3be4415de924d0f8cd1",
+      "url": "https://api.github.com/repos/VirtualPatientEngine/AIAgents4Pharma/commits/3eea84bdb14f580e94b8b3be4415de924d0f8cd1"
+    },
+    "node_id": "REF_kwDONIFsIrFyZWZzL3RhZ3MvdjEuMzUuMA"
+  },
+  {
+    "name": "v1.34.1",
+    "zipball_url": "https://api.github.com/repos/VirtualPatientEngine/AIAgents4Pharma/zipball/refs/tags/v1.34.1",
+    "tarball_url": "https://api.github.com/repos/VirtualPatientEngine/AIAgents4Pharma/tarball/refs/tags/v1.34.1",
+    "commit": {
+      "sha": "bd0344007e21de5d7bb506364f6b20a93e8f9b9f",
+      "url": "https://api.github.com/repos/VirtualPatientEngine/AIAgents4Pharma/commits/bd0344007e21de5d7bb506364f6b20a93e8f9b9f"
+    },
+    "node_id": "REF_kwDONIFsIrFyZWZzL3RhZ3MvdjEuMzQuMQ"
+  }
+]

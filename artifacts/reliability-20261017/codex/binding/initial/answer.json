@@ -1,0 +1,23 @@
+{
+  "status": "needs_input",
+  "parameters": [
+    {"id": "ka", "value": null, "unit": "min^-1"}
+  ],
+  "states": [
+    {"id": "A", "initial": 1.5},
+    {"id": "B", "initial": 1.0},
+    {"id": "C", "initial": 0.0}
+  ],
+  "equations": [
+    {"state": "A", "expression": "-ka*A*B"},
+    {"state": "B", "expression": "-ka*A*B"},
+    {"state": "C", "expression": "ka*A*B"}
+  ],
+  "questions": [
+    "What is the value of ka in min^-1?"
+  ],
+  "limitations": [
+    "The source explicitly states that ka is not reported; numerical trajectories cannot be determined without its value.",
+    "The unit min^-1 for ka is inferred from the stated dimensionless activities and time in minutes."
+  ]
+}

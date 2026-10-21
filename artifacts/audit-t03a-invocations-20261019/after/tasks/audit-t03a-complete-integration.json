@@ -1,0 +1,13 @@
+{
+  "schema_version": "1",
+  "id": "audit-t03a-complete-integration",
+  "objective": "只在agent.py补齐已交付Journal的剩余集成，修正异常计数与最终引用，不重新实现模块。",
+  "context": "上一DSH异常terminated已关闭，模块和Agent部分集成已保存。独立检查23通过12失败，明确遗漏点已写review-completion.md；Codex已修正Journal的interrupted异常类型字段，本轮该模块只读。当前任务只有一个可写文件。",
+  "read_files": ["artifacts/audit-t03a-invocations-20261019/review-completion.md", "src/biomodel_agent/invocations.py"],
+  "write_files": ["src/biomodel_agent/agent.py"],
+  "expected_files": ["src/biomodel_agent/agent.py"],
+  "instructions": "先读review-completion、Journal接口和当前agent.py，直接按8个已定位步骤补齐。用finally统一同步计数，所有实际provider/工具调用进入包装；保留messages/events/科学协议。不要重新设计或探索其他文件，不跑shell/测试/网络/子Agent。只用明确路径edit/read/write。最后简述改动。",
+  "acceptance": ["所有实际调用点有预留/返回边界且异常计数一致", "最终run与checkpoint引用一致且可导出", "已消费计算次数不因暂停恢复重置", "不改变旧模型请求或科学门槛"],
+  "verification_commands": [],
+  "budget": {"first_activity_ms":120000,"idle_ms":180000,"first_write_ms":180000,"write_idle_ms":180000,"total_ms":480000}
+}

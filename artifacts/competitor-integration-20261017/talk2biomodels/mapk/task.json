@@ -1,0 +1,5 @@
+{
+  "prompt": "Using the uploaded SBML model, simulate from time 0 through 1800 with exactly 120 equal output intervals (121 output points including both endpoints). Keep all initial values and parameters unchanged. Retain numerical time-course data for all dynamic species. Do not fetch another model or use external sources. No plot or secondary question analysis is requested.",
+  "sbml": "benchmarks/inputs/public/BIOMD0000000010.xml",
+  "sbml_sha256": "f36baf246fc4f4548f23682d02d99c48bd8d3e2ab211901938cbc724e94c53b6"
+}

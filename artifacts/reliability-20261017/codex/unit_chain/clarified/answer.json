@@ -1,0 +1,20 @@
+{
+  "status": "ready",
+  "parameters": [
+    {"id": "k1", "value": 0.2, "unit": "per minute"},
+    {"id": "k2", "value": 0.15, "unit": "per minute"}
+  ],
+  "states": [
+    {"id": "U", "initial": 1.0},
+    {"id": "V", "initial": 0.1}
+  ],
+  "equations": [
+    {"state": "U", "expression": "-k1*U"},
+    {"state": "V", "expression": "k1*U-k2*V"}
+  ],
+  "questions": [],
+  "limitations": [
+    "The author clarification supersedes the erroneous per-second table label for k1; no conversion is applied.",
+    "The unit of k2 is inferred as per minute from the supplied equations, dimensionless states, and time in minutes."
+  ]
+}

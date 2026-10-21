@@ -1,0 +1,33 @@
+{
+  "schema_version": "1",
+  "id": "v01-03-validated-fix",
+  "objective": "实现隔离的libRoadRunner模拟、数值验证和固定误差比较。",
+  "context": "Python3.12，既有frozen dataclass契约。使用.venv已安装libsbml/roadrunner/numpy/scipy。只read/write/edit列出的文件，禁止todo_write、shell、目录扫描与联网。测试由Codex执行。",
+  "read_files": [
+    "src/biomodel_agent/domain/contracts.py",
+    "src/biomodel_agent/modeling.py",
+    "src/biomodel_agent/expressions.py"
+  ],
+  "write_files": [
+    "src/biomodel_agent/simulation.py",
+    "src/biomodel_agent/validation.py",
+    "tests/test_simulation.py"
+  ],
+  "expected_files": [
+    "src/biomodel_agent/simulation.py",
+    "src/biomodel_agent/validation.py",
+    "tests/test_simulation.py"
+  ],
+  "instructions": "修复simulate真实代码中以下实证错误，勿改变对外API。\n1 sp.isConstant不存在，getConstant正确。\n2 state param-rate不能按species concentration rr['[x]']读取，_read_symbol若info.param则rr[name]；initial override paramstate同rr[name]或init(name)。rate-rule状态的初值可以override，不是assignment rule；仅assignmenttarget/boundaryconstant拒绝。\n3 worker删除for name,value in payload['param']...rr.model loop，此map只是settability bool，不是paramvalue，无需额外设置。\n4 columns=state+obs，但循环读取时只state添加values；观测单独evaluate后append，一次每sample；现在obs先读unknownrr column失败且两次append。\n5 参数覆盖先写rr['init(name)']=value，rr.reset(roadrunner.SelectionRecord.ALL)重算初始赋值；初值覆盖再写rr[name]或rr['[sid]']，不可捕获silent fallback；initialassign/assignmenttarget初值拒绝以保持原定义。root实测toggle r['init(parameter_5)']=1;r.reset(ALL)会ModelValue_4重算=1。最后rr.model.setTime(t0)，no integrate0→t0。segment只rr[param]=new，绝不reset状态。\n6 _TOL只用于核验实际时刻/数值误差，不合并接近但不相同的sample/segment，按精确sortedset schedule，每target>current都oneStep而不skip1e-12等合法区间；sample判断target==times[sampleindex]；记录experiment.times作为输出grid。rr.time属性root已实测存在。parameter/derived/time都在observeenv。\n7 observations parser故障failed，id重复碰state/param/derived都明确阻止；产物finite自动validate，NaN不得裁剪/0fill。process Queue.get(timeout)，Empty明确timed_out，其它exceptionfailed而不一律timedout。processclosecleanup，最大samples<=10000防内存；失效前静态错误不spawn。\n8 test_simulation补rate-ruleparameter birthdeath（原tests只reaction），t0=5 no-pre-equilibrate，参数override与derived initial重算可另profiletest；obs右连续段，volume2amount/conc，veryclose0,1e-12,.1 time不合并。保留已有testcode却真实API错误需修正，不编造pass。每文件必要精准修复或一次重写，不20次猜测edit，最后文字完成。",
+  "acceptance": [
+    "有依据的数学/语义检查，不支持则明确阻止",
+    "只交付文件，Codex独立验收"
+  ],
+  "verification_commands": [],
+  "budget": {
+    "idle_ms": 360000,
+    "first_write_ms": 480000,
+    "write_idle_ms": 360000,
+    "total_ms": 900000
+  }
+}

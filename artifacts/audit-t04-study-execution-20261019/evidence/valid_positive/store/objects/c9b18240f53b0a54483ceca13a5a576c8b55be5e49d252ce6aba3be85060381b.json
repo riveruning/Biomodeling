@@ -1,0 +1,1 @@
+{"kind":"crosscheck","payload":{"observations":[{"expression":"x","id":"response"}],"ok":true,"parameters":"frozen fitted values","scale":1.0,"scaled_max_error":4.2663603827541863e-07,"status":"succeeded"},"refs":["e00a0ba6064d92b19e7c8f1eeb7128e74aa8fa7e696c9f21bb22b818cc92f75a"],"schema_version":"1"}

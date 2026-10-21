@@ -1,0 +1,5 @@
+{
+  "exit_code": 0,
+  "stdout": "{\"status\": \"needs_input\", \"reason\": \"The source supplies two equally authoritative alternatives and does not specify which was used. Which equation was used: dX/dt = r*X*(1-X/K) or dX/dt = r*X*(1-X)/K?\"}\n",
+  "stderr": ""
+}

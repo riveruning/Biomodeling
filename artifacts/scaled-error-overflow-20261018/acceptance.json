@@ -1,0 +1,83 @@
+{
+  "status": "accepted",
+  "created_at": "2026-10-18T13:51:37.898159+00:00",
+  "scope": "recover representable scaled error and preserve JSON-safe explicit overflow failure",
+  "files": [
+    {
+      "path": "src/biomodel_agent/validation.py",
+      "staged": "src/biomodel_agent/validation.py",
+      "before_sha256": "28ce11607eddd8972cebceea4190979507bdfeee9eb863e0c425fac06b79f994",
+      "after_sha256": "56ee9c02feb6ae3530b09fff8ad13b6c9b7b97c5e89ca1d1a3be80e8a4c95eb5"
+    },
+    {
+      "path": "src/biomodel_agent/application.py",
+      "staged": "src/biomodel_agent/application.py",
+      "before_sha256": "4b3a6791fde3aaebdcf941ec1b96564c4c455fdd1c4ecfe6c7b7c2cd2f8f773a",
+      "after_sha256": "8e05ce20ae9d52addbbf78e44277fb5be292ecd648562f5852d2d7f958bbe513"
+    },
+    {
+      "path": "src/biomodel_agent/reporting.py",
+      "staged": "src/biomodel_agent/reporting.py",
+      "before_sha256": "794a35a1fccd3e8dfa6c4e1fbb97b5b74c7ac841f07ec9a9a04dcd1f3784fc0c",
+      "after_sha256": "575328b3e0d8016de89963afa3d4eaad792ef56014f622d50c1c693df4f0ed45"
+    },
+    {
+      "path": "tests/test_scaled_error_overflow.py",
+      "staged": "tests/test_scaled_error_overflow.py",
+      "before_sha256": null,
+      "after_sha256": "92e2620b9405df93efd9d6c9126fe6f48c4dc3df349211f9d47761efb35a1885"
+    },
+    {
+      "path": "docs/scaled-error-overflow.md",
+      "staged": "docs/scaled-error-overflow.md",
+      "before_sha256": null,
+      "after_sha256": "56b0ae83516e6c51e6a1d25939bdf36cdfeb90595556546d458fa9273715f024"
+    },
+    {
+      "path": "README.md",
+      "staged": "README.md",
+      "before_sha256": "b64c6d025e10fd44163f4f08eb3851a948dc924fb4be218aac63dc13fb5761c5",
+      "after_sha256": "ee90ada95823f4b15689fd2cc001497c55ab7197d65e035603a15307955079c0"
+    }
+  ],
+  "baseline_tests": 526,
+  "tests": {
+    "tests": 540,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "validation": "existing project suite with staged modified modules, 14 new scaled error overflow regressions; identical copied storage test keeps spawned imports on staged source",
+  "pytest_log": "pytest.log",
+  "pytest_xml": "pytest.xml",
+  "offline_original_proposals": 3,
+  "new_model_calls": 0,
+  "full_agent_benchmark_success_measured": false,
+  "original_evaluation_modified": false,
+  "independent_holdout": false,
+  "known_limitations": [
+    "overflow preflight is numerical evidence, not scientific authority",
+    "no new live LLM performance measurement",
+    "labels are declarations, not source verification; no automatic time conversion"
+  ],
+  "installed_tests": {
+    "tests": 540,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "installed_test_command": [
+    "/home/riveruning/biologymodel_agent/.venv/bin/python",
+    "-m",
+    "pytest",
+    "-q",
+    "-p",
+    "no:cacheprovider",
+    "--basetemp=/tmp/biology-agent-error-overflow-installed-20261018",
+    "--junitxml=/home/riveruning/biologymodel_agent/artifacts/scaled-error-overflow-20261018/installed-pytest.xml"
+  ],
+  "installed_test_exit_code": 0,
+  "old_checkpoint_exercise_exit_code": 0,
+  "old_checkpoint_exercise_is_scripted": true,
+  "old_checkpoint_exercise_completed": 3
+}

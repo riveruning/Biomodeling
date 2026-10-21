@@ -1,0 +1,32 @@
+{
+  "schema_version": "1",
+  "id": "context-retrieval-v1",
+  "objective": "Implement bounded lexical retrieval over task-authorized source pages, plus meaningful offline tests.",
+  "context": "User explicitly authorized improvements to agent memory and retrieval and optional DSH development. Read the contract; preserve existing files. Only a deterministic helper and tests are delegated. The first attempt stopped before writing because target files did not exist for an initial read. Codex has now created empty target files; replace them with implementation and tests. Empty files are not delivery.",
+  "read_files": [
+    "artifacts/context-memory-development/retrieval-contract.md",
+    "src/biomodel_agent/evidence.py",
+    "src/biomodel_agent/storage.py"
+  ],
+  "write_files": [
+    "src/biomodel_agent/retrieval.py",
+    "tests/test_source_retrieval.py"
+  ],
+  "expected_files": [
+    "src/biomodel_agent/retrieval.py",
+    "tests/test_source_retrieval.py"
+  ],
+  "instructions": "Implement the exact public contract in retrieval-contract.md. Only read/write/edit the listed files. Do not use shell, glob, network, subagents, installation, tests or credentials. Codex runs validation independently. Create actual files, not just a plan. Do not change agent integration, other modules or existing tests. Report changed paths and limitations.",
+  "acceptance": [
+    "Retrieval operates only on task source whitelist and exact source spans",
+    "Output and scan budgets enforced; deterministic ranking and meaningful negative tests"
+  ],
+  "verification_commands": [],
+  "budget": {
+    "first_activity_ms": 120000,
+    "idle_ms": 180000,
+    "first_write_ms": 300000,
+    "write_idle_ms": 300000,
+    "total_ms": 600000
+  }
+}

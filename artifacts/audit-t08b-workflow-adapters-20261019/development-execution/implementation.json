@@ -1,0 +1,7 @@
+{
+  "protocol": "agent_evaluation_v1",
+  "toolchain_sha256": "149e4a7e2d5c300cf8f180a388a99c103b257c03413ac97b60c3605f955f57bf",
+  "adapter_sha256": "bc5684016fa4131bfc91e8db16386adacdbedc644e7e9b4bd68763a66722e1b4",
+  "scorer_sha256": "2c0a41c137bfbf678fcada3dd6f97a720fb0f56954f8d4e344890a26259d686c",
+  "driver_sha256": "1903a950e86427416cf3e9459e93550a363c71cabb046eb0c6ba66465e2a91f5"
+}

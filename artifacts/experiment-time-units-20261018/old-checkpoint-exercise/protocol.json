@@ -1,0 +1,66 @@
+{
+  "kind": "offline_scripted_workflow_exercise",
+  "jobs": [
+    [
+      "c13_mm_with_inhibitor_ambiguous",
+      "resume"
+    ],
+    [
+      "c18_two_pathway_unit_conflict",
+      "clarified"
+    ],
+    [
+      "c18_two_pathway_unit_conflict",
+      "resume"
+    ]
+  ],
+  "new_model_requests": 0,
+  "independent_holdout": false,
+  "actor": "unchanged original response prefix followed by explicit scripted repairs",
+  "candidate": {
+    "python": "3.12.3",
+    "python_full": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]",
+    "implementation": "CPython",
+    "platform": "Linux-6.6.87.2-microsoft-standard-WSL2-x86_64-with-glibc2.39",
+    "machine": "x86_64",
+    "packages": {
+      "libroadrunner": "2.10.0",
+      "roadrunner": "absent",
+      "python-libsbml": "5.21.2",
+      "libsbml": "absent",
+      "numpy": "2.5.4",
+      "scipy": "1.18.1",
+      "pypdf": "6.20.1",
+      "biomodel-agent": "0.1.0"
+    },
+    "modules": {
+      "__init__.py": "3ebbb4065141012142168ecc70776886d2a452d80c3c3c1b19fc94665136fd5c",
+      "__main__.py": "11e716d1f66f25a0dd6ee566cb9bff3452624a3f47b8e009c3631ab2a9b01630",
+      "agent.py": "c8606da5f45d93cbbdb60fb1e0cb6eae537030e876754bff32b04621b09cfd5f",
+      "agent_tools.py": "d2b42bc44c2cfcb4e80e2d317f582e183a7da128d7b8acae6775a80140975aa3",
+      "application.py": "767f9493da25afb77559d1ee3c677c12b834e086b90e5cc1b71f3f49e7dd0792",
+      "bundles.py": "e3d710814a0205fc84fd66e5699ed5335a3bbe4d1910fc3c7f688d7ad6a49acd",
+      "cli.py": "d150ca828e5c829ff6f8acb827e196ad907662f654a421b02df6974881d3b8f0",
+      "domain/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "domain/contracts.py": "6e56aec977f16a03092df0a64498490fc78368b49c684447a957a4cb706b971d",
+      "domain/serialization.py": "35cd7eac8aa83a8bb7e41e0ea7f568abe34a570d38b8484c017ccf9b37d7e395",
+      "evidence.py": "020c4e0653bdbd9e06734ed060b89984dda013a9e7810ec132b51d5bf794b79f",
+      "expressions.py": "972ce61a74b747af2fcb92893b6c98bf9371408ff9737f68f22fe36e043fc8ea",
+      "fitting.py": "17b37ea04c28916844b46a1ec6da39cb8a038303ce81d2348820993f9720e422",
+      "hypotheses.py": "22fcc3ecb93e6845b8aa484e396885bf2b56b6eb8d64e47fed7519e717f828b7",
+      "literature_scoring.py": "3e2c20e568de9203dd8e12095627f76046ab6d68b62944e3952dad61a4f70499",
+      "llm.py": "bdeae49bf8045859ec661158186675d1ccf380c19e2bd090947bb925c77a7452",
+      "modeling.py": "69cafa82bffe977ee4a0b1e3b77c29c1bb48fd0e48d58f4644fcd045eb43c44e",
+      "reporting.py": "cbd032b08b2398f71cdeebef9ce466a075d066a9c8d4ac05f64c0388aa3ab506",
+      "simulation.py": "7de90e2aa1c0e654d4ad1e285f88c7fec2174faf2a2f2641ba1df9297aa71659",
+      "source_review.py": "bbf085e42b374bb1270bd697bd15e6fdbee0bd321391bd80ee87aa92dd1ba1bb",
+      "storage.py": "8fdfff97a2477666515664e71e2122eb2a4885d79f16c8fbb1a04735461a3062",
+      "time_units.py": "b4dbd584abcce667bb8eb089bc4342e29284a643ff6ee3c14b42388fa03041a2",
+      "validation.py": "a358aa2ecf7c460f3f263fbf5eb08188068f493f21f4a2a69bb1afe90faebb86"
+    },
+    "modules_sha256": "c5fd2d7a01fb4adf364d4bf4c3f6cee09b6ec2b77dcba1e6baf285c739b86158",
+    "provenance": "content_hash_of_src_biomodel_agent_py (no git metadata available)"
+  },
+  "budget": "same original total calls 8, repairs 2, retries 2; resume counts cumulative",
+  "model_capability_measured": false
+}

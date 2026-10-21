@@ -1,0 +1,272 @@
+[
+  {
+    "id": "biomodel--decay--0--initial",
+    "system_id": "biomodel",
+    "runtime": "biomodel_agent",
+    "case_id": "decay",
+    "repeat": 0,
+    "phase": "initial",
+    "parent_trial_id": null
+  },
+  {
+    "id": "biomodel--translation--0--initial",
+    "system_id": "biomodel",
+    "runtime": "biomodel_agent",
+    "case_id": "translation",
+    "repeat": 0,
+    "phase": "initial",
+    "parent_trial_id": null
+  },
+  {
+    "id": "biomodel--translation--0--clarified",
+    "system_id": "biomodel",
+    "runtime": "biomodel_agent",
+    "case_id": "translation",
+    "repeat": 0,
+    "phase": "clarified",
+    "parent_trial_id": "biomodel--translation--0--initial"
+  },
+  {
+    "id": "biomodel--logistic--0--initial",
+    "system_id": "biomodel",
+    "runtime": "biomodel_agent",
+    "case_id": "logistic",
+    "repeat": 0,
+    "phase": "initial",
+    "parent_trial_id": null
+  },
+  {
+    "id": "biomodel--logistic--0--clarified",
+    "system_id": "biomodel",
+    "runtime": "biomodel_agent",
+    "case_id": "logistic",
+    "repeat": 0,
+    "phase": "clarified",
+    "parent_trial_id": "biomodel--logistic--0--initial"
+  },
+  {
+    "id": "biomodel--decay--1--initial",
+    "system_id": "biomodel",
+    "runtime": "biomodel_agent",
+    "case_id": "decay",
+    "repeat": 1,
+    "phase": "initial",
+    "parent_trial_id": null
+  },
+  {
+    "id": "biomodel--translation--1--initial",
+    "system_id": "biomodel",
+    "runtime": "biomodel_agent",
+    "case_id": "translation",
+    "repeat": 1,
+    "phase": "initial",
+    "parent_trial_id": null
+  },
+  {
+    "id": "biomodel--translation--1--clarified",
+    "system_id": "biomodel",
+    "runtime": "biomodel_agent",
+    "case_id": "translation",
+    "repeat": 1,
+    "phase": "clarified",
+    "parent_trial_id": "biomodel--translation--1--initial"
+  },
+  {
+    "id": "biomodel--logistic--1--initial",
+    "system_id": "biomodel",
+    "runtime": "biomodel_agent",
+    "case_id": "logistic",
+    "repeat": 1,
+    "phase": "initial",
+    "parent_trial_id": null
+  },
+  {
+    "id": "biomodel--logistic--1--clarified",
+    "system_id": "biomodel",
+    "runtime": "biomodel_agent",
+    "case_id": "logistic",
+    "repeat": 1,
+    "phase": "clarified",
+    "parent_trial_id": "biomodel--logistic--1--initial"
+  },
+  {
+    "id": "codex-sol--decay--0--initial",
+    "system_id": "codex-sol",
+    "runtime": "codex_cli",
+    "case_id": "decay",
+    "repeat": 0,
+    "phase": "initial",
+    "parent_trial_id": null
+  },
+  {
+    "id": "codex-sol--translation--0--initial",
+    "system_id": "codex-sol",
+    "runtime": "codex_cli",
+    "case_id": "translation",
+    "repeat": 0,
+    "phase": "initial",
+    "parent_trial_id": null
+  },
+  {
+    "id": "codex-sol--translation--0--clarified",
+    "system_id": "codex-sol",
+    "runtime": "codex_cli",
+    "case_id": "translation",
+    "repeat": 0,
+    "phase": "clarified",
+    "parent_trial_id": "codex-sol--translation--0--initial"
+  },
+  {
+    "id": "codex-sol--logistic--0--initial",
+    "system_id": "codex-sol",
+    "runtime": "codex_cli",
+    "case_id": "logistic",
+    "repeat": 0,
+    "phase": "initial",
+    "parent_trial_id": null
+  },
+  {
+    "id": "codex-sol--logistic--0--clarified",
+    "system_id": "codex-sol",
+    "runtime": "codex_cli",
+    "case_id": "logistic",
+    "repeat": 0,
+    "phase": "clarified",
+    "parent_trial_id": "codex-sol--logistic--0--initial"
+  },
+  {
+    "id": "codex-sol--decay--1--initial",
+    "system_id": "codex-sol",
+    "runtime": "codex_cli",
+    "case_id": "decay",
+    "repeat": 1,
+    "phase": "initial",
+    "parent_trial_id": null
+  },
+  {
+    "id": "codex-sol--translation--1--initial",
+    "system_id": "codex-sol",
+    "runtime": "codex_cli",
+    "case_id": "translation",
+    "repeat": 1,
+    "phase": "initial",
+    "parent_trial_id": null
+  },
+  {
+    "id": "codex-sol--translation--1--clarified",
+    "system_id": "codex-sol",
+    "runtime": "codex_cli",
+    "case_id": "translation",
+    "repeat": 1,
+    "phase": "clarified",
+    "parent_trial_id": "codex-sol--translation--1--initial"
+  },
+  {
+    "id": "codex-sol--logistic--1--initial",
+    "system_id": "codex-sol",
+    "runtime": "codex_cli",
+    "case_id": "logistic",
+    "repeat": 1,
+    "phase": "initial",
+    "parent_trial_id": null
+  },
+  {
+    "id": "codex-sol--logistic--1--clarified",
+    "system_id": "codex-sol",
+    "runtime": "codex_cli",
+    "case_id": "logistic",
+    "repeat": 1,
+    "phase": "clarified",
+    "parent_trial_id": "codex-sol--logistic--1--initial"
+  },
+  {
+    "id": "codex-astra--decay--0--initial",
+    "system_id": "codex-astra",
+    "runtime": "codex_cli",
+    "case_id": "decay",
+    "repeat": 0,
+    "phase": "initial",
+    "parent_trial_id": null
+  },
+  {
+    "id": "codex-astra--translation--0--initial",
+    "system_id": "codex-astra",
+    "runtime": "codex_cli",
+    "case_id": "translation",
+    "repeat": 0,
+    "phase": "initial",
+    "parent_trial_id": null
+  },
+  {
+    "id": "codex-astra--translation--0--clarified",
+    "system_id": "codex-astra",
+    "runtime": "codex_cli",
+    "case_id": "translation",
+    "repeat": 0,
+    "phase": "clarified",
+    "parent_trial_id": "codex-astra--translation--0--initial"
+  },
+  {
+    "id": "codex-astra--logistic--0--initial",
+    "system_id": "codex-astra",
+    "runtime": "codex_cli",
+    "case_id": "logistic",
+    "repeat": 0,
+    "phase": "initial",
+    "parent_trial_id": null
+  },
+  {
+    "id": "codex-astra--logistic--0--clarified",
+    "system_id": "codex-astra",
+    "runtime": "codex_cli",
+    "case_id": "logistic",
+    "repeat": 0,
+    "phase": "clarified",
+    "parent_trial_id": "codex-astra--logistic--0--initial"
+  },
+  {
+    "id": "codex-astra--decay--1--initial",
+    "system_id": "codex-astra",
+    "runtime": "codex_cli",
+    "case_id": "decay",
+    "repeat": 1,
+    "phase": "initial",
+    "parent_trial_id": null
+  },
+  {
+    "id": "codex-astra--translation--1--initial",
+    "system_id": "codex-astra",
+    "runtime": "codex_cli",
+    "case_id": "translation",
+    "repeat": 1,
+    "phase": "initial",
+    "parent_trial_id": null
+  },
+  {
+    "id": "codex-astra--translation--1--clarified",
+    "system_id": "codex-astra",
+    "runtime": "codex_cli",
+    "case_id": "translation",
+    "repeat": 1,
+    "phase": "clarified",
+    "parent_trial_id": "codex-astra--translation--1--initial"
+  },
+  {
+    "id": "codex-astra--logistic--1--initial",
+    "system_id": "codex-astra",
+    "runtime": "codex_cli",
+    "case_id": "logistic",
+    "repeat": 1,
+    "phase": "initial",
+    "parent_trial_id": null
+  },
+  {
+    "id": "codex-astra--logistic--1--clarified",
+    "system_id": "codex-astra",
+    "runtime": "codex_cli",
+    "case_id": "logistic",
+    "repeat": 1,
+    "phase": "clarified",
+    "parent_trial_id": "codex-astra--logistic--1--initial"
+  }
+]

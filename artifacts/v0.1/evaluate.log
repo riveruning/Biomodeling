@@ -1,0 +1,40 @@
+{
+  "models": [
+    {
+      "id": "BIOMD0000000010",
+      "status": "pass",
+      "error": 2.546581511353452e-06
+    },
+    {
+      "id": "BIOMD0000000012",
+      "status": "pass",
+      "error": 4.4176167005161916e-05
+    },
+    {
+      "id": "BIOMD0000000027",
+      "status": "pass",
+      "error": 1.9395722461013066e-07
+    },
+    {
+      "id": "BIOMD0000000507",
+      "status": "pass",
+      "error": 1.5571481908409623e-07
+    }
+  ],
+  "study_ref": "adfe7a708b23f41a1c28e2c6b0594a830d8384c0005ce7e14534c7cb7d6e74b5",
+  "b_comparison": {
+    "adequacy_weighted_rmse": 3,
+    "note": "Specified known independent Gaussian noise; no significance test or proof of mechanism",
+    "ranking": "best_compatible_candidate",
+    "separation_threshold": 0.05,
+    "winner": "cand_feedforward"
+  },
+  "training_only": {
+    "ranking": "indistinguishable_from_training",
+    "training_compatible": [
+      "cand_feedback",
+      "cand_feedforward"
+    ],
+    "note": "This training-only assessment reuses frozen training fits and excludes heldout scores."
+  }
+}

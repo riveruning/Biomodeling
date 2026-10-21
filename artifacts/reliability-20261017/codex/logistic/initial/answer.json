@@ -1,0 +1,20 @@
+{
+  "status": "needs_input",
+  "parameters": [
+    {"id": "r", "value": 0.8, "unit": "min^-1"},
+    {"id": "K", "value": 2.0, "unit": "dimensionless"}
+  ],
+  "states": [
+    {"id": "X", "initial": 0.2}
+  ],
+  "equations": [
+    {"state": "X", "expression": null}
+  ],
+  "questions": [
+    "Which equation was used: dX/dt = r*X*(1-X/K) or dX/dt = r*X*(1-X)/K?"
+  ],
+  "limitations": [
+    "The source explicitly gives two equally authoritative alternatives for dX/dt and does not select one; simulation is blocked until that choice is supplied.",
+    "Time is in minutes, X is dimensionless, and the fixed compartment size is 1 dimensionless. Parameter units are inferred by dimensional consistency of both supplied alternatives."
+  ]
+}

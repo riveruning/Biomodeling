@@ -1,0 +1,11 @@
+{
+  "distribution": "pymupdf",
+  "version": "1.28.2",
+  "location": "/home/riveruning/biologymodel_agent/.venv/lib/python3.12/site-packages",
+  "python_scope": "project .venv only",
+  "requires": null,
+  "license": "Dual Licensed - GNU AFFERO GPL 3.0 or Artifex Commercial License",
+  "installation_source": "official https://pypi.org/simple, wheel only, --no-deps",
+  "command": "PYTHONDONTWRITEBYTECODE=1 .venv/bin/python -m pip install --no-cache-dir --no-deps --only-binary=:all: --index-url https://pypi.org/simple --retries 0 --timeout 20 pymupdf==1.28.2",
+  "sandbox_escalation": "Approved for official PyPI index and project-local installation after sandbox index lookup found no distribution."
+}

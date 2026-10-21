@@ -1,0 +1,48 @@
+FFF.                                                                     [100%]
+=================================== FAILURES ===================================
+________ test_unknown_execution_does_not_become_confirmed_overblocking _________
+
+system = <module 'system_comparison_test' from '/home/riveruning/biologymodel_agent/benchmarks/development/system_comparison.py'>
+tmp_path = PosixPath('/tmp/t08d1-boundary/test_unknown_execution_does_no0')
+
+    def test_unknown_execution_does_not_become_confirmed_overblocking(system, tmp_path):
+        m, r, *_ = imported(system, tmp_path, state='awaiting_input')
+        result = next(x for x in system.score(m, [r])['rows'] if x['id'] == r['trial']['id'])
+>       assert result['metrics']['overblocking']['value'] is None
+E       assert True is None
+
+tests/test_system_comparison.py:338: AssertionError
+_______________ test_utf16_native_stream_is_outside_utf8_profile _______________
+
+system = <module 'system_comparison_test' from '/home/riveruning/biologymodel_agent/benchmarks/development/system_comparison.py'>
+
+    def test_utf16_native_stream_is_outside_utf8_profile(system):
+        raw = json.dumps(events()[0]).encode('utf-16')+b'\n'
+>       assert system.native.parse_events(raw)['status'] == 'invalid_events'
+E       AssertionError: assert 'incomplete_events' == 'invalid_events'
+E         
+E         - invalid_events
+E         + incomplete_events
+
+tests/test_system_comparison.py:343: AssertionError
+_______ test_malformed_artifact_metadata_is_invalid_in_fixed_denominator _______
+
+system = <module 'system_comparison_test' from '/home/riveruning/biologymodel_agent/benchmarks/development/system_comparison.py'>
+tmp_path = PosixPath('/tmp/t08d1-boundary/test_malformed_artifact_metada0')
+
+    def test_malformed_artifact_metadata_is_invalid_in_fixed_denominator(system, tmp_path):
+        m, r, *_ = imported(system, tmp_path)
+        r['observation']['artifacts'] = [{'path': '../operator-answer', 'role': 'program', 'sha256': '0'*64}]
+        result = next(x for x in system.score(m, [r])['rows'] if x['id'] == r['trial']['id'])
+>       assert result['status'] == 'invalid_record'
+E       AssertionError: assert 'finished' == 'invalid_record'
+E         
+E         - invalid_record
+E         + finished
+
+tests/test_system_comparison.py:350: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_system_comparison.py::test_unknown_execution_does_not_become_confirmed_overblocking
+FAILED tests/test_system_comparison.py::test_utf16_native_stream_is_outside_utf8_profile
+FAILED tests/test_system_comparison.py::test_malformed_artifact_metadata_is_invalid_in_fixed_denominator
+3 failed, 1 passed, 48 deselected in 0.72s

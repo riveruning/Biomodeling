@@ -1,0 +1,276 @@
+{
+  "rows": [
+    {
+      "system": "talk2biomodels",
+      "case": "decay",
+      "kind": "agent",
+      "execution_status": "integration_or_execution_failed",
+      "calls": 8,
+      "elapsed_seconds": 51.084060152003076,
+      "status": "no_trajectory",
+      "error": "integration_model_call_budget_exhausted",
+      "deployment": "graph_constructed"
+    },
+    {
+      "system": "talk2biomodels",
+      "case": "mapk",
+      "kind": "agent",
+      "execution_status": "integration_or_execution_failed",
+      "calls": 8,
+      "elapsed_seconds": 69.21913172000495,
+      "status": "no_trajectory",
+      "error": "integration_model_call_budget_exhausted",
+      "deployment": "graph_constructed"
+    },
+    {
+      "system": "talk2biomodels-contract-clarified",
+      "case": "decay",
+      "kind": "assisted_agent_diagnostic",
+      "execution_status": "executed",
+      "calls": 2,
+      "elapsed_seconds": 8.545877827004006,
+      "status": "scored",
+      "numeric": {
+        "status": "pass",
+        "max_scaled_error": 1.594829133200193e-07,
+        "threshold": 0.001,
+        "species_scaled_errors": {
+          "P": 1.594829133200193e-07
+        },
+        "species_column_mapping": {
+          "P": "P"
+        }
+      }
+    },
+    {
+      "system": "talk2biomodels-contract-clarified",
+      "case": "mapk",
+      "kind": "assisted_agent_diagnostic",
+      "execution_status": "executed",
+      "calls": 2,
+      "elapsed_seconds": 11.493354069003544,
+      "status": "scored",
+      "numeric": {
+        "status": "pass",
+        "max_scaled_error": 9.185017721335952e-07,
+        "threshold": 0.001,
+        "species_scaled_errors": {
+          "MKKK": 6.249491142540364e-07,
+          "MKKK_P": 6.249491143250907e-07,
+          "MKK": 5.083123369331588e-07,
+          "MKK_P": 3.2923898660423374e-07,
+          "MKK_PP": 5.990388842747052e-07,
+          "MAPK": 9.185017721335952e-07,
+          "MAPK_P": 6.774309073402189e-07,
+          "MAPK_PP": 6.057155700981791e-07
+        },
+        "species_column_mapping": {
+          "MKKK": "Mos",
+          "MKKK_P": "Mos-P",
+          "MKK": "Mek1",
+          "MKK_P": "Mek1-P",
+          "MKK_PP": "Mek1-PP",
+          "MAPK": "Erk2",
+          "MAPK_P": "Erk2-P",
+          "MAPK_PP": "Erk2-PP"
+        }
+      }
+    },
+    {
+      "system": "talk2biomodels-tool-control",
+      "case": "decay",
+      "kind": "numerical_tool_control",
+      "status": "scored",
+      "numeric": {
+        "status": "pass",
+        "max_scaled_error": 1.5952075413383504e-07,
+        "threshold": 0.001,
+        "species_scaled_errors": {
+          "P": 1.5952075413383504e-07
+        },
+        "species_column_mapping": {
+          "P": "P"
+        }
+      }
+    },
+    {
+      "system": "talk2biomodels-tool-control",
+      "case": "mapk",
+      "kind": "numerical_tool_control",
+      "status": "scored",
+      "numeric": {
+        "status": "pass",
+        "max_scaled_error": 9.185016480728336e-07,
+        "threshold": 0.001,
+        "species_scaled_errors": {
+          "MKKK": 6.249492869159212e-07,
+          "MKKK_P": 6.249492870580298e-07,
+          "MKK": 5.0831245516747e-07,
+          "MKK_P": 3.2923894208873134e-07,
+          "MKK_PP": 5.990389847928175e-07,
+          "MAPK": 9.185016480728336e-07,
+          "MAPK_P": 6.774307763871926e-07,
+          "MAPK_PP": 6.057155409185574e-07
+        },
+        "species_column_mapping": {
+          "MKKK": "Mos",
+          "MKKK_P": "Mos-P",
+          "MKK": "Mek1",
+          "MKK_P": "Mek1-P",
+          "MKK_PP": "Mek1-PP",
+          "MAPK": "Erk2",
+          "MAPK_P": "Erk2-P",
+          "MAPK_PP": "Erk2-PP"
+        }
+      }
+    },
+    {
+      "system": "codex",
+      "case": "decay",
+      "kind": "agent",
+      "status": "scored",
+      "numeric": {
+        "status": "pass",
+        "max_scaled_error": 1.0595968547022494e-11,
+        "threshold": 0.001,
+        "species_scaled_errors": {
+          "P": 1.0595968547022494e-11
+        },
+        "species_column_mapping": {
+          "P": "P"
+        }
+      }
+    },
+    {
+      "system": "codex",
+      "case": "mapk",
+      "kind": "agent",
+      "status": "scored",
+      "numeric": {
+        "status": "pass",
+        "max_scaled_error": 3.319521653111224e-09,
+        "threshold": 0.001,
+        "species_scaled_errors": {
+          "MKKK": 2.067240032488371e-09,
+          "MKKK_P": 2.067243443093503e-09,
+          "MKK": 1.6107588862723788e-09,
+          "MKK_P": 6.789220918790306e-10,
+          "MKK_PP": 1.1464967997198982e-09,
+          "MAPK": 3.319521653111224e-09,
+          "MAPK_P": 2.082488042750204e-09,
+          "MAPK_PP": 2.0035198626070875e-09
+        },
+        "species_column_mapping": {
+          "MKKK": "MKKK",
+          "MKKK_P": "MKKK_P",
+          "MKK": "MKK",
+          "MKK_P": "MKK_P",
+          "MKK_PP": "MKK_PP",
+          "MAPK": "MAPK",
+          "MAPK_P": "MAPK_P",
+          "MAPK_PP": "MAPK_PP"
+        }
+      }
+    },
+    {
+      "system": "biomodel_core",
+      "case": "decay",
+      "kind": "numerical_tool_control",
+      "status": "scored",
+      "numeric": {
+        "status": "pass",
+        "max_scaled_error": 2.3091155348931025e-07,
+        "threshold": 0.001,
+        "species_scaled_errors": {
+          "P": 2.3091155348931025e-07
+        },
+        "species_column_mapping": {
+          "P": "P"
+        }
+      }
+    },
+    {
+      "system": "biomodel_core",
+      "case": "mapk",
+      "kind": "numerical_tool_control",
+      "status": "scored",
+      "numeric": {
+        "status": "pass",
+        "max_scaled_error": 2.546581511353452e-06,
+        "threshold": 0.001,
+        "species_scaled_errors": {
+          "MKKK": 2.5158403706626587e-06,
+          "MKKK_P": 2.5158403735048295e-06,
+          "MKK": 2.546581511353452e-06,
+          "MKK_P": 5.987455455643461e-07,
+          "MKK_PP": 1.947835972041882e-06,
+          "MAPK": 1.5665558858775815e-06,
+          "MAPK_P": 9.469960754652599e-07,
+          "MAPK_PP": 1.332023954082236e-06
+        },
+        "species_column_mapping": {
+          "MKKK": "MKKK",
+          "MKKK_P": "MKKK_P",
+          "MKK": "MKK",
+          "MKK_P": "MKK_P",
+          "MKK_PP": "MKK_PP",
+          "MAPK": "MAPK",
+          "MAPK_P": "MAPK_P",
+          "MAPK_PP": "MAPK_PP"
+        }
+      }
+    },
+    {
+      "system": "kinmodgpt_alternative_model",
+      "case": "complete",
+      "kind": "official_conversion_pipeline_variant",
+      "execution_status": "executed",
+      "initial_values": {
+        "X": 0.1,
+        "Y": 0.2,
+        "Z": 0.3
+      },
+      "calls": 1,
+      "elapsed_seconds": 2.8462968849999015,
+      "reported_tokens": 1287,
+      "status": "scored",
+      "numeric": {
+        "status": "pass",
+        "max_scaled_error": 2.6048934343947395e-05,
+        "scale": 10.0,
+        "threshold": 0.001,
+        "reference": "independent_handwritten_DOP853"
+      }
+    },
+    {
+      "system": "kinmodgpt_alternative_model",
+      "case": "assisted",
+      "kind": "official_conversion_pipeline_variant",
+      "execution_status": "executed",
+      "initial_values": {
+        "X": 0.0,
+        "Y": 0.0,
+        "Z": 0.0
+      },
+      "calls": 1,
+      "elapsed_seconds": 3.376259819000552,
+      "reported_tokens": 1328,
+      "status": "missing_initial_diagnostic",
+      "source_initials": "not_specified",
+      "actual_initial_origin": "Antimony_default_zero",
+      "strict_source_reproduction": "not_verified",
+      "numeric": {
+        "status": "not_applicable_without_source_initials"
+      }
+    }
+  ],
+  "original_paper_model_reproduction": "not_run_original_models_unavailable_in_configured_provider",
+  "variant_disclosure": "Both published systems executed official source under an alternative qwen LLM; KinMod uses modern Tellurium/Python runtime.",
+  "no_global_ranking": true,
+  "protocol_limits": [
+    "two development inputs, one attempt per agent task",
+    "different models/harness budgets; not strict equal-budget",
+    "BioModel product Agent has no direct SBML import action; API control is not a matched Agent baseline",
+    "T2B publication-date source snapshot, compatible installed dependencies, original benchmark environment not exactly recreated"
+  ]
+}

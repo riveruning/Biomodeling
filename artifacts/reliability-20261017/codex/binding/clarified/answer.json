@@ -1,0 +1,21 @@
+{
+  "status": "ready",
+  "parameters": [
+    {"id": "ka", "value": 0.15, "unit": "min^-1"}
+  ],
+  "states": [
+    {"id": "A", "initial": 1.5},
+    {"id": "B", "initial": 1.0},
+    {"id": "C", "initial": 0.0}
+  ],
+  "equations": [
+    {"state": "A", "expression": "-ka*A*B"},
+    {"state": "B", "expression": "-ka*A*B"},
+    {"state": "C", "expression": "ka*A*B"}
+  ],
+  "questions": [],
+  "limitations": [
+    "The author clarification supplies ka = 0.15 and explicitly supersedes the earlier statement that ka is unreported.",
+    "The unit min^-1 for ka follows from dimensionless states and time in minutes."
+  ]
+}

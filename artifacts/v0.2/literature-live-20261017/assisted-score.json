@@ -1,0 +1,101 @@
+{
+  "items": [
+    {
+      "target": "k1/value",
+      "value_status": "pass",
+      "evidence_status": "pass",
+      "fully_supported": true
+    },
+    {
+      "target": "k2/value",
+      "value_status": "pass",
+      "evidence_status": "pass",
+      "fully_supported": true
+    },
+    {
+      "target": "k3/value",
+      "value_status": "pass",
+      "evidence_status": "pass",
+      "fully_supported": true
+    },
+    {
+      "target": "k4/value",
+      "value_status": "pass",
+      "evidence_status": "pass",
+      "fully_supported": true
+    },
+    {
+      "target": "k5/value",
+      "value_status": "pass",
+      "evidence_status": "pass",
+      "fully_supported": true
+    },
+    {
+      "target": "k6/value",
+      "value_status": "pass",
+      "evidence_status": "pass",
+      "fully_supported": true
+    },
+    {
+      "target": "Ki/value",
+      "value_status": "pass",
+      "evidence_status": "pass",
+      "fully_supported": true
+    },
+    {
+      "target": "n/value",
+      "value_status": "pass",
+      "evidence_status": "pass",
+      "fully_supported": true
+    },
+    {
+      "target": "rule:X/expression",
+      "value_status": "pass",
+      "evidence_status": "pass",
+      "fully_supported": true
+    },
+    {
+      "target": "rule:Y/expression",
+      "value_status": "pass",
+      "evidence_status": "pass",
+      "fully_supported": true
+    },
+    {
+      "target": "rule:Z/expression",
+      "value_status": "pass",
+      "evidence_status": "pass",
+      "fully_supported": true
+    },
+    {
+      "target": "X/initial",
+      "value_status": "correct_abstention",
+      "evidence_status": "not_applicable",
+      "fully_supported": false
+    },
+    {
+      "target": "Y/initial",
+      "value_status": "correct_abstention",
+      "evidence_status": "not_applicable",
+      "fully_supported": false
+    },
+    {
+      "target": "Z/initial",
+      "value_status": "correct_abstention",
+      "evidence_status": "not_applicable",
+      "fully_supported": false
+    }
+  ],
+  "counts": {
+    "total": 14,
+    "expected_present": 11,
+    "value_correct": 11,
+    "evidence_supported": 11,
+    "fully_supported": 11,
+    "expected_missing": 3,
+    "correct_abstentions": 3,
+    "unsupported_completions": 0
+  },
+  "extra_targets": [],
+  "semantic_review": "pending_human_review",
+  "expression_method": "fixed_probe_agreement_not_symbolic_proof"
+}

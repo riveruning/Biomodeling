@@ -1,0 +1,53 @@
+{
+  "rows": [
+    {
+      "run": "full",
+      "workflow": "fixed_workflow",
+      "status": "timeout",
+      "executed": true,
+      "tool_calls": 4,
+      "stop_reason": "wall_deadline"
+    },
+    {
+      "run": "isolated",
+      "workflow": "fixed_workflow",
+      "status": "timeout",
+      "executed": true,
+      "tool_calls": 4,
+      "stop_reason": "wall_deadline"
+    },
+    {
+      "run": "full",
+      "workflow": "generic_tool_agent",
+      "status": "timeout",
+      "executed": false,
+      "tool_calls": 2,
+      "stop_reason": "wall_deadline"
+    },
+    {
+      "run": "isolated",
+      "workflow": "generic_tool_agent",
+      "status": "timeout",
+      "executed": true,
+      "tool_calls": 4,
+      "stop_reason": "wall_deadline"
+    },
+    {
+      "run": "full",
+      "workflow": "domain_agent",
+      "status": "timeout",
+      "executed": false,
+      "tool_calls": 2,
+      "stop_reason": "wall_deadline"
+    },
+    {
+      "run": "isolated",
+      "workflow": "domain_agent",
+      "status": "timeout",
+      "executed": true,
+      "tool_calls": 4,
+      "stop_reason": "wall_deadline"
+    }
+  ],
+  "interpretation": "All records timed out under the unchanged 0.6-second total deadline. In the first full suite generic/domain did not reach the scientific call; in isolation all three reached it. Scheduling sensitivity is consistent with these observations, not independently proven as the root cause. No timeout or old test was changed."
+}

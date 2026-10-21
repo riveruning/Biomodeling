@@ -1,0 +1,127 @@
+{
+  "schema_version": 1,
+  "status": "prepared_only_no_authorization",
+  "manifest_sha256": "d994cf80a88a3a1ef0762b9f89e44016d5afde591e2fa629667bc572aea1197f",
+  "planned_trials": 30,
+  "transport_identity": {
+    "profile": "chat_completions_comparison_v1",
+    "mode": "network_http",
+    "config": {
+      "base_url": "https://comparison.invalid/v1",
+      "api_key_env": "BIOMODEL_API_KEY",
+      "request_timeout_s": 30.0,
+      "max_response_bytes": 2000000
+    },
+    "model_config_sha256": "7aebe9a2719ce6e3425acd80ff5f6dc868abdfe75620bd787f5fb20b09542277",
+    "implementation": {
+      "toolchain_sha256": "abad7db107b62cb942b96ec88df701d47c8eb236275d0cf17216f37da6686252",
+      "httpx_version": "0.28.1",
+      "comparison_transport.py": "47e2d383a75d56bffe52c0858c24a026775a45d866fea9d58102b21b2c83b6c4",
+      "workflow_adapters.py": "1184e44fe5386cff8cce5c05f644668263ab74b1550af8e2e587bc2cf5372aaf",
+      "run_agent_comparison.py": "1903a950e86427416cf3e9459e93550a363c71cabb046eb0c6ba66465e2a91f5",
+      "agent_evaluation.py": "2c0a41c137bfbf678fcada3dd6f97a720fb0f56954f8d4e344890a26259d686c"
+    }
+  },
+  "materials": [
+    {
+      "case_id": "decay",
+      "phase": "initial",
+      "role": "source",
+      "path": "benchmarks/inputs/reliability/decay/initial/source.txt",
+      "sha256": "ffc2e454726221a03c7cd00fc621579a4b825a0c6c9857e63a61c78698e8f375",
+      "utf8_bytes": 250,
+      "chars": 250
+    },
+    {
+      "case_id": "decay",
+      "phase": "initial",
+      "role": "experiment",
+      "path": "benchmarks/inputs/reliability/decay/initial/experiment.json",
+      "sha256": "b02dcbbcc35baa81d4b4fa7af89388193f5b73bc17af2be38e19c515fd3e41ad",
+      "utf8_bytes": 210,
+      "chars": 210
+    },
+    {
+      "case_id": "translation",
+      "phase": "initial",
+      "role": "source",
+      "path": "benchmarks/inputs/reliability/translation/initial/source.txt",
+      "sha256": "ce02704af04e7ff8101dd646bd1dcfdbbae0e1df853de87135fc359c9793bed2",
+      "utf8_bytes": 367,
+      "chars": 367
+    },
+    {
+      "case_id": "translation",
+      "phase": "initial",
+      "role": "experiment",
+      "path": "benchmarks/inputs/reliability/translation/initial/experiment.json",
+      "sha256": "b02dcbbcc35baa81d4b4fa7af89388193f5b73bc17af2be38e19c515fd3e41ad",
+      "utf8_bytes": 210,
+      "chars": 210
+    },
+    {
+      "case_id": "translation",
+      "phase": "clarified",
+      "role": "source",
+      "path": "benchmarks/inputs/reliability/translation/clarified/source.txt",
+      "sha256": "82ef5f29120b52c01f94f8d7ef3cf04212ab5dd086e09c5859acd008e557989f",
+      "utf8_bytes": 451,
+      "chars": 451
+    },
+    {
+      "case_id": "translation",
+      "phase": "clarified",
+      "role": "experiment",
+      "path": "benchmarks/inputs/reliability/translation/clarified/experiment.json",
+      "sha256": "b02dcbbcc35baa81d4b4fa7af89388193f5b73bc17af2be38e19c515fd3e41ad",
+      "utf8_bytes": 210,
+      "chars": 210
+    },
+    {
+      "case_id": "logistic",
+      "phase": "initial",
+      "role": "source",
+      "path": "benchmarks/inputs/reliability/logistic/initial/source.txt",
+      "sha256": "14ccb9940189595714b06ca3b5727af5c09b1eb279ea3250d46bc3398e509504",
+      "utf8_bytes": 386,
+      "chars": 386
+    },
+    {
+      "case_id": "logistic",
+      "phase": "initial",
+      "role": "experiment",
+      "path": "benchmarks/inputs/reliability/logistic/initial/experiment.json",
+      "sha256": "b02dcbbcc35baa81d4b4fa7af89388193f5b73bc17af2be38e19c515fd3e41ad",
+      "utf8_bytes": 210,
+      "chars": 210
+    },
+    {
+      "case_id": "logistic",
+      "phase": "clarified",
+      "role": "source",
+      "path": "benchmarks/inputs/reliability/logistic/clarified/source.txt",
+      "sha256": "7d01cf55cb1e23f355a026303a12e8350767dcb7c61a88500bd50289e7497ed8",
+      "utf8_bytes": 548,
+      "chars": 548
+    },
+    {
+      "case_id": "logistic",
+      "phase": "clarified",
+      "role": "experiment",
+      "path": "benchmarks/inputs/reliability/logistic/clarified/experiment.json",
+      "sha256": "b02dcbbcc35baa81d4b4fa7af89388193f5b73bc17af2be38e19c515fd3e41ad",
+      "utf8_bytes": 210,
+      "chars": 210
+    }
+  ],
+  "runtime_data_categories": [
+    "task and tool instructions",
+    "authorized source excerpts and prerecorded replies",
+    "model outputs and conversation history",
+    "scientific tool feedback"
+  ],
+  "private_rubric_in_workflow_projection": false,
+  "online_inference_calls": 0,
+  "actual_model_revision_authenticated": false,
+  "note": "This package freezes a proposed scope, not a human authorization or a model capability result."
+}

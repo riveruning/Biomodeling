@@ -1,0 +1,28 @@
+{
+  "id": "chatcmpl-9ecc8bc3-f411-4ebf-9338-3f676e7baafe",
+  "created": 1792238403,
+  "model": "qwen3.8-chat",
+  "object": "chat.completion",
+  "choices": [
+    {
+      "finish_reason": "stop",
+      "index": 0,
+      "message": {
+        "content": "{\"action\": \"ask_researcher\", \"args\": {\"question\": \"The source gives conflicting units for parameter k: the parameter table labels k per second, but the equation legend labels k per minute (k=0.3). Which unit should be used for k in the model?\"}, \"reason\": \"Conflicting units for k (per second vs per minute) must be resolved before modeling.\"}",
+        "role": "assistant",
+        "provider_specific_fields": {
+          "refusal": null
+        }
+      },
+      "provider_specific_fields": {}
+    }
+  ],
+  "usage": {
+    "completion_tokens": 84,
+    "prompt_tokens": 1217,
+    "total_tokens": 1301,
+    "prompt_tokens_details": {
+      "cached_tokens": 0
+    }
+  }
+}

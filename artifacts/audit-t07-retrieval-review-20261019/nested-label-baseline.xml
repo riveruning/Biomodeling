@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="1" time="0.068" timestamp="2026-10-19T19:35:08.872571+08:00" hostname="LAPTOP-2QUP5P60"><testcase classname="tests.test_retrieval_review_acceptance" name="test_source_page_cannot_smuggle_annotations_in_extra_metadata" time="0.001"><failure message="Failed: DID NOT RAISE ValueError">def test_source_page_cannot_smuggle_annotations_in_extra_metadata():
+        p = packet(); source = p['cases'][0]['sources'][0]
+        source['pages'][0]['reviewer_answer'] = 'PRIVATE_ANNOTATION_MUST_NOT_ENTER_SOURCE_STORE'
+        source['pages_sha256'] = review.digest(source['pages'])
+&gt;       with pytest.raises(ValueError, match='page fields'):
+E       Failed: DID NOT RAISE ValueError
+
+tests/test_retrieval_review_acceptance.py:296: Failed</failure></testcase></testsuite></testsuites>

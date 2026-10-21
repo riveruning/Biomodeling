@@ -1,0 +1,852 @@
+{
+  "type": "exploratory_synthetic_pilot",
+  "human_domain_review": "pending",
+  "rows": [
+    {
+      "system": "biomodel",
+      "case": "c01_multistep_decay",
+      "phase": "incomplete",
+      "agent_ref": "beba884504b343b13c838ae2d4943f882809507399aef3456db59c598aa87084",
+      "status": "completed",
+      "calls": 5,
+      "retries": 0,
+      "repairs": 1,
+      "model_ref": "1c9cd8756d84363bfb7cf8cc795953625192a83b20237cd9a4801898c9439dd7",
+      "run_ref": "d2e3ac1dee45d55b5cbd672ca053d063c31ca43fc4a9518d69cd3b9a32d734c6",
+      "questions": [],
+      "tokens_cumulative": 16126,
+      "elapsed_seconds": 88.21420358500473,
+      "modules_sha256": "247383f706a0ccfdb63c84e45360d79be7c44cf3beb52d6477ba4a63a38cc0de",
+      "executable_delivery": true,
+      "actual_trajectory": true,
+      "numeric": {
+        "status": "pass",
+        "max_scaled_error": 7.590205800940145e-07,
+        "per_species_scaled_errors": {
+          "A": 3.436190265104777e-07,
+          "B": 7.590205800940145e-07
+        },
+        "threshold": 0.001
+      },
+      "successful_execution": true,
+      "false_blocking": false,
+      "provider_failures": [],
+      "protocol_errors": 0,
+      "terminal_protocol_failure": false,
+      "category": "complete",
+      "sufficient": true
+    },
+    {
+      "system": "codex",
+      "case": "c01_multistep_decay",
+      "phase": "incomplete",
+      "status": "delivered",
+      "exit_code": 0,
+      "elapsed_seconds": 33.061401081999065,
+      "model": "gpt-6.1-sol",
+      "usage": {
+        "input_tokens": 62227,
+        "cached_input_tokens": 54784,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 1025,
+        "reasoning_output_tokens": 172
+      },
+      "answer_status": "needs_input",
+      "questions": [
+        "Are the mechanism species S1 and S2 aliases for A and B, respectively? The mechanism names S1 -> S2 followed by S2 clearance, whereas the equations, initial conditions, and reporting requirement name A and B without specifying that correspondence. Please confirm that mapping or correct the species names and their associated equations and initial conditions.",
+        "The mechanism names S1 and S2, but the equations, initial conditions, and reporting requirement name A and B without specifying their correspondence. Are S1 and S2 aliases for A and B, respectively? Confirm that mapping or correct the species names and their associated equations and initial conditions."
+      ],
+      "limitations": [
+        "The supplied A and B equations, initial concentrations (a.u.), rate constants, and sampling times are individually specified, but their correspondence to the mechanism species S1 and S2 is not stated. Execution is blocked pending that species mapping.",
+        "S1 and S2 entries record unresolved mechanism names, not an assumption that they are additional independent states. Their initial values and equations remain null until the naming is reconciled."
+      ],
+      "replay": "declined",
+      "executable_delivery": false,
+      "actual_trajectory": false,
+      "numeric": {
+        "status": "not_run"
+      },
+      "successful_execution": false,
+      "false_blocking": true,
+      "category": "complete",
+      "sufficient": true
+    },
+    {
+      "system": "biomodel",
+      "case": "c05_seq_activation_missing_initial",
+      "phase": "incomplete",
+      "agent_ref": "b474d81c41558f89eab3b6b441608c7e4b54914ed06f2a4f87210354cbceff4b",
+      "status": "awaiting_input",
+      "calls": 2,
+      "retries": 0,
+      "repairs": 0,
+      "model_ref": null,
+      "run_ref": null,
+      "questions": [
+        "Please resolve: Es/initial; Es/initial: citation missing"
+      ],
+      "tokens_cumulative": 3808,
+      "elapsed_seconds": 39.910312767002324,
+      "modules_sha256": "247383f706a0ccfdb63c84e45360d79be7c44cf3beb52d6477ba4a63a38cc0de",
+      "executable_delivery": false,
+      "actual_trajectory": false,
+      "numeric": {
+        "status": "not_run"
+      },
+      "successful_execution": false,
+      "false_blocking": true,
+      "provider_failures": [],
+      "protocol_errors": 0,
+      "terminal_protocol_failure": false,
+      "category": "missing_initial",
+      "sufficient": false,
+      "gap_identified": true,
+      "requested_targeted_clarification": true,
+      "unsupported_executable_delivery": false
+    },
+    {
+      "system": "codex",
+      "case": "c05_seq_activation_missing_initial",
+      "phase": "incomplete",
+      "status": "delivered",
+      "exit_code": 0,
+      "elapsed_seconds": 35.87984167799732,
+      "model": "gpt-6.1-sol",
+      "usage": {
+        "input_tokens": 62257,
+        "cached_input_tokens": 55040,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 812,
+        "reasoning_output_tokens": 17
+      },
+      "answer_status": "needs_input",
+      "questions": [
+        "What is the initial concentration Es(0) of the complex E* in a.u.?",
+        "The initial concentration Es(0) of the complex E* is explicitly missing from source.txt. What is Es(0) in a.u.?"
+      ],
+      "limitations": [
+        "The source calls the complex E* in prose and Es in its equations; experiment.json requests Es.",
+        "Es(0) is explicitly unreported. E(0) and S(0) specify free species concentrations and do not determine Es(0); a closed system does not imply an initially absent complex. No trajectory can be determined at the 41 requested sampling times without this initial condition."
+      ],
+      "replay": "declined",
+      "executable_delivery": false,
+      "actual_trajectory": false,
+      "numeric": {
+        "status": "not_run"
+      },
+      "successful_execution": false,
+      "false_blocking": true,
+      "category": "missing_initial",
+      "sufficient": false,
+      "gap_identified": true,
+      "requested_targeted_clarification": true,
+      "unsupported_executable_delivery": false
+    },
+    {
+      "system": "biomodel",
+      "case": "c05_seq_activation_missing_initial",
+      "phase": "clarified",
+      "agent_ref": "ff08f1c8b8cfc162869fc39d92561e5b80d1c28621f6dff14641b460de54bc9b",
+      "status": "completed",
+      "calls": 4,
+      "retries": 0,
+      "repairs": 0,
+      "model_ref": "e6920df7f0029cdf9a74344e9d7cc6d3da0f518a4153924fbe30860aff2723c5",
+      "run_ref": "9b9f2a9a6e5fcaab984b013b328d07e2c90e695c27e74dc990f2ff2dee696c86",
+      "questions": [],
+      "tokens_cumulative": 11332,
+      "elapsed_seconds": 57.20363669899962,
+      "modules_sha256": "247383f706a0ccfdb63c84e45360d79be7c44cf3beb52d6477ba4a63a38cc0de",
+      "executable_delivery": true,
+      "actual_trajectory": true,
+      "numeric": {
+        "status": "pass",
+        "max_scaled_error": 3.0217694974021825e-07,
+        "per_species_scaled_errors": {
+          "E": 1.1687078025346409e-07,
+          "S": 3.0217694974021825e-07,
+          "Es": 2.5326448246355507e-07
+        },
+        "threshold": 0.001
+      },
+      "successful_execution": true,
+      "false_blocking": false,
+      "provider_failures": [],
+      "protocol_errors": 0,
+      "terminal_protocol_failure": false,
+      "category": "missing_initial",
+      "sufficient": true
+    },
+    {
+      "system": "codex",
+      "case": "c05_seq_activation_missing_initial",
+      "phase": "clarified",
+      "status": "delivered",
+      "exit_code": 0,
+      "elapsed_seconds": 38.523971097994945,
+      "model": "gpt-6.1-sol",
+      "usage": {
+        "input_tokens": 77838,
+        "cached_input_tokens": 67456,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 1203,
+        "reasoning_output_tokens": 41
+      },
+      "answer_status": "ready",
+      "questions": [],
+      "limitations": [],
+      "replay": "executed",
+      "executable_delivery": true,
+      "actual_trajectory": true,
+      "numeric": {
+        "status": "pass",
+        "max_scaled_error": 2.07503053754586e-08,
+        "per_species_scaled_errors": {
+          "E": 9.575382886595207e-09,
+          "S": 1.5972617561921254e-08,
+          "Es": 2.07503053754586e-08
+        },
+        "threshold": 0.001
+      },
+      "successful_execution": true,
+      "false_blocking": false,
+      "category": "missing_initial",
+      "sufficient": true
+    },
+    {
+      "system": "biomodel",
+      "case": "c05_seq_activation_missing_initial",
+      "phase": "resume",
+      "agent_ref": "8d96b99b886b2af0b00672d6dbc6ae17f0d95c2cde9edbd21817f6b8e4987d47",
+      "status": "completed",
+      "calls": 8,
+      "retries": 0,
+      "repairs": 1,
+      "model_ref": "75fe7f069a3745946cc6fc87c07241ee3e6b1bf8ece5975ae3896273415f3170",
+      "run_ref": "2f76c08c9933afd0385f021399b6c5ffb4540132ca55233c66928b33cf7f313f",
+      "questions": [
+        "Please resolve: Es/initial; Es/initial: citation missing"
+      ],
+      "tokens_cumulative": 33939,
+      "elapsed_seconds": 93.30731306500093,
+      "modules_sha256": "247383f706a0ccfdb63c84e45360d79be7c44cf3beb52d6477ba4a63a38cc0de",
+      "executable_delivery": true,
+      "actual_trajectory": true,
+      "numeric": {
+        "status": "pass",
+        "max_scaled_error": 3.0217694974021825e-07,
+        "per_species_scaled_errors": {
+          "E": 1.1687078025346409e-07,
+          "S": 3.0217694974021825e-07,
+          "Es": 2.5326448246355507e-07
+        },
+        "threshold": 0.001
+      },
+      "successful_execution": true,
+      "false_blocking": false,
+      "provider_failures": [],
+      "protocol_errors": 0,
+      "terminal_protocol_failure": false,
+      "category": "missing_initial",
+      "sufficient": true
+    },
+    {
+      "system": "biomodel",
+      "case": "c09_two_step_saturation_missing_parameter",
+      "phase": "incomplete",
+      "agent_ref": "c2399ac73822d1d7db154f896d35aad315edba7e71f0c46ea2f143211645af53",
+      "status": "awaiting_input",
+      "calls": 2,
+      "retries": 0,
+      "repairs": 0,
+      "model_ref": null,
+      "run_ref": null,
+      "questions": [
+        "The source defines the rate law dS/dt = -Vmax*S/(Km + S + S^2/KI) and states KI is a required input, but the parameter table gives numeric entries only for Vmax (0.9) and Km (1.5). The supplementary note says to 'take the inhibition constant from the standard characterisation as usual' but no numeric value for KI is provided anywhere in the source. What numeric value (and unit) should be used for KI?"
+      ],
+      "tokens_cumulative": 2791,
+      "elapsed_seconds": 19.957792960005463,
+      "modules_sha256": "247383f706a0ccfdb63c84e45360d79be7c44cf3beb52d6477ba4a63a38cc0de",
+      "executable_delivery": false,
+      "actual_trajectory": false,
+      "numeric": {
+        "status": "not_run"
+      },
+      "successful_execution": false,
+      "false_blocking": true,
+      "provider_failures": [],
+      "protocol_errors": 0,
+      "terminal_protocol_failure": false,
+      "category": "missing_parameter",
+      "sufficient": false,
+      "gap_identified": true,
+      "requested_targeted_clarification": true,
+      "unsupported_executable_delivery": false
+    },
+    {
+      "system": "codex",
+      "case": "c09_two_step_saturation_missing_parameter",
+      "phase": "incomplete",
+      "status": "delivered",
+      "exit_code": 0,
+      "elapsed_seconds": 31.60837664099381,
+      "model": "gpt-6.1-sol",
+      "usage": {
+        "input_tokens": 62272,
+        "cached_input_tokens": 53120,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 805,
+        "reasoning_output_tokens": 0
+      },
+      "answer_status": "needs_input",
+      "questions": [
+        "What numerical value of KI (in a.u.) from the standard characterisation should be used in dS/dt = -Vmax*S/(Km + S + S^2/KI)?",
+        "KI has no numerical value in source.txt. What numerical value of KI (in a.u.) from the standard characterisation should be used in dS/dt = -Vmax*S/(Km + S + S^2/KI)? The supplementary note does not justify dropping the inhibition term."
+      ],
+      "limitations": [
+        "source.txt requires KI but supplies no numerical value; the referenced standard characterisation is not provided. The weak exercise of substrate inhibition does not determine KI or justify omitting S^2/KI.",
+        "The unit of KI is inferred by dimensional consistency: S^2/KI must have the same concentration unit as Km and S.",
+        "No trajectory can be determined at the 41 requested sampling times without KI. The simulation was not run."
+      ],
+      "replay": "declined",
+      "executable_delivery": false,
+      "actual_trajectory": false,
+      "numeric": {
+        "status": "not_run"
+      },
+      "successful_execution": false,
+      "false_blocking": true,
+      "category": "missing_parameter",
+      "sufficient": false,
+      "gap_identified": true,
+      "requested_targeted_clarification": true,
+      "unsupported_executable_delivery": false
+    },
+    {
+      "system": "biomodel",
+      "case": "c09_two_step_saturation_missing_parameter",
+      "phase": "clarified",
+      "agent_ref": "783cc8bf330ca0a39afcd4eab1cb43d75a809066fff241360919cbc26b8051ae",
+      "status": "completed",
+      "calls": 4,
+      "retries": 0,
+      "repairs": 0,
+      "model_ref": "c459b62d9652efdf6605f9c9a73ac3421a8dbee913b28ea4625addb98468e0aa",
+      "run_ref": "ff9890c43eff392ebb213d962aee5f433780f994015fab22741469f9103cd808",
+      "questions": [],
+      "tokens_cumulative": 9941,
+      "elapsed_seconds": 49.44727817599778,
+      "modules_sha256": "247383f706a0ccfdb63c84e45360d79be7c44cf3beb52d6477ba4a63a38cc0de",
+      "executable_delivery": true,
+      "actual_trajectory": true,
+      "numeric": {
+        "status": "pass",
+        "max_scaled_error": 2.092821774990483e-06,
+        "per_species_scaled_errors": {
+          "S": 2.092821774990483e-06
+        },
+        "threshold": 0.001
+      },
+      "successful_execution": true,
+      "false_blocking": false,
+      "provider_failures": [],
+      "protocol_errors": 0,
+      "terminal_protocol_failure": false,
+      "category": "missing_parameter",
+      "sufficient": true
+    },
+    {
+      "system": "codex",
+      "case": "c09_two_step_saturation_missing_parameter",
+      "phase": "clarified",
+      "status": "delivered",
+      "exit_code": 0,
+      "elapsed_seconds": 36.371398966002744,
+      "model": "gpt-6.1-sol",
+      "usage": {
+        "input_tokens": 62720,
+        "cached_input_tokens": 55040,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 1197,
+        "reasoning_output_tokens": 29
+      },
+      "answer_status": "ready",
+      "questions": [],
+      "limitations": [
+        "S is measured in a.u. and time in minutes; the compartment size is 1 (dimensionless).",
+        "KI = 0.8 a.u. is supplied by the authoritative researcher clarification embedded in source.txt.",
+        "The simulation has not been executed in this run, as requested."
+      ],
+      "replay": "executed",
+      "executable_delivery": true,
+      "actual_trajectory": true,
+      "numeric": {
+        "status": "pass",
+        "max_scaled_error": 4.832166472512611e-09,
+        "per_species_scaled_errors": {
+          "S": 4.832166472512611e-09
+        },
+        "threshold": 0.001
+      },
+      "successful_execution": true,
+      "false_blocking": false,
+      "category": "missing_parameter",
+      "sufficient": true
+    },
+    {
+      "system": "biomodel",
+      "case": "c09_two_step_saturation_missing_parameter",
+      "phase": "resume",
+      "agent_ref": "3734f71d4e53744a28d5197120d57e5bd105b4adcba4a8c93dd009f663fb704b",
+      "status": "completed",
+      "calls": 6,
+      "retries": 0,
+      "repairs": 1,
+      "model_ref": "12e522e33a598f4337cd0dbce95a592eed8541209f7a7529074c4f6ba42ac321",
+      "run_ref": "dd8017bd2e1c59eb79f03715e8deb94bcdddf172d32fca5fa30638a0295b189d",
+      "questions": [
+        "The source defines the rate law dS/dt = -Vmax*S/(Km + S + S^2/KI) and states KI is a required input, but the parameter table gives numeric entries only for Vmax (0.9) and Km (1.5). The supplementary note says to 'take the inhibition constant from the standard characterisation as usual' but no numeric value for KI is provided anywhere in the source. What numeric value (and unit) should be used for KI?"
+      ],
+      "tokens_cumulative": 18826,
+      "elapsed_seconds": 70.8259688459948,
+      "modules_sha256": "247383f706a0ccfdb63c84e45360d79be7c44cf3beb52d6477ba4a63a38cc0de",
+      "executable_delivery": true,
+      "actual_trajectory": true,
+      "numeric": {
+        "status": "pass",
+        "max_scaled_error": 2.092821774990483e-06,
+        "per_species_scaled_errors": {
+          "S": 2.092821774990483e-06
+        },
+        "threshold": 0.001
+      },
+      "successful_execution": true,
+      "false_blocking": false,
+      "provider_failures": [],
+      "protocol_errors": 0,
+      "terminal_protocol_failure": false,
+      "category": "missing_parameter",
+      "sufficient": true
+    },
+    {
+      "system": "biomodel",
+      "case": "c13_mm_with_inhibitor_ambiguous",
+      "phase": "incomplete",
+      "agent_ref": "40aa028a4bc3a742fa1d53dfa9fa96af01d6696251063b5ee67b1c40bb451156",
+      "status": "awaiting_input",
+      "calls": 2,
+      "retries": 0,
+      "repairs": 0,
+      "model_ref": null,
+      "run_ref": null,
+      "questions": [
+        "In the rate law dS/dt = -Vmax*S/(Km*(1 + I/KI) + S), does the symbol I denote (a) the free inhibitor state (constant at I(0)=2.0), or (b) the total inhibitor (free plus sequestered in the enzyme-inhibitor complex, which would grow as S is consumed)? The material presents both readings as equally authoritative and does not specify which one the rate expression uses."
+      ],
+      "tokens_cumulative": 2801,
+      "elapsed_seconds": 17.611205911998695,
+      "modules_sha256": "247383f706a0ccfdb63c84e45360d79be7c44cf3beb52d6477ba4a63a38cc0de",
+      "executable_delivery": false,
+      "actual_trajectory": false,
+      "numeric": {
+        "status": "not_run"
+      },
+      "successful_execution": false,
+      "false_blocking": true,
+      "provider_failures": [],
+      "protocol_errors": 0,
+      "terminal_protocol_failure": false,
+      "category": "ambiguous_equation",
+      "sufficient": false,
+      "gap_identified": true,
+      "requested_targeted_clarification": true,
+      "unsupported_executable_delivery": false
+    },
+    {
+      "system": "codex",
+      "case": "c13_mm_with_inhibitor_ambiguous",
+      "phase": "incomplete",
+      "status": "delivered",
+      "exit_code": 0,
+      "elapsed_seconds": 36.671857248999004,
+      "model": "gpt-6.1-sol",
+      "usage": {
+        "input_tokens": 47328,
+        "cached_input_tokens": 42368,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 1081,
+        "reasoning_output_tokens": 49
+      },
+      "answer_status": "needs_input",
+      "questions": [
+        "In dS/dt = -Vmax*S/(Km*(1 + I/KI) + S), does I denote the free inhibitor state with I(0) = 2.0 a.u. and dI/dt = 0, or the total free-plus-bound inhibitor concentration? If it denotes the latter, please supply the equation and any initial conditions and parameters needed to determine the bound contribution over time, and clarify whether reported I is the free state or that total.",
+        "The source does not determine whether I in dS/dt = -Vmax*S/(Km*(1 + I/KI) + S) denotes the constant free inhibitor state (I(0) = 2.0 a.u., dI/dt = 0) or includes the growing enzyme-bound inhibitor fraction. Clarify which definition applies; if free-plus-bound is intended, supply the equation and any initial conditions and parameters needed for the bound contribution, and specify whether reported I is free or total."
+      ],
+      "limitations": [
+        "The source explicitly gives dS/dt = -Vmax*S/(Km*(1 + I/KI) + S), but an equally authoritative statement says the inhibition factor includes inhibitor bound to the enzyme. It leaves unresolved whether I in this expression is the constant free inhibitor state or includes a bound fraction that grows as S is consumed. The S right-hand side is therefore null pending clarification of its meaning.",
+        "No equation, initial condition, or quantitative relation is supplied for the growing bound inhibitor contribution. Adding one or choosing the free-only interpretation would require unsupported assumptions.",
+        "S and I have concentration units a.u.; time is in minutes. No trajectories were computed for the 33 sampling times in experiment.json."
+      ],
+      "replay": "declined",
+      "executable_delivery": false,
+      "actual_trajectory": false,
+      "numeric": {
+        "status": "not_run"
+      },
+      "successful_execution": false,
+      "false_blocking": true,
+      "category": "ambiguous_equation",
+      "sufficient": false,
+      "gap_identified": true,
+      "requested_targeted_clarification": true,
+      "unsupported_executable_delivery": false
+    },
+    {
+      "system": "biomodel",
+      "case": "c13_mm_with_inhibitor_ambiguous",
+      "phase": "clarified",
+      "agent_ref": "cc98472f40e665095636b21e0a93775033e762253994f34b6004ac311256935f",
+      "status": "incomplete",
+      "calls": 4,
+      "retries": 0,
+      "repairs": 3,
+      "model_ref": null,
+      "run_ref": null,
+      "questions": [],
+      "tokens_cumulative": 13991,
+      "elapsed_seconds": 117.35359511600109,
+      "modules_sha256": "247383f706a0ccfdb63c84e45360d79be7c44cf3beb52d6477ba4a63a38cc0de",
+      "executable_delivery": false,
+      "actual_trajectory": false,
+      "numeric": {
+        "status": "not_run"
+      },
+      "successful_execution": false,
+      "false_blocking": false,
+      "provider_failures": [],
+      "protocol_errors": 0,
+      "terminal_protocol_failure": false,
+      "category": "ambiguous_equation",
+      "sufficient": true
+    },
+    {
+      "system": "codex",
+      "case": "c13_mm_with_inhibitor_ambiguous",
+      "phase": "clarified",
+      "status": "delivered",
+      "exit_code": 0,
+      "elapsed_seconds": 36.713109027004975,
+      "model": "gpt-6.1-sol",
+      "usage": {
+        "input_tokens": 62838,
+        "cached_input_tokens": 57088,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 1200,
+        "reasoning_output_tokens": 19
+      },
+      "answer_status": "ready",
+      "questions": [],
+      "limitations": [
+        "The authoritative researcher clarification defines I in the rate law as the free inhibitor state, constant at I(0); enzyme-bound inhibitor is not included.",
+        "Both states are concentrations in a.u.; time is in minutes. The simulation has not been run during this task."
+      ],
+      "replay": "executed",
+      "executable_delivery": true,
+      "actual_trajectory": true,
+      "numeric": {
+        "status": "pass",
+        "max_scaled_error": 1.573024525451198e-08,
+        "per_species_scaled_errors": {
+          "S": 1.573024525451198e-08,
+          "I": 0.0
+        },
+        "threshold": 0.001
+      },
+      "successful_execution": true,
+      "false_blocking": false,
+      "category": "ambiguous_equation",
+      "sufficient": true
+    },
+    {
+      "system": "biomodel",
+      "case": "c13_mm_with_inhibitor_ambiguous",
+      "phase": "resume",
+      "agent_ref": "fa2eddf994b0cfabff0b2686d998aa4f6043b3429fc6b00d24117eb365cfde71",
+      "status": "awaiting_input",
+      "calls": 3,
+      "retries": 0,
+      "repairs": 0,
+      "model_ref": null,
+      "run_ref": null,
+      "questions": [
+        "In the rate law dS/dt = -Vmax*S/(Km*(1 + I/KI) + S), does the symbol I denote (a) the free inhibitor state (constant at I(0)=2.0), or (b) the total inhibitor (free plus sequestered in the enzyme-inhibitor complex, which would grow as S is consumed)? The material presents both readings as equally authoritative and does not specify which one the rate expression uses.",
+        "Please resolve: rule:I/expression: cite the researcher clarification used to resolve this target"
+      ],
+      "tokens_cumulative": 6247,
+      "elapsed_seconds": 31.76866668600269,
+      "modules_sha256": "247383f706a0ccfdb63c84e45360d79be7c44cf3beb52d6477ba4a63a38cc0de",
+      "executable_delivery": false,
+      "actual_trajectory": false,
+      "numeric": {
+        "status": "not_run"
+      },
+      "successful_execution": false,
+      "false_blocking": true,
+      "provider_failures": [],
+      "protocol_errors": 0,
+      "terminal_protocol_failure": false,
+      "category": "ambiguous_equation",
+      "sufficient": true
+    },
+    {
+      "system": "biomodel",
+      "case": "c18_two_pathway_unit_conflict",
+      "phase": "incomplete",
+      "agent_ref": "304e318dbe32c2734465e8453b5563667bb6c1ecf4ed79030036f6bf41c938ac",
+      "status": "awaiting_input",
+      "calls": 2,
+      "retries": 0,
+      "repairs": 0,
+      "model_ref": null,
+      "run_ref": null,
+      "questions": [
+        "The source gives conflicting units for the fast-route rate constant kf: the parameter table says 'kf = 0.18 per minute' while the equations legend says 'kf = 0.18 per hour' (and suggests entering 10.8 per hour). The experiment timetable is in minutes. Which value/unit for kf should be used in the rate law dM/dt = -(kf+kg)*M? (kg is consistently 0.12 per minute.)"
+      ],
+      "tokens_cumulative": 2762,
+      "elapsed_seconds": 20.717568022002524,
+      "modules_sha256": "247383f706a0ccfdb63c84e45360d79be7c44cf3beb52d6477ba4a63a38cc0de",
+      "executable_delivery": false,
+      "actual_trajectory": false,
+      "numeric": {
+        "status": "not_run"
+      },
+      "successful_execution": false,
+      "false_blocking": true,
+      "provider_failures": [],
+      "protocol_errors": 0,
+      "terminal_protocol_failure": false,
+      "category": "unit_conflict",
+      "sufficient": false,
+      "gap_identified": true,
+      "requested_targeted_clarification": true,
+      "unsupported_executable_delivery": false
+    },
+    {
+      "system": "codex",
+      "case": "c18_two_pathway_unit_conflict",
+      "phase": "incomplete",
+      "status": "delivered",
+      "exit_code": 0,
+      "elapsed_seconds": 37.8865589210036,
+      "model": "gpt-6.1-sol",
+      "usage": {
+        "input_tokens": 62334,
+        "cached_input_tokens": 57088,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 980,
+        "reasoning_output_tokens": 68
+      },
+      "answer_status": "needs_input",
+      "questions": [
+        "What is the intended value of kf in min^-1: 0.18 (as specified by the parameter table and equivalently by the 10.8 per hour instruction), or 0.003 (equivalent to the legend's 0.18 per hour)?",
+        "Conflicting kf units: the parameter table specifies 0.18 per minute, whereas the equations legend specifies 0.18 per hour. The legend's additional 10.8 per hour instruction agrees with the table. What is the intended kf in min^-1: 0.18 or 0.003? Simulation requires this clarification."
+      ],
+      "limitations": [
+        "The parameter table states kf = 0.18 per minute, but the equations legend states kf = 0.18 per hour for the same symbol. These are incompatible rates. The legend also instructs entering kf as 10.8 per hour for an hourly timetable, which agrees with the table but contradicts its own 0.18 per hour annotation. No precedence is specified; kf's physical value and unit remain unresolved.",
+        "M is a concentration in a.u. The experiment requires 33 sampling times in minutes from 0 through 8 inclusive at intervals of 0.25. Both rate constants must be expressed consistently with minutes before simulation. No trajectory is supplied pending clarification of kf."
+      ],
+      "replay": "declined",
+      "executable_delivery": false,
+      "actual_trajectory": false,
+      "numeric": {
+        "status": "not_run"
+      },
+      "successful_execution": false,
+      "false_blocking": true,
+      "category": "unit_conflict",
+      "sufficient": false,
+      "gap_identified": true,
+      "requested_targeted_clarification": true,
+      "unsupported_executable_delivery": false
+    },
+    {
+      "system": "biomodel",
+      "case": "c18_two_pathway_unit_conflict",
+      "phase": "clarified",
+      "agent_ref": "4174c10b1b86be8a8bc379bbf5b2c7b1c31fb6ab44b20a2afa2a8da9f66597b5",
+      "status": "awaiting_input",
+      "calls": 2,
+      "retries": 0,
+      "repairs": 0,
+      "model_ref": null,
+      "run_ref": null,
+      "questions": [
+        "Please resolve: kf/value: please clarify conflicting declared values; kg/value: please clarify conflicting declared values"
+      ],
+      "tokens_cumulative": 3680,
+      "elapsed_seconds": 35.6775820049952,
+      "modules_sha256": "247383f706a0ccfdb63c84e45360d79be7c44cf3beb52d6477ba4a63a38cc0de",
+      "executable_delivery": false,
+      "actual_trajectory": false,
+      "numeric": {
+        "status": "not_run"
+      },
+      "successful_execution": false,
+      "false_blocking": true,
+      "provider_failures": [],
+      "protocol_errors": 0,
+      "terminal_protocol_failure": false,
+      "category": "unit_conflict",
+      "sufficient": true
+    },
+    {
+      "system": "codex",
+      "case": "c18_two_pathway_unit_conflict",
+      "phase": "clarified",
+      "status": "delivered",
+      "exit_code": 0,
+      "elapsed_seconds": 29.044038765998266,
+      "model": "gpt-6.1-sol",
+      "usage": {
+        "input_tokens": 47194,
+        "cached_input_tokens": 40320,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 943,
+        "reasoning_output_tokens": 27
+      },
+      "answer_status": "ready",
+      "questions": [],
+      "limitations": [
+        "The authoritative researcher clarification in source.txt resolves the conflicting kf unit annotation: kf = 0.18 per minute = 10.8 per hour = 0.003 per second. The minute timetable uses the per-minute values.",
+        "M is a concentration in arbitrary units (a.u.). The exact solution M(t) = 5.0*exp(-(kf + kg)*t) applies to the stated constant-rate model.",
+        "The simulation was not executed during this run, as requested."
+      ],
+      "replay": "executed",
+      "executable_delivery": true,
+      "actual_trajectory": true,
+      "numeric": {
+        "status": "pass",
+        "max_scaled_error": 9.111155296892548e-09,
+        "per_species_scaled_errors": {
+          "M": 9.111155296892548e-09
+        },
+        "threshold": 0.001
+      },
+      "successful_execution": true,
+      "false_blocking": false,
+      "category": "unit_conflict",
+      "sufficient": true
+    },
+    {
+      "system": "biomodel",
+      "case": "c18_two_pathway_unit_conflict",
+      "phase": "resume",
+      "agent_ref": "72673c0012e8b10722078a744ac55aea8dfa4b495518e8f46505256d1a781cbe",
+      "status": "awaiting_input",
+      "calls": 3,
+      "retries": 0,
+      "repairs": 0,
+      "model_ref": null,
+      "run_ref": null,
+      "questions": [
+        "The source gives conflicting units for the fast-route rate constant kf: the parameter table says 'kf = 0.18 per minute' while the equations legend says 'kf = 0.18 per hour' (and suggests entering 10.8 per hour). The experiment timetable is in minutes. Which value/unit for kf should be used in the rate law dM/dt = -(kf+kg)*M? (kg is consistently 0.12 per minute.)",
+        "Please resolve: kg/value: please clarify conflicting declared values"
+      ],
+      "tokens_cumulative": 6041,
+      "elapsed_seconds": 32.2399795809979,
+      "modules_sha256": "247383f706a0ccfdb63c84e45360d79be7c44cf3beb52d6477ba4a63a38cc0de",
+      "executable_delivery": false,
+      "actual_trajectory": false,
+      "numeric": {
+        "status": "not_run"
+      },
+      "successful_execution": false,
+      "false_blocking": true,
+      "provider_failures": [],
+      "protocol_errors": 0,
+      "terminal_protocol_failure": false,
+      "category": "unit_conflict",
+      "sufficient": true
+    }
+  ],
+  "summary": {
+    "biomodel": {
+      "complete_success": {
+        "count": 1,
+        "denominator": 1
+      },
+      "gap_identification": {
+        "count": 4,
+        "denominator": 4
+      },
+      "targeted_clarification": {
+        "count": 4,
+        "denominator": 4
+      },
+      "unsupported_executable_delivery": {
+        "count": 0,
+        "denominator": 4
+      },
+      "fresh_clarified_success": {
+        "count": 2,
+        "denominator": 4
+      },
+      "sufficient_success": {
+        "count": 3,
+        "denominator": 5
+      },
+      "false_blocking_sufficient": {
+        "count": 1,
+        "denominator": 5
+      },
+      "same_task_resume_all": {
+        "count": 2,
+        "denominator": 4
+      },
+      "same_task_resume_conditional": {
+        "count": 2,
+        "denominator": 4
+      },
+      "fresh_trials_observed": 9,
+      "elapsed_seconds_fresh": 446.0931752420074,
+      "elapsed_seconds_resumes": 228.1419281779963
+    },
+    "codex": {
+      "complete_success": {
+        "count": 0,
+        "denominator": 1
+      },
+      "gap_identification": {
+        "count": 4,
+        "denominator": 4
+      },
+      "targeted_clarification": {
+        "count": 4,
+        "denominator": 4
+      },
+      "unsupported_executable_delivery": {
+        "count": 0,
+        "denominator": 4
+      },
+      "fresh_clarified_success": {
+        "count": 4,
+        "denominator": 4
+      },
+      "sufficient_success": {
+        "count": 4,
+        "denominator": 5
+      },
+      "false_blocking_sufficient": {
+        "count": 1,
+        "denominator": 5
+      },
+      "same_task_resume_all": null,
+      "same_task_resume_conditional": null,
+      "fresh_trials_observed": 9,
+      "elapsed_seconds_fresh": 315.7605534279937,
+      "elapsed_seconds_resumes": 0
+    }
+  },
+  "native_baseline_profile": "separate all-case transport diagnostic; original baseline failure preserved",
+  "superiority_claim": false,
+  "same_backbone_causal_claim": false
+}

@@ -1,0 +1,1688 @@
+[
+  {
+    "schema_version": 1,
+    "protocol": "native_system_comparison_v1",
+    "manifest_sha256": "6c97c6c6462b4a6598c1580d5a2863fc70e3977466c7693c4cc3112dff99348b",
+    "trial": {
+      "id": "biomodel--decay--0--initial",
+      "system_id": "biomodel",
+      "runtime": "biomodel_agent",
+      "case_id": "decay",
+      "repeat": 0,
+      "phase": "initial",
+      "parent_trial_id": null
+    },
+    "evidence_kind": "scripted_control",
+    "capture_kind": "product_v1_record",
+    "capture_sha256": "7029e25dc46edd09fe9167e0c206451051a3d82cabcc4cfb933a840d4cd14d54",
+    "status": "finished",
+    "session": {
+      "id": "b8dea658b5d0d194675d6a2a449aff07e4ebb27a572ffd9de41fdeed8803c22f",
+      "mode": "none",
+      "parent_record_sha256": null,
+      "identity_authenticated": false
+    },
+    "observation": {
+      "state": "completed",
+      "completion_claimed": true,
+      "execution_declared": true,
+      "execution_observed": true,
+      "question_texts": [],
+      "final_messages": [],
+      "artifacts": []
+    },
+    "assessment": {
+      "authority": "unreviewed",
+      "numeric": "unknown",
+      "source_support": "unknown",
+      "behavior_labels_reviewed": false
+    },
+    "telemetry": {
+      "elapsed_seconds": 2.9028219989995705,
+      "model_calls": 4,
+      "tool_items": 4,
+      "tool_count_kind": "domain_tool_invocations",
+      "input_tokens": null,
+      "output_tokens": null,
+      "cached_input_tokens": null,
+      "reasoning_output_tokens": null,
+      "cumulative_elapsed_seconds": 2.9028219989995705
+    },
+    "diagnostics": [
+      "product_v1_observation_attribution_not_identity_authentication"
+    ]
+  },
+  {
+    "schema_version": 1,
+    "protocol": "native_system_comparison_v1",
+    "manifest_sha256": "6c97c6c6462b4a6598c1580d5a2863fc70e3977466c7693c4cc3112dff99348b",
+    "trial": {
+      "id": "biomodel--translation--0--initial",
+      "system_id": "biomodel",
+      "runtime": "biomodel_agent",
+      "case_id": "translation",
+      "repeat": 0,
+      "phase": "initial",
+      "parent_trial_id": null
+    },
+    "evidence_kind": "scripted_control",
+    "capture_kind": "product_v1_record",
+    "capture_sha256": "2d3194fb7e644390b7323005ae30c6341c70d247d6a508517de579dce373faae",
+    "status": "finished",
+    "session": {
+      "id": "72880049bceee5807685d7e010ae74d8067c7bfa88025a3b07c27d2e0e9d5919",
+      "mode": "none",
+      "parent_record_sha256": null,
+      "identity_authenticated": false
+    },
+    "observation": {
+      "state": "awaiting_input",
+      "completion_claimed": false,
+      "execution_declared": false,
+      "execution_observed": false,
+      "question_texts": [
+        "What is the initial P value?"
+      ],
+      "final_messages": [],
+      "artifacts": []
+    },
+    "assessment": {
+      "authority": "unreviewed",
+      "numeric": "unknown",
+      "source_support": "unknown",
+      "behavior_labels_reviewed": false
+    },
+    "telemetry": {
+      "elapsed_seconds": 0.434049812000012,
+      "model_calls": 2,
+      "tool_items": 1,
+      "tool_count_kind": "domain_tool_invocations",
+      "input_tokens": null,
+      "output_tokens": null,
+      "cached_input_tokens": null,
+      "reasoning_output_tokens": null,
+      "cumulative_elapsed_seconds": 0.434049812000012
+    },
+    "diagnostics": [
+      "product_v1_observation_attribution_not_identity_authentication"
+    ]
+  },
+  {
+    "schema_version": 1,
+    "protocol": "native_system_comparison_v1",
+    "manifest_sha256": "6c97c6c6462b4a6598c1580d5a2863fc70e3977466c7693c4cc3112dff99348b",
+    "trial": {
+      "id": "biomodel--translation--0--clarified",
+      "system_id": "biomodel",
+      "runtime": "biomodel_agent",
+      "case_id": "translation",
+      "repeat": 0,
+      "phase": "clarified",
+      "parent_trial_id": "biomodel--translation--0--initial"
+    },
+    "evidence_kind": "scripted_control",
+    "capture_kind": "product_v1_record",
+    "capture_sha256": "ac078d7f0018f8bf3282d4dff84e8845970725a5a5d2cac1a6de722438083c9c",
+    "status": "finished",
+    "session": {
+      "id": "7b41105423a994ba4c5de60290e77cd235083174e99cd90926ece8f7ba4812a4",
+      "mode": "resumed",
+      "parent_record_sha256": "297784740abdf45604a6a7a4b4942ce172345cc637fd8a1bb996652fb2c8419d",
+      "identity_authenticated": false
+    },
+    "observation": {
+      "state": "completed",
+      "completion_claimed": true,
+      "execution_declared": true,
+      "execution_observed": true,
+      "question_texts": [],
+      "final_messages": [],
+      "artifacts": []
+    },
+    "assessment": {
+      "authority": "unreviewed",
+      "numeric": "unknown",
+      "source_support": "unknown",
+      "behavior_labels_reviewed": false
+    },
+    "telemetry": {
+      "elapsed_seconds": 2.963971097000467,
+      "model_calls": 3,
+      "tool_items": 3,
+      "tool_count_kind": "domain_tool_invocations",
+      "input_tokens": null,
+      "output_tokens": null,
+      "cached_input_tokens": null,
+      "reasoning_output_tokens": null,
+      "cumulative_elapsed_seconds": 3.398020909000479
+    },
+    "diagnostics": [
+      "product_v1_observation_attribution_not_identity_authentication"
+    ]
+  },
+  {
+    "schema_version": 1,
+    "protocol": "native_system_comparison_v1",
+    "manifest_sha256": "6c97c6c6462b4a6598c1580d5a2863fc70e3977466c7693c4cc3112dff99348b",
+    "trial": {
+      "id": "biomodel--logistic--0--initial",
+      "system_id": "biomodel",
+      "runtime": "biomodel_agent",
+      "case_id": "logistic",
+      "repeat": 0,
+      "phase": "initial",
+      "parent_trial_id": null
+    },
+    "evidence_kind": "scripted_control",
+    "capture_kind": "product_v1_record",
+    "capture_sha256": "60e407de8a7f3265cfcef3cb450d552722e903f0122ba3df4f1e67277bc72b26",
+    "status": "finished",
+    "session": {
+      "id": "80e8acb2445857e0c6e796cd03ed7e1995c4700633df247ee1b40ee8166f067c",
+      "mode": "none",
+      "parent_record_sha256": null,
+      "identity_authenticated": false
+    },
+    "observation": {
+      "state": "awaiting_input",
+      "completion_claimed": false,
+      "execution_declared": false,
+      "execution_observed": false,
+      "question_texts": [
+        "Which reported dX/dt alternative was actually used?"
+      ],
+      "final_messages": [],
+      "artifacts": []
+    },
+    "assessment": {
+      "authority": "unreviewed",
+      "numeric": "unknown",
+      "source_support": "unknown",
+      "behavior_labels_reviewed": false
+    },
+    "telemetry": {
+      "elapsed_seconds": 0.4882958360030898,
+      "model_calls": 2,
+      "tool_items": 1,
+      "tool_count_kind": "domain_tool_invocations",
+      "input_tokens": null,
+      "output_tokens": null,
+      "cached_input_tokens": null,
+      "reasoning_output_tokens": null,
+      "cumulative_elapsed_seconds": 0.4882958360030898
+    },
+    "diagnostics": [
+      "product_v1_observation_attribution_not_identity_authentication"
+    ]
+  },
+  {
+    "schema_version": 1,
+    "protocol": "native_system_comparison_v1",
+    "manifest_sha256": "6c97c6c6462b4a6598c1580d5a2863fc70e3977466c7693c4cc3112dff99348b",
+    "trial": {
+      "id": "biomodel--logistic--0--clarified",
+      "system_id": "biomodel",
+      "runtime": "biomodel_agent",
+      "case_id": "logistic",
+      "repeat": 0,
+      "phase": "clarified",
+      "parent_trial_id": "biomodel--logistic--0--initial"
+    },
+    "evidence_kind": "scripted_control",
+    "capture_kind": "product_v1_record",
+    "capture_sha256": "86aa607b4f77c21e5b535309a3e34918c0d76ed6abc11a7c3f35ff5713adcb34",
+    "status": "finished",
+    "session": {
+      "id": "e3287231015ca223a141126aa501c5c1cd9e66a9b520540d3bd6926d99d0e5b4",
+      "mode": "resumed",
+      "parent_record_sha256": "2057eac701fbcd5c905af14f72cb3107ae84fe8cc82d8653512296ab8fc6cc8c",
+      "identity_authenticated": false
+    },
+    "observation": {
+      "state": "completed",
+      "completion_claimed": true,
+      "execution_declared": true,
+      "execution_observed": true,
+      "question_texts": [],
+      "final_messages": [],
+      "artifacts": []
+    },
+    "assessment": {
+      "authority": "unreviewed",
+      "numeric": "unknown",
+      "source_support": "unknown",
+      "behavior_labels_reviewed": false
+    },
+    "telemetry": {
+      "elapsed_seconds": 2.6977181669935817,
+      "model_calls": 3,
+      "tool_items": 3,
+      "tool_count_kind": "domain_tool_invocations",
+      "input_tokens": null,
+      "output_tokens": null,
+      "cached_input_tokens": null,
+      "reasoning_output_tokens": null,
+      "cumulative_elapsed_seconds": 3.1860140029966715
+    },
+    "diagnostics": [
+      "product_v1_observation_attribution_not_identity_authentication"
+    ]
+  },
+  {
+    "schema_version": 1,
+    "protocol": "native_system_comparison_v1",
+    "manifest_sha256": "6c97c6c6462b4a6598c1580d5a2863fc70e3977466c7693c4cc3112dff99348b",
+    "trial": {
+      "id": "biomodel--decay--1--initial",
+      "system_id": "biomodel",
+      "runtime": "biomodel_agent",
+      "case_id": "decay",
+      "repeat": 1,
+      "phase": "initial",
+      "parent_trial_id": null
+    },
+    "evidence_kind": "scripted_control",
+    "capture_kind": "product_v1_record",
+    "capture_sha256": "ea8d7e90f4a58708e87c4c88965cc246e2ed14fd1023bffcc9e904e6d23f6823",
+    "status": "finished",
+    "session": {
+      "id": "910a70f6c94d7b605064ad9b61740b81604c164774ec3878aafda198c25c5703",
+      "mode": "none",
+      "parent_record_sha256": null,
+      "identity_authenticated": false
+    },
+    "observation": {
+      "state": "completed",
+      "completion_claimed": true,
+      "execution_declared": true,
+      "execution_observed": true,
+      "question_texts": [],
+      "final_messages": [],
+      "artifacts": []
+    },
+    "assessment": {
+      "authority": "unreviewed",
+      "numeric": "unknown",
+      "source_support": "unknown",
+      "behavior_labels_reviewed": false
+    },
+    "telemetry": {
+      "elapsed_seconds": 2.8915820559996064,
+      "model_calls": 4,
+      "tool_items": 4,
+      "tool_count_kind": "domain_tool_invocations",
+      "input_tokens": null,
+      "output_tokens": null,
+      "cached_input_tokens": null,
+      "reasoning_output_tokens": null,
+      "cumulative_elapsed_seconds": 2.8915820559996064
+    },
+    "diagnostics": [
+      "product_v1_observation_attribution_not_identity_authentication"
+    ]
+  },
+  {
+    "schema_version": 1,
+    "protocol": "native_system_comparison_v1",
+    "manifest_sha256": "6c97c6c6462b4a6598c1580d5a2863fc70e3977466c7693c4cc3112dff99348b",
+    "trial": {
+      "id": "biomodel--translation--1--initial",
+      "system_id": "biomodel",
+      "runtime": "biomodel_agent",
+      "case_id": "translation",
+      "repeat": 1,
+      "phase": "initial",
+      "parent_trial_id": null
+    },
+    "evidence_kind": "scripted_control",
+    "capture_kind": "product_v1_record",
+    "capture_sha256": "b2f87c705f5c0b9452554e4f06fde08b35ffcd03958a458e53f56169b44e8f0e",
+    "status": "finished",
+    "session": {
+      "id": "81a76bbbccdeaf878e7d7778ae75041546404226779838dfd91dc1d7357464b7",
+      "mode": "none",
+      "parent_record_sha256": null,
+      "identity_authenticated": false
+    },
+    "observation": {
+      "state": "awaiting_input",
+      "completion_claimed": false,
+      "execution_declared": false,
+      "execution_observed": false,
+      "question_texts": [
+        "What is the initial P value?"
+      ],
+      "final_messages": [],
+      "artifacts": []
+    },
+    "assessment": {
+      "authority": "unreviewed",
+      "numeric": "unknown",
+      "source_support": "unknown",
+      "behavior_labels_reviewed": false
+    },
+    "telemetry": {
+      "elapsed_seconds": 0.5028262949999771,
+      "model_calls": 2,
+      "tool_items": 1,
+      "tool_count_kind": "domain_tool_invocations",
+      "input_tokens": null,
+      "output_tokens": null,
+      "cached_input_tokens": null,
+      "reasoning_output_tokens": null,
+      "cumulative_elapsed_seconds": 0.5028262949999771
+    },
+    "diagnostics": [
+      "product_v1_observation_attribution_not_identity_authentication"
+    ]
+  },
+  {
+    "schema_version": 1,
+    "protocol": "native_system_comparison_v1",
+    "manifest_sha256": "6c97c6c6462b4a6598c1580d5a2863fc70e3977466c7693c4cc3112dff99348b",
+    "trial": {
+      "id": "biomodel--translation--1--clarified",
+      "system_id": "biomodel",
+      "runtime": "biomodel_agent",
+      "case_id": "translation",
+      "repeat": 1,
+      "phase": "clarified",
+      "parent_trial_id": "biomodel--translation--1--initial"
+    },
+    "evidence_kind": "scripted_control",
+    "capture_kind": "product_v1_record",
+    "capture_sha256": "c700d191bc0c30ddf668665fd23442b487e539a8187a878d69094f1167e647b5",
+    "status": "finished",
+    "session": {
+      "id": "accf84c600e0dd7b7e62b2d13a91b1ba07ef85a08444ea9bd71ee53539743432",
+      "mode": "resumed",
+      "parent_record_sha256": "666ddac87a11cc019eadf6a5aee585886e157228caa5537ce436479224c0d2ad",
+      "identity_authenticated": false
+    },
+    "observation": {
+      "state": "completed",
+      "completion_claimed": true,
+      "execution_declared": true,
+      "execution_observed": true,
+      "question_texts": [],
+      "final_messages": [],
+      "artifacts": []
+    },
+    "assessment": {
+      "authority": "unreviewed",
+      "numeric": "unknown",
+      "source_support": "unknown",
+      "behavior_labels_reviewed": false
+    },
+    "telemetry": {
+      "elapsed_seconds": 3.0830118770027184,
+      "model_calls": 3,
+      "tool_items": 3,
+      "tool_count_kind": "domain_tool_invocations",
+      "input_tokens": null,
+      "output_tokens": null,
+      "cached_input_tokens": null,
+      "reasoning_output_tokens": null,
+      "cumulative_elapsed_seconds": 3.5858381720026955
+    },
+    "diagnostics": [
+      "product_v1_observation_attribution_not_identity_authentication"
+    ]
+  },
+  {
+    "schema_version": 1,
+    "protocol": "native_system_comparison_v1",
+    "manifest_sha256": "6c97c6c6462b4a6598c1580d5a2863fc70e3977466c7693c4cc3112dff99348b",
+    "trial": {
+      "id": "biomodel--logistic--1--initial",
+      "system_id": "biomodel",
+      "runtime": "biomodel_agent",
+      "case_id": "logistic",
+      "repeat": 1,
+      "phase": "initial",
+      "parent_trial_id": null
+    },
+    "evidence_kind": "scripted_control",
+    "capture_kind": "product_v1_record",
+    "capture_sha256": "468975c7f6542586df7f5f15f50c4992b0a390663d0c463c99e8a5f60931148a",
+    "status": "finished",
+    "session": {
+      "id": "aa516ea56350ee28fddad4a5d10da3a7f2fbde226bd8fc70d2aa41afe3adbf03",
+      "mode": "none",
+      "parent_record_sha256": null,
+      "identity_authenticated": false
+    },
+    "observation": {
+      "state": "awaiting_input",
+      "completion_claimed": false,
+      "execution_declared": false,
+      "execution_observed": false,
+      "question_texts": [
+        "Which reported dX/dt alternative was actually used?"
+      ],
+      "final_messages": [],
+      "artifacts": []
+    },
+    "assessment": {
+      "authority": "unreviewed",
+      "numeric": "unknown",
+      "source_support": "unknown",
+      "behavior_labels_reviewed": false
+    },
+    "telemetry": {
+      "elapsed_seconds": 0.48183886199694825,
+      "model_calls": 2,
+      "tool_items": 1,
+      "tool_count_kind": "domain_tool_invocations",
+      "input_tokens": null,
+      "output_tokens": null,
+      "cached_input_tokens": null,
+      "reasoning_output_tokens": null,
+      "cumulative_elapsed_seconds": 0.48183886199694825
+    },
+    "diagnostics": [
+      "product_v1_observation_attribution_not_identity_authentication"
+    ]
+  },
+  {
+    "schema_version": 1,
+    "protocol": "native_system_comparison_v1",
+    "manifest_sha256": "6c97c6c6462b4a6598c1580d5a2863fc70e3977466c7693c4cc3112dff99348b",
+    "trial": {
+      "id": "biomodel--logistic--1--clarified",
+      "system_id": "biomodel",
+      "runtime": "biomodel_agent",
+      "case_id": "logistic",
+      "repeat": 1,
+      "phase": "clarified",
+      "parent_trial_id": "biomodel--logistic--1--initial"
+    },
+    "evidence_kind": "scripted_control",
+    "capture_kind": "product_v1_record",
+    "capture_sha256": "c204af027965344f0b8e0eb6a04511141e5a64150ae3c4646045c67c15f507cb",
+    "status": "finished",
+    "session": {
+      "id": "643feab06eff2976de8679c09474de9b15cc624bc86467b679853a230631b8eb",
+      "mode": "resumed",
+      "parent_record_sha256": "f9e304006f548d581a4865a939d226fcd0ad019467e0e1fb1a5ef2c5aa026272",
+      "identity_authenticated": false
+    },
+    "observation": {
+      "state": "completed",
+      "completion_claimed": true,
+      "execution_declared": true,
+      "execution_observed": true,
+      "question_texts": [],
+      "final_messages": [],
+      "artifacts": []
+    },
+    "assessment": {
+      "authority": "unreviewed",
+      "numeric": "unknown",
+      "source_support": "unknown",
+      "behavior_labels_reviewed": false
+    },
+    "telemetry": {
+      "elapsed_seconds": 2.794926727001439,
+      "model_calls": 3,
+      "tool_items": 3,
+      "tool_count_kind": "domain_tool_invocations",
+      "input_tokens": null,
+      "output_tokens": null,
+      "cached_input_tokens": null,
+      "reasoning_output_tokens": null,
+      "cumulative_elapsed_seconds": 3.276765588998387
+    },
+    "diagnostics": [
+      "product_v1_observation_attribution_not_identity_authentication"
+    ]
+  },
+  {
+    "schema_version": 1,
+    "protocol": "native_system_comparison_v1",
+    "manifest_sha256": "6c97c6c6462b4a6598c1580d5a2863fc70e3977466c7693c4cc3112dff99348b",
+    "trial": {
+      "id": "codex-sol--decay--0--initial",
+      "system_id": "codex-sol",
+      "runtime": "codex_cli",
+      "case_id": "decay",
+      "repeat": 0,
+      "phase": "initial",
+      "parent_trial_id": null
+    },
+    "evidence_kind": "scripted_control",
+    "capture_kind": "codex_jsonl",
+    "capture_sha256": "2a0f8099becdded903a3297df6b28b88e7263f043ce65011e600d146ec6c26d3",
+    "status": "finished",
+    "session": {
+      "id": "5e7ee255-7e73-5cc8-a5a2-8bade8d6de51",
+      "mode": "none",
+      "parent_record_sha256": null,
+      "identity_authenticated": false
+    },
+    "observation": {
+      "state": "completed",
+      "completion_claimed": true,
+      "execution_declared": true,
+      "execution_observed": null,
+      "question_texts": [],
+      "final_messages": [
+        "Literal offline interface control; not an actual model response."
+      ],
+      "artifacts": [
+        {
+          "path": "program.py",
+          "role": "program",
+          "sha256": "6684d1b03da5573212dd8a0089e265de36201884675ba64b32cfaeace35df937"
+        }
+      ]
+    },
+    "assessment": {
+      "authority": "unreviewed",
+      "numeric": "unknown",
+      "source_support": "unknown",
+      "behavior_labels_reviewed": false
+    },
+    "telemetry": {
+      "elapsed_seconds": 0.01,
+      "model_calls": null,
+      "tool_items": 1,
+      "tool_count_kind": "native_completed_tool_items",
+      "input_tokens": null,
+      "output_tokens": null,
+      "cached_input_tokens": null,
+      "reasoning_output_tokens": null,
+      "cumulative_elapsed_seconds": 0.01
+    },
+    "diagnostics": []
+  },
+  {
+    "schema_version": 1,
+    "protocol": "native_system_comparison_v1",
+    "manifest_sha256": "6c97c6c6462b4a6598c1580d5a2863fc70e3977466c7693c4cc3112dff99348b",
+    "trial": {
+      "id": "codex-sol--translation--0--initial",
+      "system_id": "codex-sol",
+      "runtime": "codex_cli",
+      "case_id": "translation",
+      "repeat": 0,
+      "phase": "initial",
+      "parent_trial_id": null
+    },
+    "evidence_kind": "scripted_control",
+    "capture_kind": "codex_jsonl",
+    "capture_sha256": "e0261f52c6e13b6417bda23ade910d61179f5be5272092f66c77c66b1fec7b6a",
+    "status": "finished",
+    "session": {
+      "id": "c6d09a7d-2834-5d2c-9685-257331e8f865",
+      "mode": "none",
+      "parent_record_sha256": null,
+      "identity_authenticated": false
+    },
+    "observation": {
+      "state": "awaiting_input",
+      "completion_claimed": false,
+      "execution_declared": false,
+      "execution_observed": null,
+      "question_texts": [
+        "What is the initial P value?"
+      ],
+      "final_messages": [
+        "Literal offline interface control; not an actual model response."
+      ],
+      "artifacts": []
+    },
+    "assessment": {
+      "authority": "unreviewed",
+      "numeric": "unknown",
+      "source_support": "unknown",
+      "behavior_labels_reviewed": false
+    },
+    "telemetry": {
+      "elapsed_seconds": 0.01,
+      "model_calls": null,
+      "tool_items": 1,
+      "tool_count_kind": "native_completed_tool_items",
+      "input_tokens": null,
+      "output_tokens": null,
+      "cached_input_tokens": null,
+      "reasoning_output_tokens": null,
+      "cumulative_elapsed_seconds": 0.01
+    },
+    "diagnostics": []
+  },
+  {
+    "schema_version": 1,
+    "protocol": "native_system_comparison_v1",
+    "manifest_sha256": "6c97c6c6462b4a6598c1580d5a2863fc70e3977466c7693c4cc3112dff99348b",
+    "trial": {
+      "id": "codex-sol--translation--0--clarified",
+      "system_id": "codex-sol",
+      "runtime": "codex_cli",
+      "case_id": "translation",
+      "repeat": 0,
+      "phase": "clarified",
+      "parent_trial_id": "codex-sol--translation--0--initial"
+    },
+    "evidence_kind": "scripted_control",
+    "capture_kind": "codex_jsonl",
+    "capture_sha256": "e0261f52c6e13b6417bda23ade910d61179f5be5272092f66c77c66b1fec7b6a",
+    "status": "finished",
+    "session": {
+      "id": "c6d09a7d-2834-5d2c-9685-257331e8f865",
+      "mode": "resumed",
+      "parent_record_sha256": "dc23ef6c7739988ad0a44415dcb480fea082808edf2cee420d9bb75f80b64d79",
+      "identity_authenticated": false
+    },
+    "observation": {
+      "state": "completed",
+      "completion_claimed": true,
+      "execution_declared": true,
+      "execution_observed": null,
+      "question_texts": [],
+      "final_messages": [
+        "Literal offline interface control; not an actual model response."
+      ],
+      "artifacts": [
+        {
+          "path": "program.py",
+          "role": "program",
+          "sha256": "6684d1b03da5573212dd8a0089e265de36201884675ba64b32cfaeace35df937"
+        }
+      ]
+    },
+    "assessment": {
+      "authority": "unreviewed",
+      "numeric": "unknown",
+      "source_support": "unknown",
+      "behavior_labels_reviewed": false
+    },
+    "telemetry": {
+      "elapsed_seconds": 0.01,
+      "model_calls": null,
+      "tool_items": 1,
+      "tool_count_kind": "native_completed_tool_items",
+      "input_tokens": null,
+      "output_tokens": null,
+      "cached_input_tokens": null,
+      "reasoning_output_tokens": null,
+      "cumulative_elapsed_seconds": 0.02
+    },
+    "diagnostics": []
+  },
+  {
+    "schema_version": 1,
+    "protocol": "native_system_comparison_v1",
+    "manifest_sha256": "6c97c6c6462b4a6598c1580d5a2863fc70e3977466c7693c4cc3112dff99348b",
+    "trial": {
+      "id": "codex-sol--logistic--0--initial",
+      "system_id": "codex-sol",
+      "runtime": "codex_cli",
+      "case_id": "logistic",
+      "repeat": 0,
+      "phase": "initial",
+      "parent_trial_id": null
+    },
+    "evidence_kind": "scripted_control",
+    "capture_kind": "codex_jsonl",
+    "capture_sha256": "bd842bac6789e939318a5a9afc90da66b6705c1b398616370e098a8ea89353c1",
+    "status": "finished",
+    "session": {
+      "id": "c10c660f-eade-5f1f-b9aa-d22a2b56421e",
+      "mode": "none",
+      "parent_record_sha256": null,
+      "identity_authenticated": false
+    },
+    "observation": {
+      "state": "awaiting_input",
+      "completion_claimed": false,
+      "execution_declared": false,
+      "execution_observed": null,
+      "question_texts": [
+        "Which X equation is intended?"
+      ],
+      "final_messages": [
+        "Literal offline interface control; not an actual model response."
+      ],
+      "artifacts": []
+    },
+    "assessment": {
+      "authority": "unreviewed",
+      "numeric": "unknown",
+      "source_support": "unknown",
+      "behavior_labels_reviewed": false
+    },
+    "telemetry": {
+      "elapsed_seconds": 0.01,
+      "model_calls": null,
+      "tool_items": 1,
+      "tool_count_kind": "native_completed_tool_items",
+      "input_tokens": null,
+      "output_tokens": null,
+      "cached_input_tokens": null,
+      "reasoning_output_tokens": null,
+      "cumulative_elapsed_seconds": 0.01
+    },
+    "diagnostics": []
+  },
+  {
+    "schema_version": 1,
+    "protocol": "native_system_comparison_v1",
+    "manifest_sha256": "6c97c6c6462b4a6598c1580d5a2863fc70e3977466c7693c4cc3112dff99348b",
+    "trial": {
+      "id": "codex-sol--logistic--0--clarified",
+      "system_id": "codex-sol",
+      "runtime": "codex_cli",
+      "case_id": "logistic",
+      "repeat": 0,
+      "phase": "clarified",
+      "parent_trial_id": "codex-sol--logistic--0--initial"
+    },
+    "evidence_kind": "scripted_control",
+    "capture_kind": "codex_jsonl",
+    "capture_sha256": "bd842bac6789e939318a5a9afc90da66b6705c1b398616370e098a8ea89353c1",
+    "status": "finished",
+    "session": {
+      "id": "c10c660f-eade-5f1f-b9aa-d22a2b56421e",
+      "mode": "resumed",
+      "parent_record_sha256": "3a8199d574c13b3902fb9cc62942207363ceb3b4f8e0154d0a866f01ef896d0d",
+      "identity_authenticated": false
+    },
+    "observation": {
+      "state": "completed",
+      "completion_claimed": true,
+      "execution_declared": true,
+      "execution_observed": null,
+      "question_texts": [],
+      "final_messages": [
+        "Literal offline interface control; not an actual model response."
+      ],
+      "artifacts": [
+        {
+          "path": "program.py",
+          "role": "program",
+          "sha256": "6684d1b03da5573212dd8a0089e265de36201884675ba64b32cfaeace35df937"
+        }
+      ]
+    },
+    "assessment": {
+      "authority": "unreviewed",
+      "numeric": "unknown",
+      "source_support": "unknown",
+      "behavior_labels_reviewed": false
+    },
+    "telemetry": {
+      "elapsed_seconds": 0.01,
+      "model_calls": null,
+      "tool_items": 1,
+      "tool_count_kind": "native_completed_tool_items",
+      "input_tokens": null,
+      "output_tokens": null,
+      "cached_input_tokens": null,
+      "reasoning_output_tokens": null,
+      "cumulative_elapsed_seconds": 0.02
+    },
+    "diagnostics": []
+  },
+  {
+    "schema_version": 1,
+    "protocol": "native_system_comparison_v1",
+    "manifest_sha256": "6c97c6c6462b4a6598c1580d5a2863fc70e3977466c7693c4cc3112dff99348b",
+    "trial": {
+      "id": "codex-sol--decay--1--initial",
+      "system_id": "codex-sol",
+      "runtime": "codex_cli",
+      "case_id": "decay",
+      "repeat": 1,
+      "phase": "initial",
+      "parent_trial_id": null
+    },
+    "evidence_kind": "scripted_control",
+    "capture_kind": "codex_jsonl",
+    "capture_sha256": "4cd65edcc7ac50339dbe186b8919bf7ec03055327adde7d0111b4f6cade4e129",
+    "status": "finished",
+    "session": {
+      "id": "06fd9643-dc19-5a29-a1b0-af7f9e92d42f",
+      "mode": "none",
+      "parent_record_sha256": null,
+      "identity_authenticated": false
+    },
+    "observation": {
+      "state": "completed",
+      "completion_claimed": true,
+      "execution_declared": true,
+      "execution_observed": null,
+      "question_texts": [],
+      "final_messages": [
+        "Literal offline interface control; not an actual model response."
+      ],
+      "artifacts": [
+        {
+          "path": "program.py",
+          "role": "program",
+          "sha256": "6684d1b03da5573212dd8a0089e265de36201884675ba64b32cfaeace35df937"
+        }
+      ]
+    },
+    "assessment": {
+      "authority": "unreviewed",
+      "numeric": "unknown",
+      "source_support": "unknown",
+      "behavior_labels_reviewed": false
+    },
+    "telemetry": {
+      "elapsed_seconds": 0.01,
+      "model_calls": null,
+      "tool_items": 1,
+      "tool_count_kind": "native_completed_tool_items",
+      "input_tokens": null,
+      "output_tokens": null,
+      "cached_input_tokens": null,
+      "reasoning_output_tokens": null,
+      "cumulative_elapsed_seconds": 0.01
+    },
+    "diagnostics": []
+  },
+  {
+    "schema_version": 1,
+    "protocol": "native_system_comparison_v1",
+    "manifest_sha256": "6c97c6c6462b4a6598c1580d5a2863fc70e3977466c7693c4cc3112dff99348b",
+    "trial": {
+      "id": "codex-sol--translation--1--initial",
+      "system_id": "codex-sol",
+      "runtime": "codex_cli",
+      "case_id": "translation",
+      "repeat": 1,
+      "phase": "initial",
+      "parent_trial_id": null
+    },
+    "evidence_kind": "scripted_control",
+    "capture_kind": "codex_jsonl",
+    "capture_sha256": "a02379b98915c7749a848cab68e71b5c9f8109fad17caa0ad965fc2b1e8e8e75",
+    "status": "finished",
+    "session": {
+      "id": "3e9b277c-1459-5c6c-a5b6-cab29fa22c1c",
+      "mode": "none",
+      "parent_record_sha256": null,
+      "identity_authenticated": false
+    },
+    "observation": {
+      "state": "awaiting_input",
+      "completion_claimed": false,
+      "execution_declared": false,
+      "execution_observed": null,
+      "question_texts": [
+        "What is the initial P value?"
+      ],
+      "final_messages": [
+        "Literal offline interface control; not an actual model response."
+      ],
+      "artifacts": []
+    },
+    "assessment": {
+      "authority": "unreviewed",
+      "numeric": "unknown",
+      "source_support": "unknown",
+      "behavior_labels_reviewed": false
+    },
+    "telemetry": {
+      "elapsed_seconds": 0.01,
+      "model_calls": null,
+      "tool_items": 1,
+      "tool_count_kind": "native_completed_tool_items",
+      "input_tokens": null,
+      "output_tokens": null,
+      "cached_input_tokens": null,
+      "reasoning_output_tokens": null,
+      "cumulative_elapsed_seconds": 0.01
+    },
+    "diagnostics": []
+  },
+  {
+    "schema_version": 1,
+    "protocol": "native_system_comparison_v1",
+    "manifest_sha256": "6c97c6c6462b4a6598c1580d5a2863fc70e3977466c7693c4cc3112dff99348b",
+    "trial": {
+      "id": "codex-sol--translation--1--clarified",
+      "system_id": "codex-sol",
+      "runtime": "codex_cli",
+      "case_id": "translation",
+      "repeat": 1,
+      "phase": "clarified",
+      "parent_trial_id": "codex-sol--translation--1--initial"
+    },
+    "evidence_kind": "scripted_control",
+    "capture_kind": "codex_jsonl",
+    "capture_sha256": "a02379b98915c7749a848cab68e71b5c9f8109fad17caa0ad965fc2b1e8e8e75",
+    "status": "finished",
+    "session": {
+      "id": "3e9b277c-1459-5c6c-a5b6-cab29fa22c1c",
+      "mode": "resumed",
+      "parent_record_sha256": "b2af1d085fc677608dc00e5a0a903f2497f6281b3d36b33645f4ed8fe735dae3",
+      "identity_authenticated": false
+    },
+    "observation": {
+      "state": "completed",
+      "completion_claimed": true,
+      "execution_declared": true,
+      "execution_observed": null,
+      "question_texts": [],
+      "final_messages": [
+        "Literal offline interface control; not an actual model response."
+      ],
+      "artifacts": [
+        {
+          "path": "program.py",
+          "role": "program",
+          "sha256": "6684d1b03da5573212dd8a0089e265de36201884675ba64b32cfaeace35df937"
+        }
+      ]
+    },
+    "assessment": {
+      "authority": "unreviewed",
+      "numeric": "unknown",
+      "source_support": "unknown",
+      "behavior_labels_reviewed": false
+    },
+    "telemetry": {
+      "elapsed_seconds": 0.01,
+      "model_calls": null,
+      "tool_items": 1,
+      "tool_count_kind": "native_completed_tool_items",
+      "input_tokens": null,
+      "output_tokens": null,
+      "cached_input_tokens": null,
+      "reasoning_output_tokens": null,
+      "cumulative_elapsed_seconds": 0.02
+    },
+    "diagnostics": []
+  },
+  {
+    "schema_version": 1,
+    "protocol": "native_system_comparison_v1",
+    "manifest_sha256": "6c97c6c6462b4a6598c1580d5a2863fc70e3977466c7693c4cc3112dff99348b",
+    "trial": {
+      "id": "codex-sol--logistic--1--initial",
+      "system_id": "codex-sol",
+      "runtime": "codex_cli",
+      "case_id": "logistic",
+      "repeat": 1,
+      "phase": "initial",
+      "parent_trial_id": null
+    },
+    "evidence_kind": "scripted_control",
+    "capture_kind": "codex_jsonl",
+    "capture_sha256": "fe9d4ecd31379c12bff553a8dd6e1546de01c54614cd01a1339346d3cf115c47",
+    "status": "finished",
+    "session": {
+      "id": "41102cff-0f9c-5867-93d1-b3b96cfff8b5",
+      "mode": "none",
+      "parent_record_sha256": null,
+      "identity_authenticated": false
+    },
+    "observation": {
+      "state": "awaiting_input",
+      "completion_claimed": false,
+      "execution_declared": false,
+      "execution_observed": null,
+      "question_texts": [
+        "Which X equation is intended?"
+      ],
+      "final_messages": [
+        "Literal offline interface control; not an actual model response."
+      ],
+      "artifacts": []
+    },
+    "assessment": {
+      "authority": "unreviewed",
+      "numeric": "unknown",
+      "source_support": "unknown",
+      "behavior_labels_reviewed": false
+    },
+    "telemetry": {
+      "elapsed_seconds": 0.01,
+      "model_calls": null,
+      "tool_items": 1,
+      "tool_count_kind": "native_completed_tool_items",
+      "input_tokens": null,
+      "output_tokens": null,
+      "cached_input_tokens": null,
+      "reasoning_output_tokens": null,
+      "cumulative_elapsed_seconds": 0.01
+    },
+    "diagnostics": []
+  },
+  {
+    "schema_version": 1,
+    "protocol": "native_system_comparison_v1",
+    "manifest_sha256": "6c97c6c6462b4a6598c1580d5a2863fc70e3977466c7693c4cc3112dff99348b",
+    "trial": {
+      "id": "codex-sol--logistic--1--clarified",
+      "system_id": "codex-sol",
+      "runtime": "codex_cli",
+      "case_id": "logistic",
+      "repeat": 1,
+      "phase": "clarified",
+      "parent_trial_id": "codex-sol--logistic--1--initial"
+    },
+    "evidence_kind": "scripted_control",
+    "capture_kind": "codex_jsonl",
+    "capture_sha256": "fe9d4ecd31379c12bff553a8dd6e1546de01c54614cd01a1339346d3cf115c47",
+    "status": "finished",
+    "session": {
+      "id": "41102cff-0f9c-5867-93d1-b3b96cfff8b5",
+      "mode": "resumed",
+      "parent_record_sha256": "d099d4df261d195e20b094ca3fd49d58b733f8cac57bd818195efef9807d368c",
+      "identity_authenticated": false
+    },
+    "observation": {
+      "state": "completed",
+      "completion_claimed": true,
+      "execution_declared": true,
+      "execution_observed": null,
+      "question_texts": [],
+      "final_messages": [
+        "Literal offline interface control; not an actual model response."
+      ],
+      "artifacts": [
+        {
+          "path": "program.py",
+          "role": "program",
+          "sha256": "6684d1b03da5573212dd8a0089e265de36201884675ba64b32cfaeace35df937"
+        }
+      ]
+    },
+    "assessment": {
+      "authority": "unreviewed",
+      "numeric": "unknown",
+      "source_support": "unknown",
+      "behavior_labels_reviewed": false
+    },
+    "telemetry": {
+      "elapsed_seconds": 0.01,
+      "model_calls": null,
+      "tool_items": 1,
+      "tool_count_kind": "native_completed_tool_items",
+      "input_tokens": null,
+      "output_tokens": null,
+      "cached_input_tokens": null,
+      "reasoning_output_tokens": null,
+      "cumulative_elapsed_seconds": 0.02
+    },
+    "diagnostics": []
+  },
+  {
+    "schema_version": 1,
+    "protocol": "native_system_comparison_v1",
+    "manifest_sha256": "6c97c6c6462b4a6598c1580d5a2863fc70e3977466c7693c4cc3112dff99348b",
+    "trial": {
+      "id": "codex-astra--decay--0--initial",
+      "system_id": "codex-astra",
+      "runtime": "codex_cli",
+      "case_id": "decay",
+      "repeat": 0,
+      "phase": "initial",
+      "parent_trial_id": null
+    },
+    "evidence_kind": "scripted_control",
+    "capture_kind": "codex_jsonl",
+    "capture_sha256": "f3144b0e8ae9d5e27febe05d06595a8b49b6332d5e60c45702711e0b18e60321",
+    "status": "finished",
+    "session": {
+      "id": "62918d8a-dc8d-5d1f-b51d-2a698d43a17a",
+      "mode": "none",
+      "parent_record_sha256": null,
+      "identity_authenticated": false
+    },
+    "observation": {
+      "state": "completed",
+      "completion_claimed": true,
+      "execution_declared": true,
+      "execution_observed": null,
+      "question_texts": [],
+      "final_messages": [
+        "Literal offline interface control; not an actual model response."
+      ],
+      "artifacts": [
+        {
+          "path": "program.py",
+          "role": "program",
+          "sha256": "6684d1b03da5573212dd8a0089e265de36201884675ba64b32cfaeace35df937"
+        }
+      ]
+    },
+    "assessment": {
+      "authority": "unreviewed",
+      "numeric": "unknown",
+      "source_support": "unknown",
+      "behavior_labels_reviewed": false
+    },
+    "telemetry": {
+      "elapsed_seconds": 0.01,
+      "model_calls": null,
+      "tool_items": 1,
+      "tool_count_kind": "native_completed_tool_items",
+      "input_tokens": null,
+      "output_tokens": null,
+      "cached_input_tokens": null,
+      "reasoning_output_tokens": null,
+      "cumulative_elapsed_seconds": 0.01
+    },
+    "diagnostics": []
+  },
+  {
+    "schema_version": 1,
+    "protocol": "native_system_comparison_v1",
+    "manifest_sha256": "6c97c6c6462b4a6598c1580d5a2863fc70e3977466c7693c4cc3112dff99348b",
+    "trial": {
+      "id": "codex-astra--translation--0--initial",
+      "system_id": "codex-astra",
+      "runtime": "codex_cli",
+      "case_id": "translation",
+      "repeat": 0,
+      "phase": "initial",
+      "parent_trial_id": null
+    },
+    "evidence_kind": "scripted_control",
+    "capture_kind": "codex_jsonl",
+    "capture_sha256": "e340def46cc71ea86af42dabfe178f35738caea2793b9a0f0e38990bff7676c3",
+    "status": "finished",
+    "session": {
+      "id": "f41c7ffb-b320-5d9c-afbd-282644636683",
+      "mode": "none",
+      "parent_record_sha256": null,
+      "identity_authenticated": false
+    },
+    "observation": {
+      "state": "awaiting_input",
+      "completion_claimed": false,
+      "execution_declared": false,
+      "execution_observed": null,
+      "question_texts": [
+        "What is the initial P value?"
+      ],
+      "final_messages": [
+        "Literal offline interface control; not an actual model response."
+      ],
+      "artifacts": []
+    },
+    "assessment": {
+      "authority": "unreviewed",
+      "numeric": "unknown",
+      "source_support": "unknown",
+      "behavior_labels_reviewed": false
+    },
+    "telemetry": {
+      "elapsed_seconds": 0.01,
+      "model_calls": null,
+      "tool_items": 1,
+      "tool_count_kind": "native_completed_tool_items",
+      "input_tokens": null,
+      "output_tokens": null,
+      "cached_input_tokens": null,
+      "reasoning_output_tokens": null,
+      "cumulative_elapsed_seconds": 0.01
+    },
+    "diagnostics": []
+  },
+  {
+    "schema_version": 1,
+    "protocol": "native_system_comparison_v1",
+    "manifest_sha256": "6c97c6c6462b4a6598c1580d5a2863fc70e3977466c7693c4cc3112dff99348b",
+    "trial": {
+      "id": "codex-astra--translation--0--clarified",
+      "system_id": "codex-astra",
+      "runtime": "codex_cli",
+      "case_id": "translation",
+      "repeat": 0,
+      "phase": "clarified",
+      "parent_trial_id": "codex-astra--translation--0--initial"
+    },
+    "evidence_kind": "scripted_control",
+    "capture_kind": "codex_jsonl",
+    "capture_sha256": "e340def46cc71ea86af42dabfe178f35738caea2793b9a0f0e38990bff7676c3",
+    "status": "finished",
+    "session": {
+      "id": "f41c7ffb-b320-5d9c-afbd-282644636683",
+      "mode": "resumed",
+      "parent_record_sha256": "14c3fda7db20a13a719b89ab9f23e5a695363b87beeae2b96d815a3ffd52c83c",
+      "identity_authenticated": false
+    },
+    "observation": {
+      "state": "completed",
+      "completion_claimed": true,
+      "execution_declared": true,
+      "execution_observed": null,
+      "question_texts": [],
+      "final_messages": [
+        "Literal offline interface control; not an actual model response."
+      ],
+      "artifacts": [
+        {
+          "path": "program.py",
+          "role": "program",
+          "sha256": "6684d1b03da5573212dd8a0089e265de36201884675ba64b32cfaeace35df937"
+        }
+      ]
+    },
+    "assessment": {
+      "authority": "unreviewed",
+      "numeric": "unknown",
+      "source_support": "unknown",
+      "behavior_labels_reviewed": false
+    },
+    "telemetry": {
+      "elapsed_seconds": 0.01,
+      "model_calls": null,
+      "tool_items": 1,
+      "tool_count_kind": "native_completed_tool_items",
+      "input_tokens": null,
+      "output_tokens": null,
+      "cached_input_tokens": null,
+      "reasoning_output_tokens": null,
+      "cumulative_elapsed_seconds": 0.02
+    },
+    "diagnostics": []
+  },
+  {
+    "schema_version": 1,
+    "protocol": "native_system_comparison_v1",
+    "manifest_sha256": "6c97c6c6462b4a6598c1580d5a2863fc70e3977466c7693c4cc3112dff99348b",
+    "trial": {
+      "id": "codex-astra--logistic--0--initial",
+      "system_id": "codex-astra",
+      "runtime": "codex_cli",
+      "case_id": "logistic",
+      "repeat": 0,
+      "phase": "initial",
+      "parent_trial_id": null
+    },
+    "evidence_kind": "scripted_control",
+    "capture_kind": "codex_jsonl",
+    "capture_sha256": "4996f33bccea892a762f93fbffddbc0cfb5834b025779a38df34088e57580b73",
+    "status": "finished",
+    "session": {
+      "id": "668f7f88-d8b0-5bf0-9632-75c72f4c49d4",
+      "mode": "none",
+      "parent_record_sha256": null,
+      "identity_authenticated": false
+    },
+    "observation": {
+      "state": "awaiting_input",
+      "completion_claimed": false,
+      "execution_declared": false,
+      "execution_observed": null,
+      "question_texts": [
+        "Which X equation is intended?"
+      ],
+      "final_messages": [
+        "Literal offline interface control; not an actual model response."
+      ],
+      "artifacts": []
+    },
+    "assessment": {
+      "authority": "unreviewed",
+      "numeric": "unknown",
+      "source_support": "unknown",
+      "behavior_labels_reviewed": false
+    },
+    "telemetry": {
+      "elapsed_seconds": 0.01,
+      "model_calls": null,
+      "tool_items": 1,
+      "tool_count_kind": "native_completed_tool_items",
+      "input_tokens": null,
+      "output_tokens": null,
+      "cached_input_tokens": null,
+      "reasoning_output_tokens": null,
+      "cumulative_elapsed_seconds": 0.01
+    },
+    "diagnostics": []
+  },
+  {
+    "schema_version": 1,
+    "protocol": "native_system_comparison_v1",
+    "manifest_sha256": "6c97c6c6462b4a6598c1580d5a2863fc70e3977466c7693c4cc3112dff99348b",
+    "trial": {
+      "id": "codex-astra--logistic--0--clarified",
+      "system_id": "codex-astra",
+      "runtime": "codex_cli",
+      "case_id": "logistic",
+      "repeat": 0,
+      "phase": "clarified",
+      "parent_trial_id": "codex-astra--logistic--0--initial"
+    },
+    "evidence_kind": "scripted_control",
+    "capture_kind": "codex_jsonl",
+    "capture_sha256": "4996f33bccea892a762f93fbffddbc0cfb5834b025779a38df34088e57580b73",
+    "status": "finished",
+    "session": {
+      "id": "668f7f88-d8b0-5bf0-9632-75c72f4c49d4",
+      "mode": "resumed",
+      "parent_record_sha256": "cbf66945c64d18bb8e4cce03e77c50c4973c4d2b558d41816d930def7c8a9501",
+      "identity_authenticated": false
+    },
+    "observation": {
+      "state": "completed",
+      "completion_claimed": true,
+      "execution_declared": true,
+      "execution_observed": null,
+      "question_texts": [],
+      "final_messages": [
+        "Literal offline interface control; not an actual model response."
+      ],
+      "artifacts": [
+        {
+          "path": "program.py",
+          "role": "program",
+          "sha256": "6684d1b03da5573212dd8a0089e265de36201884675ba64b32cfaeace35df937"
+        }
+      ]
+    },
+    "assessment": {
+      "authority": "unreviewed",
+      "numeric": "unknown",
+      "source_support": "unknown",
+      "behavior_labels_reviewed": false
+    },
+    "telemetry": {
+      "elapsed_seconds": 0.01,
+      "model_calls": null,
+      "tool_items": 1,
+      "tool_count_kind": "native_completed_tool_items",
+      "input_tokens": null,
+      "output_tokens": null,
+      "cached_input_tokens": null,
+      "reasoning_output_tokens": null,
+      "cumulative_elapsed_seconds": 0.02
+    },
+    "diagnostics": []
+  },
+  {
+    "schema_version": 1,
+    "protocol": "native_system_comparison_v1",
+    "manifest_sha256": "6c97c6c6462b4a6598c1580d5a2863fc70e3977466c7693c4cc3112dff99348b",
+    "trial": {
+      "id": "codex-astra--decay--1--initial",
+      "system_id": "codex-astra",
+      "runtime": "codex_cli",
+      "case_id": "decay",
+      "repeat": 1,
+      "phase": "initial",
+      "parent_trial_id": null
+    },
+    "evidence_kind": "scripted_control",
+    "capture_kind": "codex_jsonl",
+    "capture_sha256": "f53b01dd0074eaf14a8e04f95ae60faacd2ad423ee38961fd5ad4735aa4f49f5",
+    "status": "finished",
+    "session": {
+      "id": "c038d7dc-fe99-51fe-bd4a-b410bae925d8",
+      "mode": "none",
+      "parent_record_sha256": null,
+      "identity_authenticated": false
+    },
+    "observation": {
+      "state": "completed",
+      "completion_claimed": true,
+      "execution_declared": true,
+      "execution_observed": null,
+      "question_texts": [],
+      "final_messages": [
+        "Literal offline interface control; not an actual model response."
+      ],
+      "artifacts": [
+        {
+          "path": "program.py",
+          "role": "program",
+          "sha256": "6684d1b03da5573212dd8a0089e265de36201884675ba64b32cfaeace35df937"
+        }
+      ]
+    },
+    "assessment": {
+      "authority": "unreviewed",
+      "numeric": "unknown",
+      "source_support": "unknown",
+      "behavior_labels_reviewed": false
+    },
+    "telemetry": {
+      "elapsed_seconds": 0.01,
+      "model_calls": null,
+      "tool_items": 1,
+      "tool_count_kind": "native_completed_tool_items",
+      "input_tokens": null,
+      "output_tokens": null,
+      "cached_input_tokens": null,
+      "reasoning_output_tokens": null,
+      "cumulative_elapsed_seconds": 0.01
+    },
+    "diagnostics": []
+  },
+  {
+    "schema_version": 1,
+    "protocol": "native_system_comparison_v1",
+    "manifest_sha256": "6c97c6c6462b4a6598c1580d5a2863fc70e3977466c7693c4cc3112dff99348b",
+    "trial": {
+      "id": "codex-astra--translation--1--initial",
+      "system_id": "codex-astra",
+      "runtime": "codex_cli",
+      "case_id": "translation",
+      "repeat": 1,
+      "phase": "initial",
+      "parent_trial_id": null
+    },
+    "evidence_kind": "scripted_control",
+    "capture_kind": "codex_jsonl",
+    "capture_sha256": "440b8da757c61b79b2c6ce284d8f2f232ff3fd1c5b037f2e166f0afb3c045b6f",
+    "status": "finished",
+    "session": {
+      "id": "3bbe9172-2d1a-53fc-afe1-402d15685be6",
+      "mode": "none",
+      "parent_record_sha256": null,
+      "identity_authenticated": false
+    },
+    "observation": {
+      "state": "awaiting_input",
+      "completion_claimed": false,
+      "execution_declared": false,
+      "execution_observed": null,
+      "question_texts": [
+        "What is the initial P value?"
+      ],
+      "final_messages": [
+        "Literal offline interface control; not an actual model response."
+      ],
+      "artifacts": []
+    },
+    "assessment": {
+      "authority": "unreviewed",
+      "numeric": "unknown",
+      "source_support": "unknown",
+      "behavior_labels_reviewed": false
+    },
+    "telemetry": {
+      "elapsed_seconds": 0.01,
+      "model_calls": null,
+      "tool_items": 1,
+      "tool_count_kind": "native_completed_tool_items",
+      "input_tokens": null,
+      "output_tokens": null,
+      "cached_input_tokens": null,
+      "reasoning_output_tokens": null,
+      "cumulative_elapsed_seconds": 0.01
+    },
+    "diagnostics": []
+  },
+  {
+    "schema_version": 1,
+    "protocol": "native_system_comparison_v1",
+    "manifest_sha256": "6c97c6c6462b4a6598c1580d5a2863fc70e3977466c7693c4cc3112dff99348b",
+    "trial": {
+      "id": "codex-astra--translation--1--clarified",
+      "system_id": "codex-astra",
+      "runtime": "codex_cli",
+      "case_id": "translation",
+      "repeat": 1,
+      "phase": "clarified",
+      "parent_trial_id": "codex-astra--translation--1--initial"
+    },
+    "evidence_kind": "scripted_control",
+    "capture_kind": "codex_jsonl",
+    "capture_sha256": "440b8da757c61b79b2c6ce284d8f2f232ff3fd1c5b037f2e166f0afb3c045b6f",
+    "status": "finished",
+    "session": {
+      "id": "3bbe9172-2d1a-53fc-afe1-402d15685be6",
+      "mode": "resumed",
+      "parent_record_sha256": "0bc1f40e737c65efdb88394b617b6cdb4278fe5fd8fb5bf7dea411fc01016599",
+      "identity_authenticated": false
+    },
+    "observation": {
+      "state": "completed",
+      "completion_claimed": true,
+      "execution_declared": true,
+      "execution_observed": null,
+      "question_texts": [],
+      "final_messages": [
+        "Literal offline interface control; not an actual model response."
+      ],
+      "artifacts": [
+        {
+          "path": "program.py",
+          "role": "program",
+          "sha256": "6684d1b03da5573212dd8a0089e265de36201884675ba64b32cfaeace35df937"
+        }
+      ]
+    },
+    "assessment": {
+      "authority": "unreviewed",
+      "numeric": "unknown",
+      "source_support": "unknown",
+      "behavior_labels_reviewed": false
+    },
+    "telemetry": {
+      "elapsed_seconds": 0.01,
+      "model_calls": null,
+      "tool_items": 1,
+      "tool_count_kind": "native_completed_tool_items",
+      "input_tokens": null,
+      "output_tokens": null,
+      "cached_input_tokens": null,
+      "reasoning_output_tokens": null,
+      "cumulative_elapsed_seconds": 0.02
+    },
+    "diagnostics": []
+  },
+  {
+    "schema_version": 1,
+    "protocol": "native_system_comparison_v1",
+    "manifest_sha256": "6c97c6c6462b4a6598c1580d5a2863fc70e3977466c7693c4cc3112dff99348b",
+    "trial": {
+      "id": "codex-astra--logistic--1--initial",
+      "system_id": "codex-astra",
+      "runtime": "codex_cli",
+      "case_id": "logistic",
+      "repeat": 1,
+      "phase": "initial",
+      "parent_trial_id": null
+    },
+    "evidence_kind": "scripted_control",
+    "capture_kind": "codex_jsonl",
+    "capture_sha256": "c6f176b0c4fd143cabf9b03ef3cbd9406afe532b807835a881491dac38d6e874",
+    "status": "finished",
+    "session": {
+      "id": "ee28ade2-9e86-509c-9217-a8d1a846c35d",
+      "mode": "none",
+      "parent_record_sha256": null,
+      "identity_authenticated": false
+    },
+    "observation": {
+      "state": "awaiting_input",
+      "completion_claimed": false,
+      "execution_declared": false,
+      "execution_observed": null,
+      "question_texts": [
+        "Which X equation is intended?"
+      ],
+      "final_messages": [
+        "Literal offline interface control; not an actual model response."
+      ],
+      "artifacts": []
+    },
+    "assessment": {
+      "authority": "unreviewed",
+      "numeric": "unknown",
+      "source_support": "unknown",
+      "behavior_labels_reviewed": false
+    },
+    "telemetry": {
+      "elapsed_seconds": 0.01,
+      "model_calls": null,
+      "tool_items": 1,
+      "tool_count_kind": "native_completed_tool_items",
+      "input_tokens": null,
+      "output_tokens": null,
+      "cached_input_tokens": null,
+      "reasoning_output_tokens": null,
+      "cumulative_elapsed_seconds": 0.01
+    },
+    "diagnostics": []
+  },
+  {
+    "schema_version": 1,
+    "protocol": "native_system_comparison_v1",
+    "manifest_sha256": "6c97c6c6462b4a6598c1580d5a2863fc70e3977466c7693c4cc3112dff99348b",
+    "trial": {
+      "id": "codex-astra--logistic--1--clarified",
+      "system_id": "codex-astra",
+      "runtime": "codex_cli",
+      "case_id": "logistic",
+      "repeat": 1,
+      "phase": "clarified",
+      "parent_trial_id": "codex-astra--logistic--1--initial"
+    },
+    "evidence_kind": "scripted_control",
+    "capture_kind": "codex_jsonl",
+    "capture_sha256": "c6f176b0c4fd143cabf9b03ef3cbd9406afe532b807835a881491dac38d6e874",
+    "status": "finished",
+    "session": {
+      "id": "ee28ade2-9e86-509c-9217-a8d1a846c35d",
+      "mode": "resumed",
+      "parent_record_sha256": "606dac82f38eae6e103656ecea4f8c83ee1f9ded975c5f204357c27a3943a5e3",
+      "identity_authenticated": false
+    },
+    "observation": {
+      "state": "completed",
+      "completion_claimed": true,
+      "execution_declared": true,
+      "execution_observed": null,
+      "question_texts": [],
+      "final_messages": [
+        "Literal offline interface control; not an actual model response."
+      ],
+      "artifacts": [
+        {
+          "path": "program.py",
+          "role": "program",
+          "sha256": "6684d1b03da5573212dd8a0089e265de36201884675ba64b32cfaeace35df937"
+        }
+      ]
+    },
+    "assessment": {
+      "authority": "unreviewed",
+      "numeric": "unknown",
+      "source_support": "unknown",
+      "behavior_labels_reviewed": false
+    },
+    "telemetry": {
+      "elapsed_seconds": 0.01,
+      "model_calls": null,
+      "tool_items": 1,
+      "tool_count_kind": "native_completed_tool_items",
+      "input_tokens": null,
+      "output_tokens": null,
+      "cached_input_tokens": null,
+      "reasoning_output_tokens": null,
+      "cumulative_elapsed_seconds": 0.02
+    },
+    "diagnostics": []
+  }
+]

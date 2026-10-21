@@ -1,0 +1,24 @@
+{
+  "status": "needs_input",
+  "parameters": [
+    {"id": "Vmax", "value": 1.2, "unit": "a.u./min"},
+    {"id": "Km", "value": 0.9, "unit": "a.u."},
+    {"id": "KI", "value": 1.4, "unit": "a.u."}
+  ],
+  "states": [
+    {"id": "S", "initial": 3.0},
+    {"id": "I", "initial": 2.0}
+  ],
+  "equations": [
+    {"state": "S", "expression": null},
+    {"state": "I", "expression": "0"}
+  ],
+  "questions": [
+    "In dS/dt = -Vmax*S/(Km*(1 + I/KI) + S), does I denote the free inhibitor state with I(0) = 2.0 a.u. and dI/dt = 0, or the total free-plus-bound inhibitor concentration? If it denotes the latter, please supply the equation and any initial conditions and parameters needed to determine the bound contribution over time, and clarify whether reported I is the free state or that total."
+  ],
+  "limitations": [
+    "The source explicitly gives dS/dt = -Vmax*S/(Km*(1 + I/KI) + S), but an equally authoritative statement says the inhibition factor includes inhibitor bound to the enzyme. It leaves unresolved whether I in this expression is the constant free inhibitor state or includes a bound fraction that grows as S is consumed. The S right-hand side is therefore null pending clarification of its meaning.",
+    "No equation, initial condition, or quantitative relation is supplied for the growing bound inhibitor contribution. Adding one or choosing the free-only interpretation would require unsupported assumptions.",
+    "S and I have concentration units a.u.; time is in minutes. No trajectories were computed for the 33 sampling times in experiment.json."
+  ]
+}

@@ -1,0 +1,28 @@
+{
+  "id": "chatcmpl-bfe42d61-33ef-4ec3-84c5-104adba39bd0",
+  "created": 1792203701,
+  "model": "qwen3.8-chat",
+  "object": "chat.completion",
+  "choices": [
+    {
+      "finish_reason": "stop",
+      "index": 0,
+      "message": {
+        "content": "{\"action\": \"submit_draft\", \"args\": {\"draft\": {\"id\": \"synthetic_ode_model\", \"states\": [{\"id\": \"U\", \"initial\": 1.0, \"unit\": null, \"quantity_kind\": \"variable\", \"nonnegative\": true}, {\"id\": \"V\", \"initial\": 0.1, \"unit\": null, \"quantity_kind\": \"variable\", \"nonnegative\": true}], \"parameters\": [{\"id\": \"k1\", \"value\": 0.2, \"unit\": \"per minute\", \"origin\": \"equation legend\"}, {\"id\": \"k2\", \"value\": 0.15, \"unit\": null, \"origin\": \"parameter table\"}], \"compartment\": {\"id\": \"C\", \"size\": 1, \"unit\": \"dimensionless\"}, \"reactions\": [], \"rate_rules\": [{\"state\": \"U\", \"expression\": \"-k1*U\"}, {\"state\": \"V\", \"expression\": \"k1*U-k2*V\"}], \"derived\": [], \"time_unit\": \"minutes\"}, \"evidence\": [{\"target\": \"U/initial\", \"source_ref\": \"86db644e605b9337dc33d8e171200f5832373f76108e1b1ab71849959ec0bd6e\", \"page\": 1, \"quote\": \"Initial U = 1.0.\"}, {\"target\": \"V/initial\", \"source_ref\": \"86db644e605b9337dc33d8e171200f5832373f76108e1b1ab71849959ec0bd6e\", \"page\": 1, \"quote\": \"Initial V = 0.1.\"}, {\"target\": \"k1/value\", \"source_ref\": \"86db644e605b9337dc33d8e171200f5832373f76108e1b1ab71849959ec0bd6e\", \"page\": 1, \"quote\": \"Parameter k1 = 0.2.\"}, {\"target\": \"k2/value\", \"source_ref\": \"86db644e605b9337dc33d8e171200f5832373f76108e1b1ab71849959ec0bd6e\", \"page\": 1, \"quote\": \"Parameter k2 = 0.15.\"}, {\"target\": \"rule:U/expression\", \"source_ref\": \"86db644e605b9337dc33d8e171200f5832373f76108e1b1ab71849959ec0bd6e\", \"page\": 1, \"quote\": \"Equation dU/dt = -k1*U.\"}, {\"target\": \"rule:V/expression\", \"source_ref\": \"86db644e605b9337dc33d8e171200f5832373f76108e1b1ab71849959ec0bd6e\", \"page\": 1, \"quote\": \"Equation dV/dt = k1*U-k2*V.\"}, {\"target\": \"time_unit\", \"source_ref\": \"86db644e605b9337dc33d8e171200f5832373f76108e1b1ab71849959ec0bd6e\", \"page\": 1, \"quote\": \"Time t is in minutes.\"}, {\"target\": \"C/size\", \"source_ref\": \"86db644e605b9337dc33d8e171200f5832373f76108e1b1ab71849959ec0bd6e\", \"page\": 1, \"quote\": \"The fixed compartment has size 1 dimensionless.\"}], \"mechanism\": \"ODE system with two abstract activities U and V; U decays linearly and feeds V which also decays.\"}, \"reason\": \"Source fully specifies ODE model; submit draft.\"}",
+        "role": "assistant",
+        "provider_specific_fields": {
+          "refusal": null
+        }
+      },
+      "provider_specific_fields": {}
+    }
+  ],
+  "usage": {
+    "completion_tokens": 1034,
+    "prompt_tokens": 1169,
+    "total_tokens": 2203,
+    "prompt_tokens_details": {
+      "cached_tokens": 0
+    }
+  }
+}

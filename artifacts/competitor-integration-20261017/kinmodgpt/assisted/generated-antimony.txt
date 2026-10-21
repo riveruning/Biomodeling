@@ -1,0 +1,14 @@
+-> X ; km_X_Z * Ki ^ n / ( Ki ^ n + Z ^ n ) ; km_X_Z = 1 ; Ki = 1 ; n = 1
+X -> ; kdeg_X * X ; kdeg_X = 1
+-> Y ; kp_X_Y * X ; kp_X_Y = 1
+Y -> ; kdeg_Y * Y ; kdeg_Y = 1
+-> Z ; kp_Y_Z * Y ; kp_Y_Z = 1
+Z -> ; kdeg_Z * Z ; kdeg_Z = 1
+km_X_Z = 1.0
+kdeg_X = 0.1
+kp_X_Y = 1.0
+kdeg_Y = 0.1
+kp_Y_Z = 1.0
+kdeg_Z = 0.1
+Ki = 1.0
+n = 10

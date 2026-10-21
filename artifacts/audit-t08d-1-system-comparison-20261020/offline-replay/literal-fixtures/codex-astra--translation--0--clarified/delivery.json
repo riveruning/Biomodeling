@@ -1,0 +1,12 @@
+{
+  "state": "completed",
+  "execution_declared": true,
+  "question_texts": [],
+  "artifacts": [
+    {
+      "path": "program.py",
+      "role": "program",
+      "sha256": "6684d1b03da5573212dd8a0089e265de36201884675ba64b32cfaeace35df937"
+    }
+  ]
+}

@@ -1,0 +1,5 @@
+{
+  "httpx_version": "0.28.1",
+  "default_http_transport_retries": 0,
+  "network_connections_opened_for_inspection": 0
+}

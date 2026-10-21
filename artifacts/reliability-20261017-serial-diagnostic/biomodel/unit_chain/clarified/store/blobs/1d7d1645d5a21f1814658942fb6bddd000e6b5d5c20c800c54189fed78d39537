@@ -1,0 +1,11 @@
+Synthetic, analyst-specified biochemical ODE model; not a published paper.
+Time t is in minutes. States are dimensionless abstract activities. The fixed compartment has size 1 dimensionless.
+Initial U = 1.0.
+Initial V = 0.1.
+Parameter k1 = 0.2. The parameter table labels k1 per second, but the equally authoritative equation legend labels k1 per minute. No correction is available.
+Parameter k2 = 0.15.
+Equation dU/dt = -k1*U.
+Equation dV/dt = k1*U-k2*V.
+
+Author clarification (supersedes the unresolved statement above):
+The author corrects the table: Parameter k1 = 0.2 per minute; the per-second label was a typo. Use minutes without conversion.
