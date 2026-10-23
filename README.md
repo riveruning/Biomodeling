@@ -4,6 +4,8 @@
 
 当前入口：[支持范围与证据矩阵](docs/current-support.md)、[阶段审计与研究计划](docs/research-readiness-audit.md)、[版本化评价报告](docs/evaluation-reporting.md)、[统一测试样例与收集计划](docs/evaluation-data-plan.md)。下方按日期保留历史进展，历史测试数与小测结果只对应当时版本。
 
+演示入口：[Goodwin 文献模型完整工具流程](artifacts/literature-workflow-demo-20261021-normalized/README.md)，包含项目结构图、缺失信息阻断、模拟轨迹、独立数值对照与导出重跑。该演示使用已整理提案，未运行产品内部 Agent 决策循环；原论文图复现仍未验证。
+
 **v0.1 已实现并运行验收，当前不承诺任意论文自动复现或开放式机制发现。** 产品采用模块化单体和一个受约束的 Agent；Codex / DSH 属于外部开发工具层。交付日期：2026-10-15。
 
 2026-10-17 后续进展：[真实论文评测首例](docs/literature-pilot.md)已完成两组真实 LLM 调用。原始文本组识别图片公式缺口；辅助转录组 11 项方程/参数及引用匹配、3 个初值保留未知，但仍有格式与模型约束问题，没有执行论文模拟。参考答案待人审，不计为完整论文复现成功。

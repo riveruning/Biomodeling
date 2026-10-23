@@ -1,0 +1,8 @@
+{
+  "operation": "replace one space after e021/e022/e023/e024 labels with newline",
+  "substitutions": 4,
+  "original_source_ref": "2e309c10012bbb8f9af5e05659507d569273bcd407b44dded5241094475224f9",
+  "original_sha256": "d401c795bee04da3a1a0cd2daf4f7ab40c6154eaa9c4422c72c389bc9458b731",
+  "derived_sha256": "b55beca030eb127c0b4033538eecc3d6c60f70bac0a03ed76891bfa67c434e23",
+  "note": "Layout-only assistance for bounded binder; no numeric or equation edits; not OCR"
+}

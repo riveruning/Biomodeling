@@ -1,0 +1,442 @@
+{
+  "state": "awaiting_input",
+  "artifact": null,
+  "model_ref": null,
+  "draft_ref": "1385ce6e736b68e10d6bfccda2f2b382b2012f7c46e53b678dbb942eec635e64",
+  "hypothesis_ref": null,
+  "checks": [],
+  "problems": [
+    "X/initial: citation missing",
+    "Y/initial: citation missing",
+    "Z/initial: citation missing",
+    "k1/value: binding unknown: unsupported or incomplete declaration context; cite a complete direct declaration",
+    "k2/value: binding unknown: unsupported or incomplete declaration context; cite a complete direct declaration",
+    "k3/value: binding unknown: unsupported or incomplete declaration context; cite a complete direct declaration",
+    "k4/value: binding unknown: unsupported or incomplete declaration context; cite a complete direct declaration",
+    "k5/value: binding unknown: unsupported or incomplete declaration context; cite a complete direct declaration",
+    "k6/value: binding unknown: unsupported or incomplete declaration context; cite a complete direct declaration",
+    "Ki/value: binding unknown: unsupported or incomplete declaration context; cite a complete direct declaration",
+    "n/value: binding unknown: unsupported or incomplete declaration context; cite a complete direct declaration"
+  ],
+  "source_review": {
+    "status": "no_explicit_conflict_detected",
+    "issues": [],
+    "resolutions": [],
+    "semantic_support": "unknown",
+    "limitations": [
+      "bounded explicit English declaration checks, not arbitrary-language or paper understanding",
+      "author corrections and researcher clarifications are assertions for analysis, not independent verification",
+      "no detected conflict does not establish semantic support"
+    ]
+  },
+  "source_review_ref": "38a56c345dbc8325873bf0e88076654f4518355f3532896ec50b2564eb160a06",
+  "citation_diagnostics": [],
+  "binding_diagnostics": [
+    {
+      "version": 1,
+      "target": "k1/value",
+      "source": {
+        "source_ref": "024b4ea7193df8ea791b57bf51892aae9d6a3976e77941bf0f180f7896a07421",
+        "page": 1,
+        "start": 814,
+        "end": 849
+      },
+      "status": "unknown",
+      "reason": "unsupported or incomplete declaration context; cite a complete direct declaration",
+      "symbol_map": {},
+      "mapping_evidence": [],
+      "declarations": [
+        {
+          "kind": "value",
+          "symbol": "k3",
+          "rhs": "1.0",
+          "start": 830,
+          "end": 838
+        },
+        {
+          "kind": "value",
+          "symbol": "k5",
+          "rhs": "1.0",
+          "start": 840,
+          "end": 848
+        }
+      ],
+      "proposed": {
+        "kind": "value",
+        "value": "1"
+      },
+      "semantic_support": "unknown"
+    },
+    {
+      "version": 1,
+      "target": "k2/value",
+      "source": {
+        "source_ref": "024b4ea7193df8ea791b57bf51892aae9d6a3976e77941bf0f180f7896a07421",
+        "page": 1,
+        "start": 850,
+        "end": 885
+      },
+      "status": "unknown",
+      "reason": "unsupported or incomplete declaration context; cite a complete direct declaration",
+      "symbol_map": {},
+      "mapping_evidence": [],
+      "declarations": [
+        {
+          "kind": "value",
+          "symbol": "k4",
+          "rhs": "0.1",
+          "start": 866,
+          "end": 874
+        },
+        {
+          "kind": "value",
+          "symbol": "k6",
+          "rhs": "0.1",
+          "start": 876,
+          "end": 884
+        }
+      ],
+      "proposed": {
+        "kind": "value",
+        "value": "1/10"
+      },
+      "semantic_support": "unknown"
+    },
+    {
+      "version": 1,
+      "target": "k3/value",
+      "source": {
+        "source_ref": "024b4ea7193df8ea791b57bf51892aae9d6a3976e77941bf0f180f7896a07421",
+        "page": 1,
+        "start": 814,
+        "end": 849
+      },
+      "status": "unknown",
+      "reason": "unsupported or incomplete declaration context; cite a complete direct declaration",
+      "symbol_map": {},
+      "mapping_evidence": [],
+      "declarations": [
+        {
+          "kind": "value",
+          "symbol": "k3",
+          "rhs": "1.0",
+          "start": 830,
+          "end": 838
+        },
+        {
+          "kind": "value",
+          "symbol": "k5",
+          "rhs": "1.0",
+          "start": 840,
+          "end": 848
+        }
+      ],
+      "proposed": {
+        "kind": "value",
+        "value": "1"
+      },
+      "semantic_support": "unknown"
+    },
+    {
+      "version": 1,
+      "target": "k4/value",
+      "source": {
+        "source_ref": "024b4ea7193df8ea791b57bf51892aae9d6a3976e77941bf0f180f7896a07421",
+        "page": 1,
+        "start": 850,
+        "end": 885
+      },
+      "status": "unknown",
+      "reason": "unsupported or incomplete declaration context; cite a complete direct declaration",
+      "symbol_map": {},
+      "mapping_evidence": [],
+      "declarations": [
+        {
+          "kind": "value",
+          "symbol": "k4",
+          "rhs": "0.1",
+          "start": 866,
+          "end": 874
+        },
+        {
+          "kind": "value",
+          "symbol": "k6",
+          "rhs": "0.1",
+          "start": 876,
+          "end": 884
+        }
+      ],
+      "proposed": {
+        "kind": "value",
+        "value": "1/10"
+      },
+      "semantic_support": "unknown"
+    },
+    {
+      "version": 1,
+      "target": "k5/value",
+      "source": {
+        "source_ref": "024b4ea7193df8ea791b57bf51892aae9d6a3976e77941bf0f180f7896a07421",
+        "page": 1,
+        "start": 814,
+        "end": 849
+      },
+      "status": "unknown",
+      "reason": "unsupported or incomplete declaration context; cite a complete direct declaration",
+      "symbol_map": {},
+      "mapping_evidence": [],
+      "declarations": [
+        {
+          "kind": "value",
+          "symbol": "k3",
+          "rhs": "1.0",
+          "start": 830,
+          "end": 838
+        },
+        {
+          "kind": "value",
+          "symbol": "k5",
+          "rhs": "1.0",
+          "start": 840,
+          "end": 848
+        }
+      ],
+      "proposed": {
+        "kind": "value",
+        "value": "1"
+      },
+      "semantic_support": "unknown"
+    },
+    {
+      "version": 1,
+      "target": "k6/value",
+      "source": {
+        "source_ref": "024b4ea7193df8ea791b57bf51892aae9d6a3976e77941bf0f180f7896a07421",
+        "page": 1,
+        "start": 850,
+        "end": 885
+      },
+      "status": "unknown",
+      "reason": "unsupported or incomplete declaration context; cite a complete direct declaration",
+      "symbol_map": {},
+      "mapping_evidence": [],
+      "declarations": [
+        {
+          "kind": "value",
+          "symbol": "k4",
+          "rhs": "0.1",
+          "start": 866,
+          "end": 874
+        },
+        {
+          "kind": "value",
+          "symbol": "k6",
+          "rhs": "0.1",
+          "start": 876,
+          "end": 884
+        }
+      ],
+      "proposed": {
+        "kind": "value",
+        "value": "1/10"
+      },
+      "semantic_support": "unknown"
+    },
+    {
+      "version": 1,
+      "target": "Ki/value",
+      "source": {
+        "source_ref": "024b4ea7193df8ea791b57bf51892aae9d6a3976e77941bf0f180f7896a07421",
+        "page": 1,
+        "start": 886,
+        "end": 901
+      },
+      "status": "unknown",
+      "reason": "unsupported or incomplete declaration context; cite a complete direct declaration",
+      "symbol_map": {},
+      "mapping_evidence": [],
+      "declarations": [],
+      "proposed": {
+        "kind": "value",
+        "value": "1"
+      },
+      "semantic_support": "unknown"
+    },
+    {
+      "version": 1,
+      "target": "n/value",
+      "source": {
+        "source_ref": "024b4ea7193df8ea791b57bf51892aae9d6a3976e77941bf0f180f7896a07421",
+        "page": 1,
+        "start": 902,
+        "end": 915
+      },
+      "status": "unknown",
+      "reason": "unsupported or incomplete declaration context; cite a complete direct declaration",
+      "symbol_map": {},
+      "mapping_evidence": [],
+      "declarations": [],
+      "proposed": {
+        "kind": "value",
+        "value": "10"
+      },
+      "semantic_support": "unknown"
+    },
+    {
+      "version": 1,
+      "target": "rule:X/expression",
+      "source": {
+        "source_ref": "024b4ea7193df8ea791b57bf51892aae9d6a3976e77941bf0f180f7896a07421",
+        "page": 1,
+        "start": 548,
+        "end": 584
+      },
+      "status": "matched",
+      "reason": "direct declaration matches target within the bounded grammar",
+      "symbol_map": {},
+      "mapping_evidence": [],
+      "declarations": [
+        {
+          "kind": "rule",
+          "symbol": "X",
+          "rhs": "k1*Ki^n/(Ki^n + Z^n) - k2*X",
+          "start": 548,
+          "end": 583,
+          "normalized": {
+            "kind": "syntax",
+            "tree": "Expression(body=BinOp(left=BinOp(left=BinOp(left=Name(id='k1', ctx=Load()), op=Mult(), right=BinOp(left=Name(id='Ki', ctx=Load()), op=Pow(), right=Name(id='n', ctx=Load()))), op=Div(), right=BinOp(left=BinOp(left=Name(id='Ki', ctx=Load()), op=Pow(), right=Name(id='n', ctx=Load())), op=Add(), right=BinOp(left=Name(id='Z', ctx=Load()), op=Pow(), right=Name(id='n', ctx=Load())))), op=Sub(), right=BinOp(left=Name(id='k2', ctx=Load()), op=Mult(), right=Name(id='X', ctx=Load()))))"
+          }
+        }
+      ],
+      "proposed": {
+        "kind": "syntax",
+        "tree": "Expression(body=BinOp(left=BinOp(left=BinOp(left=Name(id='k1', ctx=Load()), op=Mult(), right=BinOp(left=Name(id='Ki', ctx=Load()), op=Pow(), right=Name(id='n', ctx=Load()))), op=Div(), right=BinOp(left=BinOp(left=Name(id='Ki', ctx=Load()), op=Pow(), right=Name(id='n', ctx=Load())), op=Add(), right=BinOp(left=Name(id='Z', ctx=Load()), op=Pow(), right=Name(id='n', ctx=Load())))), op=Sub(), right=BinOp(left=Name(id='k2', ctx=Load()), op=Mult(), right=Name(id='X', ctx=Load()))))"
+      },
+      "semantic_support": "unknown"
+    },
+    {
+      "version": 1,
+      "target": "rule:Y/expression",
+      "source": {
+        "source_ref": "024b4ea7193df8ea791b57bf51892aae9d6a3976e77941bf0f180f7896a07421",
+        "page": 1,
+        "start": 611,
+        "end": 631
+      },
+      "status": "matched",
+      "reason": "direct declaration matches target within the bounded grammar",
+      "symbol_map": {},
+      "mapping_evidence": [],
+      "declarations": [
+        {
+          "kind": "rule",
+          "symbol": "Y",
+          "rhs": "k3*X - k4*Y",
+          "start": 611,
+          "end": 630,
+          "normalized": {
+            "kind": "polynomial",
+            "terms": [
+              [
+                [
+                  "X",
+                  "k3"
+                ],
+                "1"
+              ],
+              [
+                [
+                  "Y",
+                  "k4"
+                ],
+                "-1"
+              ]
+            ]
+          }
+        }
+      ],
+      "proposed": {
+        "kind": "polynomial",
+        "terms": [
+          [
+            [
+              "X",
+              "k3"
+            ],
+            "1"
+          ],
+          [
+            [
+              "Y",
+              "k4"
+            ],
+            "-1"
+          ]
+        ]
+      },
+      "semantic_support": "unknown"
+    },
+    {
+      "version": 1,
+      "target": "rule:Z/expression",
+      "source": {
+        "source_ref": "024b4ea7193df8ea791b57bf51892aae9d6a3976e77941bf0f180f7896a07421",
+        "page": 1,
+        "start": 658,
+        "end": 678
+      },
+      "status": "matched",
+      "reason": "direct declaration matches target within the bounded grammar",
+      "symbol_map": {},
+      "mapping_evidence": [],
+      "declarations": [
+        {
+          "kind": "rule",
+          "symbol": "Z",
+          "rhs": "k5*Y - k6*Z",
+          "start": 658,
+          "end": 677,
+          "normalized": {
+            "kind": "polynomial",
+            "terms": [
+              [
+                [
+                  "Y",
+                  "k5"
+                ],
+                "1"
+              ],
+              [
+                [
+                  "Z",
+                  "k6"
+                ],
+                "-1"
+              ]
+            ]
+          }
+        }
+      ],
+      "proposed": {
+        "kind": "polynomial",
+        "terms": [
+          [
+            [
+              "Y",
+              "k5"
+            ],
+            "1"
+          ],
+          [
+            [
+              "Z",
+              "k6"
+            ],
+            "-1"
+          ]
+        ]
+      },
+      "semantic_support": "unknown"
+    }
+  ]
+}

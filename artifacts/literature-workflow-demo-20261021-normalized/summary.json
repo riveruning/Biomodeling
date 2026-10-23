@@ -1,0 +1,40 @@
+{
+  "task_ref": "813d545af732861d1d3a1846606179d9f9d917f2db35aafff938584a0f48dd4b",
+  "run_ref": "18e57a2233999e0e3537c0c814b7ab9bac1197d4a53c700554382aca56cf68b8",
+  "replay_ref": "401dbcc7f8939a336d6fd77605b341f5e84984a99d995efc95019072b6bb3798",
+  "missing_initial_state": "awaiting_input",
+  "submission_state": "ready",
+  "evidence_targets": 14,
+  "matched_bindings": 14,
+  "execution": "succeeded",
+  "comparison": {
+    "columns": [
+      "X",
+      "Y",
+      "Z"
+    ],
+    "max_scaled_error": 1.2165045512801953e-05,
+    "protocol": "fixed_scales",
+    "scales": {
+      "X": 10.0,
+      "Y": 10.0,
+      "Z": 10.0
+    },
+    "status": "pass",
+    "threshold": 0.001,
+    "time_unit": "unknown",
+    "time_unit_status": "unknown",
+    "worst": "Z[30]"
+  },
+  "scientific_status": "not_verified",
+  "semantic_support": "unknown",
+  "replay_status": "succeeded",
+  "replay_comparison": "pass",
+  "replay_max_absolute_difference": 0.0,
+  "replay_environment_matches": true,
+  "exported_objects_and_blobs": 29,
+  "late_peak_period_au": 42.75,
+  "llm_api_calls": 0,
+  "product_agent_loop": "not_run",
+  "workflow": "real product tool execution; prepared proposal, not LLM performance evaluation"
+}

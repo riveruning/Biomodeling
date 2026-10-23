@@ -1,0 +1,203 @@
+{
+  "draft": {
+    "id": "goodwin2013_exploratory",
+    "states": [
+      {
+        "id": "X",
+        "initial": 0.1,
+        "unit": "unknown",
+        "quantity_kind": "variable",
+        "nonnegative": false
+      },
+      {
+        "id": "Y",
+        "initial": 0.2,
+        "unit": "unknown",
+        "quantity_kind": "variable",
+        "nonnegative": false
+      },
+      {
+        "id": "Z",
+        "initial": 0.3,
+        "unit": "unknown",
+        "quantity_kind": "variable",
+        "nonnegative": false
+      }
+    ],
+    "parameters": [
+      {
+        "id": "k1",
+        "value": 1.0,
+        "unit": "unknown",
+        "origin": "assistant_transcription_pending_review"
+      },
+      {
+        "id": "k2",
+        "value": 0.1,
+        "unit": "unknown",
+        "origin": "assistant_transcription_pending_review"
+      },
+      {
+        "id": "k3",
+        "value": 1.0,
+        "unit": "unknown",
+        "origin": "assistant_transcription_pending_review"
+      },
+      {
+        "id": "k4",
+        "value": 0.1,
+        "unit": "unknown",
+        "origin": "assistant_transcription_pending_review"
+      },
+      {
+        "id": "k5",
+        "value": 1.0,
+        "unit": "unknown",
+        "origin": "assistant_transcription_pending_review"
+      },
+      {
+        "id": "k6",
+        "value": 0.1,
+        "unit": "unknown",
+        "origin": "assistant_transcription_pending_review"
+      },
+      {
+        "id": "Ki",
+        "value": 1.0,
+        "unit": "unknown",
+        "origin": "assistant_transcription_pending_review"
+      },
+      {
+        "id": "n",
+        "value": 10.0,
+        "unit": "unknown",
+        "origin": "assistant_transcription_pending_review"
+      }
+    ],
+    "compartment": {
+      "id": "cell",
+      "size": 1.0,
+      "unit": "dimensionless"
+    },
+    "reactions": [],
+    "rate_rules": [
+      {
+        "state": "X",
+        "expression": "k1*Ki^n/(Ki^n + Z^n) - k2*X"
+      },
+      {
+        "state": "Y",
+        "expression": "k3*X - k4*Y"
+      },
+      {
+        "state": "Z",
+        "expression": "k5*Y - k6*Z"
+      }
+    ],
+    "derived": [],
+    "time_unit": "unknown",
+    "element_map": {},
+    "hypothesis_refs": [],
+    "parent_ref": null
+  },
+  "evidence": [
+    {
+      "target": "k1/value",
+      "quote": "k1 = 1.0; k3 = 1.0; k5 = 1.0.",
+      "claim_type": "paper_assumption",
+      "source_ref": "d82396e58ecc63c4274e68461c2a41b035ab59811940544fdfa66d6656f9e019",
+      "page": 1
+    },
+    {
+      "target": "k2/value",
+      "quote": "k2 = 0.1; k4 = 0.1; k6 = 0.1.",
+      "claim_type": "paper_assumption",
+      "source_ref": "d82396e58ecc63c4274e68461c2a41b035ab59811940544fdfa66d6656f9e019",
+      "page": 1
+    },
+    {
+      "target": "k3/value",
+      "quote": "k1 = 1.0; k3 = 1.0; k5 = 1.0.",
+      "claim_type": "paper_assumption",
+      "source_ref": "d82396e58ecc63c4274e68461c2a41b035ab59811940544fdfa66d6656f9e019",
+      "page": 1
+    },
+    {
+      "target": "k4/value",
+      "quote": "k2 = 0.1; k4 = 0.1; k6 = 0.1.",
+      "claim_type": "paper_assumption",
+      "source_ref": "d82396e58ecc63c4274e68461c2a41b035ab59811940544fdfa66d6656f9e019",
+      "page": 1
+    },
+    {
+      "target": "k5/value",
+      "quote": "k1 = 1.0; k3 = 1.0; k5 = 1.0.",
+      "claim_type": "paper_assumption",
+      "source_ref": "d82396e58ecc63c4274e68461c2a41b035ab59811940544fdfa66d6656f9e019",
+      "page": 1
+    },
+    {
+      "target": "k6/value",
+      "quote": "k2 = 0.1; k4 = 0.1; k6 = 0.1.",
+      "claim_type": "paper_assumption",
+      "source_ref": "d82396e58ecc63c4274e68461c2a41b035ab59811940544fdfa66d6656f9e019",
+      "page": 1
+    },
+    {
+      "target": "Ki/value",
+      "quote": "Ki = 1.0.",
+      "claim_type": "paper_assumption",
+      "source_ref": "d82396e58ecc63c4274e68461c2a41b035ab59811940544fdfa66d6656f9e019",
+      "page": 1
+    },
+    {
+      "target": "n/value",
+      "quote": "n = 10.",
+      "claim_type": "paper_assumption",
+      "source_ref": "d82396e58ecc63c4274e68461c2a41b035ab59811940544fdfa66d6656f9e019",
+      "page": 1
+    },
+    {
+      "target": "rule:X/expression",
+      "quote": "dX/dt = k1*Ki^n/(Ki^n + Z^n) - k2*X.",
+      "claim_type": "mathematical_definition",
+      "source_ref": "d82396e58ecc63c4274e68461c2a41b035ab59811940544fdfa66d6656f9e019",
+      "page": 1
+    },
+    {
+      "target": "rule:Y/expression",
+      "quote": "dY/dt = k3*X - k4*Y.",
+      "claim_type": "mathematical_definition",
+      "source_ref": "d82396e58ecc63c4274e68461c2a41b035ab59811940544fdfa66d6656f9e019",
+      "page": 1
+    },
+    {
+      "target": "rule:Z/expression",
+      "quote": "dZ/dt = k5*Y - k6*Z.",
+      "claim_type": "mathematical_definition",
+      "source_ref": "d82396e58ecc63c4274e68461c2a41b035ab59811940544fdfa66d6656f9e019",
+      "page": 1
+    },
+    {
+      "target": "X/initial",
+      "quote": "Initial X = 0.1.",
+      "claim_type": "system_conjecture",
+      "source_ref": "d82396e58ecc63c4274e68461c2a41b035ab59811940544fdfa66d6656f9e019",
+      "page": 1
+    },
+    {
+      "target": "Y/initial",
+      "quote": "Initial Y = 0.2.",
+      "claim_type": "system_conjecture",
+      "source_ref": "d82396e58ecc63c4274e68461c2a41b035ab59811940544fdfa66d6656f9e019",
+      "page": 1
+    },
+    {
+      "target": "Z/initial",
+      "quote": "Initial Z = 0.3.",
+      "claim_type": "system_conjecture",
+      "source_ref": "d82396e58ecc63c4274e68461c2a41b035ab59811940544fdfa66d6656f9e019",
+      "page": 1
+    }
+  ]
+}

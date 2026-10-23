@@ -1,0 +1,656 @@
+{
+  "state": "ready",
+  "model_ref": "9917ecd7d5b792bdef3a55b5a5d5a560e294add7a268b3434d373e129aaf5a11",
+  "draft_ref": "2f381c0ae20d9ef137278e389604bc4b4f505e503a2799e2851215c808477888",
+  "hypothesis_ref": null,
+  "checks": [
+    {
+      "code": "unit_unknown",
+      "status": "unknown",
+      "message": "state 'X': unit 'unknown' is not a supported SBML unit; it is left undeclared rather than assumed dimensionless",
+      "severity": "warning"
+    },
+    {
+      "code": "unit_unknown",
+      "status": "unknown",
+      "message": "state 'Y': unit 'unknown' is not a supported SBML unit; it is left undeclared rather than assumed dimensionless",
+      "severity": "warning"
+    },
+    {
+      "code": "unit_unknown",
+      "status": "unknown",
+      "message": "state 'Z': unit 'unknown' is not a supported SBML unit; it is left undeclared rather than assumed dimensionless",
+      "severity": "warning"
+    },
+    {
+      "code": "unit_unknown",
+      "status": "unknown",
+      "message": "parameter 'k1': unit 'unknown' is not a supported SBML unit; it is left undeclared rather than assumed dimensionless",
+      "severity": "warning"
+    },
+    {
+      "code": "unit_unknown",
+      "status": "unknown",
+      "message": "parameter 'k2': unit 'unknown' is not a supported SBML unit; it is left undeclared rather than assumed dimensionless",
+      "severity": "warning"
+    },
+    {
+      "code": "unit_unknown",
+      "status": "unknown",
+      "message": "parameter 'k3': unit 'unknown' is not a supported SBML unit; it is left undeclared rather than assumed dimensionless",
+      "severity": "warning"
+    },
+    {
+      "code": "unit_unknown",
+      "status": "unknown",
+      "message": "parameter 'k4': unit 'unknown' is not a supported SBML unit; it is left undeclared rather than assumed dimensionless",
+      "severity": "warning"
+    },
+    {
+      "code": "unit_unknown",
+      "status": "unknown",
+      "message": "parameter 'k5': unit 'unknown' is not a supported SBML unit; it is left undeclared rather than assumed dimensionless",
+      "severity": "warning"
+    },
+    {
+      "code": "unit_unknown",
+      "status": "unknown",
+      "message": "parameter 'k6': unit 'unknown' is not a supported SBML unit; it is left undeclared rather than assumed dimensionless",
+      "severity": "warning"
+    },
+    {
+      "code": "unit_unknown",
+      "status": "unknown",
+      "message": "parameter 'Ki': unit 'unknown' is not a supported SBML unit; it is left undeclared rather than assumed dimensionless",
+      "severity": "warning"
+    },
+    {
+      "code": "unit_unknown",
+      "status": "unknown",
+      "message": "parameter 'n': unit 'unknown' is not a supported SBML unit; it is left undeclared rather than assumed dimensionless",
+      "severity": "warning"
+    },
+    {
+      "code": "unit_unknown",
+      "status": "unknown",
+      "message": "time: unit 'unknown' is not a supported SBML unit; it is left undeclared rather than assumed dimensionless",
+      "severity": "warning"
+    },
+    {
+      "code": "draft_valid",
+      "status": "pass",
+      "message": "all structural checks passed",
+      "severity": "blocking"
+    },
+    {
+      "code": "semantic_support",
+      "status": "unknown",
+      "severity": "warning",
+      "message": "Bounded target binding does not establish semantic support, units, or scientific truth."
+    }
+  ],
+  "problems": [],
+  "source_review": {
+    "status": "no_explicit_conflict_detected",
+    "issues": [],
+    "resolutions": [],
+    "semantic_support": "unknown",
+    "limitations": [
+      "bounded explicit English declaration checks, not arbitrary-language or paper understanding",
+      "author corrections and researcher clarifications are assertions for analysis, not independent verification",
+      "no detected conflict does not establish semantic support"
+    ]
+  },
+  "source_review_ref": "0d24f8e6de546d4fb4c02fbdffa576dba709135c2ede8a136f574d56434e5255",
+  "citation_diagnostics": [],
+  "binding_diagnostics": [
+    {
+      "version": 1,
+      "target": "k1/value",
+      "source": {
+        "source_ref": "d82396e58ecc63c4274e68461c2a41b035ab59811940544fdfa66d6656f9e019",
+        "page": 1,
+        "start": 820,
+        "end": 849
+      },
+      "status": "matched",
+      "reason": "direct declaration matches target within the bounded grammar",
+      "symbol_map": {},
+      "mapping_evidence": [],
+      "declarations": [
+        {
+          "kind": "value",
+          "symbol": "k1",
+          "rhs": "1.0",
+          "start": 820,
+          "end": 828
+        },
+        {
+          "kind": "value",
+          "symbol": "k3",
+          "rhs": "1.0",
+          "start": 830,
+          "end": 838
+        },
+        {
+          "kind": "value",
+          "symbol": "k5",
+          "rhs": "1.0",
+          "start": 840,
+          "end": 848
+        }
+      ],
+      "proposed": {
+        "kind": "value",
+        "value": "1"
+      },
+      "semantic_support": "unknown"
+    },
+    {
+      "version": 1,
+      "target": "k2/value",
+      "source": {
+        "source_ref": "d82396e58ecc63c4274e68461c2a41b035ab59811940544fdfa66d6656f9e019",
+        "page": 1,
+        "start": 856,
+        "end": 885
+      },
+      "status": "matched",
+      "reason": "direct declaration matches target within the bounded grammar",
+      "symbol_map": {},
+      "mapping_evidence": [],
+      "declarations": [
+        {
+          "kind": "value",
+          "symbol": "k2",
+          "rhs": "0.1",
+          "start": 856,
+          "end": 864
+        },
+        {
+          "kind": "value",
+          "symbol": "k4",
+          "rhs": "0.1",
+          "start": 866,
+          "end": 874
+        },
+        {
+          "kind": "value",
+          "symbol": "k6",
+          "rhs": "0.1",
+          "start": 876,
+          "end": 884
+        }
+      ],
+      "proposed": {
+        "kind": "value",
+        "value": "1/10"
+      },
+      "semantic_support": "unknown"
+    },
+    {
+      "version": 1,
+      "target": "k3/value",
+      "source": {
+        "source_ref": "d82396e58ecc63c4274e68461c2a41b035ab59811940544fdfa66d6656f9e019",
+        "page": 1,
+        "start": 820,
+        "end": 849
+      },
+      "status": "matched",
+      "reason": "direct declaration matches target within the bounded grammar",
+      "symbol_map": {},
+      "mapping_evidence": [],
+      "declarations": [
+        {
+          "kind": "value",
+          "symbol": "k1",
+          "rhs": "1.0",
+          "start": 820,
+          "end": 828
+        },
+        {
+          "kind": "value",
+          "symbol": "k3",
+          "rhs": "1.0",
+          "start": 830,
+          "end": 838
+        },
+        {
+          "kind": "value",
+          "symbol": "k5",
+          "rhs": "1.0",
+          "start": 840,
+          "end": 848
+        }
+      ],
+      "proposed": {
+        "kind": "value",
+        "value": "1"
+      },
+      "semantic_support": "unknown"
+    },
+    {
+      "version": 1,
+      "target": "k4/value",
+      "source": {
+        "source_ref": "d82396e58ecc63c4274e68461c2a41b035ab59811940544fdfa66d6656f9e019",
+        "page": 1,
+        "start": 856,
+        "end": 885
+      },
+      "status": "matched",
+      "reason": "direct declaration matches target within the bounded grammar",
+      "symbol_map": {},
+      "mapping_evidence": [],
+      "declarations": [
+        {
+          "kind": "value",
+          "symbol": "k2",
+          "rhs": "0.1",
+          "start": 856,
+          "end": 864
+        },
+        {
+          "kind": "value",
+          "symbol": "k4",
+          "rhs": "0.1",
+          "start": 866,
+          "end": 874
+        },
+        {
+          "kind": "value",
+          "symbol": "k6",
+          "rhs": "0.1",
+          "start": 876,
+          "end": 884
+        }
+      ],
+      "proposed": {
+        "kind": "value",
+        "value": "1/10"
+      },
+      "semantic_support": "unknown"
+    },
+    {
+      "version": 1,
+      "target": "k5/value",
+      "source": {
+        "source_ref": "d82396e58ecc63c4274e68461c2a41b035ab59811940544fdfa66d6656f9e019",
+        "page": 1,
+        "start": 820,
+        "end": 849
+      },
+      "status": "matched",
+      "reason": "direct declaration matches target within the bounded grammar",
+      "symbol_map": {},
+      "mapping_evidence": [],
+      "declarations": [
+        {
+          "kind": "value",
+          "symbol": "k1",
+          "rhs": "1.0",
+          "start": 820,
+          "end": 828
+        },
+        {
+          "kind": "value",
+          "symbol": "k3",
+          "rhs": "1.0",
+          "start": 830,
+          "end": 838
+        },
+        {
+          "kind": "value",
+          "symbol": "k5",
+          "rhs": "1.0",
+          "start": 840,
+          "end": 848
+        }
+      ],
+      "proposed": {
+        "kind": "value",
+        "value": "1"
+      },
+      "semantic_support": "unknown"
+    },
+    {
+      "version": 1,
+      "target": "k6/value",
+      "source": {
+        "source_ref": "d82396e58ecc63c4274e68461c2a41b035ab59811940544fdfa66d6656f9e019",
+        "page": 1,
+        "start": 856,
+        "end": 885
+      },
+      "status": "matched",
+      "reason": "direct declaration matches target within the bounded grammar",
+      "symbol_map": {},
+      "mapping_evidence": [],
+      "declarations": [
+        {
+          "kind": "value",
+          "symbol": "k2",
+          "rhs": "0.1",
+          "start": 856,
+          "end": 864
+        },
+        {
+          "kind": "value",
+          "symbol": "k4",
+          "rhs": "0.1",
+          "start": 866,
+          "end": 874
+        },
+        {
+          "kind": "value",
+          "symbol": "k6",
+          "rhs": "0.1",
+          "start": 876,
+          "end": 884
+        }
+      ],
+      "proposed": {
+        "kind": "value",
+        "value": "1/10"
+      },
+      "semantic_support": "unknown"
+    },
+    {
+      "version": 1,
+      "target": "Ki/value",
+      "source": {
+        "source_ref": "d82396e58ecc63c4274e68461c2a41b035ab59811940544fdfa66d6656f9e019",
+        "page": 1,
+        "start": 892,
+        "end": 901
+      },
+      "status": "matched",
+      "reason": "direct declaration matches target within the bounded grammar",
+      "symbol_map": {},
+      "mapping_evidence": [],
+      "declarations": [
+        {
+          "kind": "value",
+          "symbol": "Ki",
+          "rhs": "1.0",
+          "start": 892,
+          "end": 900
+        }
+      ],
+      "proposed": {
+        "kind": "value",
+        "value": "1"
+      },
+      "semantic_support": "unknown"
+    },
+    {
+      "version": 1,
+      "target": "n/value",
+      "source": {
+        "source_ref": "d82396e58ecc63c4274e68461c2a41b035ab59811940544fdfa66d6656f9e019",
+        "page": 1,
+        "start": 908,
+        "end": 915
+      },
+      "status": "matched",
+      "reason": "direct declaration matches target within the bounded grammar",
+      "symbol_map": {},
+      "mapping_evidence": [],
+      "declarations": [
+        {
+          "kind": "value",
+          "symbol": "n",
+          "rhs": "10",
+          "start": 908,
+          "end": 914
+        }
+      ],
+      "proposed": {
+        "kind": "value",
+        "value": "10"
+      },
+      "semantic_support": "unknown"
+    },
+    {
+      "version": 1,
+      "target": "rule:X/expression",
+      "source": {
+        "source_ref": "d82396e58ecc63c4274e68461c2a41b035ab59811940544fdfa66d6656f9e019",
+        "page": 1,
+        "start": 548,
+        "end": 584
+      },
+      "status": "matched",
+      "reason": "direct declaration matches target within the bounded grammar",
+      "symbol_map": {},
+      "mapping_evidence": [],
+      "declarations": [
+        {
+          "kind": "rule",
+          "symbol": "X",
+          "rhs": "k1*Ki^n/(Ki^n + Z^n) - k2*X",
+          "start": 548,
+          "end": 583,
+          "normalized": {
+            "kind": "syntax",
+            "tree": "Expression(body=BinOp(left=BinOp(left=BinOp(left=Name(id='k1', ctx=Load()), op=Mult(), right=BinOp(left=Name(id='Ki', ctx=Load()), op=Pow(), right=Name(id='n', ctx=Load()))), op=Div(), right=BinOp(left=BinOp(left=Name(id='Ki', ctx=Load()), op=Pow(), right=Name(id='n', ctx=Load())), op=Add(), right=BinOp(left=Name(id='Z', ctx=Load()), op=Pow(), right=Name(id='n', ctx=Load())))), op=Sub(), right=BinOp(left=Name(id='k2', ctx=Load()), op=Mult(), right=Name(id='X', ctx=Load()))))"
+          }
+        }
+      ],
+      "proposed": {
+        "kind": "syntax",
+        "tree": "Expression(body=BinOp(left=BinOp(left=BinOp(left=Name(id='k1', ctx=Load()), op=Mult(), right=BinOp(left=Name(id='Ki', ctx=Load()), op=Pow(), right=Name(id='n', ctx=Load()))), op=Div(), right=BinOp(left=BinOp(left=Name(id='Ki', ctx=Load()), op=Pow(), right=Name(id='n', ctx=Load())), op=Add(), right=BinOp(left=Name(id='Z', ctx=Load()), op=Pow(), right=Name(id='n', ctx=Load())))), op=Sub(), right=BinOp(left=Name(id='k2', ctx=Load()), op=Mult(), right=Name(id='X', ctx=Load()))))"
+      },
+      "semantic_support": "unknown"
+    },
+    {
+      "version": 1,
+      "target": "rule:Y/expression",
+      "source": {
+        "source_ref": "d82396e58ecc63c4274e68461c2a41b035ab59811940544fdfa66d6656f9e019",
+        "page": 1,
+        "start": 611,
+        "end": 631
+      },
+      "status": "matched",
+      "reason": "direct declaration matches target within the bounded grammar",
+      "symbol_map": {},
+      "mapping_evidence": [],
+      "declarations": [
+        {
+          "kind": "rule",
+          "symbol": "Y",
+          "rhs": "k3*X - k4*Y",
+          "start": 611,
+          "end": 630,
+          "normalized": {
+            "kind": "polynomial",
+            "terms": [
+              [
+                [
+                  "X",
+                  "k3"
+                ],
+                "1"
+              ],
+              [
+                [
+                  "Y",
+                  "k4"
+                ],
+                "-1"
+              ]
+            ]
+          }
+        }
+      ],
+      "proposed": {
+        "kind": "polynomial",
+        "terms": [
+          [
+            [
+              "X",
+              "k3"
+            ],
+            "1"
+          ],
+          [
+            [
+              "Y",
+              "k4"
+            ],
+            "-1"
+          ]
+        ]
+      },
+      "semantic_support": "unknown"
+    },
+    {
+      "version": 1,
+      "target": "rule:Z/expression",
+      "source": {
+        "source_ref": "d82396e58ecc63c4274e68461c2a41b035ab59811940544fdfa66d6656f9e019",
+        "page": 1,
+        "start": 658,
+        "end": 678
+      },
+      "status": "matched",
+      "reason": "direct declaration matches target within the bounded grammar",
+      "symbol_map": {},
+      "mapping_evidence": [],
+      "declarations": [
+        {
+          "kind": "rule",
+          "symbol": "Z",
+          "rhs": "k5*Y - k6*Z",
+          "start": 658,
+          "end": 677,
+          "normalized": {
+            "kind": "polynomial",
+            "terms": [
+              [
+                [
+                  "Y",
+                  "k5"
+                ],
+                "1"
+              ],
+              [
+                [
+                  "Z",
+                  "k6"
+                ],
+                "-1"
+              ]
+            ]
+          }
+        }
+      ],
+      "proposed": {
+        "kind": "polynomial",
+        "terms": [
+          [
+            [
+              "Y",
+              "k5"
+            ],
+            "1"
+          ],
+          [
+            [
+              "Z",
+              "k6"
+            ],
+            "-1"
+          ]
+        ]
+      },
+      "semantic_support": "unknown"
+    },
+    {
+      "version": 1,
+      "target": "X/initial",
+      "source": {
+        "source_ref": "d82396e58ecc63c4274e68461c2a41b035ab59811940544fdfa66d6656f9e019",
+        "page": 1,
+        "start": 1143,
+        "end": 1159
+      },
+      "status": "matched",
+      "reason": "direct declaration matches target within the bounded grammar",
+      "symbol_map": {},
+      "mapping_evidence": [],
+      "declarations": [
+        {
+          "kind": "initial",
+          "symbol": "X",
+          "rhs": "0.1",
+          "start": 1143,
+          "end": 1158
+        }
+      ],
+      "proposed": {
+        "kind": "initial",
+        "value": "1/10"
+      },
+      "semantic_support": "unknown"
+    },
+    {
+      "version": 1,
+      "target": "Y/initial",
+      "source": {
+        "source_ref": "d82396e58ecc63c4274e68461c2a41b035ab59811940544fdfa66d6656f9e019",
+        "page": 1,
+        "start": 1160,
+        "end": 1176
+      },
+      "status": "matched",
+      "reason": "direct declaration matches target within the bounded grammar",
+      "symbol_map": {},
+      "mapping_evidence": [],
+      "declarations": [
+        {
+          "kind": "initial",
+          "symbol": "Y",
+          "rhs": "0.2",
+          "start": 1160,
+          "end": 1175
+        }
+      ],
+      "proposed": {
+        "kind": "initial",
+        "value": "1/5"
+      },
+      "semantic_support": "unknown"
+    },
+    {
+      "version": 1,
+      "target": "Z/initial",
+      "source": {
+        "source_ref": "d82396e58ecc63c4274e68461c2a41b035ab59811940544fdfa66d6656f9e019",
+        "page": 1,
+        "start": 1177,
+        "end": 1193
+      },
+      "status": "matched",
+      "reason": "direct declaration matches target within the bounded grammar",
+      "symbol_map": {},
+      "mapping_evidence": [],
+      "declarations": [
+        {
+          "kind": "initial",
+          "symbol": "Z",
+          "rhs": "0.3",
+          "start": 1177,
+          "end": 1192
+        }
+      ],
+      "proposed": {
+        "kind": "initial",
+        "value": "3/10"
+      },
+      "semantic_support": "unknown"
+    }
+  ]
+}

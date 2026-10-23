@@ -1,0 +1,17 @@
+{
+  "matplotlib": "3.11.1",
+  "inputs": {
+    "05-run.json": "5281f8934886885c98bf987e9fff727d03d94479186dbc53aede035758524a85",
+    "reference.json": "2238335b2afe4d3261ee095177b736cf7211e8d7cf58f1054f7c6fada5baaf75",
+    "trajectories.csv": "fe02115bfdd369cc1e2e91559cb98cd6c41479fb6b0fad76dbef051dee639273"
+  },
+  "transformation": "abs(RoadRunner - SciPy) / 10; no smoothing, filtering or aggregation",
+  "medium": "local demonstration report, no journal submission specification",
+  "figure_inches": [
+    12,
+    6.4
+  ],
+  "png_dpi": 180,
+  "caption": "Three deterministic Goodwin trajectories X, Y, Z over 0\u2013240 arbitrary time units, with RoadRunner solid lines and independently coded SciPy dashed lines. The lower panels show absolute solver differences divided by the fixed scale 10. All 481 samples are retained, without smoothing, filtering or statistical error bars. This is a single deterministic trajectory, not biological replicate data. Separate state axes have different ranges; residual axes share one range. Initial conditions are analyst supplied. Original-paper trajectory fidelity remains unverified.",
+  "guidance": "/home/riveruning/.agents/skills/scientific-visualization/SKILL.md"
+}

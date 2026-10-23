@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sbml xmlns="http://www.sbml.org/sbml/level3/version2/core" level="3" version="2">
+  <model id="goodwin2013_exploratory" name="goodwin2013_exploratory">
+    <listOfCompartments>
+      <compartment id="cell" spatialDimensions="0" size="1" units="dimensionless" constant="true"/>
+    </listOfCompartments>
+    <listOfParameters>
+      <parameter id="k1" value="1" constant="true"/>
+      <parameter id="k2" value="0.1" constant="true"/>
+      <parameter id="k3" value="1" constant="true"/>
+      <parameter id="k4" value="0.1" constant="true"/>
+      <parameter id="k5" value="1" constant="true"/>
+      <parameter id="k6" value="0.1" constant="true"/>
+      <parameter id="Ki" value="1" constant="true"/>
+      <parameter id="n" value="10" constant="true"/>
+      <parameter id="X" value="0.1" constant="false"/>
+      <parameter id="Y" value="0.2" constant="false"/>
+      <parameter id="Z" value="0.3" constant="false"/>
+    </listOfParameters>
+    <listOfRules>
+      <rateRule variable="X">
+        <math xmlns="http://www.w3.org/1998/Math/MathML">
+          <apply>
+            <minus/>
+            <apply>
+              <divide/>
+              <apply>
+                <times/>
+                <ci> k1 </ci>
+                <apply>
+                  <power/>
+                  <ci> Ki </ci>
+                  <ci> n </ci>
+                </apply>
+              </apply>
+              <apply>
+                <plus/>
+                <apply>
+                  <power/>
+                  <ci> Ki </ci>
+                  <ci> n </ci>
+                </apply>
+                <apply>
+                  <power/>
+                  <ci> Z </ci>
+                  <ci> n </ci>
+                </apply>
+              </apply>
+            </apply>
+            <apply>
+              <times/>
+              <ci> k2 </ci>
+              <ci> X </ci>
+            </apply>
+          </apply>
+        </math>
+      </rateRule>
+      <rateRule variable="Y">
+        <math xmlns="http://www.w3.org/1998/Math/MathML">
+          <apply>
+            <minus/>
+            <apply>
+              <times/>
+              <ci> k3 </ci>
+              <ci> X </ci>
+            </apply>
+            <apply>
+              <times/>
+              <ci> k4 </ci>
+              <ci> Y </ci>
+            </apply>
+          </apply>
+        </math>
+      </rateRule>
+      <rateRule variable="Z">
+        <math xmlns="http://www.w3.org/1998/Math/MathML">
+          <apply>
+            <minus/>
+            <apply>
+              <times/>
+              <ci> k5 </ci>
+              <ci> Y </ci>
+            </apply>
+            <apply>
+              <times/>
+              <ci> k6 </ci>
+              <ci> Z </ci>
+            </apply>
+          </apply>
+        </math>
+      </rateRule>
+    </listOfRules>
+  </model>
+</sbml>
