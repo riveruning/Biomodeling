@@ -6,6 +6,11 @@ __pycache__/
 *.egg-info/
 build/
 dist/
+runs/
+
+# New run output stays local; existing versioned research evidence is retained.
+artifacts/*
+!artifacts/README.md
 
 # Local credentials and agent settings
 .env

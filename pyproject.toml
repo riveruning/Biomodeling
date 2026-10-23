@@ -6,6 +6,7 @@ build-backend = "setuptools.build_meta"
 name = "biomodel-agent"
 version = "0.1.0"
 description = "Auditable ODE modeling, simulation and bounded hypothesis research workflows"
+readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
   "numpy",
@@ -14,7 +15,15 @@ dependencies = [
   "libroadrunner",
   "pypdf",
   "httpx",
+  "python-dotenv>=1,<2",
 ]
+
+[project.scripts]
+biomodel-agent = "biomodel_agent.cli:main"
+
+[project.urls]
+Repository = "https://github.com/riveruning/Biomodeling"
+Issues = "https://github.com/riveruning/Biomodeling/issues"
 
 [project.optional-dependencies]
 test = ["pytest"]

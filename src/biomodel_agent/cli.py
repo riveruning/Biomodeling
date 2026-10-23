@@ -12,6 +12,23 @@ def _fail(msg: str) -> int:
     return 1
 
 
+def _cmd_doctor(args) -> int:
+    from .onboarding import check_environment
+    result = check_environment(args)
+    print(json.dumps(result, ensure_ascii=False, indent=2))
+    return 0 if result['ok'] else 1
+
+
+def _cmd_demo(args) -> int:
+    from .onboarding import run_demo
+    try:
+        result = run_demo(args.store)
+    except Exception as exc:
+        return _fail(f'demo failed: {exc}')
+    print(json.dumps(result, ensure_ascii=False, indent=2))
+    return 0 if result['execution'] == 'succeeded' and result['comparison'] == 'pass' else 1
+
+
 def _load_json(path: str, what: str):
     with open(path, encoding="utf-8") as fh:
         data = json.load(fh)
@@ -410,7 +427,19 @@ def _cmd_study_run(args):
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(prog="biomodel_agent", description="Fact-driven biology model reproduction CLI")
+    parser.add_argument('--env-file', help='load this dotenv file instead of .env in the current directory')
     sub = parser.add_subparsers(dest="command", required=True)
+
+    p = sub.add_parser('doctor', help='check local dependencies and optional LLM settings; no network calls')
+    p.add_argument('--llm', action='store_true', help='also validate required provider settings locally')
+    p.add_argument('--base-url')
+    p.add_argument('--model')
+    p.add_argument('--api-key-env', default='BIOMODEL_API_KEY')
+    p.set_defaults(func=_cmd_doctor)
+
+    p = sub.add_parser('demo', help='run a self-contained offline ODE example with an analytic reference')
+    p.add_argument('--store', default='runs/demo', help='local output directory (default: runs/demo)')
+    p.set_defaults(func=_cmd_demo)
 
     p = sub.add_parser('source-ingest', help='ingest local evidence without invoking an LLM')
     p.add_argument('path')
@@ -560,6 +589,17 @@ def main(argv: list[str] | None = None) -> int:
     p.set_defaults(func=_cmd_study_run)
 
     args = parser.parse_args(argv)
+    if args.env_file or args.command in {'agent', 'agent-resume', 'agent-recover'} or (
+            args.command == 'doctor' and args.llm):
+        from pathlib import Path
+        from dotenv import load_dotenv
+        env_path = Path(args.env_file) if args.env_file else Path.cwd() / '.env'
+        if args.env_file and not env_path.is_file():
+            return _fail('specified --env-file does not exist or is not a file')
+        try:
+            load_dotenv(env_path, override=False, interpolate=False, encoding='utf-8-sig')
+        except (OSError, UnicodeError):
+            return _fail('cannot read environment file as UTF-8')
     return args.func(args)
 
 
