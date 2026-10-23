@@ -1,0 +1,8 @@
+* text=auto
+
+# Source downloads omit historical output; a full clone preserves all evidence.
+artifacts/* export-ignore
+artifacts/README.md -export-ignore
+tasks export-ignore
+discussion-notes export-ignore
+config export-ignore

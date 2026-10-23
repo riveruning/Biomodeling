@@ -1,0 +1,5 @@
+This is a manually curated synthetic modeling specification, not a real paper.
+State x is a normalized model variable. Initial x = 0.0.
+Production parameter k = 2.0. Degradation parameter d = 1.0.
+Equation: dx/dt = k - d*x.
+Time is measured in seconds. No parameters are missing.

@@ -1,0 +1,165 @@
+{
+  "provenance": "Generated with accepted pre-T04 studies._payload; full scientific configuration retained",
+  "payload_sha256": "45c8738ce34d9779cd4fcccd7bfcc22e66c43240d15c144adb0bd91f636d524e",
+  "payload": {
+    "schema_version": 1,
+    "profile": "adaptation_study_v1",
+    "config": {
+      "training": [
+        {
+          "id": "train",
+          "role": "training",
+          "experiment": {
+            "times": [
+              0.0,
+              0.5,
+              1.0,
+              2.0,
+              4.0
+            ],
+            "initial_overrides": {},
+            "parameter_overrides": {},
+            "segments": [],
+            "time_unit": "second"
+          },
+          "values": {
+            "response": [
+              0.0,
+              0.7869386805747332,
+              1.2642411176571153,
+              1.7293294335267746,
+              1.9633687222225316
+            ]
+          },
+          "sigma": {
+            "response": 0.01
+          },
+          "scales": {
+            "response": 1.0
+          }
+        }
+      ],
+      "holdout": [
+        {
+          "id": "private-holdout-id",
+          "role": "holdout",
+          "experiment": {
+            "times": [
+              0.0,
+              0.5,
+              1.0,
+              2.0,
+              4.0
+            ],
+            "initial_overrides": {},
+            "parameter_overrides": {},
+            "segments": [],
+            "time_unit": "second"
+          },
+          "values": {
+            "response": [
+              0.0,
+              0.7869386805747332,
+              1.2642411176571153,
+              1.7293294335267746,
+              1.9633687222225316
+            ]
+          },
+          "sigma": {
+            "response": 0.01
+          },
+          "scales": {
+            "response": 1.0
+          }
+        }
+      ],
+      "candidates": [
+        "cand_baseline"
+      ],
+      "starts": 1,
+      "seed": 17,
+      "max_nfev": 60,
+      "timeout_s": 20.0,
+      "separation_threshold": 0.05
+    },
+    "candidates": {
+      "cand_baseline": {
+        "id": "cand_baseline",
+        "states": [
+          {
+            "id": "x",
+            "initial": 0.0,
+            "unit": "dimensionless",
+            "quantity_kind": "variable",
+            "nonnegative": false
+          }
+        ],
+        "parameters": [
+          {
+            "id": "k",
+            "value": 2.0,
+            "unit": "unknown",
+            "origin": "template_prior"
+          },
+          {
+            "id": "d",
+            "value": 1.0,
+            "unit": "unknown",
+            "origin": "template_prior"
+          },
+          {
+            "id": "u",
+            "value": 1.0,
+            "unit": "unknown",
+            "origin": "template_prior"
+          },
+          {
+            "id": "b",
+            "value": 1.0,
+            "unit": "unknown",
+            "origin": "template_prior"
+          }
+        ],
+        "compartment": {
+          "id": "cell",
+          "size": 1.0,
+          "unit": "dimensionless"
+        },
+        "reactions": [],
+        "rate_rules": [
+          {
+            "state": "x",
+            "expression": "k*u - d*x"
+          }
+        ],
+        "derived": [],
+        "time_unit": "second",
+        "element_map": {},
+        "hypothesis_refs": [
+          "system_conjecture: candidate template cand_baseline; linearized local scenario; constrained ODE draft built from empty; not open mechanism discovery; not a paper fact; d/h unit unknown (time is second, inverse-second not asserted)"
+        ],
+        "parent_ref": null
+      }
+    },
+    "bounds": {
+      "cand_baseline": {
+        "k": [
+          0.5,
+          4.0
+        ],
+        "d": [
+          0.6,
+          1.8
+        ]
+      }
+    },
+    "observations": [
+      {
+        "id": "response",
+        "expression": "x"
+      }
+    ],
+    "authority": "operator_frozen_protocol",
+    "scientific_status": "not_verified"
+  }
+}

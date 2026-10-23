@@ -1,0 +1,1018 @@
+[
+  {
+    "trial_id": "fixed_workflow--decay--0--initial",
+    "session_ref": "73d492bf130791752ae016f456302f2b34de80a34780ef6598c9f352f93dd008",
+    "store_root": "/home/riveruning/biologymodel_agent/artifacts/audit-t08c-http-transport-20261019/http-mock-execution/stores/fixed_workflow--decay--0",
+    "audit": {
+      "supervised": true,
+      "stop_reason": null,
+      "run_ref": "5325ab94bfc7f566e9f3de87c8fb110024e665e6da41e99d2363bc150b60eff8",
+      "native_agent_run_ref": null,
+      "request_refs": [
+        "fe4421e73a55abe227620fb4cae3929e3dda73075d8cef12f88a83f55c51a154"
+      ],
+      "response_refs": [
+        "08b8ee5518b780c22abfa864e3a794a3def237d94293441dc76cf42f526ee450"
+      ],
+      "transport_exchange_refs": [
+        "0feb4ab163d23bb71623762c6eb60c308ab0f8bb5b2a1e68d63ccd9cf126a126"
+      ],
+      "reservation_refs": [
+        "5f91b343c60b6e391e264546eb461a7900b653ffce2611be87243881c7a55ab9",
+        "a7ea065d5bced6177f317e37b70b6339788b14c51f64d928b1e890f71c1360c0",
+        "314be6b7bae8fdc91e823493a394b15f0feece33e4d56930c669d36085f60dad",
+        "ef4ae0f1231b515b4c43192e938e562ca299a35bc3dce73fce9c9ff14326d6fe"
+      ],
+      "clarification_origin": null,
+      "runtime_adapter_sha256": "1184e44fe5386cff8cce5c05f644668263ab74b1550af8e2e587bc2cf5372aaf",
+      "scientific_support": "unknown",
+      "same_returned_model_verified": true
+    }
+  },
+  {
+    "trial_id": "fixed_workflow--translation--0--initial",
+    "session_ref": "9a84944c78a3fe0851993a1f762b6f738537d30135b0cedce0a523e6c16bfc80",
+    "store_root": "/home/riveruning/biologymodel_agent/artifacts/audit-t08c-http-transport-20261019/http-mock-execution/stores/fixed_workflow--translation--0",
+    "audit": {
+      "supervised": true,
+      "stop_reason": null,
+      "run_ref": null,
+      "native_agent_run_ref": null,
+      "request_refs": [
+        "f19a995dbac9c06c2c8492cccd52a53d272116e729e320e3b8190428eef7dace"
+      ],
+      "response_refs": [
+        "6c4abf5892e2a8d7460cf86d7c22c6ed216ea5a9cc7807476762bc9314b1b904"
+      ],
+      "transport_exchange_refs": [
+        "fd251f2c54b4d4407bf981c04ee3022f918737288c3502102965b58db07c81c0"
+      ],
+      "reservation_refs": [
+        "0c8d0bd048721d1a86421e1b8b779bc95adc17d3641309011c382c5794d36a68",
+        "37e48f67d70da4019796436baffd24fd67482390c358fbc59ca04206e44d9f49"
+      ],
+      "clarification_origin": null,
+      "runtime_adapter_sha256": "1184e44fe5386cff8cce5c05f644668263ab74b1550af8e2e587bc2cf5372aaf",
+      "scientific_support": "unknown",
+      "same_returned_model_verified": true
+    }
+  },
+  {
+    "trial_id": "fixed_workflow--translation--0--clarified",
+    "session_ref": "310b0bdfee803273f622164951f6f43e20a083cce94f7316986b8550243d1fda",
+    "store_root": "/home/riveruning/biologymodel_agent/artifacts/audit-t08c-http-transport-20261019/http-mock-execution/stores/fixed_workflow--translation--0",
+    "audit": {
+      "supervised": true,
+      "stop_reason": null,
+      "run_ref": "db2ffbf251c9eabc717b21d61f49380b5ba9c4c2a73b527e6cc2a78876c4ecbf",
+      "native_agent_run_ref": null,
+      "request_refs": [
+        "663d34cc0f248de6c97d5d1489af57119420c127d2be3b81383f565cab4f0b8a"
+      ],
+      "response_refs": [
+        "0c7448b6fd0eb6c5911c1fad08ed35380dd3f1f249aafba5e9fa36b18ed29f9a"
+      ],
+      "transport_exchange_refs": [
+        "f3617f6a5a6fc54564d28d88ac4af8094da1c1ef1442a04f723c1f038e033c27"
+      ],
+      "reservation_refs": [
+        "d338ab3e721675fd4d70a0f367170de4ee4300a307bd59b55718bf8934b0f7c0",
+        "dff5540754bccaf8685e70e825de58051095e8106cb8b29608ac8539622f8aee",
+        "a96f4648a22ae22e42009ee82a68fe208d148c5d055e54d76995a642623c15d7",
+        "eae35bed4563c0bafbb42e7e963f6a4ef57a81f08fcc74357142d2604cdcce6d",
+        "d72e4c16365b9c003a0eef3085a6a3f12ee9c8c4ad088c6171b98f4b3e90bde2"
+      ],
+      "clarification_origin": "prerecorded_protocol",
+      "runtime_adapter_sha256": "1184e44fe5386cff8cce5c05f644668263ab74b1550af8e2e587bc2cf5372aaf",
+      "scientific_support": "unknown",
+      "same_returned_model_verified": true
+    }
+  },
+  {
+    "trial_id": "fixed_workflow--logistic--0--initial",
+    "session_ref": "60f7dd3d078c5920a8297d9424c19fc9e8bc930c262f7c8591a9477ebe91dcb6",
+    "store_root": "/home/riveruning/biologymodel_agent/artifacts/audit-t08c-http-transport-20261019/http-mock-execution/stores/fixed_workflow--logistic--0",
+    "audit": {
+      "supervised": true,
+      "stop_reason": null,
+      "run_ref": null,
+      "native_agent_run_ref": null,
+      "request_refs": [
+        "1e02a64d4ae81517c4ff45cce81c797ba77af8908b08ef6ef427ccf36c37977d"
+      ],
+      "response_refs": [
+        "f1136880043aa952fdaecae741bda384db9f0bf1b91dda57b60efe7d75e37478"
+      ],
+      "transport_exchange_refs": [
+        "dc6f4bf4223a25d64915a41ce90c371515924e867465e9726016bd631349cc0c"
+      ],
+      "reservation_refs": [
+        "cba48783b24620ac2f8bead0148216d0058af7c041d3dfe49ef601431da8d436",
+        "3cf633f59752ff7c4e1f680934543eac0d9cb5607a1bcfd209eedb05cb7cbe7e"
+      ],
+      "clarification_origin": null,
+      "runtime_adapter_sha256": "1184e44fe5386cff8cce5c05f644668263ab74b1550af8e2e587bc2cf5372aaf",
+      "scientific_support": "unknown",
+      "same_returned_model_verified": true
+    }
+  },
+  {
+    "trial_id": "fixed_workflow--logistic--0--clarified",
+    "session_ref": "ad597e3eb5cd3073b10ef39c2d55f6d50002b9f7798816bebc1ced0bc08b36f7",
+    "store_root": "/home/riveruning/biologymodel_agent/artifacts/audit-t08c-http-transport-20261019/http-mock-execution/stores/fixed_workflow--logistic--0",
+    "audit": {
+      "supervised": true,
+      "stop_reason": null,
+      "run_ref": "7e57842c7be040982a0274ddb6ea8d144d85f0c6a8de771a889f130e8f3bbbef",
+      "native_agent_run_ref": null,
+      "request_refs": [
+        "f2cbe9c5068045f2ab75c603ab011c568e1e2d7f10920d08cb97bd7b82c08748"
+      ],
+      "response_refs": [
+        "e22bd33cc8cda59ec51841e8f3936702fcd84afcbd874591671fb5edd7d1adad"
+      ],
+      "transport_exchange_refs": [
+        "7d7f66743e927d3bf100c3a483e48fce08c6a3b51326a0fa4d0f07569725528b"
+      ],
+      "reservation_refs": [
+        "872bf31ba5fdc7106a4a42eeb4d050641b1e5add7fba9f2978e03837429e7200",
+        "5e656d9c2337b6b67921e20193dd1c03c6e20a91e6a461fbe13b2b0a996e5d0d",
+        "a721de6e06af30177502311c5bcdff59fcc6024990b7c6f42999a0666ebd4208",
+        "07147dd9709adc2159caaf4fbb10020d31f551c00eadb1b72ceafd52923359f5",
+        "41231403e8ea92571b24a687d7cf784e895118bf60046375cd9ea7ec79bbc0f9"
+      ],
+      "clarification_origin": "prerecorded_protocol",
+      "runtime_adapter_sha256": "1184e44fe5386cff8cce5c05f644668263ab74b1550af8e2e587bc2cf5372aaf",
+      "scientific_support": "unknown",
+      "same_returned_model_verified": true
+    }
+  },
+  {
+    "trial_id": "fixed_workflow--decay--1--initial",
+    "session_ref": "e0c87d994e1db61d8424113f8504af182c9014b6abbb62834f541d99cb55a267",
+    "store_root": "/home/riveruning/biologymodel_agent/artifacts/audit-t08c-http-transport-20261019/http-mock-execution/stores/fixed_workflow--decay--1",
+    "audit": {
+      "supervised": true,
+      "stop_reason": null,
+      "run_ref": "93c33a7e9fbde80456eab043169075133bdec33d1feff36247193099e1677239",
+      "native_agent_run_ref": null,
+      "request_refs": [
+        "c796edf4abcd40261e8b6c4561711e408418bdac8df940a9f57dab1fdeb81eaf"
+      ],
+      "response_refs": [
+        "9f97a67d2d2f8af4d14771ef81d1754127534280bef6b55fa650c2f620a9b83f"
+      ],
+      "transport_exchange_refs": [
+        "aa9c2a0075ad0e3be3889fe6b4d5b59d9f66ee3b522c1d1ac2ce09bec5769a38"
+      ],
+      "reservation_refs": [
+        "7da79e993bf2dc622dab923c15dd3bf27597877e4953d97957565180c6378780",
+        "f41f9a8a8f8d9de5e2ab89a751420c86496cfc10d218521f0a56069cb485aa85",
+        "0d372b670875fab60524fe43219ee8e18ab98d83a9676cdee4e606d332c017e8",
+        "d5bcf50c17e131117b4bcd3dfc84d32bdc28ad39e7cd5fc8bf4e3863bee890f9"
+      ],
+      "clarification_origin": null,
+      "runtime_adapter_sha256": "1184e44fe5386cff8cce5c05f644668263ab74b1550af8e2e587bc2cf5372aaf",
+      "scientific_support": "unknown",
+      "same_returned_model_verified": true
+    }
+  },
+  {
+    "trial_id": "fixed_workflow--translation--1--initial",
+    "session_ref": "5ae6100d1b7e86cb06f7b7eff3ab004177d6a8e02886be63a926eb5bca501aee",
+    "store_root": "/home/riveruning/biologymodel_agent/artifacts/audit-t08c-http-transport-20261019/http-mock-execution/stores/fixed_workflow--translation--1",
+    "audit": {
+      "supervised": true,
+      "stop_reason": null,
+      "run_ref": null,
+      "native_agent_run_ref": null,
+      "request_refs": [
+        "8d7cba56de5f23ff1cd883c219dd1a949f49890174cdb31c7e9bab067245b207"
+      ],
+      "response_refs": [
+        "c9012be49809a4f13e03552498f96e6757f3c36c026dbfb0bfa9f1fe6d4143e0"
+      ],
+      "transport_exchange_refs": [
+        "b15f0199a83a024a66740b41d696590d36f96eee77c409577ba3a0d274e3ce8b"
+      ],
+      "reservation_refs": [
+        "a090e2e4c7c6c0637322c3f695318aa78d6a7ba96b32860c9014296ad94b76a0",
+        "4caf7a14f30a962f9c053402283382b5a5df923705e1fb77801a11c14a11a226"
+      ],
+      "clarification_origin": null,
+      "runtime_adapter_sha256": "1184e44fe5386cff8cce5c05f644668263ab74b1550af8e2e587bc2cf5372aaf",
+      "scientific_support": "unknown",
+      "same_returned_model_verified": true
+    }
+  },
+  {
+    "trial_id": "fixed_workflow--translation--1--clarified",
+    "session_ref": "ae80e1aa1c760cad0583d0de542337de8b48e6194f76c5cd17629167ea8fc322",
+    "store_root": "/home/riveruning/biologymodel_agent/artifacts/audit-t08c-http-transport-20261019/http-mock-execution/stores/fixed_workflow--translation--1",
+    "audit": {
+      "supervised": true,
+      "stop_reason": null,
+      "run_ref": "cd3c780a397d73e1ef396c04bcd0f28d1ac249a6496d55642b5565d89c78beee",
+      "native_agent_run_ref": null,
+      "request_refs": [
+        "c1539477fe908f9060248feb84d9a7d0b0cef8f6e49ccd1c7735b7f70e7ce681"
+      ],
+      "response_refs": [
+        "e8e3570cbfebbed0f396061334eaf24be911ef6107b186e3064b5c155f733bb0"
+      ],
+      "transport_exchange_refs": [
+        "a50b4b00ff9d9b3f4d53c5b16cdd1f33c56d13043eb908cf90c05168f2b1a414"
+      ],
+      "reservation_refs": [
+        "6913e21c1f3f1bbd01e244733e42f736507aed1516e47e4c57a736c0e68c3ea8",
+        "a97b4cf248540908e3daf113f5ab49a34ea49473ed8a4a8897c1c866d201b6df",
+        "aeb904da0c07a34aa1cc53dac3d533d729b8a57713bb1d9ac34f0b5c575eab8d",
+        "e4fddcf902b23e79960010ac5b3685f0b8637a785c5578ba587c6f6c0dc906a9",
+        "3e0e707cf537ced9dbd1155d2b5d9e18812783e573163a7d23dafeccbcbed178"
+      ],
+      "clarification_origin": "prerecorded_protocol",
+      "runtime_adapter_sha256": "1184e44fe5386cff8cce5c05f644668263ab74b1550af8e2e587bc2cf5372aaf",
+      "scientific_support": "unknown",
+      "same_returned_model_verified": true
+    }
+  },
+  {
+    "trial_id": "fixed_workflow--logistic--1--initial",
+    "session_ref": "209383505f2e0e103366011c270dfcfaccfb18896d775843ded69f9cd244c37f",
+    "store_root": "/home/riveruning/biologymodel_agent/artifacts/audit-t08c-http-transport-20261019/http-mock-execution/stores/fixed_workflow--logistic--1",
+    "audit": {
+      "supervised": true,
+      "stop_reason": null,
+      "run_ref": null,
+      "native_agent_run_ref": null,
+      "request_refs": [
+        "3185461db2039070a88dd1cd1cce482e3763ed62250eb12862eb2a90ea7055fa"
+      ],
+      "response_refs": [
+        "e1340ffc942c54cb244fa0d1de9b942dced688cbba4681678afb853479a3d732"
+      ],
+      "transport_exchange_refs": [
+        "26e1d74ba26e14b85f47569fd6d3aaf70f02c18faa5d540391834e2319ad95b1"
+      ],
+      "reservation_refs": [
+        "e20e532f351de609aff2eb92a01b6a0909a566e2685344a040f46a10efd0f3a4",
+        "d06be7d7ac5f2969c681d07a34e6dfea34da38956df86d6d3babdb6120ea6bf2"
+      ],
+      "clarification_origin": null,
+      "runtime_adapter_sha256": "1184e44fe5386cff8cce5c05f644668263ab74b1550af8e2e587bc2cf5372aaf",
+      "scientific_support": "unknown",
+      "same_returned_model_verified": true
+    }
+  },
+  {
+    "trial_id": "fixed_workflow--logistic--1--clarified",
+    "session_ref": "6b8d5b2454c4926e2dcbe5e5aaf6f438c591fab5ae588dc024f8c1bd9bdfd05d",
+    "store_root": "/home/riveruning/biologymodel_agent/artifacts/audit-t08c-http-transport-20261019/http-mock-execution/stores/fixed_workflow--logistic--1",
+    "audit": {
+      "supervised": true,
+      "stop_reason": null,
+      "run_ref": "194af44442fc66e71ba249c2bb49b0044348c38d60325c5e00012d1d12e6069a",
+      "native_agent_run_ref": null,
+      "request_refs": [
+        "d81f6ccf0f4b267aa66f70e3b25b1973cd8501a0197adcb1187f9421b63b5231"
+      ],
+      "response_refs": [
+        "65ed51d8d187b4dc5d076a5f647422a43a0b690006470ecaac2a1d196c6fd70f"
+      ],
+      "transport_exchange_refs": [
+        "70b50061f5819408653fe4405b8c667a2a384c89a64ab982c7bbe5208c277107"
+      ],
+      "reservation_refs": [
+        "b88394924ed718535f83293fc951ac5553ff4c6efd09d1e80ba44ff04e480845",
+        "3e8a926555fb5efdf747c5f0bac5651565cef85c5275314feab1096bd6aeec7f",
+        "93e52ab97d9ec1cebdeb655b4059e6a9bb2934afbd7d6125ccc06c70cadd6cea",
+        "bc93b9660cd24e606add7716e60b394a1b7f57eb92d421f1ee4ea98d250a7664",
+        "faa5380bd56a6e15a5b426c2f4ae929429990915ba9bc75eacbef50e21895e79"
+      ],
+      "clarification_origin": "prerecorded_protocol",
+      "runtime_adapter_sha256": "1184e44fe5386cff8cce5c05f644668263ab74b1550af8e2e587bc2cf5372aaf",
+      "scientific_support": "unknown",
+      "same_returned_model_verified": true
+    }
+  },
+  {
+    "trial_id": "generic_tool_agent--decay--0--initial",
+    "session_ref": "138b411980d56f0a143f13a9d04170b545b62c05848a292a7f12bd9c0de1be04",
+    "store_root": "/home/riveruning/biologymodel_agent/artifacts/audit-t08c-http-transport-20261019/http-mock-execution/stores/generic_tool_agent--decay--0",
+    "audit": {
+      "supervised": true,
+      "stop_reason": null,
+      "run_ref": "04f4ff363b2e2974a1ca10dace7c5b81efbfc4792e49b2b1935340e00420f03a",
+      "native_agent_run_ref": null,
+      "request_refs": [
+        "3b5e9e64173e8ea7ac050ce30ddc08ec61c34fd3b9bc6b3e10e605a611f7dfd7",
+        "d1fe1dec32474d987a241ed59091f258433351ff6eea168ac6b257ff9e1e186e",
+        "07a372e2dcea2b5648a4b123ba4166121a4b096f7b620a5c06d65363c0c030e6",
+        "a948e3d29e339a7cdda7c7fbe228ac22f215279e7375ddbe543d3817c6ed38f9"
+      ],
+      "response_refs": [
+        "ec0a98f3a5799750d04da5e5ae7c5bc6f80c42aef3760185132edda437b3090e",
+        "5462ec1cd658f30cd760f1af55b9b3314119355045fba33d25e540728e1bf3ea",
+        "cb5a523ca334953f9c183e3c05e259c670c7074b796b7de790e5b6f97d57dbe8",
+        "a3f72f6cd103933de2e4c747cd67aa56677328f622d06553df2712d4531aa68f"
+      ],
+      "transport_exchange_refs": [
+        "3e5829795330a2f8a857a0b77a2a41b571678532aada24e9b91ac3b51719ec3c",
+        "7c84a3988d44b3fa6dd8a1f4e162742b8b4ac31a641322d38308a0ef4b55322d",
+        "19161ee9197022a769835c9b400465174c045a3dbd5830f3e1c9a8ff5dcff9fe",
+        "69240023d2a0e9e41ab44936e8df8e51b0dd200d129e4fbd5b586eb13818c6d8"
+      ],
+      "reservation_refs": [
+        "35585491b6efdb62887a3e9c3a1ce487c129111ef2109bbefedfb965a9452847",
+        "8fd4a790f2d66ad425899c397db8e04fd5242195614841b050e0ad9ca43b08ab",
+        "75c2122603cde6684abfa2b1b7f73763f028ea994905be2e744083efe85217b3",
+        "7f66b1a391adb5cbfd1b8127eecaffee6ded99a0b53486b11761b4ea4e5c3cff",
+        "9ada109b2b17e13899a12a6cc00ca09308886af5f20f88790fe55a2f27ec9038",
+        "c628fab5ecaf57371e686d52058d12f6b5387cbe3d32941ba1ccba5a1411668e",
+        "ecde493e7a36b59692d9e98bc68d7b307a32818c4cd91a99346b21d17c23a236"
+      ],
+      "clarification_origin": null,
+      "runtime_adapter_sha256": "1184e44fe5386cff8cce5c05f644668263ab74b1550af8e2e587bc2cf5372aaf",
+      "scientific_support": "unknown",
+      "same_returned_model_verified": true
+    }
+  },
+  {
+    "trial_id": "generic_tool_agent--translation--0--initial",
+    "session_ref": "2c08fbc6fb3bc33bac97ff8d724d6cda6af95947b45d37c1fdf6c06446c70c5d",
+    "store_root": "/home/riveruning/biologymodel_agent/artifacts/audit-t08c-http-transport-20261019/http-mock-execution/stores/generic_tool_agent--translation--0",
+    "audit": {
+      "supervised": true,
+      "stop_reason": null,
+      "run_ref": null,
+      "native_agent_run_ref": null,
+      "request_refs": [
+        "14ead09988467cfa8c5fc0617faac5e3f2fa237ca6357c17802ea8e1094899b8",
+        "c6ba1ac12468906c72edfd3c27806445a5735849b0836acf51b07c5e5f173632"
+      ],
+      "response_refs": [
+        "e722d2059eb69a163c3ec95afeb3ead517eee112f4744b9817c983e256f2db87",
+        "c54d099a7463bcb5cd2bbc877527fbc1024bf3697ab67590402796ca08b4ef26"
+      ],
+      "transport_exchange_refs": [
+        "54c318db23f5e9aa4c0062b5d968106a5594f9fc5a41362115309dfe478d0ee3",
+        "0de0a3ed538c039b535317a8c6d8392242876ca5ef41e68abbea8533a6aa0674"
+      ],
+      "reservation_refs": [
+        "f6ea423fedcc9f549b9c8a1cf419f0019b84f43ae45583e9cb6aec445e6ea0d9",
+        "90f3ee33617b5f8eb6f5f9188f73de1bdf1bceed7a6959cace17b6800ac54e20",
+        "9ced677d442e6e8f75ca9dd573f18466d0eff6e6151d32254a679e63fe810b2c"
+      ],
+      "clarification_origin": null,
+      "runtime_adapter_sha256": "1184e44fe5386cff8cce5c05f644668263ab74b1550af8e2e587bc2cf5372aaf",
+      "scientific_support": "unknown",
+      "same_returned_model_verified": true
+    }
+  },
+  {
+    "trial_id": "generic_tool_agent--translation--0--clarified",
+    "session_ref": "29ddcd5bc99ebc62f3fd1e96accba4de80566ed6f697035265b27584969a1d2d",
+    "store_root": "/home/riveruning/biologymodel_agent/artifacts/audit-t08c-http-transport-20261019/http-mock-execution/stores/generic_tool_agent--translation--0",
+    "audit": {
+      "supervised": true,
+      "stop_reason": null,
+      "run_ref": "a73b8b297786f08cff195db7dc585a630fda016a364da022194a912eba391e75",
+      "native_agent_run_ref": null,
+      "request_refs": [
+        "150de7cfab878d57c8817e1ce354b1c7bad76fcb8cbf3e74a40972138fb03629",
+        "c73ded87ea1302069a9644043a79049f7363c6d2d29e91fa12eb480a6b2b09d5",
+        "c64769f62c8a0e7cb2939bc638335e77265c4867d93507927100a06c7661d58e"
+      ],
+      "response_refs": [
+        "deb992d3187d8bc88b9545fc1ed14e02864ff4f4ea45f2e9d99ca059b1a7c796",
+        "859fe8cf86c8370a14dbf346ec5da0a5dcefa2fe222189c5871461a596eabae9",
+        "9ea45fcef27665f551736ca0ffaaaf8c7121137a51876622b2eb67c8a382adca"
+      ],
+      "transport_exchange_refs": [
+        "376f344a83432161f0f520b58fef38a329698a6f42f1d0dbbb3a7942110d0f10",
+        "ade039d4f59f829a58971205e8832e76d8d10a7f241d44fcb9195dd21375aed0",
+        "71d5895ce1a162b1e39fd801c41fae3a8555ec15f469dff8166d280eaf11b10a"
+      ],
+      "reservation_refs": [
+        "3f099052223c15319549ee008993db069ccf9c15cc833ef9510f6dbb7b6749b8",
+        "b906f0cd0804178701c7bff998b8c286ffbdf307a04881e4aec059f88f5dcf19",
+        "f44e8373914234fab529e23c069acef1f4de893a2d107d3438d3d1e29570d4d5",
+        "d26c63b86a8e8f2c1a1dd67e501cb074bc84fcb016a0fc279ede90a56e87ece8",
+        "6524ab59185535f7717f5285b1bbaab8018a847a2bb933e4223bb715b13250ee"
+      ],
+      "clarification_origin": "prerecorded_protocol",
+      "runtime_adapter_sha256": "1184e44fe5386cff8cce5c05f644668263ab74b1550af8e2e587bc2cf5372aaf",
+      "scientific_support": "unknown",
+      "same_returned_model_verified": true
+    }
+  },
+  {
+    "trial_id": "generic_tool_agent--logistic--0--initial",
+    "session_ref": "971b478465f93d95f37bf4796fba5aad7f71a67f323d449747a634797b084824",
+    "store_root": "/home/riveruning/biologymodel_agent/artifacts/audit-t08c-http-transport-20261019/http-mock-execution/stores/generic_tool_agent--logistic--0",
+    "audit": {
+      "supervised": true,
+      "stop_reason": null,
+      "run_ref": null,
+      "native_agent_run_ref": null,
+      "request_refs": [
+        "b71fc97ea277dcfeb3bdb22129a28886bc79bbad9b98cb872e9b205c55cdf497",
+        "54c162f97bf4b574ecd77b2e3781101b87eb935efeffd0b8c5b6a7e9a64c2c38"
+      ],
+      "response_refs": [
+        "ee0ae95c3b52b56213a4523886e9c74c6b920d2bc5c7603537d32f9300cd59cf",
+        "dc69321980065ba1889313ac7016dd77fd8fa89f83f8740f8a01f7dc0d24a85c"
+      ],
+      "transport_exchange_refs": [
+        "60537170489ae4a5919c7a60906a349efc1455da9bd8e696cc98b555d50b10fd",
+        "2b5a2bde31fdc337eef23a2e6a38e0b7445ef1c418370f6abb4f276e22ab1fa4"
+      ],
+      "reservation_refs": [
+        "68b1a3d5fb6bf4f207c06af8320890c2e41735e3247769ed1a357e24ed9f977a",
+        "9a5080075c32f5ce48c7c68a7d4dd2840a77b02ccb337cdfff4a28a21849e09e",
+        "155bdbe129e218ca0ca054478739ecaabd91423a071c53897c09074a5b07d865"
+      ],
+      "clarification_origin": null,
+      "runtime_adapter_sha256": "1184e44fe5386cff8cce5c05f644668263ab74b1550af8e2e587bc2cf5372aaf",
+      "scientific_support": "unknown",
+      "same_returned_model_verified": true
+    }
+  },
+  {
+    "trial_id": "generic_tool_agent--logistic--0--clarified",
+    "session_ref": "b97c2df28c79a619bc2581c7b87a938668f515d7d834e8015c4593846295abfb",
+    "store_root": "/home/riveruning/biologymodel_agent/artifacts/audit-t08c-http-transport-20261019/http-mock-execution/stores/generic_tool_agent--logistic--0",
+    "audit": {
+      "supervised": true,
+      "stop_reason": null,
+      "run_ref": "2e1f25c6c5cdbfe24e7793fcacf9f961bfea563de0eea121a38b118dcc4d25a5",
+      "native_agent_run_ref": null,
+      "request_refs": [
+        "70952ca9e0e4bcd36764d7cac72e84dc2061ba5339eaa450494ef64d61e57dc5",
+        "723ccfb06fd782e33cbb153fb2172125382d31f5de31c8bcf15c98eba1f21303",
+        "6d7c823e9ad8d3eda6700ec3759bbdd4a222f469c33603e522958e3d6bdcfddd"
+      ],
+      "response_refs": [
+        "0008d12c07d55193a56f468a60f8f1a29bf15c1f66faa40f117ce0fc7910f05a",
+        "3f2c9c038ae4791a54414e3eed0cdfa210ec0fe800d08fdf59263036b2716a09",
+        "59eb3c9441c1435165bfedd3d7ec97483bd8a41d7b033070dff7f7ccd5809491"
+      ],
+      "transport_exchange_refs": [
+        "c4cb0f1932b534b0c2dfbaba74992ddba254bed590200c40e218183d0b3b3ef4",
+        "a4dae690cf1f70f3c29a9f9b3f0b54be0f504dd701fd3df1b69fd05d5246c359",
+        "def5993f6f15a8d5337de01c9b8c7db781f44eb333d4242755aa5deb80ce8f76"
+      ],
+      "reservation_refs": [
+        "63a4997c06152f31e4f07bfbf875331019868a891dd87e9d976d847f13b749f6",
+        "18c12cdd28e84c102993e558e3b6db2d2df83cfd69fbfcd0da45ff9f4b782d6b",
+        "76b7638fb79c8c5d418216aaff78a2ec54f8fd1c36885109521786c2869a7a84",
+        "3d1b2e9654e009ef70195480d2b09fcab0a1629a3aa8fae45568c8723603d1cb",
+        "6900f487e435e558309b77a62a4f70442825f7bbc023411841270ea905b8c5db"
+      ],
+      "clarification_origin": "prerecorded_protocol",
+      "runtime_adapter_sha256": "1184e44fe5386cff8cce5c05f644668263ab74b1550af8e2e587bc2cf5372aaf",
+      "scientific_support": "unknown",
+      "same_returned_model_verified": true
+    }
+  },
+  {
+    "trial_id": "generic_tool_agent--decay--1--initial",
+    "session_ref": "16d05b8bd62cb274dcfea1971be81b833f24f95c15e8e1a2ee1f92020afaac9d",
+    "store_root": "/home/riveruning/biologymodel_agent/artifacts/audit-t08c-http-transport-20261019/http-mock-execution/stores/generic_tool_agent--decay--1",
+    "audit": {
+      "supervised": true,
+      "stop_reason": null,
+      "run_ref": "1e1f89a33d35248edac354fbc77a419b92db412f305d29880a1208f57d546ff4",
+      "native_agent_run_ref": null,
+      "request_refs": [
+        "360ffe92f233319a88d2f0d034754523133998a5f58f8fbcc104b99ad15e3351",
+        "9f6cc000ed9933d26fefd6de43114318e890878d8c79d311372a7342b02d210c",
+        "14257e7bec58a2592866b96e260bb464d5287d6048f3ba00c1f3da73e120911f",
+        "93b9c9627bb10930cf17c8c9090353db24f0539c359382f16071b927dd0b6f07"
+      ],
+      "response_refs": [
+        "940b2e7fddb3aa973ecbd415dfbe274eff845524b1700c6dcb195f3200ff0e1b",
+        "0faaa6677a7021c27ee01108d883d3b2bbd86848d50b2f69df275ebfd39f377a",
+        "92d78110c5c014cd452c63fd12bec030af437b713a1dca204a5a7b7002ccc5fc",
+        "0d0147822d159897c87cccf36d2ec8ebcac2df0d7ad8dcf94ee00e840fb9e34b"
+      ],
+      "transport_exchange_refs": [
+        "5b877a670629073cdebdb5ba262113d6af0e4ab9754595ec3013a5e42387c1f6",
+        "2e72ea215ef52b141f77effa0a894c04aac3e80fb09000d4b35f1655216c98bf",
+        "46897ef9ca981bcc412f6e922cb45291ba356af5c70554f64bb72090447d28b6",
+        "18f0fa2d83df24a695cdecbe1c902edca753ea42b0f23d85b06f447cbf3c6355"
+      ],
+      "reservation_refs": [
+        "22b7dc01cf3be1ec832188eca76fcfdf0bcf6fafcc4621523132954437b00d10",
+        "9abd6ea1cbc5cf8e45b0b4d489a31f0991088fb6ac96d449a5cce5e9fc54ddde",
+        "da0087fabb0f1e0bf0b5f0a97d883198706952cde4d8aacc80860f9ea217d93a",
+        "c27f8d8f4361d4613b55a85dd7cd272587211ec564ddb5b7c85df44346dbdbc4",
+        "a4fe6d3c852dc55b25825e53be65f7583f51bc855f583d63c97a0d881d539a92",
+        "ecc1442cb4f284b9f58d4e4e440c77b686e010fb1eba69aef6e402c88b7897ef",
+        "2204eebcdfc67d7dcab4ab3b54a59c473606aecae6e377820c3508a61242f7e6"
+      ],
+      "clarification_origin": null,
+      "runtime_adapter_sha256": "1184e44fe5386cff8cce5c05f644668263ab74b1550af8e2e587bc2cf5372aaf",
+      "scientific_support": "unknown",
+      "same_returned_model_verified": true
+    }
+  },
+  {
+    "trial_id": "generic_tool_agent--translation--1--initial",
+    "session_ref": "e531cc3468f327a2650af1f9dbeee75f7c42402f1b05670356e522bfea40b0c1",
+    "store_root": "/home/riveruning/biologymodel_agent/artifacts/audit-t08c-http-transport-20261019/http-mock-execution/stores/generic_tool_agent--translation--1",
+    "audit": {
+      "supervised": true,
+      "stop_reason": null,
+      "run_ref": null,
+      "native_agent_run_ref": null,
+      "request_refs": [
+        "98be91bcbbb52964ba35beaf2820ebc7e62446f7e3659c2ae39fcd1d52e66b19",
+        "007ad17de9126c49c28c768cf6f4b3343454a104947f4611df5565a9188ab6d8"
+      ],
+      "response_refs": [
+        "0a3306015d416a0e0ee83ab1a86c844b79e654ae06c74df10797c236477c77b3",
+        "58d4153ab7278b18cd79363d9bcd6ba9530b25d0fb33930d162d34486464e5c3"
+      ],
+      "transport_exchange_refs": [
+        "aa04bc61b07ccbec781af58c9456da606c65486b455fd6b8ac0358e02ce6667d",
+        "a94fbccd2c6edb18ab98a010e75fdc52e05dcafb7a67b3a2cfcdcdb69ce2ae42"
+      ],
+      "reservation_refs": [
+        "4a85af70bcb5a3d49a82e13d3c353f629c3964105287bbfdbe21cc85f1b86429",
+        "6c1dab9bc90c73a6e2cfeba11c8ea7bc34f219e4e8291de6527d7fe18c0cf38a",
+        "2d967544a8583aa131e8c4ec5e4c4ebfddc31e02bb5631e2a382615dc9189c04"
+      ],
+      "clarification_origin": null,
+      "runtime_adapter_sha256": "1184e44fe5386cff8cce5c05f644668263ab74b1550af8e2e587bc2cf5372aaf",
+      "scientific_support": "unknown",
+      "same_returned_model_verified": true
+    }
+  },
+  {
+    "trial_id": "generic_tool_agent--translation--1--clarified",
+    "session_ref": "77964128dbcfe07f1abe270b9ade1783aaffdf1133b6bf3a0eb8905c078e409d",
+    "store_root": "/home/riveruning/biologymodel_agent/artifacts/audit-t08c-http-transport-20261019/http-mock-execution/stores/generic_tool_agent--translation--1",
+    "audit": {
+      "supervised": true,
+      "stop_reason": null,
+      "run_ref": "603518303212f39fe47b0fcc848b7313bec6913f439b9f6633f5232faff9866f",
+      "native_agent_run_ref": null,
+      "request_refs": [
+        "78410d14380f86f1c2b1ac8cffae936f3469cbb103916decf6dc2b09fd64dc5b",
+        "de2083e66d62c5165751a64c6ffd107f8f89fdd3639d81a601b4a467d336d915",
+        "f0eeb559ea909ee770f15fe987f6c77e982e6543883d4d22b0ffa3b96725128f"
+      ],
+      "response_refs": [
+        "fbf69f7117894b24130c3cbdf0912fd05be1df2ab13c6cebdd0adaee6b6bcc7f",
+        "66358fd733c6b1b96ccdf013b354d8aca8b7ec36e20864bbb01701b559a009b2",
+        "768a7bfad96e0e38ce093427dd528b56f61edc153faba6556aa322f8e2645dbe"
+      ],
+      "transport_exchange_refs": [
+        "1a592e48262b7870000012f8c3e6cbdb240906f7e8337b253ecdda39240b0b03",
+        "fe808d5ea3b7872ef3ed69a104eb1508693b50775765de00aba5d68d3f531462",
+        "4425fc1e6080ce3a9a916469d8269ea87f400ee35db7fe41b5e48ce142b025d9"
+      ],
+      "reservation_refs": [
+        "812639a33c9d606a84a02b65737faadef98ef1d0e4ff7e6740179dd51f60b0cb",
+        "af1fda0fc25d532a5073ff80adfeeb274b47d6eb2e570f8a3e2ed0d6b8830264",
+        "407d5f7444c4b09e5e633ed456c2bd85d6680ff71b3170b010b1b99048af4786",
+        "eb4b3bc58f3a6f41437efbd11c7a7858d95d5d9b744cacd5bccb30d3a00ee80d",
+        "2e5ceea04ed671337917a2a7d0444e0823bb8e281b0ffb6ffa44dc1e0ab56afe"
+      ],
+      "clarification_origin": "prerecorded_protocol",
+      "runtime_adapter_sha256": "1184e44fe5386cff8cce5c05f644668263ab74b1550af8e2e587bc2cf5372aaf",
+      "scientific_support": "unknown",
+      "same_returned_model_verified": true
+    }
+  },
+  {
+    "trial_id": "generic_tool_agent--logistic--1--initial",
+    "session_ref": "13f93ae2e3e2607f3b9355f30ceecc773bfe7a8e6a6a9fac725bbe8b017c12d5",
+    "store_root": "/home/riveruning/biologymodel_agent/artifacts/audit-t08c-http-transport-20261019/http-mock-execution/stores/generic_tool_agent--logistic--1",
+    "audit": {
+      "supervised": true,
+      "stop_reason": null,
+      "run_ref": null,
+      "native_agent_run_ref": null,
+      "request_refs": [
+        "51cc850301d2f03762b89738ec8fcb6364dec6b79b0c297700b2e16126b63bec",
+        "8b286e4e9e81e105d510051f3bcc46317a3c81c8bfbc80b4e6ca2b106d25f9dc"
+      ],
+      "response_refs": [
+        "2f5f0805f10ccd5b64ec5618ad5768b1482cdd46432cf82a5e22c3589a6f54ba",
+        "f3625ed74cede2cef96b84b08084d5ff8617819f25c01031fbafe488dd54a900"
+      ],
+      "transport_exchange_refs": [
+        "3d62e1945e68e89d9adc16b52cab1d175eb1d000535cd066f5c8ed11bfeeb938",
+        "43c93974aaa19d31f67cd997c431e55913f6f3dde66a8affca82c2013aefc824"
+      ],
+      "reservation_refs": [
+        "e6a3ce28029cb98ce3b853f983599dc56311420d11bdb4e4682c4e2c3cbfa2d2",
+        "abaec8876f7cd5a4c79d6936af5fe7901e779e10e892ff878871d0cf896b459f",
+        "cc106900953a7afb29726bc8fa57527088ad31efcc2afbe93ba8681f98045fe5"
+      ],
+      "clarification_origin": null,
+      "runtime_adapter_sha256": "1184e44fe5386cff8cce5c05f644668263ab74b1550af8e2e587bc2cf5372aaf",
+      "scientific_support": "unknown",
+      "same_returned_model_verified": true
+    }
+  },
+  {
+    "trial_id": "generic_tool_agent--logistic--1--clarified",
+    "session_ref": "922957fd40b1903ab59f5dc9a75b4c47cfd1ca01d9d0cf078328cd13e7f4a603",
+    "store_root": "/home/riveruning/biologymodel_agent/artifacts/audit-t08c-http-transport-20261019/http-mock-execution/stores/generic_tool_agent--logistic--1",
+    "audit": {
+      "supervised": true,
+      "stop_reason": null,
+      "run_ref": "b2bdd557aae8be9bd7a6835eb0adabb3bed72dc7b1b82e3e107851acf470fb71",
+      "native_agent_run_ref": null,
+      "request_refs": [
+        "46375f3bf83b2322ad4e4c2e3a913a3b2cfea1ebeef73d441476fb30512e300b",
+        "36e581a9765c3b77a94c6f1ee4251abcf75b8aa809f45809bd2ddb2b85af451d",
+        "5cc77ccfc2777e387597f4ae64b156700e20de03d0139ade2703de875398c7fe"
+      ],
+      "response_refs": [
+        "8553569484cb203b58c8940d79451002bc92be6a052573a990b7cbeee2f3a8c5",
+        "7ad41e8d66ac2a69f692e7d8a2edb103f130188dd7796eda32a37cc3322d8798",
+        "c31c81617e4c5059c94c4cc452cf0935c37a76022753d2cdf9d0d913918875a1"
+      ],
+      "transport_exchange_refs": [
+        "d4b2e1ceb702638e1b4888f1725cc8c5f22cccd2d53d5b4870e449605eb1ccaa",
+        "93eab3018ddd403cb8dcfa0d4f7f79ec9a4ba333581e1fd39904af767e02868b",
+        "faa4c3279f54887393db6292021e4bf19e221dfb9720d13d8ae361a607b7288e"
+      ],
+      "reservation_refs": [
+        "98593c9b47ff31778972a2e2d7eee9f9cc84102fc55ff9f55736b2f28ecabcd3",
+        "506b57020fa365f8603cc6b9c90c39189c943298a05cf5ffc63c06d7e0363193",
+        "c55fbac48cb819385ed9b5af2ccc550f7747be8ab288df50a1e29353c5b518d6",
+        "9a1ff3fcb85655ff6873ad1e6f60922c5f6f31205aa7c72bfdb1953069b46af2",
+        "981acffaf98c1831dedd90b6523d4aab7db9e4bf9fbc7350a72496e94d0ba356"
+      ],
+      "clarification_origin": "prerecorded_protocol",
+      "runtime_adapter_sha256": "1184e44fe5386cff8cce5c05f644668263ab74b1550af8e2e587bc2cf5372aaf",
+      "scientific_support": "unknown",
+      "same_returned_model_verified": true
+    }
+  },
+  {
+    "trial_id": "domain_agent--decay--0--initial",
+    "session_ref": "b8dea658b5d0d194675d6a2a449aff07e4ebb27a572ffd9de41fdeed8803c22f",
+    "store_root": "/home/riveruning/biologymodel_agent/artifacts/audit-t08c-http-transport-20261019/http-mock-execution/stores/domain_agent--decay--0",
+    "audit": {
+      "supervised": true,
+      "stop_reason": null,
+      "run_ref": "1ad3021e13da8fcaf6a34843089ff4b4d64583eca1231bf0671e6307bb21de13",
+      "native_agent_run_ref": "40aa1ea6568a9e6368ba1fe31611f0c42009e840725eb0ac7cdec81bf24cd557",
+      "request_refs": [
+        "3adb4003ee56307383c7879c60d1e91182e6c5e3833f0a8e6f531935419d494c",
+        "14bc3a2339a55cbc6e7f3c3f089a70751929bc59e2c04a925f35a6f86905aa3c",
+        "dfca7761d9dcd311f97d8a4ede15705cf0f930a5631abf12411d7ed277193f4e",
+        "e5e7c56575ec61988bc95aabd013fff13c9834b3e58ec533aa5dad3d1546a193"
+      ],
+      "response_refs": [
+        "fcccc236e4503c86b61999ef5c2161381f6b6ae20950a1d9fcf454833c99e635",
+        "cb9bd11091dc35459882b5a8c14fc71b10ffb92d34d005c2c061241fa7b11c46",
+        "c857dfc1cc00c3745e24738fe737ea23b14a869fc4782a0b1da3622f5cacc700",
+        "5a4be3a672d1a2dcbf73483f88db9ed1e6bb21fb9a27a6f78ae510622fe7cc1b"
+      ],
+      "transport_exchange_refs": [
+        "de37d433c4835d7f51efbb335799b870868a5ecbc281dba29763e6e32291a24e",
+        "e24244e0ebc53333588d804a51607e33c0660339d815be1f27f458beeabd4c89",
+        "25a51f20255b4e730afcdef3f025d99e423d525d396c8797e7227f8b50465962",
+        "35ab7ee0533226b5c2feeb0f4f4d4bda30a3d1b39c77258ee01153a07d766567"
+      ],
+      "reservation_refs": [
+        "be66e442a46e9e02644cbeab91c09bbaf021dc9725bb7f562d6970722b11df88",
+        "b95c729bf5445342d5bdc0956950bae4ec7e09928548576d2f059f0722396ba1",
+        "b9c9b35780a305dacc8fb30f948a3587d5786d94b16b1961ae8b371015146bb5",
+        "7fd3a53b0a856a79b6122afd32d2eace16c865c492384018c4f0399682aae83d",
+        "ebafb4f836f5ef1e16b0552d6d9f21b0528a38c5783f3b389a1c71f659a3d3a6",
+        "7e107c916235539cc2f73f7e819e52ead0169e0431f71ba5255523bcdcc6d094",
+        "171a9af38d766cdfbf2fd03f4d1cd34a7737b3ff951621c87d5beeb8141c2741"
+      ],
+      "clarification_origin": null,
+      "runtime_adapter_sha256": "1184e44fe5386cff8cce5c05f644668263ab74b1550af8e2e587bc2cf5372aaf",
+      "scientific_support": "unknown",
+      "same_returned_model_verified": true
+    }
+  },
+  {
+    "trial_id": "domain_agent--translation--0--initial",
+    "session_ref": "72880049bceee5807685d7e010ae74d8067c7bfa88025a3b07c27d2e0e9d5919",
+    "store_root": "/home/riveruning/biologymodel_agent/artifacts/audit-t08c-http-transport-20261019/http-mock-execution/stores/domain_agent--translation--0",
+    "audit": {
+      "supervised": true,
+      "stop_reason": null,
+      "run_ref": null,
+      "native_agent_run_ref": "b4fe54f48a66d4b09495f9ec9fb32fb5429b2793dbab63a312a9b96f487f9dd7",
+      "request_refs": [
+        "5b177bdb9818ea31b69048c822852856a3437f6840f90d3bf22e2f3d961f418e",
+        "5a9eb9d7f9aedbf6509e43c9c0781af4f616bff8fe005eea98a2453232500c18"
+      ],
+      "response_refs": [
+        "6cd97cc331f7a10d3462b344411a1c5b76f65ff6c6bc3698dfba3bbd44788489",
+        "7dc7a31093eab462f26d1840079599cd444b8b433d85d1a595f0113767e9c04c"
+      ],
+      "transport_exchange_refs": [
+        "728618cf0ee66c30cbc6c26364d8d45a190aaf4b0c6df3748522b91781ec6405",
+        "ecf7002f0c6fb128f1694600f9f0423a983ce5977411874fcd3632b3d0222a04"
+      ],
+      "reservation_refs": [
+        "11726736ec3ca18a8e2c7b678f5bb47c3e1f5fa71783697c812e59f5d06617bd",
+        "31e661145e9201f49f8f6b498f137005d9ee3683bc1eb0cb808260b3e85493b3",
+        "5a3d99c35e293cccffa64665b2a7b7d0174abc495602437fa27da4bf2b20ffbe"
+      ],
+      "clarification_origin": null,
+      "runtime_adapter_sha256": "1184e44fe5386cff8cce5c05f644668263ab74b1550af8e2e587bc2cf5372aaf",
+      "scientific_support": "unknown",
+      "same_returned_model_verified": true
+    }
+  },
+  {
+    "trial_id": "domain_agent--translation--0--clarified",
+    "session_ref": "7b41105423a994ba4c5de60290e77cd235083174e99cd90926ece8f7ba4812a4",
+    "store_root": "/home/riveruning/biologymodel_agent/artifacts/audit-t08c-http-transport-20261019/http-mock-execution/stores/domain_agent--translation--0",
+    "audit": {
+      "supervised": true,
+      "stop_reason": null,
+      "run_ref": "ebb92f62ea516fa591c2c6269e040b9ed1c931efc3fbe6375f0cd76de560be79",
+      "native_agent_run_ref": "a515ada7caac954d11b3d4fbf07927ef13252ac44d1878cbd8a05f8fbfc830d6",
+      "request_refs": [
+        "1a7f04fce2d68be4aaf1d8dac6673a998ddb67f5b9f7b2c61825df7c5205fbcd",
+        "241b754623532af9da7fd14352223fc1b2bc9a1bf4039329d85b297e618a16c2",
+        "0bce6e5b241c6f77c71e6a3761aa8ef617ded3fec71150ccdbed35e5920a13c1"
+      ],
+      "response_refs": [
+        "bdbedb62f52ffbcd388af51a5d0c9c6847b9f6b3b44c307113a2e152e265a8d6",
+        "0cd75195585e6bbac3705461eda2a9d0f9bf5d5a5c1c53dc812c6cc6f6f87ef4",
+        "f3cb19606fba83c6df15c12a75cd85d70379bb2d3149ad30920408a2e7201a5a"
+      ],
+      "transport_exchange_refs": [
+        "ae6c720506d7702222e32e3215b834ba56cd846e969e2707f346cab1c971240d",
+        "324c369dc26d52319ade69f9f3b3411f44356e19cc79c3898aea321c8c7dcc75",
+        "2e03708be3f60e6180f691db253e353652c2d720def83d6b9e8c1196c72abdfa"
+      ],
+      "reservation_refs": [
+        "80364c9c143c5fc026496bd4710d49ef67f93f500d7ff339994b0e77fa95daee",
+        "28fb17cc0c6d229d2cb7bffd2d761d608cdb0f01ae2486a97bce318065c07394",
+        "b61b4844ac704af423ffe6238592469476d4575a0ad6c2c3f668edecf15a0a68",
+        "7034b8cb005f08ff4cbd08ab35de1ab1b396d339b4d368fddff36ec38aef7f08",
+        "6daccf7e814cac5cb5131e3691798897aaa84a4286f8853ffc932940ed414cc8"
+      ],
+      "clarification_origin": "prerecorded_protocol",
+      "runtime_adapter_sha256": "1184e44fe5386cff8cce5c05f644668263ab74b1550af8e2e587bc2cf5372aaf",
+      "scientific_support": "unknown",
+      "same_returned_model_verified": true
+    }
+  },
+  {
+    "trial_id": "domain_agent--logistic--0--initial",
+    "session_ref": "80e8acb2445857e0c6e796cd03ed7e1995c4700633df247ee1b40ee8166f067c",
+    "store_root": "/home/riveruning/biologymodel_agent/artifacts/audit-t08c-http-transport-20261019/http-mock-execution/stores/domain_agent--logistic--0",
+    "audit": {
+      "supervised": true,
+      "stop_reason": null,
+      "run_ref": null,
+      "native_agent_run_ref": "5e76ffe488034cf9da73eede3f7094df2345d8dd5166c7267ebf56c424dda270",
+      "request_refs": [
+        "12164132be863867bf4273ba1def8d33807a9c37e236f79e713466c0ef63580c",
+        "11ec282c881eb8c31173bfe209a71dff717849cf4c69ec0cff429eeba9886276"
+      ],
+      "response_refs": [
+        "cf4c300cdb91fbe95735c35a5a14324cc42e02b767ac511f18c0be877cf00836",
+        "8d40d07587734a7b7f32c57b799913106ea5ea8fbd59e5637dd5128f7b2c80f3"
+      ],
+      "transport_exchange_refs": [
+        "b14b6d73ffea319173ab71a720c63d95602cfc63447e1e029fb032642be91888",
+        "0c9b089212e8f59a93087201003ef3a2532ecd8dfff222dd5ab3e4077e1c8b61"
+      ],
+      "reservation_refs": [
+        "e71722ff3c969473fa9a477aaecb9199efabefaf9f498d6822a98b606d04a8eb",
+        "3f947fe6eab3e05af1abf5407c3155c10dae83bd06be7afb8600c7cafe81e0cf",
+        "d2a040c47a6f78f93de668c76d143c01cb4981dad96d9fa0b7a37fd054f87ca9"
+      ],
+      "clarification_origin": null,
+      "runtime_adapter_sha256": "1184e44fe5386cff8cce5c05f644668263ab74b1550af8e2e587bc2cf5372aaf",
+      "scientific_support": "unknown",
+      "same_returned_model_verified": true
+    }
+  },
+  {
+    "trial_id": "domain_agent--logistic--0--clarified",
+    "session_ref": "e3287231015ca223a141126aa501c5c1cd9e66a9b520540d3bd6926d99d0e5b4",
+    "store_root": "/home/riveruning/biologymodel_agent/artifacts/audit-t08c-http-transport-20261019/http-mock-execution/stores/domain_agent--logistic--0",
+    "audit": {
+      "supervised": true,
+      "stop_reason": null,
+      "run_ref": "19d7226bb4c070e7f2c1d420b0e54d2f6873f0181816f5bdbdd25a2a6729599d",
+      "native_agent_run_ref": "cf341e8067335cc49cd8f249ae64a5c97c744808a46ec1ca158aacd6392c9c8e",
+      "request_refs": [
+        "839efc0331b521ae3dad432099e7db8f18d9c383b59a6cb9584805c12e01d002",
+        "dcbb9ef88c1e28656a6a27c95c8b43c6d928886e061d46aa0e208de702923201",
+        "bad6fdaf16b371e04606c0817d4975f7f8639fdd1cc2311939d7d2f69a94456b"
+      ],
+      "response_refs": [
+        "83eb15905c6c833ed789de76e9dfaec34f08496cd8c385b8fca327f84198fe77",
+        "fe5f4c77cd6be3b419fe2ef016b1dbdc6c18a617e7f98ca496068b6c9a38662c",
+        "6b747e2c4dcdf0020e1394415ac078c2a31e9c6995da893075c823722fab3669"
+      ],
+      "transport_exchange_refs": [
+        "45eac9ec91092c14e9bf54773d0ffb178c439b67212176bdba817da139fda003",
+        "7125f3cdd659c693f9eee66548e3abc2bf8108912dead54b1f0982568cd3a017",
+        "19a8ebf2053d4af5974d2200dac7ea02c32875a2822590b760bdf4f0696b7371"
+      ],
+      "reservation_refs": [
+        "aa10f8a897936ea79e161886bee199e23617d6ea4cf79156aebcac01c89b00e7",
+        "a11806bc30841e63a6f658238c9dd3a8fb9824a595bb2bed98f0307fd60ae23f",
+        "6852d64513f3de8936a8b629a3d37de7db75dd1f5856a0a724414ecc597bb5d3",
+        "73c5300d192b1352655204e7b26d10bdb4cdebe9fe05a4eeb31ae97dd460dd99",
+        "0930360e531e48cabb72e28b6f5dae6aaf977260a6c0cc292d08d6b819d49606"
+      ],
+      "clarification_origin": "prerecorded_protocol",
+      "runtime_adapter_sha256": "1184e44fe5386cff8cce5c05f644668263ab74b1550af8e2e587bc2cf5372aaf",
+      "scientific_support": "unknown",
+      "same_returned_model_verified": true
+    }
+  },
+  {
+    "trial_id": "domain_agent--decay--1--initial",
+    "session_ref": "910a70f6c94d7b605064ad9b61740b81604c164774ec3878aafda198c25c5703",
+    "store_root": "/home/riveruning/biologymodel_agent/artifacts/audit-t08c-http-transport-20261019/http-mock-execution/stores/domain_agent--decay--1",
+    "audit": {
+      "supervised": true,
+      "stop_reason": null,
+      "run_ref": "f7fcbafe72ade4a0c2b6756f8484c80bff643f9ad91e79b4a5abf24898b41ded",
+      "native_agent_run_ref": "d639bef5d255e500539e19d1a59a2ccf39a18b9fab2ab38c39069030776ffba1",
+      "request_refs": [
+        "b7ecf58db5eb0f5e4f76df1b547122e3a98405578921de0fcb4247c75e33f05f",
+        "565dea0416a901859645c78de7745c3f787c3ce3b38a2a4b6ed8125b407c4880",
+        "f038826f6ec13a6a17e01d739af9e8f5e7baf887d87ceb02ad3d33de3c2d2670",
+        "dcfde9ced8a6eaa2e6ff96852361cb35d53263cacd013f9a6b4fb433afa028fa"
+      ],
+      "response_refs": [
+        "8571f467d1f463d6d8ed349d96003f6ed8c1fb86188e9053bc4de58807cc6d47",
+        "077d6960108ec8a171fb21a5c3d20350dd38625d6b6f17311c68a3cf5b65ef51",
+        "55e1d80f843e6adcc0c51aa4f9ad35a42cababcf04ebde6425648e02b16e4a32",
+        "8a98b537de7196831ec3b3fd8e63c40aaef713eb1c307134330c1c425fee7e77"
+      ],
+      "transport_exchange_refs": [
+        "e04e325c1d63b985de183d6914577cd1b03326e18a9bf208214b1972aed26c9e",
+        "d7a7fa0c38effc74e9a035664f2fedd5e63ae95b23db524b816bda0026de03da",
+        "70617ee8672c6838dddb21b1caf9f9455110d9373c10ba2db492799603e3033a",
+        "a1058089aa81afcf0b24ac65f02371634a083367a24091d57aa452cb79765849"
+      ],
+      "reservation_refs": [
+        "674ea02988034ef4688b39266ef5aded556250e67b0981e5acddbf7aa8b7c909",
+        "8bfc60bc43ecd309ad775ce4464dfc1f39a441ed19ac6d27318822d6aa262559",
+        "ab455aca926c66aa2bc3ecbe9b2fae8451d8d281783a3df54e99cfce90bb7cf5",
+        "79a2d7871c3bb12b7f1349211773e57cf6848bbb58991aecf388cbabd00f07a7",
+        "e2590501f3e9f162b47b58c716c1dd057ac5314bf4b181e3919ba190b5f72542",
+        "1619eb107c7476a1f90b7eb8373900c71a7b540ac6ef2f4603991b80c744ad56",
+        "d613a3074b98f274899aa88b38202de49347265f5f8673555ea885f2382bc77a"
+      ],
+      "clarification_origin": null,
+      "runtime_adapter_sha256": "1184e44fe5386cff8cce5c05f644668263ab74b1550af8e2e587bc2cf5372aaf",
+      "scientific_support": "unknown",
+      "same_returned_model_verified": true
+    }
+  },
+  {
+    "trial_id": "domain_agent--translation--1--initial",
+    "session_ref": "81a76bbbccdeaf878e7d7778ae75041546404226779838dfd91dc1d7357464b7",
+    "store_root": "/home/riveruning/biologymodel_agent/artifacts/audit-t08c-http-transport-20261019/http-mock-execution/stores/domain_agent--translation--1",
+    "audit": {
+      "supervised": true,
+      "stop_reason": null,
+      "run_ref": null,
+      "native_agent_run_ref": "3172e89ea0f8e8cf4cf1d259f66c99ab51a53a15cf0a125eb1006d98d2e3243b",
+      "request_refs": [
+        "3401b4519d56f0288f9f0fcc9fe40cefb66bb8610f02402e9cbaa0335678f46f",
+        "52b5afa26c028613564dc97d5b26fb40597f0e1aa686ca8d549cfdc4352c7927"
+      ],
+      "response_refs": [
+        "5afb4b40f6080edba528feb709433380ecd09879d7ae1e2afe294114e08e3227",
+        "1805ef58024e5c4c3e5aa27f9825027ef0301882e7fcc345628bd46851d69094"
+      ],
+      "transport_exchange_refs": [
+        "4480f31df6b742d92b55c66d57e21dd91a51d5d5c197c98a561f8b070561d6f5",
+        "bef9a0647a05e1d74e528d6fd4c8c5130c3f32eaf8798a6296e6a9528b80fe54"
+      ],
+      "reservation_refs": [
+        "bb3953820f72f33e70fd48ea55a488c84baac2bf3bc20ff309e28e9e6df1ae2d",
+        "4b01a392736493867d18c6606ff4ee79c6a0e6ad5bb81e6d6f174432507d2106",
+        "eb235fa2d6994933937afe9a96b5cd55273080d15aac5e11ac0af4252c3a3a50"
+      ],
+      "clarification_origin": null,
+      "runtime_adapter_sha256": "1184e44fe5386cff8cce5c05f644668263ab74b1550af8e2e587bc2cf5372aaf",
+      "scientific_support": "unknown",
+      "same_returned_model_verified": true
+    }
+  },
+  {
+    "trial_id": "domain_agent--translation--1--clarified",
+    "session_ref": "accf84c600e0dd7b7e62b2d13a91b1ba07ef85a08444ea9bd71ee53539743432",
+    "store_root": "/home/riveruning/biologymodel_agent/artifacts/audit-t08c-http-transport-20261019/http-mock-execution/stores/domain_agent--translation--1",
+    "audit": {
+      "supervised": true,
+      "stop_reason": null,
+      "run_ref": "ad87c290e58df81765f23ff6f782c66c87f68720d18a23958fcc4815fd7e72ae",
+      "native_agent_run_ref": "3a510eaa7d4c1cecfd06a73b091d1c0126fdaf631dd9efa65996d22a14e59cf9",
+      "request_refs": [
+        "5ef914626f878b9dc6b513a7a98af129eccbfa7d75e772dfb437145e5853302c",
+        "cef4bb222c427373c9b41d92b2b4551511183c0a67c4519e8f04dc834d6c463d",
+        "1a1a4a2904418cbdb46e77c5b51ce202aa6fe59f6ae3a5cf4af47a24e56fdbb7"
+      ],
+      "response_refs": [
+        "067af0ddf565a7106c26ea031804c37f4438565775c86e2d27d009f61dd5021a",
+        "81559ab4e462150a6e367e1c59779eba71f1d1c1b1d0caad3eec4ef323486ebf",
+        "0572569fe82dfeb1177c172c701638a8deb7c21ddbe9e8e10aff4b5e7922833f"
+      ],
+      "transport_exchange_refs": [
+        "00fecf2998e8fd919d31761f281274e9875bff594afc005197082075af545102",
+        "8632ae90e70db529b746b56da385977dceeccc680829c11c85e950bf8f10bd2f",
+        "20f227d5427aef46de9b414c2e7fb3a5f3eb5fc1c8f3c711a92258fd6d76bb68"
+      ],
+      "reservation_refs": [
+        "364258affee167bbc2276eb8b3c605d324fffdfd09f0f390a562449a8c8dae50",
+        "ee906ff72d488802fa59d3e4193339c5a434b5b0f0c19395b0feaa02800c7428",
+        "6eaafb2efa6181f5b286e24dac921728df1073e817c626fb801b0482088673b7",
+        "2f0e98d77dd090f8a246372da0b45d54ee8c6f7ceba5975f1e6e07639a7999e6",
+        "44e1034189d612c183f494b4b5dfed5268dc0fe368ad5cef94f498a337431637"
+      ],
+      "clarification_origin": "prerecorded_protocol",
+      "runtime_adapter_sha256": "1184e44fe5386cff8cce5c05f644668263ab74b1550af8e2e587bc2cf5372aaf",
+      "scientific_support": "unknown",
+      "same_returned_model_verified": true
+    }
+  },
+  {
+    "trial_id": "domain_agent--logistic--1--initial",
+    "session_ref": "aa516ea56350ee28fddad4a5d10da3a7f2fbde226bd8fc70d2aa41afe3adbf03",
+    "store_root": "/home/riveruning/biologymodel_agent/artifacts/audit-t08c-http-transport-20261019/http-mock-execution/stores/domain_agent--logistic--1",
+    "audit": {
+      "supervised": true,
+      "stop_reason": null,
+      "run_ref": null,
+      "native_agent_run_ref": "1cb7961b4c2c203775977ee97665275297b493c8227d63de1cf60dde0952c23d",
+      "request_refs": [
+        "8f6faa9dcbe3852ebf2db77a1adf8132cb9478da1f687506406c36cea402cdaa",
+        "f89d13ea3396bdcccd78a1cd19d776dbf0643ae112da289061a0418db3aa2b1b"
+      ],
+      "response_refs": [
+        "3382a1162f54ce47d57927ce230aa00f034a1f538bc4752bf02e5f2960bd0cdb",
+        "73ee1e00e242adde702ad20b530de33ceb8fd554542a81e8da56b072ba9f6591"
+      ],
+      "transport_exchange_refs": [
+        "9a6543be0bb6ba44ece97be26681ab9421e1d6a95de25ae508a31f501e989f4e",
+        "1609557f8610bf759f73f2e4280a72fcf3eeca8004ac9ca2c694c52428b4998b"
+      ],
+      "reservation_refs": [
+        "b376ff579a2bdf4583344c98c78b8b0347617d439a1dda3fc13b26b8d7e71c2a",
+        "80bcbc351a34419a90bb23a70030417f116030681fa4207996444bfaf09b2dd9",
+        "41fdcf22d4cb0b35bde648f29783c6e5b86d749d752c7f9018bd20f10ccac52f"
+      ],
+      "clarification_origin": null,
+      "runtime_adapter_sha256": "1184e44fe5386cff8cce5c05f644668263ab74b1550af8e2e587bc2cf5372aaf",
+      "scientific_support": "unknown",
+      "same_returned_model_verified": true
+    }
+  },
+  {
+    "trial_id": "domain_agent--logistic--1--clarified",
+    "session_ref": "643feab06eff2976de8679c09474de9b15cc624bc86467b679853a230631b8eb",
+    "store_root": "/home/riveruning/biologymodel_agent/artifacts/audit-t08c-http-transport-20261019/http-mock-execution/stores/domain_agent--logistic--1",
+    "audit": {
+      "supervised": true,
+      "stop_reason": null,
+      "run_ref": "2aacdb17dc6e932bce84fb0bd11a959f626a79a743e4702fa800219df32a82bc",
+      "native_agent_run_ref": "f8c4891fa730ed46109c842d0f80d4040d834f36f32003df11b07c6dc3cb4c7f",
+      "request_refs": [
+        "289959aafb5e3ce917eee9582b32b7076b0560f6148bfc7ae2a4a952377b0b5b",
+        "ba98dbd765d31600700ee2d935d9af595bc4db55591a4823be556f234122e3ab",
+        "1cf086ad50890a133744422dc6b50103bbf64cda08cffc7ddb7a353abaf4d148"
+      ],
+      "response_refs": [
+        "8287ba79169f6b9b8882d88053c3db244576459685df1c4dcd0d7e6f84263d09",
+        "fea4646650218323b99ed4544bbc174ef4d831febdb0e35e002ae0f25322f844",
+        "f9decc93146171eff69f9bf4d9ac828ce18aab00d32450226a8455383bf9f529"
+      ],
+      "transport_exchange_refs": [
+        "8b90fbda1839b9b7f2ad47dfec6e0333effddb9b9ea1f2b0f58da386678fc459",
+        "637c9d08d8a0c351d7b41035a8a13382f83a7fb24303f68408f2a1c9226d6b32",
+        "314f8dc97650d6382977a3f9ed663a289f12f6ca06a00f7f01bebcdf59ad824d"
+      ],
+      "reservation_refs": [
+        "be0c2164e465ce8d37c4b571adc636cfc1c3a452a8751e03727664647c9d8f5c",
+        "7c799b176859794e027d11338ba827345e12ec9e61d3642f2851fb693e653439",
+        "2a06842b1b75f7fd3057a247ced84ddd94c1b7d4ee40a14639313328d5c9d3d9",
+        "166f9564c4c797a568cba084338b3d77447a465d1bb31701209e5d41cdc1b952",
+        "4a97e3c78adfca975ac788ee2a695c633141179f99e6dc0c34d8ecf676734cce"
+      ],
+      "clarification_origin": "prerecorded_protocol",
+      "runtime_adapter_sha256": "1184e44fe5386cff8cce5c05f644668263ab74b1550af8e2e587bc2cf5372aaf",
+      "scientific_support": "unknown",
+      "same_returned_model_verified": true
+    }
+  }
+]
