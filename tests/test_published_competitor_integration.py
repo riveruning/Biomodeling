@@ -14,11 +14,12 @@ import competitor_common as common
 from score_published_competitors import compare_imported, from_basico_split, from_t2b_state
 
 
-@pytest.mark.skipif(not (common.OUT/'source-manifest.json').exists(),
-                    reason='optional third-party source snapshots not downloaded')
-def test_official_sources_remain_unmodified():
-    common.verify_source('kinmodgpt')
-    common.verify_source('talk2biomodels')
+@pytest.mark.parametrize('system', ['kinmodgpt', 'talk2biomodels'])
+def test_official_sources_remain_unmodified(system):
+    if not (common.OUT/'source-manifest.json').is_file() or not (common.OUT/'vendor'/system).is_dir():
+        pytest.skip('optional third-party source snapshot not downloaded')
+    # An existing checkout with missing/changed files must still fail integrity.
+    common.verify_source(system)
 
 
 def test_changed_vendor_source_is_rejected(tmp_path,monkeypatch):
