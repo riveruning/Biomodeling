@@ -6,15 +6,18 @@ from pathlib import Path
 import pytest
 
 ROOT = Path(__file__).resolve().parents[1]
-SAVED = ROOT/'artifacts/audit-t08c-http-transport-20261019/http-mock-execution'
+SAVED = ROOT/'tests/fixtures/http-mock-execution'
 
 
 @pytest.fixture
-def reporting():
+def reporting(monkeypatch):
     spec = importlib.util.spec_from_file_location('evaluation_reporting_test',
         ROOT/'benchmarks/development/evaluation_reporting.py')
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
+    # These are frozen historical reporting controls, not current-runtime runs.
+    frozen = module.v1._read(SAVED/'manifest.json')['toolchain_sha256']
+    monkeypatch.setattr(module.v1, 'implementation_fingerprint', lambda: frozen)
     return module
 
 

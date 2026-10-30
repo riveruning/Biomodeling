@@ -1,0 +1,31 @@
+Assistant visual transcription of a real paper, pending independent human review.
+Gonze D, Abou-Jaoude W (2013), The Goodwin Model: Behind the Hill Function.
+DOI: 10.1371/journal.pone.0069573. Open access, CC BY.
+
+Scope: equations (1)-(3), Hill function (4), and Figure 2B parameter images.
+The image originals and viewing copies are retained beside this file.
+This is an assisted-input development control, not automatic PDF/OCR extraction.
+The task uses the paper's symbol names, with ASCII Ki for the subscripted K_i.
+
+Equation (1), image e004:
+dX/dt = k1*Ki^n/(Ki^n + Z^n) - k2*X.
+Equation (2), image e005:
+dY/dt = k3*X - k4*Y.
+Equation (3), image e006:
+dZ/dt = k5*Y - k6*Z.
+Hill function (4), image e010: f(Z) = Ki^n/(Ki^n + Z^n).
+
+Figure 2B parameter images, using decimal equivalents of the printed values:
+e021: k1 = 1.0; k3 = 1.0; k5 = 1.0.
+e022: k2 = 0.1; k4 = 0.1; k6 = 0.1.
+e023: Ki = 1.0.
+e024: n = 10.
+The caption gives arbitrary units and an oscillation period of about 40 a.u.
+No physical unit conversion is justified by this excerpt.
+
+
+Additional analyst-specified exploration protocol, not original paper initial conditions:
+Initial X = 0.1.
+Initial Y = 0.2.
+Initial Z = 0.3.
+These initial values allow exploratory simulation, not exact reproduction of Figure 2B.

@@ -1,0 +1,58 @@
+[
+  {
+    "milestone": "workspace-ir-20261029",
+    "state": "bounded_engineering_delivery_complete_scientific_evaluation_pending",
+    "full": null,
+    "raw_local_acceptance_sha256": "ab102cd99814343909666e9849864fd8cfeb681d8da57d02431bc2a0b5b235e1"
+  },
+  {
+    "milestone": "native-modeling-plan-20261029",
+    "state": "complete",
+    "full": {
+      "tests": 2310,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "time_seconds": 629.079,
+      "junit": "full.xml"
+    },
+    "raw_local_acceptance_sha256": "20a839d5221d5d1d36d95f2139ddd065b40b1dee11ed8729189d1f064e5161c6"
+  },
+  {
+    "milestone": "unified-task-flow-20261029",
+    "state": "complete",
+    "full": {
+      "tests": 2387,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "time_seconds": 884.024,
+      "junit": "full.xml"
+    },
+    "raw_local_acceptance_sha256": "f26ea5419b3fdde2ccc84d7b2d96d8f1dce2b6939e263d8b28da6def84e3d0f9"
+  },
+  {
+    "milestone": "task-proposals-20261030",
+    "state": "passed",
+    "full": {
+      "tests": 2450,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "time_s": 818.674
+    },
+    "raw_local_acceptance_sha256": "5f9a4dd090835ab56470d179f8e84b58f2c0b58f564fafd991424a0ab6d33e74"
+  },
+  {
+    "milestone": "research-workbench-20261030",
+    "state": "passed",
+    "full": {
+      "tests": 2507,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "time_s": 839.634
+    },
+    "raw_local_acceptance_sha256": "9eab1afcc6da566833f51350f1c1eca2812bf2259d3b07346e9f40c21137d670"
+  }
+]

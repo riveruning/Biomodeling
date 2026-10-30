@@ -1,0 +1,438 @@
+{
+  "schema_version": 1,
+  "library_version": "1.0.0",
+  "usage": "curated_seen_development_reuse",
+  "cases": [
+    {
+      "id": "goodwin-exploratory",
+      "version": "1.0.0",
+      "model_type": "ode",
+      "title": "Goodwin：分析者初值的探索运行",
+      "family": "goodwin2013",
+      "tags": [
+        "goodwin",
+        "ode",
+        "探索",
+        "oscillator"
+      ],
+      "summary": "Reuse the existing source-bound Goodwin executable with analyst initials; compare to stored SciPy numerical reference.",
+      "purpose": "explicit_model_reuse_only_not_blind_evaluation",
+      "exposure": "seen_development",
+      "source_attribution": {
+        "doi": "10.1371/journal.pone.0069573",
+        "license": "CC BY; existing seen development material",
+        "input": "assisted visual transcription; not independent domain-reviewed original data"
+      },
+      "applicability": [
+        "Same fixed equations/parameters and analyst initial X=.1,Y=.2,Z=.3; 0..240 a.u. grid.",
+        "Not exact original transient reproduction or a parameter-transfer recommendation."
+      ],
+      "known_gaps": [
+        "Original paper initials unknown.",
+        "Reference is a numerical solver crosscheck, not author data.",
+        "Physical units and independent source/model review remain unknown/pending."
+      ],
+      "symbols_and_equations": {
+        "parameters": {
+          "k1": 1.0,
+          "k2": 0.1,
+          "k3": 1.0,
+          "k4": 0.1,
+          "k5": 1.0,
+          "k6": 0.1,
+          "Ki": 1.0,
+          "n": 10.0
+        },
+        "rules": {
+          "X": "k1*Ki^n/(Ki^n+Z^n)-k2*X",
+          "Y": "k3*X-k4*Y",
+          "Z": "k5*Y-k6*Z"
+        },
+        "time_unit": "unknown/arbitrary",
+        "initials": {
+          "X": 0.1,
+          "Y": 0.2,
+          "Z": 0.3
+        },
+        "initials_origin": "analyst_exploration"
+      },
+      "independent_review": "pending",
+      "scientific_support": "unknown",
+      "recipe": {
+        "kind": "goodwin_ode_v1",
+        "model": "examples/goodwin/model.xml",
+        "experiment": "examples/goodwin/experiment.json",
+        "reference": "examples/goodwin/reference.json",
+        "source_bundle_manifest": "examples/goodwin/figure2-reference/source-model-bundle/bundle.json",
+        "model_ref": "9917ecd7d5b792bdef3a55b5a5d5a560e294add7a268b3434d373e129aaf5a11",
+        "scales": {
+          "X": 10.0,
+          "Y": 10.0,
+          "Z": 10.0
+        },
+        "threshold": 0.001,
+        "initials": {
+          "X": 0.1,
+          "Y": 0.2,
+          "Z": 0.3
+        },
+        "initials_origin": "analyst_exploration",
+        "solver": {
+          "rtol": 1e-07,
+          "atol": 1e-10,
+          "timeout_s": 30.0,
+          "max_steps": 100000
+        }
+      },
+      "files": {
+        "examples/goodwin/experiment.json": {
+          "sha256": "26a712d46648c8e768bdd7486f64c56e2c68ed48d41a72707b4bc61b53988cab",
+          "bytes": 5191
+        },
+        "examples/goodwin/figure2-reference/source-model-bundle/blobs/b55beca030eb127c0b4033538eecc3d6c60f70bac0a03ed76891bfa67c434e23": {
+          "sha256": "b55beca030eb127c0b4033538eecc3d6c60f70bac0a03ed76891bfa67c434e23",
+          "bytes": 1282
+        },
+        "examples/goodwin/figure2-reference/source-model-bundle/blobs/d401c795bee04da3a1a0cd2daf4f7ab40c6154eaa9c4422c72c389bc9458b731": {
+          "sha256": "d401c795bee04da3a1a0cd2daf4f7ab40c6154eaa9c4422c72c389bc9458b731",
+          "bytes": 1282
+        },
+        "examples/goodwin/figure2-reference/source-model-bundle/bundle.json": {
+          "sha256": "2e9711d00f2d3cee3cda68aaf23256815501bcafa20c37cbdf76b1b3dd58bf75",
+          "bytes": 1840
+        },
+        "examples/goodwin/figure2-reference/source-model-bundle/objects/07efb31ac450a01f35d37485f04cc9cd61ecab9c4bbcca913721f1267c28c564.json": {
+          "sha256": "07efb31ac450a01f35d37485f04cc9cd61ecab9c4bbcca913721f1267c28c564",
+          "bytes": 1883
+        },
+        "examples/goodwin/figure2-reference/source-model-bundle/objects/0d24f8e6de546d4fb4c02fbdffa576dba709135c2ede8a136f574d56434e5255.json": {
+          "sha256": "0d24f8e6de546d4fb4c02fbdffa576dba709135c2ede8a136f574d56434e5255",
+          "bytes": 509
+        },
+        "examples/goodwin/figure2-reference/source-model-bundle/objects/12d720b195f4078750d6809339498b7268b034919bbef36f608bf63ee01a577f.json": {
+          "sha256": "12d720b195f4078750d6809339498b7268b034919bbef36f608bf63ee01a577f",
+          "bytes": 964
+        },
+        "examples/goodwin/figure2-reference/source-model-bundle/objects/283e2abf83ab4d27f8c81010026627bae7279356450c671cab7add92bb944efb.json": {
+          "sha256": "283e2abf83ab4d27f8c81010026627bae7279356450c671cab7add92bb944efb",
+          "bytes": 964
+        },
+        "examples/goodwin/figure2-reference/source-model-bundle/objects/2e309c10012bbb8f9af5e05659507d569273bcd407b44dded5241094475224f9.json": {
+          "sha256": "2e309c10012bbb8f9af5e05659507d569273bcd407b44dded5241094475224f9",
+          "bytes": 1638
+        },
+        "examples/goodwin/figure2-reference/source-model-bundle/objects/2f381c0ae20d9ef137278e389604bc4b4f505e503a2799e2851215c808477888.json": {
+          "sha256": "2f381c0ae20d9ef137278e389604bc4b4f505e503a2799e2851215c808477888",
+          "bytes": 3591
+        },
+        "examples/goodwin/figure2-reference/source-model-bundle/objects/39ad3bcb2322d38a19b776205483d1e139a7914435352dc92be1f1f8bf45b49b.json": {
+          "sha256": "39ad3bcb2322d38a19b776205483d1e139a7914435352dc92be1f1f8bf45b49b",
+          "bytes": 961
+        },
+        "examples/goodwin/figure2-reference/source-model-bundle/objects/712522ebe00fe6caebc492493ba6e2dae3846cb690bec4231ebf50801e092ce0.json": {
+          "sha256": "712522ebe00fe6caebc492493ba6e2dae3846cb690bec4231ebf50801e092ce0",
+          "bytes": 806
+        },
+        "examples/goodwin/figure2-reference/source-model-bundle/objects/7b1508364fd22f61d32fad3d431f2661ab5e4a0260ec8b3177302c1fd1996103.json": {
+          "sha256": "7b1508364fd22f61d32fad3d431f2661ab5e4a0260ec8b3177302c1fd1996103",
+          "bytes": 964
+        },
+        "examples/goodwin/figure2-reference/source-model-bundle/objects/8586ebffe0b418ac68899baee95a20441b247b1691406b86723744aa4289114f.json": {
+          "sha256": "8586ebffe0b418ac68899baee95a20441b247b1691406b86723744aa4289114f",
+          "bytes": 833
+        },
+        "examples/goodwin/figure2-reference/source-model-bundle/objects/9917ecd7d5b792bdef3a55b5a5d5a560e294add7a268b3434d373e129aaf5a11.json": {
+          "sha256": "9917ecd7d5b792bdef3a55b5a5d5a560e294add7a268b3434d373e129aaf5a11",
+          "bytes": 4400
+        },
+        "examples/goodwin/figure2-reference/source-model-bundle/objects/a164d9503256c2784d0d8c65d47a78fc47aa7faf1f4bd6d01ba1d6468a72113b.json": {
+          "sha256": "a164d9503256c2784d0d8c65d47a78fc47aa7faf1f4bd6d01ba1d6468a72113b",
+          "bytes": 961
+        },
+        "examples/goodwin/figure2-reference/source-model-bundle/objects/c7b3763979f941b77b92d214fffb6b337a85d1ccb7cced6222d2d0c43a2fc154.json": {
+          "sha256": "c7b3763979f941b77b92d214fffb6b337a85d1ccb7cced6222d2d0c43a2fc154",
+          "bytes": 971
+        },
+        "examples/goodwin/figure2-reference/source-model-bundle/objects/c86267caaa702522234a293962e1155331ea9f342e2bf01e4e72015e406446d1.json": {
+          "sha256": "c86267caaa702522234a293962e1155331ea9f342e2bf01e4e72015e406446d1",
+          "bytes": 833
+        },
+        "examples/goodwin/figure2-reference/source-model-bundle/objects/c9461f4508105a1b386f85137891e783d13d26b13801dcb1e6e70875271b85ac.json": {
+          "sha256": "c9461f4508105a1b386f85137891e783d13d26b13801dcb1e6e70875271b85ac",
+          "bytes": 961
+        },
+        "examples/goodwin/figure2-reference/source-model-bundle/objects/ccbf872ef950206c0290588585aeaf620ea6c5aa401c1629ea1b88e10def01e6.json": {
+          "sha256": "ccbf872ef950206c0290588585aeaf620ea6c5aa401c1629ea1b88e10def01e6",
+          "bytes": 832
+        },
+        "examples/goodwin/figure2-reference/source-model-bundle/objects/d6e5728af0948ca82dd148b81bdb6eaf18725082fc51362541129d5591eaf30b.json": {
+          "sha256": "d6e5728af0948ca82dd148b81bdb6eaf18725082fc51362541129d5591eaf30b",
+          "bytes": 971
+        },
+        "examples/goodwin/figure2-reference/source-model-bundle/objects/d82396e58ecc63c4274e68461c2a41b035ab59811940544fdfa66d6656f9e019.json": {
+          "sha256": "d82396e58ecc63c4274e68461c2a41b035ab59811940544fdfa66d6656f9e019",
+          "bytes": 2182
+        },
+        "examples/goodwin/figure2-reference/source-model-bundle/objects/ecbdea3098a1d6a6ba5a5cfc8a7c50ffbb153d89d01f302320237374f829092d.json": {
+          "sha256": "ecbdea3098a1d6a6ba5a5cfc8a7c50ffbb153d89d01f302320237374f829092d",
+          "bytes": 811
+        },
+        "examples/goodwin/model.xml": {
+          "sha256": "ee357ba77788a667924994bbb9b14ef8d657bf54d8d607bb230e55a31bd9fee0",
+          "bytes": 2826
+        },
+        "examples/goodwin/reference.json": {
+          "sha256": "2238335b2afe4d3261ee095177b736cf7211e8d7cf58f1054f7c6fada5baaf75",
+          "bytes": 43446
+        }
+      }
+    },
+    {
+      "id": "goodwin-original-initials-unknown",
+      "version": "1.0.0",
+      "model_type": "ode",
+      "title": "Goodwin：原始初值未知，阻断执行",
+      "family": "goodwin2013",
+      "tags": [
+        "goodwin",
+        "ode",
+        "缺初值",
+        "blocked"
+      ],
+      "summary": "Explicit source reuse with image-bound visual candidates; no executable model, exploratory initials or solver-reference answer is loaded.",
+      "purpose": "explicit_model_reuse_only_not_blind_evaluation",
+      "exposure": "seen_development",
+      "source_attribution": {
+        "doi": "10.1371/journal.pone.0069573",
+        "license": "CC BY; existing seen development material",
+        "input": "assisted visual transcription; not independent domain-reviewed original data"
+      },
+      "applicability": [
+        "Only selected s2a JATS and eight previously inspected formula images.",
+        "Prepare a new task to clarify original initials; do not substitute the exploratory case."
+      ],
+      "known_gaps": [
+        "X/initial",
+        "Y/initial",
+        "Z/initial",
+        "Visual interpretation independent review pending."
+      ],
+      "symbols_and_equations": {
+        "parameters": {
+          "k1": 1.0,
+          "k2": 0.1,
+          "k3": 1.0,
+          "k4": 0.1,
+          "k5": 1.0,
+          "k6": 0.1,
+          "Ki": 1.0,
+          "n": 10.0
+        },
+        "rules": {
+          "X": "k1*Ki^n/(Ki^n+Z^n)-k2*X",
+          "Y": "k3*X-k4*Y",
+          "Z": "k5*Y-k6*Z"
+        },
+        "time_unit": "unknown/arbitrary",
+        "initials": {
+          "X": null,
+          "Y": null,
+          "Z": null
+        },
+        "initials_origin": "unknown"
+      },
+      "independent_review": "pending",
+      "scientific_support": "unknown",
+      "recipe": {
+        "kind": "goodwin_missing_initials_v1",
+        "xml": "benchmarks/inputs/literature/gonze2013/article.xml",
+        "section": "s2a",
+        "images": {
+          "e004": "benchmarks/inputs/literature/gonze2013/equations/e004.tiff",
+          "e005": "benchmarks/inputs/literature/gonze2013/equations/e005.tiff",
+          "e006": "benchmarks/inputs/literature/gonze2013/equations/e006.tiff",
+          "e010": "benchmarks/inputs/literature/gonze2013/equations/e010.tiff",
+          "e021": "benchmarks/inputs/literature/gonze2013/equations/e021.tiff",
+          "e022": "benchmarks/inputs/literature/gonze2013/equations/e022.tiff",
+          "e023": "benchmarks/inputs/literature/gonze2013/equations/e023.tiff",
+          "e024": "benchmarks/inputs/literature/gonze2013/equations/e024.tiff"
+        },
+        "visual_candidates": "examples/case-library/goodwin-visual-candidates.json",
+        "experiment": "examples/goodwin/experiment.json",
+        "initials": {
+          "X": null,
+          "Y": null,
+          "Z": null
+        },
+        "reference": null
+      },
+      "files": {
+        "benchmarks/inputs/literature/gonze2013/article.xml": {
+          "sha256": "e3813bbd1ac35780ce16c8d8f991a84ef351813d2ed6bd34b84f278deadac562",
+          "bytes": 117143
+        },
+        "benchmarks/inputs/literature/gonze2013/equations/e004.tiff": {
+          "sha256": "c6e2f454ad07f823ef07f3f8daa7916bed058a9ac9a031a4ebabcfb55538c837",
+          "bytes": 4650
+        },
+        "benchmarks/inputs/literature/gonze2013/equations/e005.tiff": {
+          "sha256": "a6f694229984c53a4f267f77b1a36777410b8bda2423d8de1da0886947c0e295",
+          "bytes": 2958
+        },
+        "benchmarks/inputs/literature/gonze2013/equations/e006.tiff": {
+          "sha256": "9a37dece9facd1537a3973b4e36c987fb0759bdfdc6062213759aac10e104353",
+          "bytes": 2966
+        },
+        "benchmarks/inputs/literature/gonze2013/equations/e010.tiff": {
+          "sha256": "5cb6188a1d1c5e02b9d3022e16ca5725e1cec492cd67b7dfc2e8d52e494cb1cf",
+          "bytes": 3368
+        },
+        "benchmarks/inputs/literature/gonze2013/equations/e021.tiff": {
+          "sha256": "4f8ac6108846f0cf4c5d40281fe9d74200fecc052ad834f88b58636ef876df64",
+          "bytes": 1920
+        },
+        "benchmarks/inputs/literature/gonze2013/equations/e022.tiff": {
+          "sha256": "0f9d1c7b6a8a86beb72aa6f7d69e9efb8d70b36aa9b35bc218c306cc350ab5e2",
+          "bytes": 2254
+        },
+        "benchmarks/inputs/literature/gonze2013/equations/e023.tiff": {
+          "sha256": "fa67253d9aa5c7d6d17d35203b14114c638f2b469811fb20238a1faca2e03861",
+          "bytes": 1058
+        },
+        "benchmarks/inputs/literature/gonze2013/equations/e024.tiff": {
+          "sha256": "02fd069f90826c7d66d95f266e5fe74429df29b3d5bad544f727a7137fddd14c",
+          "bytes": 1042
+        },
+        "examples/case-library/goodwin-visual-candidates.json": {
+          "sha256": "91f2ed733196949e7360c5e82bddb0917c1ddb56f4f1012e3c7a95ebfdd19db8",
+          "bytes": 691
+        },
+        "examples/goodwin/experiment.json": {
+          "sha256": "26a712d46648c8e768bdd7486f64c56e2c68ed48d41a72707b4bc61b53988cab",
+          "bytes": 5191
+        }
+      }
+    },
+    {
+      "id": "fba-analytic-chain",
+      "version": "1.0.0",
+      "model_type": "fba",
+      "title": "FBA：解析通量链路",
+      "family": "analytic-uptake-chain",
+      "tags": [
+        "fba",
+        "稳态",
+        "analytic",
+        "代谢"
+      ],
+      "summary": "Fixed analyst LP control; reproduce the original steady-state balance and scalar objective, without biological interpretation.",
+      "purpose": "explicit_model_reuse_only_not_blind_evaluation",
+      "exposure": "seen_development",
+      "source_attribution": {
+        "origin": "analyst synthetic example",
+        "license": "project development fixture"
+      },
+      "applicability": [
+        "Fixed uptake bound and biomass objective only."
+      ],
+      "known_gaps": [
+        "Not a paper reconstruction task.",
+        "No dynamics or unique-flux/biological certification."
+      ],
+      "symbols_and_equations": {
+        "balance": "uptake - biomass = 0",
+        "bounds": "0 <= uptake <= 10; biomass >= 0",
+        "objective": "maximize biomass",
+        "initials": "not_applicable",
+        "flux_unit": "mmol_per_gDW_per_hour"
+      },
+      "independent_review": "pending",
+      "scientific_support": "unknown",
+      "recipe": {
+        "kind": "fba_json_v1",
+        "model": "examples/fba-v1/chain.json",
+        "reference": "examples/fba-v1/analytic-reference.json",
+        "config": {
+          "method": "highs-ds",
+          "timeout_s": 15.0
+        }
+      },
+      "files": {
+        "examples/fba-v1/analytic-reference.json": {
+          "sha256": "58857ade004d4e4ae8fa06d1a1b60bdf80ee112c4713050df763de1fd0614d90",
+          "bytes": 126
+        },
+        "examples/fba-v1/chain.json": {
+          "sha256": "687759d272109dc1ffb463d2bfc9d4dc646d9a9d748e58af194dfd4045d04a66",
+          "bytes": 766
+        }
+      }
+    },
+    {
+      "id": "fba-textbook",
+      "version": "1.0.0",
+      "model_type": "fba",
+      "title": "FBA：公开教材固定模型",
+      "family": "cobra-textbook",
+      "tags": [
+        "fba",
+        "textbook",
+        "教材",
+        "代谢"
+      ],
+      "summary": "Reuse the already saved public COBRA textbook FBC model; check residuals/certificate and its documented scalar objective.",
+      "purpose": "explicit_model_reuse_only_not_blind_evaluation",
+      "exposure": "seen_development",
+      "source_attribution": {
+        "origin": "existing public COBRApy textbook fixture",
+        "receipt": "tests/fixtures/fba/source-receipt.json",
+        "license": "Existing public development fixture; upstream licensing not independently audited. Preserve source receipt and attribution; no new redistribution grant asserted."
+      },
+      "applicability": [
+        "Unmodified textbook model, original FBC bounds/activity/objective."
+      ],
+      "known_gaps": [
+        "Seen development model, not a new paper or unseen task.",
+        "Scalar objective agreement does not establish a unique flux vector.",
+        "Scientific review pending; two HiGHS methods share an engine."
+      ],
+      "symbols_and_equations": {
+        "balance": "original explicit non-boundary S*v=0",
+        "bounds": "original FBC v2 bound parameters",
+        "objective": "original active objective",
+        "initials": "not_applicable",
+        "flux_unit": "declared in original FBC input; checked by importer"
+      },
+      "independent_review": "pending",
+      "scientific_support": "unknown",
+      "recipe": {
+        "kind": "fba_fbc_v1",
+        "model": "tests/fixtures/fba/textbook.xml",
+        "reference": "examples/fba-v1/textbook-reference.json",
+        "receipt": "tests/fixtures/fba/source-receipt.json",
+        "config": {
+          "method": "highs-ds",
+          "timeout_s": 15.0
+        }
+      },
+      "files": {
+        "examples/fba-v1/textbook-reference.json": {
+          "sha256": "0362e38edf6934820d1be43c8ff6a5c0ea9008898c238b8dfb8b074cb0945906",
+          "bytes": 135
+        },
+        "tests/fixtures/fba/source-receipt.json": {
+          "sha256": "6f8d870a6d942629900a64e75cbeea059e85bd175506c8669c518c0d4f651308",
+          "bytes": 525
+        },
+        "tests/fixtures/fba/textbook.xml": {
+          "sha256": "0abebb806ce94922d7c7eb6cadca8c2fa5c4500d0db8e119d3c6224ae59e212d",
+          "bytes": 351123
+        },
+        "tests/fixtures/fba/README.md": {
+          "sha256": "1295fa2a039b98f726b5d8c45a0a35e0d734f9b8bca9f2a30b681a23710c1e93",
+          "bytes": 555
+        }
+      }
+    }
+  ]
+}

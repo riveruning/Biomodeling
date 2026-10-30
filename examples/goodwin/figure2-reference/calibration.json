@@ -1,0 +1,82 @@
+{
+  "version": 1,
+  "image_sha256": "b779db5200b1633dadf6ace69686667172ccbb8d08b37bcae562b2560021128e",
+  "image_size": [
+    2050,
+    872
+  ],
+  "x_pixels": [
+    1231.5,
+    1991.5
+  ],
+  "time_range": [
+    0,
+    200
+  ],
+  "y_pixels": [
+    86.5,
+    740.5
+  ],
+  "value_range": [
+    0,
+    3
+  ],
+  "sample_x": [
+    1235,
+    1988
+  ],
+  "legend_mask": [
+    1807,
+    100,
+    1978,
+    279
+  ],
+  "pixel_uncertainty": 1.5,
+  "series": {
+    "Y": {
+      "channel": 1,
+      "minimum": 70,
+      "margins": [
+        25,
+        0,
+        15
+      ],
+      "value_roi": [
+        0,
+        3
+      ],
+      "prominence": 0.08,
+      "minimum_separation": 20
+    },
+    "Z": {
+      "channel": 0,
+      "minimum": 120,
+      "margins": [
+        0,
+        70,
+        40
+      ],
+      "value_roi": [
+        1.25,
+        3
+      ],
+      "prominence": 0.4,
+      "minimum_separation": 20
+    }
+  },
+  "excluded": {
+    "X": "resolution_limited_near_axis; amplitude comparable to stroke/calibration resolution"
+  },
+  "source": {
+    "doi": "10.1371/journal.pone.0069573",
+    "authors": "Gonze D; Abou-Jaoude W",
+    "year": 2013,
+    "figure": "2B",
+    "url": "https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0069573",
+    "image_url": "https://journals.plos.org/plosone/article/figure/image?download&size=large&id=10.1371/journal.pone.0069573.g002",
+    "license": "Creative Commons Attribution; original publisher image unmodified",
+    "initials": "not reported in inspected main-text section and Figure 2 caption; supplements not exhaustively checked",
+    "caption_period_approx_au": 40
+  },
+  "review": "developer_only_independent_review_pending"
+}

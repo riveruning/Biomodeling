@@ -46,9 +46,23 @@ def _require_json(value: Any, label: str) -> None:
 REPLAY_CLASSES: dict[str, str] = {
     "respond": "external_unknown",
     "submit_draft": "artifact_write",
+    "submit_plan": "artifact_write",
     "run": "scientific_execution",
     "run_study": "scientific_execution",
+    "run_estimation": "scientific_execution",
+    "request_estimation": "artifact_write",
+    "run_fba": "scientific_execution",
+    "run_typed": "scientific_execution",
+    "inspect_typed": "read_only",
+    "inspect_fba": "read_only",
     "search_sources": "read_only",
+    "investigate_parameter": "artifact_write",
+    "assess_parameter": "artifact_write",
+    "inspect_progress": "read_only",
+    "revise_plan": "artifact_write",
+    "refresh_plan": "artifact_write",
+    "route_failure": "artifact_write",
+    "search_knowledge": "external_unknown",
     "inspect_source": "read_only",
     "recall_memory": "read_only",
     "load_skill": "read_only",
@@ -83,7 +97,15 @@ class InvocationJournal:
             raise ValueError("inherited runs must be an int in 0..1, not a bool")
         if parent_run_ref is not None:
             parent_record = store.get(parent_run_ref)
-            if parent_record["kind"] != "agent_run":
+            fba_parent = (payload.get('mode') == 'fba' and payload.get('fba_protocol') == 'fba_agent_v2'
+                and parent_record['kind'] == 'fba_agent_run' and parent_record['payload'].get('version') == 2
+                and parent_record['payload'].get('task_ref') == task_ref
+                and parent_record['payload'].get('state') == 'awaiting_input')
+            typed_parent = (payload.get('mode') == 'native_typed' and payload.get('typed_protocol') == 'typed_agent_v2'
+                and parent_record['kind'] == 'typed_agent_run' and parent_record['payload'].get('version') == 2
+                and parent_record['payload'].get('task_ref') == task_ref
+                and parent_record['payload'].get('state') == 'awaiting_input')
+            if parent_record["kind"] != "agent_run" and not fba_parent and not typed_parent:
                 raise ValueError("parent_run_ref must name an agent_run record")
         self._max_calls = max_calls
         self._max_runs = 1
@@ -148,7 +170,7 @@ class InvocationJournal:
             if self.calls >= self._max_calls:
                 raise ValueError("LLM call budget is exhausted; start a separate task")
             call_count, run_count = self.calls + 1, self.runs
-        elif name in ("run", "run_study"):
+        elif name in ("run", "run_study", "run_fba", "run_estimation", "run_typed"):
             if self.runs >= self._max_runs:
                 raise ValueError("scientific execution budget is exhausted; start a separate task")
             call_count, run_count = self.calls, self.runs + 1

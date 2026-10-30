@@ -265,6 +265,26 @@ def _fit_worker(payload,out):
         out.put({'status':'failed','best':None,'starts':[],'diagnostics':[f'{type(exc).__name__}: {exc}']})
 
 
+def describe_profile(artifact):
+    """Describe the supported fitting inputs without integration or optimization."""
+    compiler = _Compiler(artifact)
+    return {'profile': 'rate_rule_fitting_v1', 'states': list(compiler.states),
+            'constant_parameters': sorted(compiler.constants)}
+
+
+def validate_prediction_inputs(artifact, experiment, observations, parameters=None):
+    """Validate a prediction mapping without integrating or supplying data."""
+    _Compiler(artifact)._inputs(experiment, observations, {} if parameters is None else parameters)
+
+
+def preflight(artifact, training, observations, bounds, *, validation_experiments=()):
+    """Check a fixed estimation protocol; validation values never enter fitting."""
+    compiler, _, obs = _prepare(artifact, training, observations, bounds)
+    midpoint = {name: float(lo)+(float(hi)-float(lo))/2 for name, (lo, hi) in bounds.items()}
+    for experiment in validation_experiments:
+        compiler._inputs(experiment, obs, midpoint)
+
+
 def fit_parameters(artifact,training,observations,bounds,starts=3,seed=17,max_nfev=100,timeout_s=90):
     started = time.monotonic()
     deadline = Deadline(timeout_s)

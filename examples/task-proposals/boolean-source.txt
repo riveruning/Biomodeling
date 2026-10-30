@@ -1,0 +1,7 @@
+Initial A = False.
+Initial B = False.
+Rule A = not B.
+Rule B = A.
+Update = synchronous.
+Time unit = sweep.
+Clamps = none.

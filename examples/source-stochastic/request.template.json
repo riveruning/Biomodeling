@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "goal": "Check the explicitly declared synthetic stochastic birth/death model.",
+  "source_refs": [
+    "SOURCE_REF"
+  ],
+  "proposal_max_calls": 1,
+  "max_calls": 6,
+  "execution": {
+    "settings": {
+      "duration": 2.0,
+      "samples": 5,
+      "trajectories": 32,
+      "seed": 123,
+      "max_events": 20000,
+      "timeout_s": 15.0
+    }
+  }
+}

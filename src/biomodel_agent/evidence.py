@@ -187,6 +187,16 @@ def _source_page_text(store: ArtifactStore, source_ref: str, page: int) -> str:
     payload = env.get("payload")
     if not isinstance(payload, dict):
         raise ArtifactError(f"{source_ref}: malformed source payload")
+    from .parameter_sources import validate as validate_parameter_source
+    try:
+        validate_parameter_source(store, source_ref)
+    except ValueError as exc:
+        raise ArtifactError(f'{source_ref}: invalid native parameter provenance: {exc}') from exc
+    from .jats_sources import validate as validate_jats
+    try:
+        validate_jats(store, source_ref)
+    except (ValueError, KeyError, TypeError) as exc:
+        raise ArtifactError(f'{source_ref}: invalid JATS provenance: {exc}') from exc
     pages = payload.get("pages")
     if not isinstance(pages, list):
         raise ArtifactError(f"{source_ref}: malformed source pages")
@@ -197,6 +207,45 @@ def _source_page_text(store: ArtifactStore, source_ref: str, page: int) -> str:
                 raise ArtifactError(f"{source_ref} page {page}: text is not a string")
             return text
     raise ArtifactError(f"{source_ref}: page {page} not found")
+
+
+def source_summary(store, source_ref):
+    """Adapter-neutral metadata; absent page capabilities remain unknown."""
+    obj = store.get(source_ref)
+    if obj['kind'] != SOURCE_KIND or not isinstance(obj['payload'], dict):
+        raise ArtifactError('source summary requires a source object')
+    p = obj['payload']
+    pages = p.get('pages')
+    if not isinstance(pages, list) or not pages:
+        raise ArtifactError('source summary requires stored pages')
+    _source_page_text(store, source_ref, pages[0]['number'])
+    result = {'pages': [{'page': page['number'], 'chars': len(page['text'])} for page in pages]}
+    if p.get('parser_output_ref') or p.get('capabilities') or p.get('warnings'):
+        capabilities = p.get('capabilities', {})
+        warnings = p.get('warnings', [])
+        if not isinstance(capabilities, dict) or not isinstance(warnings, list) or any(not isinstance(w, str) for w in warnings):
+            raise ArtifactError('invalid source capability metadata')
+        result.update(parser=p.get('parser', 'unknown'), parser_version=p.get('parser_version', 'unknown'),
+            capabilities=capabilities, warnings=[w[:240] for w in warnings[:10]], warning_count=len(warnings),
+            page_status=[{'page': page['number'], 'status': page.get('status', 'unknown'),
+                          'tables': page.get('table_status', 'not_reported')} for page in pages])
+    return result
+
+
+def _locate(store, source_ref, page, start, end):
+    from .jats_sources import PARSERS, locate as locate_jats
+    p = store.get(source_ref)['payload']
+    if p.get('parser') in PARSERS:
+        try:
+            return locate_jats(store, source_ref, page, start, end)
+        except (ValueError, KeyError, TypeError) as exc:
+            raise ArtifactError(f'invalid JATS locator: {exc}') from exc
+    if p.get('parser') == 'pymupdf':
+        from .pdf_adapter import locate
+        return locate(store, source_ref, page, start, end)
+    if p.get('parser_output_ref'):
+        raise ArtifactError('structured source adapter has no registered citation locator')
+    return None
 
 
 def add_claim(
@@ -260,8 +309,7 @@ def add_claim(
         "relation": relation,
         "review_status": review_status,
     }
-    from .pdf_adapter import locate
-    locator = locate(store, source_ref, page, start, end)
+    locator = _locate(store, source_ref, page, start, end)
     if locator is not None:
         payload['locator'] = locator
     if allowed_symbols is not None:
@@ -402,8 +450,7 @@ def _claim_exists_quoted(store: ArtifactStore, claim_ref: str) -> bool:
         return False
     if end > len(text):
         return False
-    from .pdf_adapter import locate
     try:
-        return text[start:end] == quote and payload.get('locator') == locate(store, source_ref, page, start, end)
+        return text[start:end] == quote and payload.get('locator') == _locate(store, source_ref, page, start, end)
     except ArtifactError:
         return False

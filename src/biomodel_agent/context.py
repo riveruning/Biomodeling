@@ -57,13 +57,15 @@ def essential_indices(messages):
         data = _payload(message)
         if message['role'] == 'user':
             tool = data.get('tool')
+            if tool == 'load_skill' and data.get('scientific_skill_ref') and data.get('ok') is True:
+                latest['scientific_skill:'+data['name']] = i
             if tool == 'researcher_reply':
                 selected.add(i)
-            elif tool in ('submit_draft', 'run', 'run_study'):
+            elif tool in ('submit_draft', 'submit_plan', 'run', 'run_study', 'run_fba', 'inspect_fba', 'run_typed', 'inspect_typed', 'request_estimation', 'run_estimation', 'inspect_progress', 'investigate_parameter', 'assess_parameter', 'revise_plan', 'refresh_plan', 'route_failure'):
                 latest[tool] = i
-                if tool in ('run', 'run_study') and data.get('ok') is True:
+                if tool in ('run', 'run_study', 'run_estimation', 'run_fba', 'run_typed') and data.get('ok') is True:
                     latest[tool + '_result'] = i
-        elif message['role'] == 'assistant' and data.get('action') == 'submit_draft':
+        elif message['role'] == 'assistant' and data.get('action') in ('submit_draft', 'submit_plan'):
             latest['draft_action'] = i
     selected.update(latest.values())
     return selected

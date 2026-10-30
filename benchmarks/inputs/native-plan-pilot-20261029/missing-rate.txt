@@ -1,0 +1,6 @@
+Synthetic development specification; not a paper or experimental evidence.
+State z is a normalized variable.
+Initial z = 3.
+Parameter k is not reported. No numerical value for k is available.
+Equation dz/dt = -k*z.
+Time is measured in seconds.

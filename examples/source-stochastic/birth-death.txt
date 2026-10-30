@@ -1,0 +1,13 @@
+Synthetic development declarations; not a literature reproduction.
+Mixing = well_mixed.
+Kinetics = time_homogeneous.
+Time unit = second.
+State unit = molecule_count.
+Rate convention = stochastic_combinations.
+Initial X = 4.
+Reaction birth: 0 -> X.
+Stochastic rate birth = 5.
+Stochastic rate unit birth = 1/second.
+Reaction death: X -> 0.
+Stochastic rate death = 0.5.
+Stochastic rate unit death = 1/second.

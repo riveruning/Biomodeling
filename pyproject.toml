@@ -19,9 +19,13 @@ dependencies = [
 [project.optional-dependencies]
 test = ["pytest"]
 pdf = ["pymupdf==1.28.2"]
+figures = ["Pillow==12.3.0", "matplotlib==3.11.1"]
 
 [tool.setuptools.packages.find]
 where = ["src"]
+
+[tool.setuptools.package-data]
+biomodel_agent = ["workspace_assets/*.md", "workspace_assets/*.lock", "workspace_assets/examples/*", "workspace_assets/references/*.md", "workspace_assets/skills/*/SKILL.md", "workbench_assets/*"]
 
 [tool.pytest.ini_options]
 pythonpath = ["src"]
