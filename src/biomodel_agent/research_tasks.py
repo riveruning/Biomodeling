@@ -69,14 +69,13 @@ def _records(store,kind,**matches):
 
 @contextmanager
 def _owner(store,family):
-    import fcntl
+    from . import local_ownership
     if not isinstance(family,str) or not re.fullmatch('[a-f0-9]{32}',family):raise ValueError('invalid task family')
     directory=store.root/'.research-owners';directory.mkdir(mode=0o700,exist_ok=True)
-    if directory.is_symlink():raise ValueError('research ownership directory is a symlink')
-    fd=os.open(directory/(family+'.lock'),os.O_RDWR|os.O_CREAT|os.O_CLOEXEC|os.O_NOFOLLOW,0o600)
+    if local_ownership.is_redirect(directory):raise ValueError('research ownership directory is a symlink or reparse point')
+    try:fd=local_ownership.acquire(directory/(family+'.lock'))
+    except local_ownership.OwnerBusy as exc:raise ValueError('research task already has an active owner') from exc
     try:
-        try:fcntl.flock(fd,fcntl.LOCK_EX|fcntl.LOCK_NB)
-        except BlockingIOError as exc:raise ValueError('research task already has an active owner') from exc
         yield
     finally:os.close(fd)
 

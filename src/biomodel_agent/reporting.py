@@ -36,7 +36,13 @@ def render_report(store,ref):
     record = store.get(ref)
     p = record['payload']
     lines = [f'# BioModel research report', '', f'Artifact: `{ref}`', f'Kind: `{record["kind"]}`','']
-    if record['kind']=='research_task_proposal':
+    if record['kind'] in ('research_project','research_project_snapshot'):
+        from .research_projects import report_lines
+        lines.extend(report_lines(store,ref))
+    elif record['kind'] in ('research_reproduction_batch','research_batch_snapshot'):
+        from .research_pipeline import report_lines
+        lines.extend(report_lines(store,ref))
+    elif record['kind']=='research_task_proposal':
         from .task_proposals import report_lines
         lines.extend(report_lines(store,ref))
     elif record['kind'] in ('research_task','research_task_run'):

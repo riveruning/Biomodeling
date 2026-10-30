@@ -2,13 +2,15 @@
 
 面向生物动力学模型的科研原型：从指定材料构建小规模确定性 ODE 模型，执行 SBML 模拟、参考比较，并保存证据和报告。也支持预定义候选机制的拟合与留出比较，以及有界稳态 FBA 的 JSON/FBC 导入、LP 求解、数值检查与独立 Agent 路由。另有随机反应、1D线性PDE、布尔网络与格点细胞模型的[原生执行架构](docs/model-types.md)。当前不保证任意论文自动复现或开放式机制发现。
 
+新增 [Agent 研究项目](docs/agent-research-projects.md)：人提出应用场景，Agent 自主选择对象、粒度、证据、假设和实验，在关键问题上讨论，并保留多轮模型和结果。开发论文队列可汇总流程缺口与待验证的经验候选；真实 LLM 的研究效果尚待评价。
+
 可启动[本地研究工作台](docs/research-workbench.md)，在浏览器里整理任务、核对原文与建议、采纳输入、回答追问和导出结果。模型服务默认关闭：
 
 ```bash
 .venv/bin/python -m biomodel_agent workbench --store runs/research-workbench --port 8765
 ```
 
-打开终端显示的本机地址。当前仍需显式选择与科研核验，界面不会把输入完整或计算完成当作生物学证实。
+打开终端显示的本机地址。研究项目入口为 `/projects`，由 Agent 在确认的资料与额度内推进；原生任务页保留逐项采纳。计算完成不等于生物学证实。
 
 ## 目录
 
@@ -37,7 +39,7 @@ python3.12 -m venv .venv
 .venv/bin/python -m biomodel_agent --help
 ```
 
-不需要 GPU。上述为 Linux 使用方式；Windows 完整 Agent 流程请使用 WSL2，当前任务锁依赖 Unix 文件锁。
+不需要 GPU。上述为 Linux 使用方式。原生 Windows 安装与启动见[纯运行版说明](scripts/runtime/README.md)：64 位 Python 3.12，本地独立虚拟环境，双击 `setup.cmd`、`start.cmd`。任务所有权支持 Windows 与 POSIX；开发用进程组评测监督器仍需 Linux / WSL2。
 
 ## 使用
 
@@ -83,6 +85,8 @@ python3.12 -m venv .venv
 新的运行结果请放在 `runs/` 或 `artifacts/` 的新任务子目录中，保留旧验收记录。部分历史研究脚本需要归档产物；产品安装和常规测试不依赖这些实验归档。干净检出中的历史归档/付费集成检查会按已有规则跳过；详见[版本验证](docs/validation/20261030/README.md)。
 
 ## 当前阶段
+
+本轮在六类后端外增加研究循环、具名对齐、来源数据选择、冻结实验、分层验证和开发复现队列。完整数学输入直接计算，减少只负责“运行、结束”的内层模型调用。用量缺失保持未知，跨案例经验暂不自动激活。使用方法与边界见[研究项目说明](docs/agent-research-projects.md)。
 
 截至 2026-10-30，六类模型已有各自受限的执行路径。ODE 主流程最完整，FBA 支持稳态计算与显式恢复；随机反应、1D 线性 PDE、布尔网络和格点细胞支持冻结原生输入的计算、检查、报告与重跑，通用论文自动建模尚未接通；显式 typed v2 已补暂停与受控恢复。
 

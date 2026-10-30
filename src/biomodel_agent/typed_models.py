@@ -171,7 +171,7 @@ def _records(store, kind, input_ref):
     # Inspect immutable files instead of relying on a possibly stale SQLite index.
     out = []
     for path in sorted(store.objects_dir.glob('*.json')):
-        raw = json.loads(path.read_text())
+        raw = json.loads(path.read_text(encoding='utf-8'))
         if raw.get('kind')==kind and raw.get('payload', {}).get('input_ref')==input_ref:
             record = store.get(path.stem); out.append((path.stem, record))
     return out
@@ -179,16 +179,13 @@ def _records(store, kind, input_ref):
 
 @contextmanager
 def _owner(store, ref):
-    import fcntl
+    from . import local_ownership
     directory = store.root/'.typed-owners'; directory.mkdir(mode=0o700, exist_ok=True)
-    if directory.is_symlink():
+    if local_ownership.is_redirect(directory):
         raise ValueError('typed owner directory must not be a symlink')
-    fd = os.open(directory/(ref+'.lock'), os.O_RDWR | os.O_CREAT | os.O_CLOEXEC | os.O_NOFOLLOW, 0o600)
+    try:fd=local_ownership.acquire(directory/(ref+'.lock'))
+    except local_ownership.OwnerBusy as exc:raise ValueError('typed input already has an active owner') from exc
     try:
-        try:
-            fcntl.flock(fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
-        except BlockingIOError as exc:
-            raise ValueError('typed input already has an active owner') from exc
         yield
     finally:
         os.close(fd)

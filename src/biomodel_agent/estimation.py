@@ -219,16 +219,13 @@ def plan_summary(store, ref):
 @contextmanager
 def _owner(store, ref):
     # Same local store ownership convention as Agent recovery; lock is not a sandbox.
-    import fcntl
+    from . import local_ownership
     directory = store.root / '.estimation-owners'; directory.mkdir(mode=0o700, exist_ok=True)
-    if directory.is_symlink():
+    if local_ownership.is_redirect(directory):
         raise ValueError('estimation owner directory must not be a symlink')
-    fd = os.open(directory/(ref+'.lock'), os.O_RDWR | os.O_CREAT | os.O_CLOEXEC | os.O_NOFOLLOW, 0o600)
+    try:fd=local_ownership.acquire(directory/(ref+'.lock'))
+    except local_ownership.OwnerBusy as exc:raise ValueError('estimation plan already has an active owner') from exc
     try:
-        try:
-            fcntl.flock(fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
-        except BlockingIOError as exc:
-            raise ValueError('estimation plan already has an active owner') from exc
         yield
     finally:
         os.close(fd)

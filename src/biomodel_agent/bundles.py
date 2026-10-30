@@ -37,6 +37,8 @@ def export_bundle(store,root_ref,destination):
             raise ValueError('export changed immutable content')
     visit(root_ref)
     plan_commands = {'modeling_plan': 'model-plan-show', 'modeling_plan_compilation': 'model-plan-compilation-show',
+                     'research_project':'research-project-show','research_project_snapshot':'research-project-show',
+                     'research_reproduction_batch':'research-batch-show','research_batch_snapshot':'research-batch-show',
                      'modeling_plan_run': 'model-plan-replay','research_task':'research-task-show',
                      'research_task_run':'research-task-result','research_task_proposal':'research-proposal-show'}
     plan_command = plan_commands.get(root_object['kind'])
@@ -46,7 +48,8 @@ def export_bundle(store,root_ref,destination):
     manifest={'schema_version':'1','root_ref':root_ref,'objects_and_blobs':sorted(seen),
               'replay':replay,
               'note':'Install the same project version and requirements.lock; replay records environment differences.'}
-    research_root=root_object['kind'] in ('research_task','research_task_run','research_task_proposal')
+    research_root=root_object['kind'] in ('research_task','research_task_run','research_task_proposal',
+        'research_project','research_project_snapshot','research_reproduction_batch','research_batch_snapshot')
     if research_root:
         manifest['replay_mode']='read_only_task_inspection'
         manifest['note']='This command reads the saved task/result; a new Agent/scientific execution requires an explicit new task.'

@@ -59,14 +59,21 @@ class Handler(BaseHTTPRequestHandler):
         api=path.startswith('/api/') or path.startswith('/downloads/')
         if not self._guard(api):return
         try:
-            if path in ('/','/app.js','/style.css'):
-                filename={'/':'index.html','/app.js':'app.js','/style.css':'style.css'}[path]
+            if path in ('/','/app.js','/style.css','/projects','/projects.js'):
+                filename={'/':'index.html','/app.js':'app.js','/style.css':'style.css','/projects':'projects.html','/projects.js':'projects.js'}[path]
                 raw=(ASSETS/filename).read_bytes()
-                if path=='/':raw=raw.replace(b'__WORKBENCH_TOKEN__',self.server.workbench.token.encode('ascii'))
-                self._send(200,raw,{'/':'text/html; charset=utf-8','/app.js':'text/javascript; charset=utf-8','/style.css':'text/css; charset=utf-8'}[path]);return
+                if path in ('/','/projects'):raw=raw.replace(b'__WORKBENCH_TOKEN__',self.server.workbench.token.encode('ascii'))
+                self._send(200,raw,'text/html; charset=utf-8' if path in ('/','/projects') else 'text/css; charset=utf-8' if path=='/style.css' else 'text/javascript; charset=utf-8');return
             app=self.server.workbench;parts=path.strip('/').split('/')
             query=parse_qs(parsed.query,keep_blank_values=True)
             if path=='/api/overview':out=app.overview()
+            elif len(parts)==3 and parts[:2]==['api','project']:
+                from . import research_projects,research_supervisor
+                root=ref(parts[2]);out=research_projects.inspect(app.readonly,root)
+                out['iteration_facts']={r:research_projects.facts(app.readonly,r) for r in out['iteration_refs']}
+                out['questions']=[dict(question_ref=r,**research_projects.own(app.readonly,r,research_projects.QUESTION,root)) for r in out['pending_questions']]
+                out['assessments']=[research_projects.own(app.readonly,r,research_projects.ASSESSMENT,root) for r in out['assessment_refs']]
+                out['usage']=research_supervisor.usage(app.readonly,root)
             elif len(parts)==3 and parts[:2]==['api','task']:out=app.task(parts[2])
             elif len(parts)==3 and parts[:2]==['api','proposal']:
                 from . import task_proposals

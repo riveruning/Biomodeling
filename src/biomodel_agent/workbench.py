@@ -28,8 +28,13 @@ MAX_BODY=2_100_000
 MAX_UPLOAD=1_000_000
 MAX_BUNDLE=64*1024*1024
 KEY=re.compile(r'[A-Za-z0-9_-]{16,80}')
-PROVIDER_ACTIONS={'propose_task','run_task','resume_task','recover_task'}
+PROVIDER_ACTIONS={'propose_task','run_task','resume_task','recover_task','run_project'}
 FIELDS={
+    'create_project':({'config'},set()),
+    'run_project':({'project_ref'},set()),
+    'reply_project':({'project_ref','question_ref','reply','respondent'},set()),
+    'recover_project':({'project_ref','attempt_ref'},set()),
+    'snapshot_project':({'project_ref'},set()),
     'import_source':({'filename','content'},set()),
     'import_model':({'filename','content','model_type'},set()),
     'create_task':({'config'},{'parent_ref','reason'}),
@@ -105,12 +110,10 @@ class Workbench:
         self._worker.start()
 
     def _acquire(self):
-        import fcntl
+        from . import local_ownership
         path=self.store.root/'.workbench-owner.lock'
-        fd=os.open(path,os.O_RDWR|os.O_CREAT|os.O_CLOEXEC|os.O_NOFOLLOW,0o600)
-        try:fcntl.flock(fd,fcntl.LOCK_EX|fcntl.LOCK_NB)
-        except BaseException:
-            os.close(fd);raise ValueError('此 store 已有运行中的工作台')
+        try:fd=local_ownership.acquire(path)
+        except local_ownership.OwnerBusy as exc:raise ValueError('此 store 已有运行中的工作台') from exc
         self._owner_fd=fd
 
     def close(self,timeout=5.):
@@ -142,7 +145,12 @@ class Workbench:
                 except (ValueError,KeyError,TypeError,OSError):issues.append(dict(ref=r,message='模型记录不可用'))
         jobs=self._rows(OPERATION)
         jobs.sort(key=lambda r:self.store.objects_dir.joinpath(r[0]+'.json').stat().st_mtime_ns,reverse=True)
-        return dict(requests=requests,sources=sources,models=models,jobs=[self.job(r) for r,_ in jobs[:30]],issues=issues,
+        from . import research_projects
+        projects=[]
+        for r,p in self._rows(research_projects.PROJECT)[-100:]:
+            try:projects.append(dict(project_ref=r,scenario=p['scenario'],state=research_projects.inspect(self.readonly,r)['state']))
+            except (ValueError,KeyError,TypeError,OSError):projects.append(dict(project_ref=r,scenario=p.get('scenario','研究项目'),state='unavailable'))
+        return dict(requests=requests,projects=projects,sources=sources,models=models,jobs=[self.job(r) for r,_ in jobs[:30]],issues=issues,
             request_total=len(rows),request_limit=100,provider=self.provider_info,model_types=list(tasks.TYPES),scientific_support='unknown')
 
     def task(self,request_ref):
@@ -182,15 +190,22 @@ class Workbench:
     def report(self,artifact_ref):
         from . import reporting
         ref(artifact_ref)
-        if self.readonly.get(artifact_ref)['kind'] not in (tasks.REQUEST,tasks.RUN,proposals.PROPOSAL):raise ValueError('请选择研究任务、建议或研究结果')
+        if self.readonly.get(artifact_ref)['kind'] not in (tasks.REQUEST,tasks.RUN,proposals.PROPOSAL,'research_project','research_project_snapshot','research_reproduction_batch','research_batch_snapshot'):raise ValueError('请选择研究任务、建议或研究结果')
         return reporting.render_report(self.readonly,artifact_ref)
 
     def _validate(self,operation,params):
         if operation not in FIELDS:raise ValueError('不支持的工作台操作')
         required,optional=FIELDS[operation];c.fields(params,required,optional)
-        for key in ('request_ref','proposal_ref','attempt_ref','ref','parent_ref'):
+        for key in ('request_ref','proposal_ref','attempt_ref','ref','parent_ref','project_ref','question_ref'):
             if params.get(key) is not None:ref(params[key]);self.readonly.get(params[key])
-        if operation.startswith('import_'):
+        if operation=='create_project':
+            from .research_projects import normalize
+            normalize(self.readonly,params['config'])
+        elif params.get('project_ref'):
+            from . import research_projects
+            research_projects.load(self.readonly,params['project_ref'])
+            if operation=='reply_project':_text(params['reply'],4000);c.label(params['respondent'],200)
+        elif operation.startswith('import_'):
             _filename(params['filename'],('.txt','.md') if operation=='import_source' else ('.json',))
             _text(params['content'],MAX_UPLOAD)
             if len(params['content'].encode('utf-8'))>MAX_UPLOAD:raise ValueError('上传文件最多 1 MB')
@@ -218,6 +233,11 @@ class Workbench:
 
     def _service_needed(self,operation,params):
         if operation not in PROVIDER_ACTIONS:return False
+        if operation=='run_project':
+            from . import research_projects
+            view=research_projects.inspect(self.readonly,params['project_ref'])
+            if view['state'] in ('needs_recovery','awaiting_alignment'):raise ValueError('请先核对已确认返回或回答对齐问题')
+            return view['state'] not in research_projects.TERMINAL and view['budget']['planner_calls']<view['budget']['planner_max_calls']
         view=tasks.status(self.readonly,params['request_ref'])
         if operation=='run_task' and view['state']!='ready_to_run':raise ValueError('任务尚未就绪或已有执行；请查看状态与已有结果')
         if operation=='resume_task' and view['state']!='awaiting_input':raise ValueError('任务当前没有等待回答的问题')
@@ -236,6 +256,18 @@ class Workbench:
         params=self._validate(operation,params)
         if operation not in PROVIDER_ACTIONS:raise ValueError('此操作不需要向模型服务发送材料')
         needed=self._service_needed(operation,params)
+        if operation=='run_project':
+            from . import research_projects,research_supervisor
+            project=research_projects.load(self.readonly,params['project_ref'])
+            scope=dict(version=1,operation=operation,project_ref=params['project_ref'],project=project,
+                current=research_projects.inspect(self.readonly,params['project_ref']),provider=self.provider_info,
+                initial_messages=research_supervisor._messages(self.readonly,params['project_ref']),
+                data_categories=['应用场景与项目授权资料','Agent 后续读取的同项目材料、假设、模型及计算反馈',
+                    '额度内检索并读取的 Europe PMC 开放全文（若文献额度启用）'],
+                autonomy='Agent 决定研究对象、粒度、证据、假设和迭代；需要对齐时暂停。',scientific_support='unknown')
+            digest=hashlib.sha256(canonical_bytes(scope)).hexdigest()
+            return dict(requires_provider=needed,provider_enabled=self.allow_provider,scope_sha256=digest,scope=scope,
+                note='此次确认覆盖本项目冻结额度内的研究循环；不要求逐个建模决定再次确认。')
         request=tasks.load(self.readonly,params['request_ref']);view=tasks.status(self.readonly,params['request_ref'])
         if request['implementation_sha256']!=recovery.implementation_fingerprint():raise ValueError('任务实现版本已变化，请先创建明确的修订')
         scope=dict(version=1,operation=operation,request_ref=params['request_ref'],request=request['spec'],
@@ -266,15 +298,18 @@ class Workbench:
                 raise ValueError('请先启用模型服务、检查发送范围并明确确认此次请求')
             request_ref=self._request_for(operation,params)
             family=tasks.load(self.readonly,request_ref)['family_id'] if request_ref else None
+            if params.get('project_ref'):family='project:'+params['project_ref']
             if sum(s['state'] in ('queued','running') for s in self._states.values())>=16:raise ValueError('队列已满，请等待当前作业结束')
             if family and any(s.get('family_id')==family and s['state'] in ('queued','running') for s in self._states.values()):
                 raise ValueError('此任务已有排队或执行中的操作，请查看作业状态')
             refs=[]
-            for field in ('request_ref','proposal_ref','attempt_ref','ref','parent_ref'):
+            for field in ('request_ref','proposal_ref','attempt_ref','ref','parent_ref','project_ref','question_ref'):
                 if params.get(field):refs.append(params[field])
             if operation=='create_task':
                 refs.extend(params['config'].get('source_refs',[]))
                 if params['config'].get('model_ref'):refs.append(params['config']['model_ref'])
+            if operation=='create_project':
+                for input_field in ('source_refs','model_refs','reference_refs'):refs.extend(params['config'].get(input_field,[]))
             reservation=self.store.put(OPERATION,dict(version=1,key=key,operation=operation,params=params,family_id=family,request_ref=request_ref,
                 phase='reserved',requires_provider=needed,provider_consent=needed and provider_consent,
                 scope_sha256=preview['scope_sha256'] if preview else None,
@@ -291,7 +326,7 @@ class Workbench:
         if state in ('queued','running') and not self._worker.is_alive():state='unknown_effects'
         out=dict(job_ref=operation_ref,key=p['key'],operation=p['operation'],request_ref=p.get('request_ref'),
             state=state,result=None,
-            input_summary={k:p['params'][k] for k in ('filename','request_ref','proposal_ref','attempt_ref','candidate_id','respondent') if k in p['params']},
+            input_summary={k:p['params'][k] for k in ('filename','request_ref','proposal_ref','attempt_ref','candidate_id','respondent','project_ref') if k in p['params']},
             note='未确认的操作不会在刷新或重启后重新提交。')
         if p['operation']=='create_task':out['input_summary']['goal']=p['params']['config']['goal']
         if terminals:
@@ -311,8 +346,10 @@ class Workbench:
         return self.job(rows[0][0])
 
     def _provider(self,params):
-        view=tasks.status(self.readonly,params['request_ref']);identity=None
-        if view.get('native_task_ref'):identity=self.readonly.get(view['native_task_ref'])['payload']['provider']
+        identity=None
+        if params.get('request_ref'):
+            view=tasks.status(self.readonly,params['request_ref'])
+            if view.get('native_task_ref'):identity=self.readonly.get(view['native_task_ref'])['payload']['provider']
         try:
             if self._provider_factory:return self._provider_factory(identity)
             from .research_cli import _provider
@@ -320,6 +357,21 @@ class Workbench:
         except Exception:raise ValueError('模型服务初始化失败，请在服务端检查配置与凭证环境变量。') from None
 
     def _perform(self,operation,params):
+        if operation in ('create_project','run_project','reply_project','recover_project','snapshot_project'):
+            from . import research_projects,research_supervisor
+            if operation=='create_project':return dict(project_ref=research_projects.create(self.store,params['config']))
+            project=params['project_ref']
+            if operation=='run_project':
+                provider=self._provider(params) if self._service_needed(operation,params) else None
+                return dict(project_ref=project,snapshot_ref=research_supervisor.run(self.store,provider,project))
+            if operation=='reply_project':
+                result=research_projects.operate(self.store,project,'reply_alignment',
+                    {k:params[k] for k in ('question_ref','reply','respondent')},actor='operator')
+                return dict(project_ref=project,**result)
+            if operation=='recover_project':
+                result=research_projects.recover(self.store,project,params['attempt_ref'])
+                return dict(project_ref=project,**result)
+            return dict(project_ref=project,snapshot_ref=research_projects.snapshot(self.store,project))
         if operation.startswith('import_'):
             with tempfile.TemporaryDirectory(prefix='biomodel-workbench-') as directory:
                 path=Path(directory)/params['filename'];path.write_text(params['content'],encoding='utf-8')

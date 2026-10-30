@@ -711,6 +711,8 @@ def main(argv: list[str] | None = None) -> int:
     register_workspace_commands(sub)
     from .research_cli import register as register_research_commands
     register_research_commands(sub,_add_store)
+    from .research_project_cli import register as register_project_commands
+    register_project_commands(sub,_add_store)
     from .task_proposal_cli import register as register_proposal_commands
     register_proposal_commands(sub,_add_store)
     from .workbench_server import register as register_workbench_commands

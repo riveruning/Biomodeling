@@ -6,6 +6,7 @@
 
 ## 先读这些
 
+- [Agent 研究项目、迭代与论文开发队列（2026-10-30）](agent-research-projects.md)
 - [有限来源到随机反应模型（2026-10-30）](source-stochastic.md)
 - [本地研究工作台（2026-10-30）](research-workbench.md)
 - [统一科研任务入口与六类续接（2026-10-30）](research-tasks.md)
@@ -100,3 +101,5 @@
 - [Agent 可靠性改进：调用恢复与来源冲突阻断](agent-reliability-improvements.md)
 - [冻结版本的独立材料小测与通用 Agent 对照](holdout-pilot-evaluation.md)
 - [已发表系统的实际接入与开发评测](published-competitor-integration.md)
+
+- [Windows 原生运行与纯运行包](windows-runtime.md)

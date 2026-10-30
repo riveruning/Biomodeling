@@ -14,7 +14,8 @@ TEXT = 'Initial x = 1.\nParameter k = 0.4.\nEquation dx/dt = -k*x.\nTime is meas
 
 def setup(tmp_path, text=TEXT):
     store = ArtifactStore(tmp_path / 'store')
-    path = tmp_path / 'source.txt'; path.write_text(text)
+    # Evidence offsets refer to this exact LF fixture on every operating system.
+    path = tmp_path / 'source.txt'; path.write_text(text,encoding='utf-8',newline='\n')
     source = evidence.ingest_source(store, path)
     draft = ModelDraft('decay', (State('x', 1.),), (Parameter('k', .4),),
                        rate_rules=(RateRule('x', '-k*x'),))

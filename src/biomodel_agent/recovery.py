@@ -53,21 +53,14 @@ def execution_owner(store, task_ref):
         raise RecoveryBlocked('invalid task reference for ownership')
     if store.get(task_ref)['kind'] != 'agent_task':
         raise RecoveryBlocked('owner reference must be an agent_task')
-    try:
-        import fcntl
-    except ImportError as exc:
-        raise RecoveryBlocked('local file ownership is unsupported on this platform') from exc
+    from . import local_ownership
     directory = store.root / '.agent-owners'
     directory.mkdir(mode=0o700, exist_ok=True)
-    if directory.is_symlink():
+    if local_ownership.is_redirect(directory):
         raise RecoveryBlocked('owner directory must not be a symlink')
-    fd = os.open(directory / (task_ref + '.lock'),
-                 os.O_RDWR | os.O_CREAT | os.O_CLOEXEC | os.O_NOFOLLOW, 0o600)
+    try:fd=local_ownership.acquire(directory/(task_ref+'.lock'))
+    except local_ownership.OwnerBusy as exc:raise RecoveryBlocked('task already has an active execution owner') from exc
     try:
-        try:
-            fcntl.flock(fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
-        except BlockingIOError as exc:
-            raise RecoveryBlocked('task already has an active execution owner') from exc
         yield
     finally:
         os.close(fd)  # close releases flock even during BaseException

@@ -797,3 +797,8 @@ ul{
     gap:5px
   }
 }
+
+#research-iterations .muted,
+#project-jobs .muted{
+  overflow-wrap:anywhere
+}

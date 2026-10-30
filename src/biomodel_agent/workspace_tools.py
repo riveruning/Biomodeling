@@ -36,7 +36,8 @@ def doctor():
         available = importlib.util.find_spec(module) is not None
         packages[distribution] = dict(installed_version=version, locked_version=pins.get(distribution),
                                      available=available, matches_lock=version is not None and version == pins.get(distribution))
-    local_locking = importlib.util.find_spec('fcntl') is not None
+    from .local_ownership import available
+    local_locking = available()
     python_supported = sys.version_info >= (3, 12)
     ready = python_supported and local_locking and all(p['available'] for p in packages.values())
     return dict(version=1, ready=ready, python_executable=sys.executable, python_version=platform.python_version(),
@@ -45,7 +46,8 @@ def doctor():
         provider_required=False, provider_connectivity='not_tested', scientific_execution='not_run',
         host_requirement='File access plus CLI/code execution; Skill discovery depends on the host.',
         limitations=['Dependency discovery is not a solver or provider health test.',
-                     'Use WSL/Linux for the local execution-owner workflow when fcntl is unavailable.'])
+                     'Use a local filesystem; do not share one live store across Windows and WSL/Linux.',
+                     'The development comparison supervisor requires POSIX fork and process groups.'])
 
 
 def _copy_assets(resource, destination, hashes, prefix=''):
@@ -72,6 +74,9 @@ def initialize(destination):
     environment = doctor()
     if not environment['ready']:
         raise ValueError('workspace environment is incomplete; inspect workspace-doctor')
+    seed_examples=_assets().joinpath('examples').is_dir()
+    if not seed_examples and not _assets().joinpath('templates').is_dir():
+        raise ValueError('packaged workspace templates are missing')
     stage = Path(tempfile.mkdtemp(prefix='.biomodel-workspace-', dir=destination.parent))
     try:
         hashes = {}; _copy_assets(_assets(), stage, hashes)
@@ -79,7 +84,7 @@ def initialize(destination):
         from .storage import ArtifactStore
         store = ArtifactStore(stage / 'store')
         source_refs = {}
-        for case in ('complete', 'ambiguous', 'missing'):
+        for case in (('complete', 'ambiguous', 'missing') if seed_examples else ()):
             source_refs[case] = evidence.ingest_source(store, stage / 'examples' / f'{case}-source.txt')
             path = stage / 'examples' / f'{case}-plan.json'
             spec = json.loads(path.read_text(encoding='utf-8'))
@@ -95,7 +100,8 @@ def initialize(destination):
             project_source_sha256=application.environment_fingerprint()['modules_sha256'],
             example_source_refs=source_refs, file_sha256=hashes, environment=environment,
             scientific_runs=0, provider_calls=0,
-            note='Synthetic development controls. No host compatibility or scientific performance is certified.')
+            note=('Synthetic development controls. No host compatibility or scientific performance is certified.' if seed_examples else
+                  'Empty user workspace. Templates describe structure; no sources, reference answers or results are preloaded.'))
         (stage / 'workspace.json').write_text(json.dumps(manifest, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
         # destination was checked before preparation; reject concurrent creation.
         if destination.exists() or destination.is_symlink():
@@ -121,5 +127,5 @@ def command(args):
 def register(sub):
     p = sub.add_parser('workspace-doctor', help='check local dependencies; no network or model execution')
     p.set_defaults(func=command)
-    p = sub.add_parser('workspace-init', help='create a new external-Agent workspace with explicit synthetic examples')
+    p = sub.add_parser('workspace-init', help='create an external-Agent workspace from the installed assets; no model calls')
     p.add_argument('--output', required=True); p.set_defaults(func=command)
