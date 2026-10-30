@@ -1,2 +1,0 @@
-A + B -> ; kf * A * B ; kf = 0.4
--> A + B ; kr * A * B ; kr = 0.2

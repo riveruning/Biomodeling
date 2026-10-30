@@ -1,6 +1,0 @@
-{
-  "schema_version": "1",
-  "provider_api": "openai-completions",
-  "model": "qwen3.8-chat",
-  "stream_idle_ms": 60000
-}

@@ -1,6 +1,10 @@
 .venv/
 .workflow/
-artifacts/development/
+artifacts/
+runs/
+tasks/
+discussion-notes/
+config/development-runtime.json
 __pycache__/
 .pytest_cache/
 *.egg-info/
@@ -15,7 +19,12 @@ dist/
 .aws/
 .codex/
 
-# Downloaded third-party environments and source checkouts
-artifacts/competitor-integration-20261017/runtime/
-artifacts/competitor-integration-20261017/runtime-t2b/
-artifacts/competitor-integration-20261017/vendor/
+# Development caches and editor files
+*.py[cod]
+.mypy_cache/
+.ruff_cache/
+.coverage
+.coverage.*
+htmlcov/
+.DS_Store
+*.swp

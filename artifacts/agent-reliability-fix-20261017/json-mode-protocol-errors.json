@@ -1,7 +1,0 @@
-[
-  {
-    "case": "feedback",
-    "phase": "initial",
-    "error": "model response has unknown key(s) ['question']"
-  }
-]
