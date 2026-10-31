@@ -47,3 +47,5 @@ XML/PDF 复杂公式、图表与任意补充数据仍有解析缺口；跨案例
 原 93 个测试文件及输入中，92 个保持不变，另 1 个仅作上述截止测试稳健性修正；所有变化可与基线摘要核对。新增控制不替代原有检查。历史源码、原始失败、研究记录和旧版本指纹保留，未把旧记录改签为新实现。
 
 主要本地记录在 `artifacts/research-projects-20261030/`：`frozen-delivery.json`、`history-regression.xml`、`key-regression.xml`、各次完整回归、`source-demo-release/`、`installed-demo-delivery/`、`browser-delivery/` 与 `public-literature-smoke-pmcid/`。这些原始对象和运行资料不随普通源码分发。
+
+后续查询与Windows作业交付优化见[2026-10-31增量验收](../20261031/query-read-performance.md)，本页原源码与原始接受结果保持不变。

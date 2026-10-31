@@ -75,3 +75,117 @@ def test_project_human_reply_is_scoped_attributed_and_survives_export(app):
     frozen=submit(app,'snapshot_project',dict(project_ref=ref));assert frozen['state']=='returned'
     exported=submit(app,'export_bundle',dict(ref=frozen['result']['snapshot_ref']));assert exported['state']=='returned'
     assert not app.store.list('typed_run')
+
+
+def test_project_read_rechecks_before_publishing_and_next_request_is_fresh(web,monkeypatch):
+    from biomodel_agent import read_views
+    ref=submit(web.workbench,'create_project',dict(config=config()))['result']['project_ref']
+    status,body,_=request(web,'/api/project/'+ref);assert status==200
+    path=web.workbench.store.objects_dir/(ref+'.json');original_bytes=path.read_bytes()
+    original=read_views._ReadView._revalidate
+    def tamper(view):
+        path.write_bytes(original_bytes.replace(b'A human',b'B human'))
+        return original(view)
+    with monkeypatch.context() as context:
+        context.setattr(read_views._ReadView,'_revalidate',tamper)
+        status,body,_=request(web,'/api/project/'+ref)
+        assert status==409 and 'iteration_refs' not in json.loads(body)
+    path.write_bytes(original_bytes)
+    question=step(web.workbench.store,ref,'ask_alignment',category='granularity',question='Choose granularity.',affected_fields=['granularity'])['question_ref']
+    status,body,_=request(web,'/api/project/'+ref)
+    assert status==200 and json.loads(body)['pending_questions']==[question]
+
+
+@pytest.mark.parametrize('separator',['\n','\r\n','\r\n\n'])
+def test_uploaded_source_keeps_exact_utf8_and_newlines(app,separator):
+    content='注释😀'+separator+'Initial A = False.'+separator
+    uploaded=submit(app,'import_source',dict(filename='source.txt',content=content))
+    source_ref=uploaded['result']['source_ref'];record=app.store.get(source_ref)['payload']
+    assert app.store.get_blob(record['blob_ref'])==content.encode('utf-8')
+    start=content.index('Initial A = False.')
+    view=app.source(source_ref,start=start,end=start+len('Initial A = False.'))
+    assert view['quote']=='Initial A = False.'
+
+
+def test_completion_after_terminal_scan_does_not_publish_resultless_success(app,monkeypatch):
+    import threading,time
+    from biomodel_agent.workbench import TERMINAL
+    entered=threading.Event();release=threading.Event();original_perform=app._perform
+    def blocked(operation,params):
+        entered.set();assert release.wait(20)
+        return original_perform(operation,params)
+    monkeypatch.setattr(app,'_perform',blocked)
+    queued=app.submit(uuid4().hex,'create_project',dict(config=config()))
+    assert entered.wait(5)
+    original_rows=app._rows;triggered=False
+    def rows(kind,**matches):
+        nonlocal triggered
+        found=original_rows(kind,**matches)
+        if kind==TERMINAL and not triggered:
+            triggered=True;release.set();deadline=time.monotonic()+20
+            while app._states[queued['job_ref']]['state'] not in ('returned','failed') and time.monotonic()<deadline:time.sleep(.01)
+            assert app._states[queued['job_ref']]['state']=='returned'
+        return found
+    monkeypatch.setattr(app,'_rows',rows)
+    try:
+        racing=app.job(queued['job_ref'])
+        assert racing['state'] not in ('returned','failed') or 'terminal_ref' in racing
+        final=app.job(queued['job_ref'])
+        assert final['state']=='returned' and final['result']['project_ref'] and final['terminal_ref']
+    finally:release.set()
+
+
+def test_memory_completion_without_confirmed_terminal_remains_unknown(app,monkeypatch):
+    from biomodel_agent.workbench import TERMINAL
+    complete=submit(app,'create_project',dict(config=config()));original=app._rows
+    monkeypatch.setattr(app,'_rows',lambda kind,**matches:[] if kind==TERMINAL else original(kind,**matches))
+    unknown=app.job(complete['job_ref'])
+    assert unknown['state']=='unknown_effects' and unknown['result'] is None
+
+
+@pytest.mark.parametrize('size',[8192,65536])
+def test_rejected_post_with_body_returns_403_without_creating_jobs(web,size):
+    for _ in range(4):
+        status,body,_=request(web,'/api/jobs',raw=b'x'*size,headers={'X-Workbench-Token':'wrong'})
+        assert status==403
+    assert not web.workbench.store.list(OPERATION)
+
+
+def test_rejection_does_not_wait_for_complete_request_body(web):
+    import http.client
+    connection=http.client.HTTPConnection('127.0.0.1',web.server_port,timeout=2)
+    try:
+        connection.putrequest('POST','/api/jobs')
+        connection.putheader('Origin',web.origin)
+        connection.putheader('X-Workbench-Token','wrong')
+        connection.putheader('Content-Length','65536')
+        connection.putheader('Content-Type','application/json')
+        connection.endheaders();connection.send(b'x')
+        response=connection.getresponse();response.read();assert response.status==403
+    finally:connection.close()
+    status,_,_=request(web,'/api/overview')
+    assert status==200 and not web.workbench.store.list(OPERATION)
+
+
+def test_rejected_slow_body_has_a_total_time_limit(web,monkeypatch):
+    import socket,threading,time
+    from biomodel_agent.workbench_server import Handler
+    finished=threading.Event();stop=threading.Event();original=Handler._discard_rejected_body
+    def observed(handler):
+        try:return original(handler)
+        finally:finished.set()
+    monkeypatch.setattr(Handler,'_discard_rejected_body',observed)
+    connection=socket.create_connection(('127.0.0.1',web.server_port),timeout=2)
+    head=('POST /api/jobs HTTP/1.1\r\nHost: '+web.authority+'\r\nX-Workbench-Token: wrong\r\nContent-Length: 65536\r\n\r\n')
+    connection.sendall(head.encode()+b'x')
+    def trickle():
+        for _ in range(50):
+            if stop.wait(.1):return
+            try:connection.sendall(b'x')
+            except OSError:return
+    sender=threading.Thread(target=trickle,daemon=True);sender.start()
+    try:
+        assert b'403' in connection.recv(1024)
+        assert finished.wait(2),'rejected slow input must not extend the cleanup deadline'
+        assert not web.workbench.store.list(OPERATION)
+    finally:stop.set();connection.close();sender.join(2)

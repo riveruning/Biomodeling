@@ -21,6 +21,7 @@ import zipfile
 
 from . import evidence, model_contracts as c, recovery, research_tasks as tasks, task_proposals as proposals
 from .storage import ArtifactStore, REF_RE, canonical_bytes
+from .read_views import verified_read
 
 OPERATION='workbench_operation'
 TERMINAL='workbench_operation_terminal'
@@ -124,33 +125,37 @@ class Workbench:
     def authenticate(self,token):
         return isinstance(token,str) and hmac.compare_digest(token,self.token)
 
-    def _rows(self,kind,**matches):return tasks._records(self.readonly,kind,**matches)
+    def _rows(self,kind,*,store=None,**matches):return tasks._records(self.readonly if store is None else store,kind,**matches)
 
     def overview(self):
+        with verified_read(self.readonly) as store:
+            return self._overview(store)
+
+    def _overview(self,store):
         requests=[];sources=[];models=[];issues=[]
-        rows=self._rows(tasks.REQUEST)
+        rows=self._rows(tasks.REQUEST,store=store)
         # Display recency is file recency only; it never selects a task branch.
         rows.sort(key=lambda r:self.store.objects_dir.joinpath(r[0]+'.json').stat().st_mtime_ns,reverse=True)
         for r,p in rows[:100]:
             item=dict(request_ref=r,goal=p.get('spec',{}).get('goal','无法读取的任务'),revision=p.get('revision'),family_id=p.get('family_id'))
-            try:item.update(tasks.status(self.readonly,r))
+            try:item.update(tasks.status(store,r))
             except (ValueError,KeyError,TypeError,OSError):item.update(state='unavailable',error='记录或实现版本不匹配；保留原产物，使用对应版本检查。')
             requests.append(item)
-        for r,p in self._rows('source')[:100]:
-            try:sources.append(dict(source_ref=r,filename=p.get('filename','来源'),**evidence.source_summary(self.readonly,r)))
+        for r,p in self._rows('source',store=store)[:100]:
+            try:sources.append(dict(source_ref=r,filename=p.get('filename','来源'),**evidence.source_summary(store,r)))
             except (ValueError,KeyError,TypeError,OSError):issues.append(dict(ref=r,message='来源记录不可用'))
         for kind in ('typed_model','fba_model'):
-            for r,p in self._rows(kind)[:100]:
-                try:brief=proposals._model_brief(self.readonly,r);models.append(brief)
+            for r,p in self._rows(kind,store=store)[:100]:
+                try:brief=proposals._model_brief(store,r);models.append(brief)
                 except (ValueError,KeyError,TypeError,OSError):issues.append(dict(ref=r,message='模型记录不可用'))
-        jobs=self._rows(OPERATION)
+        jobs=self._rows(OPERATION,store=store)
         jobs.sort(key=lambda r:self.store.objects_dir.joinpath(r[0]+'.json').stat().st_mtime_ns,reverse=True)
         from . import research_projects
         projects=[]
-        for r,p in self._rows(research_projects.PROJECT)[-100:]:
-            try:projects.append(dict(project_ref=r,scenario=p['scenario'],state=research_projects.inspect(self.readonly,r)['state']))
+        for r,p in self._rows(research_projects.PROJECT,store=store)[-100:]:
+            try:projects.append(dict(project_ref=r,scenario=p['scenario'],state=research_projects.inspect(store,r)['state']))
             except (ValueError,KeyError,TypeError,OSError):projects.append(dict(project_ref=r,scenario=p.get('scenario','研究项目'),state='unavailable'))
-        return dict(requests=requests,projects=projects,sources=sources,models=models,jobs=[self.job(r) for r,_ in jobs[:30]],issues=issues,
+        return dict(requests=requests,projects=projects,sources=sources,models=models,jobs=[self.job(r,store=store) for r,_ in jobs[:30]],issues=issues,
             request_total=len(rows),request_limit=100,provider=self.provider_info,model_types=list(tasks.TYPES),scientific_support='unknown')
 
     def task(self,request_ref):
@@ -188,10 +193,11 @@ class Workbench:
             metadata=evidence.source_summary(self.readonly,source_ref))
 
     def report(self,artifact_ref):
-        from . import reporting
-        ref(artifact_ref)
-        if self.readonly.get(artifact_ref)['kind'] not in (tasks.REQUEST,tasks.RUN,proposals.PROPOSAL,'research_project','research_project_snapshot','research_reproduction_batch','research_batch_snapshot'):raise ValueError('请选择研究任务、建议或研究结果')
-        return reporting.render_report(self.readonly,artifact_ref)
+        with verified_read(self.readonly) as store:
+            from . import reporting
+            ref(artifact_ref)
+            if store.get(artifact_ref)['kind'] not in (tasks.REQUEST,tasks.RUN,proposals.PROPOSAL,'research_project','research_project_snapshot','research_reproduction_batch','research_batch_snapshot'):raise ValueError('请选择研究任务、建议或研究结果')
+            return reporting.render_report(store,artifact_ref)
 
     def _validate(self,operation,params):
         if operation not in FIELDS:raise ValueError('不支持的工作台操作')
@@ -317,13 +323,17 @@ class Workbench:
             self._states[reservation]=dict(state='queued',family_id=family);self._queue.put(reservation)
             return self.job(reservation)
 
-    def job(self,operation_ref):
-        ref(operation_ref);obj=self.readonly.get(operation_ref);p=obj['payload']
+    def job(self,operation_ref,*,store=None):
+        store=self.readonly if store is None else store
+        ref(operation_ref);obj=store.get(operation_ref);p=obj['payload']
         if obj['kind']!=OPERATION or type(p.get('version')) is not int or p['version']!=1:raise ValueError('不是工作台作业')
-        terminals=self._rows(TERMINAL,operation_ref=operation_ref)
-        if len(terminals)>1:raise ValueError('作业存在多个结束记录')
+        # Capture live state before scanning: completion can arrive while the
+        # scan is in progress. A terminal state always needs its saved receipt.
         state=self._states.get(operation_ref,{}).get('state','unknown_effects')
         if state in ('queued','running') and not self._worker.is_alive():state='unknown_effects'
+        terminals=self._rows(TERMINAL,operation_ref=operation_ref,store=store)
+        if len(terminals)>1:raise ValueError('作业存在多个结束记录')
+        if not terminals and state in ('returned','failed'):state='unknown_effects'
         out=dict(job_ref=operation_ref,key=p['key'],operation=p['operation'],request_ref=p.get('request_ref'),
             state=state,result=None,
             input_summary={k:p['params'][k] for k in ('filename','request_ref','proposal_ref','attempt_ref','candidate_id','respondent','project_ref') if k in p['params']},
@@ -331,7 +341,7 @@ class Workbench:
         if p['operation']=='create_task':out['input_summary']['goal']=p['params']['config']['goal']
         if terminals:
             r,t=terminals[0]
-            if type(t.get('version')) is not int or t['version']!=1 or t['state'] not in ('returned','failed') or operation_ref not in self.readonly.get(r)['refs']:
+            if type(t.get('version')) is not int or t['version']!=1 or t['state'] not in ('returned','failed') or operation_ref not in store.get(r)['refs']:
                 raise ValueError('作业结束记录无效')
             # The immutable object can become visible before its SQLite index
             # commit finishes. Do not publish completion ahead of our worker.
@@ -374,7 +384,7 @@ class Workbench:
             return dict(project_ref=project,snapshot_ref=research_projects.snapshot(self.store,project))
         if operation.startswith('import_'):
             with tempfile.TemporaryDirectory(prefix='biomodel-workbench-') as directory:
-                path=Path(directory)/params['filename'];path.write_text(params['content'],encoding='utf-8')
+                path=Path(directory)/params['filename'];path.write_bytes(params['content'].encode('utf-8'))
                 if operation=='import_source':return dict(source_ref=evidence.ingest_source(self.store,path))
                 from . import fba,typed_models
                 if params['model_type']=='fba':model=fba.import_model(self.store,path)

@@ -20,13 +20,13 @@ function show(title,...body){$("project-reader-title").textContent=title;clear("
 function editor(title,body,save){$("project-editor-title").textContent=title;clear("project-editor-body",...body);formSave=save;$("project-editor").showModal();}
 function field(label,input){return node("label",{},node("span",{},label),input);}
 async function submit(operation,params,extra={}){
- const key=crypto.randomUUID().replaceAll("-","");pending[key]={operation,project_ref:params.project_ref||null};persist();
- let job;try{job=await api("/api/jobs",{key,operation,params,...extra});pending[key].job_ref=job.job_ref;persist();}
- catch(e){note("提交结果未确认，已保存原提交标识；页面只查询，不自动重发。");throw e;}
+ const key=crypto.randomUUID().replaceAll("-","");pending[key]={operation,project_ref:params.project_ref||null,state:"submitting"};persist();
+ let job;try{job=await api("/api/jobs",{key,operation,params,...extra});if(pending[key])pending[key].job_ref=job.job_ref;persist();}
+ catch(e){if(pending[key])pending[key].state="unknown_effects";persist();note("提交结果未确认，已保存原提交标识；页面只查询，不自动重发。");throw e;}
  await follow(job);return job;
 }
 async function follow(job){
- const old=pending[job.key];if(!old)return;
+ const old=pending[job.key];if(!old)return;old.state=job.state;persist();
  if(job.state==="returned"){
   const result=job.result||{};delete pending[job.key];persist();
   if(result.project_ref){selected=result.project_ref;location.hash=selected;}
@@ -78,6 +78,7 @@ function render(data){
  const b=data.budget;clear("project-metrics",...[["规划调用",b.planner_calls+" / "+b.planner_max_calls],["迭代版本",b.iterations+" / "+b.max_iterations],["原生额度分配",b.native_reserved+" / "+b.max_native_calls],["文献请求",b.literature_requests+" / "+b.max_literature_requests]].map(([n,v])=>node("div",{class:"metric"},small(n),node("strong",{},v))));
  const active=Object.values(pending).some(x=>x.project_ref===selected&&x.operation==="run_project");
  $("advance-project").disabled=active||data.state!=="ready"||b.planner_calls>=b.planner_max_calls;
+ $("project-export").disabled=Object.values(pending).some(x=>(x.project_ref===selected||x.operation==="export_bundle")&&["submitting","queued","running"].includes(x.state));
  $("project-status-note").textContent=active?"Agent 正在推进研究。页面只读取进度。":data.state==="awaiting_alignment"?"回答下面的问题，再继续本项目。":data.state==="needs_recovery"?"操作结果尚未确认；请核对已保存返回，不要重新发起原请求。":b.planner_calls>=b.planner_max_calls?"研究规划额度已用完。已有证据和结果均保留。":"Agent 会在项目额度内选择下一步；新证据和新假设将产生新版本。";
  const frame=data.frame?.spec;
  clear("research-frame",...(frame?[node("h3",{},frame.objective),small("研究模式："+frame.mode),node("p",{},frame.granularity),node("p",{},frame.rationale),details("研究对象",frame.modeling_targets),details("证据需求与检索计划",frame.evidence_needs),details("本轮判据",frame.criteria),details("尚未解决",frame.unresolved)]:[small("尚未提出研究方案。你可以让 Agent 从应用场景开始推进。")]));

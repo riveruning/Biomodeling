@@ -3,9 +3,11 @@ from http.server import BaseHTTPRequestHandler,ThreadingHTTPServer
 from pathlib import Path
 import json
 import sys
+import time
 from urllib.parse import parse_qs,urlsplit
 
 from . import model_contracts as c
+from .read_views import verified_read
 from .workbench import MAX_BODY,Workbench,decode,ref
 
 ASSETS=Path(__file__).parent/'workbench_assets'
@@ -69,11 +71,12 @@ class Handler(BaseHTTPRequestHandler):
             if path=='/api/overview':out=app.overview()
             elif len(parts)==3 and parts[:2]==['api','project']:
                 from . import research_projects,research_supervisor
-                root=ref(parts[2]);out=research_projects.inspect(app.readonly,root)
-                out['iteration_facts']={r:research_projects.facts(app.readonly,r) for r in out['iteration_refs']}
-                out['questions']=[dict(question_ref=r,**research_projects.own(app.readonly,r,research_projects.QUESTION,root)) for r in out['pending_questions']]
-                out['assessments']=[research_projects.own(app.readonly,r,research_projects.ASSESSMENT,root) for r in out['assessment_refs']]
-                out['usage']=research_supervisor.usage(app.readonly,root)
+                with verified_read(app.readonly) as store:
+                    root=ref(parts[2]);out=research_projects.inspect(store,root)
+                    out['iteration_facts']={r:research_projects.facts(store,r) for r in out['iteration_refs']}
+                    out['questions']=[dict(question_ref=r,**research_projects.own(store,r,research_projects.QUESTION,root)) for r in out['pending_questions']]
+                    out['assessments']=[research_projects.own(store,r,research_projects.ASSESSMENT,root) for r in out['assessment_refs']]
+                    out['usage']=research_supervisor.usage(store,root)
             elif len(parts)==3 and parts[:2]==['api','task']:out=app.task(parts[2])
             elif len(parts)==3 and parts[:2]==['api','proposal']:
                 from . import task_proposals
@@ -98,8 +101,33 @@ class Handler(BaseHTTPRequestHandler):
         except (ValueError,KeyError,TypeError,OSError):self._send(409,dict(error='记录不可用、输入不合法或实现版本已变化，请检查任务和原记录。'))
         except Exception:self._send(500,dict(error='本地读取未完成，请检查服务端记录。'))
 
+    def _discard_rejected_body(self):
+        # Closing with unread POST bytes can reset the connection on Windows,
+        # losing the 403 that was already sent. Never parse rejected input or
+        # wait for an unbounded/ambiguous body; the connection is closing.
+        lengths=self.headers.get_all('Content-Length',[])
+        if self.headers.get('Transfer-Encoding') or len(lengths)!=1:return
+        value=lengths[0]
+        if not value.isascii() or not value.isdigit() or len(value)>9:return
+        length=int(value)
+        if not 0<length<=MAX_BODY:return
+        timeout=self.connection.gettimeout()
+        try:
+            deadline=time.monotonic()+.25
+            while length:
+                remaining=deadline-time.monotonic()
+                if remaining<=0:break
+                self.connection.settimeout(remaining)
+                chunk=self.rfile.read1(min(length,65536))
+                if not chunk:break
+                length-=len(chunk)
+        except OSError:pass
+        finally:self.connection.settimeout(timeout)
+
     def do_POST(self):
-        if not self._guard(True):return
+        if not self._guard(True):
+            self._discard_rejected_body()
+            return
         try:
             if self.headers.get('Transfer-Encoding'):raise ValueError('不支持分块请求')
             lengths=self.headers.get_all('Content-Length',[])

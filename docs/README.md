@@ -103,3 +103,5 @@
 - [已发表系统的实际接入与开发评测](published-competitor-integration.md)
 
 - [Windows 原生运行与纯运行包](windows-runtime.md)
+
+- [研究查询读取优化](query-read-performance.md)
