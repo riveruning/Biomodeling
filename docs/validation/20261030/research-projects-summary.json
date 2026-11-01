@@ -1,0 +1,101 @@
+{
+  "implementation_sha256": "90dd8efb6166c946eb90cb26c13a85e2c9766500681d4a54426d08a25319c7ea",
+  "full_regression": {
+    "tests": 2667,
+    "passed": 2667,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "junit_sha256": "dda7057c7b39a1bb81ad0d7879d338ebbaa188b358e536aad2d2f053bcad79d5"
+  },
+  "focused_research": {
+    "tests": 82,
+    "passed": 82,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "junit_sha256": "7a15e4e0f873ede1b639883e50fddc52049e4828416663f4793e88384ea516c1"
+  },
+  "focused_project_ui": {
+    "tests": 5,
+    "passed": 5,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "junit_sha256": "4b8119554936f69ac52b7bfe520eca5a3459c25083b56cb611ae3ffac0e61e35"
+  },
+  "existing_deadline_isolation": {
+    "tests": 50,
+    "passed": 50,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "junit_sha256": "bc2f012db1bfab7502d1e41112f2e6f89e4bbc6a56adf91ffa112c64b0b64924"
+  },
+  "retained_timing_failure": {
+    "tests": 2667,
+    "passed": 2666,
+    "failures": 1,
+    "errors": 0,
+    "skipped": 0,
+    "junit_sha256": "66777ebf68b49f05143f6919136bae4056b4a45cbc6f1934e8da70942a7905f9"
+  },
+  "original_tests_unchanged": 92,
+  "original_test_changes": [
+    "tests/test_workflow_adapters.py"
+  ],
+  "test_change": "Only the slow-provider deadline test window changed from 0.2s to 1s, retaining 5s delay, <3s termination and one-call assertions.",
+  "deadline_robustness": {
+    "tests": 50,
+    "passed": 50,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "junit_sha256": "16a88f62b18c6066ffe2715751912876799029bab7ce2e247958774d21e70592"
+  },
+  "product_python_files": 81,
+  "product_assets": 23,
+  "wheel_sha256": "1fd743447d90af4f32b8a82d45affbdc13c84b33eef62def725d709f95ed535f",
+  "package_file_comparison": {
+    "source_files": 104,
+    "installed_missing_or_different": []
+  },
+  "numerical_data_equal": true,
+  "node_offline_tests": 18,
+  "public_literature": {
+    "adapter_get_requests": 3,
+    "first_query_hits": 0,
+    "successful_search_and_fetch_gets": 2,
+    "fulltext_characters": 20924,
+    "tested_implementation_sha256": "264c7a73f0b79cbf2d6f085811670f1092225a072e8185233e9e782d4a3850b0",
+    "adapter_module_unchanged": true
+  },
+  "live_external_model_requests": 0,
+  "actual_paper_reproductions": 0,
+  "scientific_support": "unknown",
+  "limits": [
+    "Scripted research decisions do not validate real LLM planning or evidence judgments.",
+    "Literal data copying does not prove relevance, unit mapping or independent scientific validity.",
+    "Experience candidates remain inactive; independent evaluation data was not used.",
+    "No model-token or scientific-success-rate reduction has been established."
+  ],
+  "scripted_controls": {
+    "planner_responses_per_application": 12,
+    "scientific_calls_per_application": 2,
+    "inner_model_responses": 0,
+    "linked_iterations": 2,
+    "human_replies": 1,
+    "synthetic_batch_cases": 3,
+    "unique_declared_materials": 2,
+    "unique_declared_families": 2,
+    "unique_declared_papers": 0,
+    "inactive_experience_candidates": 1
+  },
+  "browser": {
+    "desktop_and_390px": true,
+    "reload_mutations": 0,
+    "console_errors": 0,
+    "external_page_requests": 0,
+    "download_bytes": 183089
+  }
+}

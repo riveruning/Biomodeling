@@ -1,0 +1,125 @@
+{
+  "schema_version": 1,
+  "id": "complete_example",
+  "model_type": "ode",
+  "mode": "reproduction",
+  "context": {},
+  "entities": [
+    {
+      "id": "protein",
+      "label": "Supplied normalized state"
+    }
+  ],
+  "evidence": [
+    {
+      "id": "E0",
+      "source_ref": "SOURCE_REF",
+      "page": 1,
+      "start": 55,
+      "end": 69,
+      "quote": "Initial x = 1.",
+      "interpretation": "Candidate reading of the supplied declaration.",
+      "conditions": {}
+    },
+    {
+      "id": "E1",
+      "source_ref": "SOURCE_REF",
+      "page": 1,
+      "start": 70,
+      "end": 88,
+      "quote": "Parameter k = 0.4.",
+      "interpretation": "Candidate reading of the supplied declaration.",
+      "conditions": {}
+    },
+    {
+      "id": "E2",
+      "source_ref": "SOURCE_REF",
+      "page": 1,
+      "start": 89,
+      "end": 111,
+      "quote": "Equation dx/dt = -k*x.",
+      "interpretation": "Candidate reading of the supplied declaration.",
+      "conditions": {}
+    }
+  ],
+  "mechanisms": [],
+  "candidates": [
+    {
+      "id": "first_order",
+      "label": "Explicit first-order candidate",
+      "variable_map": {
+        "protein": "x"
+      },
+      "draft": {
+        "id": "decay",
+        "states": [
+          {
+            "id": "x",
+            "initial": 1.0,
+            "unit": "unknown",
+            "quantity_kind": "variable",
+            "nonnegative": false
+          }
+        ],
+        "parameters": [
+          {
+            "id": "k",
+            "value": 0.4,
+            "unit": "unknown",
+            "origin": "unknown"
+          }
+        ],
+        "compartment": {
+          "id": "cell",
+          "size": 1.0,
+          "unit": "dimensionless"
+        },
+        "reactions": [],
+        "rate_rules": [
+          {
+            "state": "x",
+            "expression": "-k*x"
+          }
+        ],
+        "derived": [],
+        "time_unit": "second",
+        "element_map": {},
+        "hypothesis_refs": [],
+        "parent_ref": null
+      },
+      "decisions": [
+        {
+          "target": "x/initial",
+          "origin": "reported",
+          "evidence_ids": [
+            "E0"
+          ],
+          "mechanism_ids": [],
+          "rationale": "Use the explicit supplied declaration.",
+          "alternatives": []
+        },
+        {
+          "target": "k/value",
+          "origin": "reported",
+          "evidence_ids": [
+            "E1"
+          ],
+          "mechanism_ids": [],
+          "rationale": "Use the explicit supplied declaration.",
+          "alternatives": []
+        },
+        {
+          "target": "rule:x/expression",
+          "origin": "reported",
+          "evidence_ids": [
+            "E2"
+          ],
+          "mechanism_ids": [],
+          "rationale": "Use the explicit supplied declaration.",
+          "alternatives": []
+        }
+      ]
+    }
+  ],
+  "selected_candidate": "first_order"
+}

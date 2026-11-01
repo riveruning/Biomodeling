@@ -1,0 +1,14 @@
+{
+  "by_image": {
+    "e004": "Equation dX/dt = k1*Ki**n/(Ki**n+Z**n)-k2*X.",
+    "e005": "Equation dY/dt = k3*X-k4*Y.",
+    "e006": "Equation dZ/dt = k5*Y-k6*Z.",
+    "e010": "Hill function f(Z) = Ki**n/(Ki**n+Z**n).",
+    "e021": "Parameter k1 = 1.0.\nParameter k3 = 1.0.\nParameter k5 = 1.0.",
+    "e022": "Parameter k2 = 0.1.\nParameter k4 = 0.1.\nParameter k6 = 0.1.",
+    "e023": "Parameter Ki = 1.0.",
+    "e024": "Parameter n = 10.0."
+  },
+  "actor": "Codex development visual pre-review; independent review pending",
+  "notes": "Reuse already inspected images; Ki denotes K_i, ** denotes exponentiation, chained equalities split, 1/10 becomes 0.1; no original initials inferred."
+}

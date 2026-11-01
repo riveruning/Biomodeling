@@ -1,0 +1,49 @@
+{
+  "date": "2026-11-01",
+  "source_commit": "593affca82ee2b16afd798752d0623536fd4434c",
+  "scope": "Focused local architecture audit regression; not a full test-suite run or a scientific effectiveness evaluation.",
+  "results": {
+    "focused": {
+      "tests": 319,
+      "failures": 0,
+      "errors": 6,
+      "skipped": 0,
+      "seconds": 171.888,
+      "junit_sha256": "0ae47706e3077c036ae8109b046e96df10fa187c0a9b083d1cc7df0f0b17c376",
+      "log_sha256": "837f001d1752010e52d6515f1406d51275b349b0c6331a8f536166e0aea75d6e"
+    },
+    "ode": {
+      "tests": 4,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 1.406,
+      "junit_sha256": "6b44b16f65a89099ea26ca3316e520ca4f80c34158a9dc0d00f6322bb3f33a8d",
+      "log_sha256": "d26833743ca8c74218ae0242e68050445811359ce6709c77a77e13c43ce73616"
+    },
+    "http": {
+      "tests": 6,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 2.465,
+      "junit_sha256": "add3dffc473ce9b1f12e348ac780a5edd9f5399c8253144c665b513e9d285f5a",
+      "log_sha256": "74e82fbeb34578b709f30ed933f6cc5f66e06934ffe0f23ae630d287d11f3ca8"
+    }
+  },
+  "distinct_tests": 323,
+  "final_passed_distinct_tests": 323,
+  "initial_environment_errors": "Six HTTP fixture setup errors: restricted sandbox denied socket creation. The same six tests passed after approved loopback-capable execution. Initial logs retained.",
+  "cli_smoke": [
+    "--help",
+    "model-types"
+  ],
+  "live_model_requests": 0,
+  "external_database_requests": 0,
+  "browser_validation_performed": false,
+  "windows_validation_performed": false,
+  "independent_evalset_accessed": false,
+  "product_code_modified": false,
+  "raw_logs_directory": "runs/project-audit-20261101 (local, ignored by git)",
+  "scientific_effectiveness": "not_evaluated"
+}

@@ -1,0 +1,8 @@
+Synthetic development specification; not a paper or experimental evidence.
+States a and b are normalized variables in a closed transfer system.
+Initial a = 2.
+Initial b = 1.
+Parameter k = 0.2.
+Equation da/dt = -k*a.
+Equation db/dt = k*a.
+Time is measured in seconds.

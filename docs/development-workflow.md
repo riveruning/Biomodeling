@@ -2,6 +2,8 @@
 
 本文件约束外部开发协作，不改变 BioModel Agent 产品内部的单 Agent 架构。
 
+2026-10-29 实测增量：现有受限监督器可以连接并审批明确路径的读取，但本轮两次写入申请的 `rawInput` 均为空，缺 `path/content`，网关以 `missing_content` 保持未批准，未产生源码交付。一次缩小到单文件重试后结束委派，由 Codex 在自身授权内实现。现阶段再次委派前应先确认写入参数完整，不能把读取成功视为实现链路可用，也不能为此放宽网关。记录见[本轮 DSH 结果](../artifacts/workspace-ir-20261029/dsh-outcomes.json)；缺双方完整 usage，未给出 token 节省比例。下文保留原工作流及其记录时环境。
+
 ## 1. 分工与基本循环
 
 Codex 负责任务拆分、科学语义与接口决定、权限监督、独立代码审查、测试执行和验收。DSH 负责在指定文件范围内实现代码和必要测试，并报告限制。DSH 的“完成”只表示提交了产物，不能代表 Codex 验收通过。
@@ -104,3 +106,7 @@ node scripts/dsh-workflow.mjs --task tasks/workflow-smoke.json --bridge-root /ho
 首次创建 venv 因缺 ensurepip 未成功；现已在原项目目录完成独立环境，不安装系统 python-venv 包来改变宿主。2026-10-14 已核对 numpy、scipy、libSBML、libRoadRunner、pytest 均从项目 `.venv` 加载。
 
 DSH 若需要新依赖，应在交付说明列出，由 Codex 在项目环境中安装。原有环境只做必要只读检查，不为本项目升级或重装。缓存和运行产物尽量留在项目目录；只读复用已有工具，不将其当作可随意修改的项目文件。
+
+## 源码分发中的本地设置
+
+`config/development-runtime.json` 不随源码分发；需要历史 DSH 工作流时，从 `config/development-runtime.example.json` 复制并按受信任提供方目录选择模型。此配置不包含凭证，也不启用任何产品模型服务；实际请求仍需对应授权和既有网关。任务卡和完整协作日志保留在本地历史归档。

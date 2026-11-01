@@ -53,21 +53,14 @@ def execution_owner(store, task_ref):
         raise RecoveryBlocked('invalid task reference for ownership')
     if store.get(task_ref)['kind'] != 'agent_task':
         raise RecoveryBlocked('owner reference must be an agent_task')
-    try:
-        import fcntl
-    except ImportError as exc:
-        raise RecoveryBlocked('local file ownership is unsupported on this platform') from exc
+    from . import local_ownership
     directory = store.root / '.agent-owners'
     directory.mkdir(mode=0o700, exist_ok=True)
-    if directory.is_symlink():
+    if local_ownership.is_redirect(directory):
         raise RecoveryBlocked('owner directory must not be a symlink')
-    fd = os.open(directory / (task_ref + '.lock'),
-                 os.O_RDWR | os.O_CREAT | os.O_CLOEXEC | os.O_NOFOLLOW, 0o600)
+    try:fd=local_ownership.acquire(directory/(task_ref+'.lock'))
+    except local_ownership.OwnerBusy as exc:raise RecoveryBlocked('task already has an active execution owner') from exc
     try:
-        try:
-            fcntl.flock(fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
-        except BlockingIOError as exc:
-            raise RecoveryBlocked('task already has an active execution owner') from exc
         yield
     finally:
         os.close(fd)  # close releases flock even during BaseException
@@ -89,6 +82,14 @@ def _inventory(store):
 
 
 def _initial_scope(store, execution, task):
+    if task.get('mode') == 'native_typed':
+        from .typed_agent_runtime import validate_initial_scope
+        validate_initial_scope(store, execution, task)
+        return
+    if task.get('mode') == 'fba':
+        from .fba_agent_runtime import validate_initial_scope
+        validate_initial_scope(store, execution, task)
+        return
     meta = execution.get('recovery')
     if not isinstance(meta, dict) or type(meta.get('version')) is not int or meta['version'] != 1:
         raise RecoveryBlocked('legacy_or_incompatible_recovery_snapshot')
@@ -162,7 +163,7 @@ def _returned(store, operation, adoptable, task):
         response = json.loads(details['response_json'])
         if not isinstance(response, dict):
             raise RecoveryBlocked('invalid_cached_response')
-    elif name == 'submit_draft':
+    elif name in ('submit_draft', 'submit_plan'):
         required = {'state', 'problems', 'checks', 'draft_ref', 'model_ref', 'hypothesis_ref',
                     'source_review_ref', 'source_review', 'citation_diagnostics'}
         if not required <= details.keys():
@@ -174,7 +175,57 @@ def _returned(store, operation, adoptable, task):
                 raise RecoveryBlocked('invalid_draft_result_binding')
         if details['state'] == 'ready' and (not details['model_ref'] or not details['draft_ref']):
             raise RecoveryBlocked('ready_draft_missing_model')
-    elif name in ('run', 'run_study'):
+        if name == 'submit_plan':
+            from . import native_modeling
+            task_ref = store.get(reserved['execution_ref'])['payload']['task_ref']
+            scope = reserved['details']
+            frozen_sources = store.get(reserved['execution_ref'])['payload']['recovery']['source_refs']
+            if scope.get('source_refs') != frozen_sources or not set(native_modeling.refs(details)) <= set(envelope['refs']):
+                raise RecoveryBlocked('invalid_decision_submission_scope')
+            native_modeling.verify_return(store, task_ref, scope, details)
+    elif name == 'request_estimation':
+        from . import estimation_workflow as workflow
+        ref = details.get('request_ref'); obj = store.get(ref)
+        task_ref = store.get(reserved['execution_ref'])['payload']['task_ref']
+        expected = workflow.request_payload(store, task_ref, reserved['details']['source_refs'], reserved['details']['args'])
+        if (ref not in envelope['refs'] or obj['kind'] != workflow.REQUEST
+                or canonical_bytes(obj['payload']) != canonical_bytes(expected)
+                or not {task_ref, *expected['source_refs']} <= set(obj['refs'])):
+            raise RecoveryBlocked('invalid_estimation_request_binding')
+    elif name == 'run_estimation':
+        from . import estimation_workflow as workflow
+        ref = details.get('result_ref'); plan_ref = reserved['details'].get('plan_ref')
+        if not plan_ref or ref not in envelope['refs'] or task.get('estimation_plan_ref') != plan_ref:
+            raise RecoveryBlocked('invalid_estimation_result_binding')
+        workflow.check_result(store, ref, plan_ref=plan_ref)
+        adoptable.append(ref)
+    elif name in ('run_typed','inspect_typed'):
+        from . import typed_agent_runtime as runtime
+        if task.get('mode')!='native_typed' or task.get('typed_protocol')!=runtime.PROFILE:
+            raise RecoveryBlocked('typed_operation_outside_recoverable_native_task')
+        if name=='run_typed':
+            ref=details.get('result_ref')
+            if ref not in envelope['refs'] or reserved['details']!=dict(input_ref=task['input_ref']):
+                raise RecoveryBlocked('invalid_typed_scientific_return_binding')
+            runtime.bound_result(store,task,ref)
+            adoptable.append(ref)
+        elif canonical_bytes(details)!=canonical_bytes(runtime.inspect(store,task,reserved['details'].get('run_ref'))):
+            raise RecoveryBlocked('invalid_typed_inspect_return')
+    elif name in ('run_fba', 'inspect_fba'):
+        from . import fba_agent_runtime as runtime
+        if task.get('mode') != 'fba' or task.get('fba_protocol') != runtime.PROFILE:
+            raise RecoveryBlocked('fba_operation_not_supported_in_ode_recovery')
+        if name == 'run_fba':
+            ref = details.get('result_ref')
+            if (ref not in envelope['refs'] or reserved['details'] != dict(model_ref=task['model_ref'], settings=task['settings'])):
+                raise RecoveryBlocked('invalid_fba_scientific_return_binding')
+            runtime.bound_result(store, task, ref)
+            adoptable.append(ref)
+        else:
+            ref = reserved['details'].get('run_ref')
+            if canonical_bytes(details) != canonical_bytes(runtime.inspect(store, task, ref)):
+                raise RecoveryBlocked('invalid_fba_inspect_return')
+    elif name in ('run', 'run_study', 'run_fba'):
         ref = details['result_ref']
         expected_kind = 'run' if name == 'run' else 'hypothesis_study'
         if ref not in envelope['refs'] or store.get(ref)['kind'] != expected_kind:
@@ -207,6 +258,57 @@ def _returned(store, operation, adoptable, task):
                     or plan_ref not in result['refs']):
                 raise RecoveryBlocked('invalid_study_plan_binding')
         adoptable.append(ref)
+    elif name == 'load_skill' and details.get('scientific_skill_ref'):
+        from . import scientific_skills
+        protocol = task.get('skill_protocol')
+        if not protocol or details['scientific_skill_ref'] not in envelope['refs']:
+            raise RecoveryBlocked('invalid_scientific_skill_binding')
+        expected = scientific_skills.load(store, protocol, reserved['details']['args']['name'])
+        if canonical_bytes(details) != canonical_bytes(expected):
+            raise RecoveryBlocked('scientific_skill_return_mismatch')
+    elif name == 'investigate_parameter' and task.get('failure_policy'):
+        ref = details.get('investigation_ref')
+        if ref not in envelope['refs'] or store.get(ref)['kind'] != 'parameter_investigation':
+            raise RecoveryBlocked('invalid_investigation_result_binding')
+        payload = store.get(ref)['payload']
+        args = reserved['details']['args']
+        if (details != dict(investigation_ref=ref, **payload)
+                or payload['target'] != args['target'] or payload['query'] != args['query']
+                or payload['retrieval']['method'] != task.get('retrieval_method', 'lexical_v1')
+                or payload['selected_value'] is not None):
+            raise RecoveryBlocked('investigation_result_request_mismatch')
+        adoptable.append(ref)
+    elif name == 'route_failure':
+        from . import failure_handling
+        ref = details.get('decision_ref')
+        policy = task.get('failure_policy')
+        if not policy or ref not in envelope['refs']:
+            raise RecoveryBlocked('invalid_failure_decision_binding')
+        decision = failure_handling.load(store, ref, policy)
+        if (decision['descriptor'] != reserved['details']['descriptor']
+                or details != dict(decision_ref=ref, **decision['decision'])):
+            raise RecoveryBlocked('failure_decision_request_mismatch')
+        adoptable.append(ref)
+    elif name in ('revise_plan', 'refresh_plan'):
+        from . import task_plans
+        ref = details.get('plan_ref')
+        if not task.get('planning') or ref not in envelope['refs']:
+            raise RecoveryBlocked('invalid_task_plan_result_binding')
+        plan = task_plans.load(store, task['planning'], ref)
+        request = reserved['details']
+        expected_parent = request['args']['expected_plan_ref'] if name == 'revise_plan' else request['previous_ref']
+        if (plan['previous_ref'] != expected_parent or plan['call'] != reserved['call_count']
+                or plan['revision_type'] != ('model_revision' if name == 'revise_plan' else 'source_update')
+                or details != dict(plan_ref=ref, revision=plan['revision'], changed_steps=plan['changed_steps'])):
+            raise RecoveryBlocked('task_plan_result_request_mismatch')
+        if name == 'revise_plan':
+            args = request['args']
+            steps = task_plans._steps(args['steps'], plan['max_calls'], plan['source_refs'], plan['parameter_targets'])
+            if steps != plan['steps'] or args['reason'] != plan['reason']:
+                raise RecoveryBlocked('task_plan_revision_request_mismatch')
+        elif request['source_refs'] != plan['source_refs']:
+            raise RecoveryBlocked('task_plan_refresh_scope_mismatch')
+        adoptable.append(ref)
     elif name == 'inspect_source' and type(details.get('page_found')) is not bool:
         raise RecoveryBlocked('invalid_inspect_return')
 
@@ -225,6 +327,14 @@ def diagnose_execution(store, execution_ref):
         task = task_record['payload']
         if task_record['kind'] != 'agent_task' or type(task.get('resume_version')) is not int or task['resume_version'] != 1:
             raise RecoveryBlocked('incompatible_task_version')
+        fba_v2 = task.get('mode') == 'fba' and task.get('fba_protocol') == 'fba_agent_v2'
+        typed_v2 = task.get('mode') == 'native_typed' and task.get('typed_protocol') == 'typed_agent_v2'
+        if task.get('mode') == 'native_typed' and not typed_v2:
+            report['call_count'] = report['run_count'] = None
+            raise RecoveryBlocked('native_typed_recovery_not_supported_inspect_receipts_no_retry')
+        if task.get('mode') == 'fba' and not fba_v2:
+            report['call_count'] = report['run_count'] = None
+            raise RecoveryBlocked('fba_recovery_not_supported_inspect_frozen_receipts_no_retry')
         max_calls = task['max_calls']
         if (type(max_calls) is not int or not 1 <= max_calls <= 50
                 or type(execution.get('max_calls')) is not int or execution['max_calls'] != max_calls
@@ -233,18 +343,20 @@ def diagnose_execution(store, execution_ref):
                 or not _count(execution.get('base_run_count'), 1) or task_ref not in record['refs']):
             raise RecoveryBlocked('invalid_execution_budgets_or_task_binding')
         report['call_count'], report['run_count'] = execution['base_call_count'], execution['base_run_count']
+        final_kind = 'typed_agent_run' if typed_v2 else 'fba_agent_run' if fba_v2 else 'agent_run'
+        allowed_kinds = ('agent_invocation', final_kind, 'agent_recovery')
         inventory = _inventory(store)
         grouped = {}
         for ref, envelope in inventory.items():
             payload = envelope['payload']
-            if envelope['kind'] in ('agent_invocation', 'agent_run', 'agent_recovery') and not isinstance(payload, dict):
+            if envelope['kind'] in allowed_kinds and not isinstance(payload, dict):
                 raise RecoveryBlocked('malformed_recovery_object')
             if not isinstance(payload, dict) or payload.get('execution_ref') != execution_ref:
                 continue
-            if envelope['kind'] not in ('agent_invocation', 'agent_run', 'agent_recovery'):
+            if envelope['kind'] not in allowed_kinds:
                 continue
             store.get(ref)  # full reference verification, without index repairs
-            if envelope['kind'] == 'agent_run':
+            if envelope['kind'] == final_kind:
                 if payload.get('task_ref') != task_ref or execution_ref not in envelope['refs']:
                     raise RecoveryBlocked('invalid_final_run_binding')
                 report['final_run_refs'].append(ref)
@@ -283,7 +395,7 @@ def diagnose_execution(store, execution_ref):
         for sequence, operation in enumerate(pairs, 1):
             res, term = operation['reserved'], operation['terminal']
             calls += int(res['name'] == 'respond')
-            runs += int(res['name'] in ('run', 'run_study'))
+            runs += int(res['name'] in ('run', 'run_study', 'run_fba', 'run_typed', 'run_estimation'))
             if (res['sequence'] != sequence or not _count(res.get('call_count'), max_calls)
                     or not _count(res.get('run_count'), 1) or res['call_count'] != calls or res['run_count'] != runs):
                 raise RecoveryBlocked('journal_sequence_or_budget_mismatch')
@@ -307,6 +419,10 @@ def diagnose_execution(store, execution_ref):
         initial_sources = execution['recovery']['source_refs']
         if any(ref not in record['refs'] for ref in initial_sources):
             raise RecoveryBlocked('initial_sources_missing_from_execution_refs')
+        if fba_v2 and task['model_ref'] not in record['refs']:
+            raise RecoveryBlocked('initial_fba_model_missing_from_execution_refs')
+        if typed_v2 and not {task['model_ref'],task['input_ref']}<=set(record['refs']):
+            raise RecoveryBlocked('initial_typed_model_or_input_missing')
         ordered_refs = [ref for op in pairs for ref in (op['reserved_ref'], op['terminal_ref']) if ref]
         for receipt_ref in report['recovery_refs']:
             receipt_record = store.get(receipt_ref)
@@ -333,6 +449,13 @@ def diagnose_execution(store, execution_ref):
                     or cp['payload'].get('invocation_refs') != ordered_refs
                     or set(final.get('recovery_refs', [])) != set(report['recovery_refs'])):
                 raise RecoveryBlocked('final_run_journal_mismatch')
+            if fba_v2 and (type(final.get('run_count')) is not int or final['run_count'] != runs
+                    or cp['payload'].get('run_count') != runs or final.get('model_ref') != task['model_ref']):
+                raise RecoveryBlocked('final_fba_model_or_run_budget_mismatch')
+            if typed_v2 and (type(final.get('run_count')) is not int or final['run_count']!=runs
+                    or cp['payload'].get('run_count')!=runs or final.get('model_ref')!=task['model_ref']
+                    or final.get('input_ref')!=task['input_ref'] or final.get('model_type')!=task['model_type']):
+                raise RecoveryBlocked('final_typed_model_input_or_budget_mismatch')
         report['status'] = ('blocked' if report['reasons'] else
                             'finished' if report['final_run_refs'] else 'ready')
     except (ValueError, KeyError, TypeError, OSError, IndexError) as exc:
@@ -397,11 +520,13 @@ class ReplayJournal:
         if name == 'respond':
             self.last_usage = out.get('usage', {})
             return json.loads(out['response_json'])
-        if name == 'submit_draft':
+        if name in ('submit_draft', 'submit_plan'):
             out['artifact'] = (from_dict(ModelArtifact, self._store.get(out['model_ref'])['payload'])
                                if out.get('model_ref') else None)
-        elif name in ('run', 'run_study'):
+        elif name in ('run', 'run_study', 'run_fba', 'run_typed', 'run_estimation'):
             return out['result_ref']
+        elif name == 'request_estimation':
+            return out['request_ref']
         elif name == 'inspect_source':
             args = res['details']['args']
             page = next((p['text'] for p in self._store.get(args['source_ref'])['payload']['pages']

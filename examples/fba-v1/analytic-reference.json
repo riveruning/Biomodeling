@@ -1,0 +1,6 @@
+{
+  "reference": {
+    "objective": 10.0,
+    "source": "Analytic: uptake <= 10 and uptake = biomass, maximize biomass"
+  }
+}

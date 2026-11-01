@@ -181,7 +181,10 @@ def test_reported_token_and_model_identity_mismatches_stop_before_tool_effect(ad
 
 
 def test_hard_deadline_terminates_slow_provider(adapters,tmp_path):
-    p=projection(adapters); p['budget']['max_elapsed_seconds']=.2
+    # Leave room for process/store startup so this checks interruption of an
+    # entered provider call. A 0.2s window can expire before dispatch under a
+    # full-suite load, correctly reporting zero requests instead.
+    p=projection(adapters); p['budget']['max_elapsed_seconds']=1.
     start=time.monotonic()
     out=adapters.run_trial(p,EnvelopeTransport(p,[action('finish')],delay=5),tmp_path/'timeout')
     assert time.monotonic()-start<3

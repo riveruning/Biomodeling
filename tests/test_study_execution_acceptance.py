@@ -189,7 +189,7 @@ def test_global_budget_is_consumed_across_phases_and_candidates(tmp_path, monkey
 def test_legacy_v1_plan_is_preserved_and_execution_default_is_disclosed(tmp_path):
     from pathlib import Path
     original = json.loads((Path(__file__).resolve().parents[1] /
-        'artifacts/audit-t04-study-execution-20261019/baseline-plan-v1.json').read_text())['payload']
+        'tests/fixtures/baseline-plan-v1.json').read_text())['payload']
     store = ArtifactStore(tmp_path / 'store')
     ref = store.put(studies.PLAN_KIND, original)
     before = deepcopy(store.get(ref))

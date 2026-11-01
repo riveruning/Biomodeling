@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "model_type": "individual",
+  "id": "lattice_cells",
+  "units": {
+    "time": "sweep",
+    "space": "lattice_site"
+  },
+  "width": 8,
+  "height": 8,
+  "boundary": "closed",
+  "initial": [
+    [
+      3,
+      3
+    ],
+    [
+      4,
+      4
+    ]
+  ],
+  "probabilities": {
+    "death": 0.05,
+    "move": 0.5,
+    "divide": 0.3
+  }
+}

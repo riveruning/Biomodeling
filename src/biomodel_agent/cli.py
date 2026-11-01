@@ -160,8 +160,8 @@ def _cmd_agent(args) -> int:
     from .evidence import ingest_source
     from .llm import ChatProvider
     from . import agent as agent_mod
-    if not args.source:
-        return _fail("agent requires at least one --source")
+    if not args.source and not args.source_ref and not args.estimation_plan_ref:
+        return _fail("agent requires at least one --source or --source-ref")
     try:
         base_url = args.base_url or os.environ.get("BIOMODEL_BASE_URL")
         model = args.model or os.environ.get("BIOMODEL_MODEL")
@@ -170,9 +170,16 @@ def _cmd_agent(args) -> int:
             return _fail("missing LLM settings: set BIOMODEL_BASE_URL / BIOMODEL_MODEL and the API key env var")
         store = ArtifactStore(args.store)
         materials = [ingest_source(store,p, pdf_parser=args.pdf_parser, pdf_timeout_s=args.pdf_timeout) for p in args.source]
+        materials.extend(args.source_ref)
         provider = ChatProvider(base_url=base_url, model=model, api_key_env=args.api_key_env,
                                 json_mode=args.json_mode)
-        if args.study_plan_ref:
+        if args.estimation_plan_ref:
+            from .estimation import load_plan
+            plan = load_plan(store, args.estimation_plan_ref)
+            if not materials:
+                materials = plan['config']['source_refs'][:]
+            exp_data = _load_json(args.experiment, 'experiment JSON') if args.experiment else plan['config']['training'][0]['experiment']
+        elif args.study_plan_ref:
             from .studies import load_plan
             plan = load_plan(store, args.study_plan_ref)
             exp_data = _load_json(args.experiment, "experiment JSON") if args.experiment else plan['config']['training'][0]['experiment']
@@ -184,14 +191,57 @@ def _cmd_agent(args) -> int:
         ref = agent_mod.run_agent(store,provider,materials,experiment,mode=args.mode,
                                   allowed_mechanisms=tuple(args.allowed_mechanism),max_calls=args.max_calls,
                                   memory_project=args.memory_project, memory_model_ref=args.memory_model_ref,
+                                  memory_context=_load_json(args.memory_context, 'memory context') if args.memory_context else None,
+                                  experience_proposals=args.experience_proposals,
                                   study_plan_ref=args.study_plan_ref, context_max_chars=args.context_max_chars,
-                                  retrieval_method=args.retrieval_method)
+                                  estimation_requests=args.estimation_requests, estimation_plan_ref=args.estimation_plan_ref,
+                                  modeling_decisions=args.modeling_decisions,
+                                  modeling_context=_load_json(args.modeling_context, 'modeling context') if args.modeling_context else None,
+                                  retrieval_method=args.retrieval_method,
+                                  knowledge_databases=args.knowledge_database,
+                                  parameter_requirements=_load_json(args.parameter_requirements, 'parameter requirements JSON') if args.parameter_requirements else None,
+                                  task_planning=args.task_planning, failure_handling=args.failure_handling, scientific_skills=args.scientific_skills)
 
     except Exception as exc:
         return _fail(f"agent failed: {exc}")
     state = store.get(ref)["payload"]["state"]
     print(json.dumps({"ref": ref, "mode": args.mode, "state":state}))
     return 0 if state == "completed" else 2
+
+
+def _cmd_knowledge(args):
+    from . import knowledge
+    from .storage import ArtifactStore
+    try:
+        store = ArtifactStore(args.store)
+        if args.command == 'knowledge-search':
+            result = knowledge.search(store, args.database, args.query, args.limit)
+        elif args.command == 'knowledge-files':
+            result = knowledge.model_files(store, args.identifier)
+        else:
+            result = knowledge.fetch(store, args.database, args.identifier, args.filename)
+            if args.output:
+                if args.database != 'biomodels':
+                    raise ValueError('--output is only supported for BioModels SBML')
+                source = store.get(result['source_ref'])['payload']
+                with open(args.output, 'xb') as stream:
+                    stream.write(store.get_blob(source['blob_ref']))
+                result['output'] = args.output
+    except (ValueError, OSError) as exc:
+        return _fail(f'knowledge access failed: {exc}')
+    print(json.dumps(result, ensure_ascii=False, allow_nan=False))
+    return 0
+
+
+def _cmd_parameter_source(args):
+    from .parameter_sources import prepare
+    from .storage import ArtifactStore
+    try:
+        result = prepare(ArtifactStore(args.store), args.source_ref, args.target, args.parameter_index, args.unit)
+    except (ValueError, OSError) as exc:
+        return _fail(f'parameter preparation failed: {exc}')
+    print(json.dumps(result, ensure_ascii=False, allow_nan=False))
+    return 0
 
 
 def _cmd_source_ingest(args):
@@ -222,9 +272,13 @@ def _cmd_agent_resume(args) -> int:
     try:
         store = ArtifactStore(args.store)
         previous = store.get(args.ref)
-        if previous['kind'] != 'agent_run' or not previous['payload'].get('task_ref'):
+        if previous['kind'] not in ('agent_run', 'fba_agent_run','typed_agent_run') or not previous['payload'].get('task_ref'):
             return _fail("run has no recoverable task configuration")
         task = store.get(previous['payload']['task_ref'])['payload']
+        if previous['kind'] == 'fba_agent_run' and task.get('fba_protocol') != 'fba_agent_v2':
+            return _fail('legacy FBA records have no recovery snapshot; start a new recoverable task')
+        if previous['kind']=='typed_agent_run' and task.get('typed_protocol')!='typed_agent_v2':
+            return _fail('legacy typed records have no recovery snapshot; start a new recoverable task')
         config = task['provider']
         base_url = args.base_url or os.environ.get('BIOMODEL_BASE_URL')
         if not base_url or not os.environ.get(args.api_key_env):
@@ -237,7 +291,7 @@ def _cmd_agent_resume(args) -> int:
         payload = store.get(ref)['payload']
     except Exception as exc:
         return _fail(f"agent resume failed: {exc}")
-    print(json.dumps({'ref': ref, 'state': payload['state'], 'mode': payload['mode'],
+    print(json.dumps({'ref': ref, 'state': payload['state'], 'mode': payload.get('mode', payload.get('model_type')),
                       'call_count': payload['call_count'], 'parent_run_ref': args.ref}))
     return 0 if payload['state'] == 'completed' else 2
 
@@ -326,6 +380,40 @@ def _cmd_export(args):
     return 0
 
 
+def _cmd_memory_candidate(args):
+    from .storage import ArtifactStore
+    from . import memory_candidates
+    try:
+        store = ArtifactStore(args.store)
+        operation = args.candidate_operation
+        if operation == 'propose':
+            result = {'candidate_ref': memory_candidates.propose(store, args.ref, project_id=args.project,
+                       author=args.author, applicability=args.applicability,
+                       conditions=_load_json(args.conditions, 'memory conditions') if args.conditions else None)}
+        elif operation == 'inspect':
+            result = memory_candidates.inspect(store, args.ref)
+        elif operation == 'review':
+            result = {'review_ref': memory_candidates.review(store, args.ref, decision=args.decision,
+                      reviewer=args.reviewer, reason=args.reason)}
+        else:
+            result = {'memory_ref': memory_candidates.activate(store, args.ref)}
+    except Exception as exc:
+        return _fail(f'memory candidate {args.candidate_operation} failed: {exc}')
+    print(json.dumps(result, ensure_ascii=False))
+    return 0
+
+
+def _cmd_agent_progress(args):
+    from .storage import ArtifactStore
+    from .workstate import from_run
+    try:
+        result = from_run(ArtifactStore(args.store), args.ref)
+    except Exception as exc:
+        return _fail(f'agent progress failed: {exc}')
+    print(json.dumps(result, ensure_ascii=False))
+    return 0
+
+
 def _cmd_memory_add(args):
     from .storage import ArtifactStore
     from .memory import remember
@@ -333,10 +421,31 @@ def _cmd_memory_add(args):
         ref = remember(ArtifactStore(args.store), project_id=args.project,
                        content=_read_text(args.content_file), category=args.category, author=args.author,
                        source_refs=args.source_ref, model_ref=args.model_ref,
-                       supersedes=args.supersedes, reason=args.reason)
+                       supersedes=args.supersedes, reason=args.reason,
+                       conditions=_load_json(args.conditions, 'memory conditions') if args.conditions else None,
+                       depends_on=args.depends_on)
     except Exception as exc:
         return _fail(f'memory add failed: {exc}')
     print(json.dumps({'memory_ref': ref, 'authority': 'operator_assertion'}))
+    return 0
+
+
+def _cmd_memory_architecture(args):
+    from .storage import ArtifactStore
+    from . import memory, memory_candidates
+    try:
+        store = ArtifactStore(args.store)
+        if args.command == 'memory-invalidate':
+            value = {'invalidation_ref': memory.invalidate_dependency(store, args.project, args.ref,
+                     author=args.author, reason=args.reason)}
+        elif args.command == 'experience-derive':
+            value = {'derivation_ref': memory_candidates.derive_for_run(store, args.run_ref)}
+        else:
+            refs = memory_candidates.derivations(store, args.run_ref)
+            value = {'run_ref': args.run_ref, 'derivations': [dict(ref=ref, **store.get(ref)['payload']) for ref in refs]}
+    except (ValueError, TypeError, KeyError, OSError) as exc:
+        return _fail(str(exc))
+    print(json.dumps(value, ensure_ascii=False))
     return 0
 
 
@@ -345,7 +454,8 @@ def _cmd_memory_search(args):
     from .memory import snapshot, recall
     try:
         store = ArtifactStore(args.store)
-        scope = snapshot(store, project_id=args.project, model_ref=args.model_ref, source_refs=args.source_ref)
+        scope = snapshot(store, project_id=args.project, model_ref=args.model_ref, source_refs=args.source_ref,
+                         context=_load_json(args.context, 'memory context') if args.context else None)
         result = recall(store, scope, args.query, source_refs=args.source_ref)
     except Exception as exc:
         return _fail(f'memory search failed: {exc}')
@@ -408,9 +518,301 @@ def _cmd_study_run(args):
     return 0 if summary['completion_eligible'] else 1
 
 
+def _cmd_fba(args):
+    from .storage import ArtifactStore
+    from . import fba
+    try:
+        store=ArtifactStore(args.store)
+        if args.command=='fba-import':
+            ref=fba.import_model(store,args.path,format=args.format)
+            print(json.dumps(dict(ref=ref,model_type='fba')));return 0
+        if args.command=='fba-replay':
+            ref=fba.replay(store,args.ref)
+        elif args.command=='agent-fba':
+            from .llm import ChatProvider
+            from .agent import run_model_agent
+            base=args.base_url or os.environ.get('BIOMODEL_BASE_URL')
+            model=args.model or os.environ.get('BIOMODEL_MODEL')
+            if not base or not model or not os.environ.get(args.api_key_env):
+                return _fail('missing FBA Agent LLM settings; no service called')
+            provider=ChatProvider(base_url=base,model=model,api_key_env=args.api_key_env)
+            ref=run_model_agent(store,provider,model_type='fba',model_ref=args.ref,
+                settings=_load_json(args.config,'FBA settings') if args.config else None,max_calls=args.max_calls,
+                recoverable=args.recoverable,context_max_chars=args.context_max_chars)
+            result=store.get(ref)['payload']
+            print(json.dumps(dict(ref=ref,state=result['state'],model_type='fba')))
+            return 0 if result['state']=='completed' else 2
+        else:
+            ref=fba.run(store,args.ref,_load_json(args.config,'FBA settings') if args.config else None)
+        result=fba.summary(store,ref)
+        print(json.dumps(dict(ref=ref,**result)))
+        return 0 if result['completion_eligible'] else 2
+    except Exception as exc:
+        return _fail('FBA failed: '+str(exc))
+
+
+def _cmd_case(args):
+    from . import case_library as cases
+    from .storage import ArtifactStore
+    try:
+        if args.command=='case-search':value=cases.search(args.query)
+        elif args.command=='case-inspect':value=cases.inspect(args.id,args.version)
+        else:
+            store=ArtifactStore(args.store)
+            if args.command=='case-load':
+                ref=cases.load(store,args.id,args.version)
+            elif args.command=='case-run':ref=cases.run(store,args.material_ref)
+            else:
+                ref=cases.propose(store,args.material_ref,args.source_ref,proposed_version=args.proposed_version,
+                                  summary=args.summary,applicability=args.applicability,author=args.author)
+            value={'ref':ref,**store.get(ref)['payload']}
+        print(json.dumps(value,ensure_ascii=False,indent=2))
+        if args.command=='case-run' and value['status']!='numeric_diagnostic_pass':return 2
+        return 0
+    except (ValueError,KeyError,TypeError,OSError) as exc:return _fail(str(exc))
+
+
+def _cmd_jats(args):
+    from .storage import ArtifactStore
+    from . import jats_sources
+    try:
+        store=ArtifactStore(args.store)
+        if args.command=='source-jats':
+            ref=jats_sources.ingest(store,args.path,args.section,_load_json(args.assets,'asset map') if args.assets else None)
+        else:
+            ref=jats_sources.transcribe(store,args.source_ref,_load_json(args.candidates,'visual candidates'),args.actor,args.notes)
+        p=store.get(ref)['payload']
+        print(json.dumps({'source_ref':ref,'parser':p['parser'],'warnings':p['warnings']},ensure_ascii=False))
+        return 0
+    except (ValueError,KeyError,TypeError,OSError) as exc:
+        return _fail(str(exc))
+
+
+def _cmd_paper(args):
+    from .storage import ArtifactStore
+    from . import paper_reference as paper
+    try:
+        store=ArtifactStore(args.store)
+        if args.command=='paper-reference':ref=paper.prepare_reference(store,args.image,_load_json(args.calibration,'calibration'))
+        elif args.command=='paper-protocol':ref=paper.protocol(store,args.reference_ref,args.model_ref,_load_json(args.protocol,'protocol'))
+        else:ref=paper.compare(store,args.protocol_ref,args.run_ref)
+    except (ValueError,KeyError,TypeError,OSError) as exc:return _fail(str(exc))
+    print(ref)
+    return 0
+
+
+def _cmd_estimation(args):
+    from .storage import ArtifactStore
+    from . import estimation
+    try:
+        store = ArtifactStore(args.store)
+        if args.command == 'estimate-prepare':
+            ref = estimation.prepare_plan(store, _load_json(args.config, 'estimation protocol'))
+            output = estimation.plan_summary(store, ref)
+        elif args.command == 'estimate-plan':
+            output = estimation.plan_summary(store, args.ref)
+        elif args.command == 'estimate-status':
+            output = estimation.status(store, args.ref)
+        elif args.command == 'estimate-request':
+            from .estimation_workflow import REQUEST
+            obj = store.get(args.ref)
+            if obj['kind'] != REQUEST:
+                raise ValueError('expected estimation request')
+            output = dict(request_ref=args.ref, **obj['payload'])
+        elif args.command == 'estimate-review':
+            from .estimation_workflow import review
+            ref = review(store, args.ref, decision=args.decision, reviewer=args.reviewer, reason=args.reason,
+                         acknowledged_unresolved=args.acknowledge)
+            output = dict(review_ref=ref, **store.get(ref)['payload'])
+        elif args.command == 'estimate-candidate':
+            from .estimation_workflow import prepare_candidate
+            ref = prepare_candidate(store, args.ref)
+            output = dict(candidate_ref=ref, **store.get(ref)['payload'])
+        elif args.command == 'estimate-run':
+            ref = estimation.execute(store, args.ref)
+            output = dict(result_ref=ref, **estimation.result_summary(store, ref))
+        else:
+            output = estimation.result_summary(store, args.ref)
+    except Exception as exc:
+        return _fail(f'estimation failed: {exc}')
+    print(json.dumps(output, ensure_ascii=False, allow_nan=False))
+    return 0 if output.get('execution_status', 'succeeded') == 'succeeded' else 2
+
+
+def _cmd_exploration(args):
+    from .storage import ArtifactStore
+    from . import exploration
+    try:
+        store = ArtifactStore(args.store)
+        if args.command == 'estimate-explore-prepare':
+            ref = exploration.prepare_plan(store, args.candidate_ref, _load_json(args.config, 'exploration protocol'))
+            output = exploration.plan_summary(store, ref)
+        elif args.command == 'estimate-explore-run':
+            ref = exploration.execute(store, args.ref)
+            output = exploration.result_summary(store, ref)
+        elif args.command == 'estimate-explore-status':
+            output = exploration.status(store, args.ref)
+        else:
+            output = exploration.result_summary(store, args.ref)
+    except Exception as exc:
+        return _fail(f'exploration failed: {exc}')
+    print(json.dumps(output, ensure_ascii=False, allow_nan=False))
+    return 0 if output.get('status', 'succeeded') == 'succeeded' else 2
+
+
+def _cmd_typed(args):
+    from . import typed_models as models
+    from .storage import ArtifactStore
+    try:
+        if args.command=='model-types':
+            print(json.dumps(models.capabilities(), ensure_ascii=False)); return 0
+        store = ArtifactStore(args.store)
+        if args.command=='typed-import':
+            ref = models.import_model(store, args.path)
+            print(json.dumps(dict(ref=ref, model_type=models.load(store,ref)['model_type']))); return 0
+        if args.command=='typed-status':
+            out = models.status(store, args.ref)
+            print(json.dumps(out)); return 0 if out['state']!='unknown_effects' else 2
+        if args.command=='typed-replay':
+            ref = models.replay(store, args.ref)
+        elif args.command=='typed-execute':
+            ref = models.execute(store, args.ref)
+        else:
+            settings = _load_json(args.config, 'native model settings') if args.config else None
+            if args.command=='typed-prepare':
+                ref = models.prepare(store,args.ref,settings)
+                print(json.dumps(dict(ref=ref,state='ready'))); return 0
+            if args.command=='agent-typed':
+                from .agent import run_model_agent
+                from .llm import ChatProvider
+                models.load(store, args.ref, model_type=args.model_type)
+                base = args.base_url or os.environ.get('BIOMODEL_BASE_URL')
+                model = args.model or os.environ.get('BIOMODEL_MODEL')
+                if not base or not model or not os.environ.get(args.api_key_env):
+                    return _fail('missing native Agent LLM settings; no service called')
+                provider = ChatProvider(base_url=base,model=model,api_key_env=args.api_key_env)
+                ref = run_model_agent(store,provider,model_type=args.model_type,model_ref=args.ref,settings=settings,max_calls=args.max_calls,
+                    recoverable=args.recoverable,context_max_chars=args.context_max_chars)
+                out = store.get(ref)['payload']
+                print(json.dumps(dict(ref=ref,state=out['state'],model_type=out['model_type']))); return 0 if out['state']=='completed' else 2
+            ref = models.run(store,args.ref,settings)
+        out = models.summary(store,ref)
+        print(json.dumps(dict(ref=ref,**out))); return 0 if out['completion_eligible'] else 2
+    except Exception as exc:
+        return _fail('native modeling failed: '+str(exc))
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(prog="biomodel_agent", description="Fact-driven biology model reproduction CLI")
     sub = parser.add_subparsers(dest="command", required=True)
+    from .modeling_cli import register as register_modeling_commands
+    register_modeling_commands(sub, _add_store)
+    from .workspace_tools import register as register_workspace_commands
+    register_workspace_commands(sub)
+    from .research_cli import register as register_research_commands
+    register_research_commands(sub,_add_store)
+    from .research_project_cli import register as register_project_commands
+    register_project_commands(sub,_add_store)
+    from .task_proposal_cli import register as register_proposal_commands
+    register_proposal_commands(sub,_add_store)
+    from .workbench_server import register as register_workbench_commands
+    register_workbench_commands(sub,_add_store)
+    p = sub.add_parser('model-types', help='list explicit modeling profiles and limitations')
+    p.set_defaults(func=_cmd_typed)
+    p = sub.add_parser('typed-import', help='import strict native stochastic/PDE/Boolean/individual JSON')
+    _add_store(p); p.add_argument('path'); p.set_defaults(func=_cmd_typed)
+    for command in ('typed-prepare', 'typed-execute', 'typed-run', 'typed-replay', 'typed-status', 'agent-typed'):
+        p = sub.add_parser(command, help='bounded native model execution; no automatic method inference')
+        _add_store(p); p.add_argument('ref')
+        if command in ('typed-prepare', 'typed-run', 'agent-typed'):
+            p.add_argument('--config', help='JSON settings for the explicit native profile')
+        if command=='agent-typed':
+            from .typed_models import TYPES
+            p.add_argument('--model-type', choices=TYPES, required=True)
+            p.add_argument('--base-url'); p.add_argument('--model'); p.add_argument('--api-key-env', default='BIOMODEL_API_KEY')
+            p.add_argument('--max-calls', type=int, default=6)
+            p.add_argument('--recoverable',action='store_true',help='enable native typed v2 pause and verified recovery')
+            p.add_argument('--context-max-chars',type=int,default=60000)
+        p.set_defaults(func=_cmd_typed)
+    p = sub.add_parser('estimate-explore-prepare', help='freeze explicit exploration of a reviewed estimated-model candidate')
+    _add_store(p); p.add_argument('--candidate-ref', required=True); p.add_argument('--config', required=True)
+    p.set_defaults(func=_cmd_exploration)
+    for command in ('estimate-explore-run', 'estimate-explore-show', 'estimate-explore-status'):
+        p = sub.add_parser(command, help='explicit exploratory execution/inspection; no strict paper reproduction claim')
+        _add_store(p); p.add_argument('ref'); p.set_defaults(func=_cmd_exploration)
+    p = sub.add_parser('estimate-prepare', help='freeze a separate explicit bounded ODE estimation branch')
+    _add_store(p); p.add_argument('--config', required=True); p.set_defaults(func=_cmd_estimation)
+    for command in ('estimate-plan', 'estimate-status', 'estimate-run', 'estimate-show', 'estimate-request', 'estimate-candidate'):
+        p = sub.add_parser(command, help='inspect/execute frozen estimation; candidate values only, no automatic adoption')
+        _add_store(p); p.add_argument('ref'); p.set_defaults(func=_cmd_estimation)
+    p = sub.add_parser('estimate-review', help='explicit operator review for exploration; never scientific certification')
+    _add_store(p); p.add_argument('ref'); p.add_argument('--decision', choices=['approved_for_exploration','rejected'], required=True)
+    p.add_argument('--reviewer', required=True); p.add_argument('--reason', required=True)
+    p.add_argument('--acknowledge', action='append', default=[], help='explicitly acknowledge each unresolved result item for exploratory approval')
+    p.set_defaults(func=_cmd_estimation)
+    p=sub.add_parser('case-search',help='search pinned seen-development reuse metadata, without loading source/reference files')
+    p.add_argument('--query',default='');p.set_defaults(func=_cmd_case)
+    for command in ('case-inspect','case-load'):
+        p=sub.add_parser(command,help='inspect/load an explicit versioned reuse case; no model execution')
+        p.add_argument('--id',required=True);p.add_argument('--version',default='1.0.0')
+        if command=='case-load':_add_store(p)
+        p.set_defaults(func=_cmd_case)
+    p=sub.add_parser('case-run',help='explicit new deterministic run of an immutable loaded case; not task resume')
+    _add_store(p);p.add_argument('--material-ref',required=True);p.set_defaults(func=_cmd_case)
+    p=sub.add_parser('case-propose',help='quarantine an attributed knowledge candidate; never publish or activate it')
+    _add_store(p);p.add_argument('--material-ref',required=True);p.add_argument('--source-ref',action='append',required=True)
+    for name in ('proposed-version','summary','applicability','author'):p.add_argument('--'+name,required=True)
+    p.set_defaults(func=_cmd_case)
+    p=sub.add_parser('source-jats',help='project a single JATS section with explicit unresolved image/MathML/table anchors')
+    _add_store(p)
+    p.add_argument('--path',required=True);p.add_argument('--section',required=True);p.add_argument('--assets')
+    p.set_defaults(func=_cmd_jats)
+    p=sub.add_parser('source-transcript',help='new attributed visual-candidate source; independent review remains pending')
+    _add_store(p)
+    for name in ('source-ref','candidates','actor','notes'):p.add_argument('--'+name,required=True)
+    p.set_defaults(func=_cmd_jats)
+    for command,fields in [('paper-reference',('image','calibration')),('paper-protocol',('reference-ref','model-ref','protocol')),('paper-compare',('protocol-ref','run-ref'))]:
+        p=sub.add_parser(command,help='retrospective image feature diagnostic; requires figures extra')
+        _add_store(p)
+        for field in fields:p.add_argument('--'+field,required=True)
+        p.set_defaults(func=_cmd_paper)
+
+    p=sub.add_parser('fba-import',help='import a bounded native FBA JSON or strict FBC v2 model')
+    p.add_argument('path');p.add_argument('--format',choices=('json','fbc'),default='json');_add_store(p)
+    p.set_defaults(func=_cmd_fba)
+    for name in ('fba-run','fba-replay','agent-fba'):
+        p=sub.add_parser(name,help='execute a frozen steady-state FBA model or replay')
+        p.add_argument('ref');_add_store(p)
+        if name!='fba-replay':p.add_argument('--config',help='JSON with method, timeout_s and optional frozen scalar reference')
+        if name=='agent-fba':
+            p.add_argument('--recoverable',action='store_true',help='new FBA v2 task with checkpoints, attributed pause/reply and verified recovery')
+            p.add_argument('--context-max-chars',type=int,default=60000,help='message-JSON context budget; custom values require --recoverable')
+            p.add_argument('--base-url');p.add_argument('--model');p.add_argument('--api-key-env',default='BIOMODEL_API_KEY')
+            p.add_argument('--max-calls',type=int,default=6)
+        p.set_defaults(func=_cmd_fba)
+
+    p = sub.add_parser('parameter-source', help='prepare a recomputable native SABIO-RK parameter source for a new task')
+    _add_store(p)
+    p.add_argument('source_ref', help='previously imported SABIO-RK source')
+    p.add_argument('--target', required=True, help='explicit model symbol/value mapping')
+    p.add_argument('--parameter-index', type=int, required=True, help='original kineticlaw.parameter index')
+    p.add_argument('--unit', required=True, help='explicit target unit; supported conversions only')
+    p.set_defaults(func=_cmd_parameter_source)
+
+    for name in ('knowledge-search', 'knowledge-files', 'knowledge-fetch'):
+        p = sub.add_parser(name, help='query or import public BioModels/SABIO-RK records')
+        _add_store(p)
+        if name != 'knowledge-files':
+            p.add_argument('--database', choices=['biomodels', 'sabiork'], required=True)
+        if name == 'knowledge-search':
+            p.add_argument('--query', required=True, help='public database query; sent to the selected service')
+            p.add_argument('--limit', type=int, default=5)
+        else:
+            p.add_argument('identifier')
+            if name == 'knowledge-fetch':
+                p.add_argument('--filename', help='BioModels XML/SBML filename; auto-select only one primary XML')
+                p.add_argument('--output', help='save BioModels SBML to a new file; never overwrite')
+        p.set_defaults(func=_cmd_knowledge)
 
     p = sub.add_parser('source-ingest', help='ingest local evidence without invoking an LLM')
     p.add_argument('path')
@@ -447,8 +849,11 @@ def main(argv: list[str] | None = None) -> int:
 
     p = sub.add_parser("agent", help="LLM-guided reproduction or hypothesis study")
     _add_pdf_options(p)
-    p.add_argument("--source", action="append", required=True)
-    p.add_argument("--experiment", help="required unless a study plan supplies the experiment")
+    p.add_argument("--source", action="append", default=[])
+    p.add_argument('--source-ref', action='append', default=[], help='imported source in the same store')
+    p.add_argument('--knowledge-database', action='append', default=[], choices=['biomodels', 'sabiork'],
+                   help='enable advisory public database search; query text is sent externally')
+    p.add_argument("--experiment", help="required unless a frozen study/estimation plan supplies the experiment")
     _add_store(p)
     p.add_argument("--base-url")
     p.add_argument("--model")
@@ -464,7 +869,17 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument("--allowed-mechanism", action="append", default=[])
     p.add_argument("--memory-project", help="explicit project namespace for advisory memory")
     p.add_argument("--memory-model-ref", help="optional model scope within the memory project")
+    p.add_argument('--memory-context', help='JSON of declared exact-match applicability labels; no automatic scientific inference')
+    p.add_argument('--experience-proposals', action='store_true', help='opt-in post-run tool-derived candidate; never auto-approve/activate')
     p.add_argument("--study-plan-ref", help="operator-frozen adaptation study plan; requires hypothesis mode")
+    p.add_argument('--estimation-requests', action='store_true', help='allow ordinary Agent to propose a separate estimation protocol, without fitting')
+    p.add_argument('--estimation-plan-ref', help='operator-frozen separate estimation branch; ends for explicit result review')
+    p.add_argument('--parameter-requirements', help='JSON file freezing parameter units and explicit context requirements')
+    p.add_argument('--scientific-skills', action='store_true', help='enable frozen scientific procedures and artifact-based checks')
+    p.add_argument('--failure-handling', action='store_true', help='enable bounded ODE failure repair, local investigation and stop routes')
+    p.add_argument('--task-planning', action='store_true', help='enable bounded ODE task plans, dependencies and audited revisions')
+    p.add_argument('--modeling-decisions', action='store_true', help='opt-in reproduction through explicit modeling plans; submit_draft is disabled')
+    p.add_argument('--modeling-context', help='JSON of operator-frozen conditions for decision-plan evidence')
     p.set_defaults(func=_cmd_agent)
 
     p = sub.add_parser("agent-resume", help="continue an awaiting-input agent with a researcher reply")
@@ -507,6 +922,26 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument('--output',required=True)
     p.set_defaults(func=_cmd_export)
 
+    p = sub.add_parser('agent-progress', help='show derived steps, gaps, parameter provenance and failure routes')
+    _add_store(p)
+    p.add_argument('ref', help='agent_run or agent_checkpoint reference')
+    p.set_defaults(func=_cmd_agent_progress)
+
+    for operation in ('propose', 'inspect', 'review', 'activate'):
+        p = sub.add_parser('memory-candidate-' + operation, help='candidate experience: ' + operation)
+        _add_store(p)
+        p.add_argument('ref', help='agent_run, candidate, or approved review reference as appropriate')
+        if operation == 'propose':
+            p.add_argument('--project', required=True)
+            p.add_argument('--author', required=True)
+            p.add_argument('--applicability', required=True)
+            p.add_argument('--conditions', help='JSON of explicit applicability labels')
+        elif operation == 'review':
+            p.add_argument('--decision', required=True, choices=['approved', 'rejected'])
+            p.add_argument('--reviewer', required=True)
+            p.add_argument('--reason', required=True)
+        p.set_defaults(func=_cmd_memory_candidate, candidate_operation=operation)
+
     p = sub.add_parser('memory-add', help='record or supersede an attributed advisory memory')
     _add_store(p)
     p.add_argument('--project', required=True)
@@ -517,6 +952,8 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument('--model-ref')
     p.add_argument('--supersedes')
     p.add_argument('--reason', default='')
+    p.add_argument('--conditions', help='JSON of explicit applicability labels')
+    p.add_argument('--depends-on', action='append', default=[], help='active advisory memory required by this entry')
     p.set_defaults(func=_cmd_memory_add)
 
     p = sub.add_parser('memory-search', help='search active memories in an explicit project and source scope')
@@ -525,6 +962,7 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument('--query', required=True)
     p.add_argument('--source-ref', action='append', default=[])
     p.add_argument('--model-ref')
+    p.add_argument('--context', help='JSON of declared memory applicability labels')
     p.set_defaults(func=_cmd_memory_search)
 
     p = sub.add_parser('memory-retract', help='append a retraction without overwriting original memory')
@@ -533,6 +971,13 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument('--author', required=True)
     p.add_argument('--reason', required=True)
     p.set_defaults(func=_cmd_memory_retract)
+    p = sub.add_parser('memory-invalidate', help='append a project-scoped source/model/memory invalidation')
+    _add_store(p); p.add_argument('ref'); p.add_argument('--project', required=True)
+    p.add_argument('--author', required=True); p.add_argument('--reason', required=True)
+    p.set_defaults(func=_cmd_memory_architecture)
+    for command in ('experience-derive', 'experience-list'):
+        p = sub.add_parser(command, help='idempotent post-run proposal derivation/list; no new inference')
+        _add_store(p); p.add_argument('--run-ref', required=True); p.set_defaults(func=_cmd_memory_architecture)
 
     p = sub.add_parser('source-search', help='retrieve exact spans only from explicitly supplied sources')
     _add_store(p)

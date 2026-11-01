@@ -1,0 +1,62 @@
+{
+  "state": "passed",
+  "scope": "Clean Git-tree source distribution, without private runtime configuration or historical research archives.",
+  "candidate_git_tree": "5fb2d40798a20b69eee5f8cf7394a47d2e0fb089",
+  "files_in_tested_tree": 514,
+  "full": {
+    "tests": 2580,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 3,
+    "time_s": 854.93
+  },
+  "passed": 2577,
+  "skipped": [
+    {
+      "classname": "tests.test_published_competitor_integration",
+      "name": "test_official_sources_remain_unmodified",
+      "reason": "optional third-party source snapshots not downloaded"
+    },
+    {
+      "classname": "tests.test_published_competitor_integration",
+      "name": "test_complete_and_missing_initial_conditions_remain_distinct",
+      "reason": "optional paid integration trial not run"
+    },
+    {
+      "classname": "tests.test_reliability_benchmark",
+      "name": "test_frozen_inputs_and_reference_files_are_unchanged",
+      "reason": "optional development benchmark not prepared"
+    }
+  ],
+  "unchanged_runtime_input_files": 428,
+  "runtime_input_drift": [],
+  "implementation_sha256": "17e0266c1c9b47f0bc4d6e06b9301a53f4cdec05e97a0a0dc16358a5d89ddd59",
+  "matched_product_files": 91,
+  "clean_wheel_sha256": "40b0b34088e2030fb387d50ed74e54fab271f4387de6f1ec6216e95e067f8ede",
+  "node_offline": [
+    {
+      "log": "node-supervisor-linux.log",
+      "tests": 15,
+      "pass": 15,
+      "fail": 0,
+      "skipped": 0
+    },
+    {
+      "log": "node-runtime-linux.log",
+      "tests": 3,
+      "pass": 3,
+      "fail": 0,
+      "skipped": 0
+    }
+  ],
+  "local_archive_files_retained": 11798,
+  "online_model_requests": 0,
+  "independent_domain_review": "not_performed",
+  "scientific_support": "unknown",
+  "raw_evidence_sha256": {
+    "clean-full.xml": "e975dc3afe93c309cd2722264891bb7dfd5e08f76ebffc4cd9b36b53ff8aefce",
+    "clean-full.log": "d82607525ac0059e7152a4b8adbfe1e84f4aa20d11be054e28d04bc1047ed581",
+    "node-supervisor-linux.log": "22aa286fe0582d837f4bd54a25adb5237d61e5ae189b5664402fd237fe36c925",
+    "node-runtime-linux.log": "f728a6fbccfacce0fcbc561d517976f54e54389a50db2f4d796bf96e57685c16"
+  }
+}

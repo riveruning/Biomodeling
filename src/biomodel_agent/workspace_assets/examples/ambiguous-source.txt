@@ -1,0 +1,5 @@
+Synthetic development specification; not a real paper.
+Initial x = 1.
+Parameter k = 0.4.
+Protein x is degraded; the kinetic law is unspecified.
+Time is measured in seconds.

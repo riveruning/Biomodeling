@@ -296,9 +296,11 @@ def test_live_evidence_label_is_not_supported_by_offline_import(system):
     with pytest.raises(ValueError): system.validate_manifest(m)
 
 
-def test_product_actual_saved_record_imports_without_changing_scoring(system, tmp_path):
-    old = ROOT/'artifacts/audit-t08c-http-transport-20261019/http-mock-execution'
+def test_product_actual_saved_record_imports_without_changing_scoring(system, tmp_path, monkeypatch):
+    old = ROOT/'tests/fixtures/http-mock-execution'
     native_manifest = system._read(old/'manifest.json')
+    # Isolate historical import/scoring behavior from the installed toolchain.
+    monkeypatch.setattr(system.v1, 'implementation_fingerprint', lambda: native_manifest['toolchain_sha256'])
     records, receipts = system._read(old/'records.json'), system._read(old/'receipts.json')
     record = next(r for r in records if r['trial_id'] == 'domain_agent--decay--0--initial')
     receipt = next(r for r in receipts if r['trial_id'] == record['trial_id'])
@@ -421,8 +423,10 @@ def test_external_recording_is_still_not_authenticated_live_evidence(system, tmp
     assert system.score(m, [r])['semantic_support'] == 'unknown'
 
 
-def test_product_fixture_cannot_be_relabelled_external_recording(system, tmp_path):
-    old = ROOT/'artifacts/audit-t08c-http-transport-20261019/http-mock-execution'
+def test_product_fixture_cannot_be_relabelled_external_recording(system, tmp_path, monkeypatch):
+    old = ROOT/'tests/fixtures/http-mock-execution'
+    native_manifest = system._read(old/'manifest.json')
+    monkeypatch.setattr(system.v1, 'implementation_fingerprint', lambda: native_manifest['toolchain_sha256'])
     records = system._read(old/'records.json')
     record = next(r for r in records if r['trial_id'] == 'domain_agent--decay--0--initial')
     m = system.development_manifest(); m['evidence_kind'] = 'external_recording'

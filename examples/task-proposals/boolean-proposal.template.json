@@ -1,0 +1,119 @@
+{
+  "schema_version": 1,
+  "summary": "A literal two-node Boolean draft with source declarations.",
+  "evidence": [
+    {
+      "id": "E0",
+      "kind": "source",
+      "page": 1,
+      "quote": "Initial A = False.",
+      "source_ref": "SOURCE_REF"
+    },
+    {
+      "id": "E1",
+      "kind": "source",
+      "page": 1,
+      "quote": "Initial B = False.",
+      "source_ref": "SOURCE_REF"
+    },
+    {
+      "id": "E2",
+      "kind": "source",
+      "page": 1,
+      "quote": "Rule A = not B.",
+      "source_ref": "SOURCE_REF"
+    },
+    {
+      "id": "E3",
+      "kind": "source",
+      "page": 1,
+      "quote": "Rule B = A.",
+      "source_ref": "SOURCE_REF"
+    },
+    {
+      "id": "E4",
+      "kind": "source",
+      "page": 1,
+      "quote": "Update = synchronous.",
+      "source_ref": "SOURCE_REF"
+    },
+    {
+      "id": "E5",
+      "kind": "source",
+      "page": 1,
+      "quote": "Time unit = sweep.",
+      "source_ref": "SOURCE_REF"
+    },
+    {
+      "id": "E6",
+      "kind": "source",
+      "page": 1,
+      "quote": "Clamps = none.",
+      "source_ref": "SOURCE_REF"
+    }
+  ],
+  "candidates": [
+    {
+      "boolean_draft": {
+        "clamps": {},
+        "id": "literal_network",
+        "model_type": "boolean",
+        "nodes": [
+          {
+            "id": "A",
+            "initial": false,
+            "rule": "not B"
+          },
+          {
+            "id": "B",
+            "initial": false,
+            "rule": "A"
+          }
+        ],
+        "schema_version": 1,
+        "units": {
+          "time": "sweep"
+        },
+        "update": "synchronous"
+      },
+      "evidence_ids": [
+        "E0",
+        "E1",
+        "E2",
+        "E3",
+        "E4",
+        "E5",
+        "E6"
+      ],
+      "evidence_map": {
+        "A/initial": [
+          "E0"
+        ],
+        "A/rule": [
+          "E2"
+        ],
+        "B/initial": [
+          "E1"
+        ],
+        "B/rule": [
+          "E3"
+        ],
+        "clamps": [
+          "E6"
+        ],
+        "time_unit": [
+          "E5"
+        ],
+        "update": [
+          "E4"
+        ]
+      },
+      "id": "direct",
+      "model_type": "boolean",
+      "rationale": "Explicit discrete rules and initial states are supplied.",
+      "unknowns": []
+    }
+  ],
+  "recommendation": "direct",
+  "questions": []
+}

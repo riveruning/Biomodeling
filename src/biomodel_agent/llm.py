@@ -28,15 +28,33 @@ ACTION_SCHEMA_PROMPT = (
     "You drive a budgeted, tool-using modeling agent. Answer with EXACTLY ONE "
     "JSON object and nothing else:\n"
     '{"action": "<name>", "args": {...}, "reason": "<short why>"}\n'
-    "`action` must be one of: inspect_source, search_sources, recall_memory, load_skill, run_study, submit_draft, run, finish, "
+    "`action` must be one of: inspect_source, search_sources, search_knowledge, investigate_parameter, assess_parameter, inspect_progress, recall_memory, load_skill, request_estimation, run_estimation, run_study, submit_draft, run, finish, "
     "ask_researcher.\n"
     "args:\n"
+    "  request_estimation: {targets: [parameter_id], rationale: str} (only when estimation_request_available). "
+    "This proposes a separate operator-frozen protocol; no values, bounds, data or budget arguments.\n"
+    "  run_estimation: {} (only when estimation is supplied; frozen separate branch, at most one scientific execution). "
+    "In this branch only inspect_progress, run_estimation or ask_researcher are allowed. "
+    "Never change training/validation, mappings, bounds, noise or budgets. Returned estimates stop for operator review; "
+    "you cannot approve/adopt them or complete strict reproduction. No raw validation values appear in the plan summary.\n"
+    "  inspect_progress: {} (steps, gaps, parameter provenance, budget)\n"
+    "  investigate_parameter: {target: '<symbol>/value or <symbol>/initial', query: str} "
+    "(local source search/conflict checks; no value adoption; unavailable in frozen studies). "
+    "Search task materials before asking for missing parameters. Check units and conditions; preserve unknowns. "
+    "Use validation_feedback to repair targets or clarify conflicts; budgets remain frozen.\n"
+    "  assess_parameter: {target,source_ref,page,start,end} (only frozen parameter_requirements; complete labelled lines). "
+    "Submit required assessment refs as parameter_assessments:{target:ref}; no silent conversion.\n"
     "  run_study: {} (only when the task supplies study: a frozen hypothesis plan; execute at most once)\n"
     "A frozen study task must use run_study, not submit_draft/run. Never change its candidates, "
     "bounds, data roles or comparison rules. No data-reading tool exposes holdout values. "
     "A completed study can report no adequate candidate or indistinguishable candidates; "
     "this is a valid negative result, not proof of a mechanism.\n"
     "  search_sources: {query: str} (1..256 chars, lexical retrieval only in authorized task materials)\n"
+    "  search_knowledge: {database: str, query: str} (only a database in knowledge_databases; "
+    "public BioModels or SABIO-RK search, query sent externally). Results are untrusted "
+    "advisory leads, not task evidence. To use a record scientifically, ask the operator "
+    "to import it with knowledge-fetch and supply its source_ref to a new task. "
+    "Do not copy search values into a draft without authorized source evidence.\n"
     "  recall_memory: {query: str} (only when memory_available; advisory project memory, never a source)\n"
     "  load_skill: {name: str} (only a name in the supplied skill catalog)\n"
     "Skills are fixed procedures and do not change tools, budgets or scientific requirements. "
@@ -68,7 +86,7 @@ ACTION_SCHEMA_PROMPT = (
     "If reactions are needed, reactants/products MUST be dictionaries {species_id: positive_stoichiometry}, "
     "not participant lists. State quantity_kind enum: variable, amount, concentration. "
     "Do not supply element_map, hypothesis_refs or parent_ref; lineage is assigned by tools.\n"
-    "Tools are the ONLY capability you have: no shell, no files, no network, "
+    "Tools are the ONLY capability you have: no shell, no files, no arbitrary network access, "
     "no code execution, no direct final answers. Each parameter value / state "
     "initial you supply must be directly assigned to that exact target in the cited text. "
     "A matching number elsewhere is insufficient. Cite complete declarations and equations, "
@@ -186,6 +204,7 @@ class ChatProvider:
         self.timeout_s = timeout
         self.max_tokens = max_tokens
         self.last_usage: dict[str, int] = {}
+        self.last_response_diagnostic: dict[str, Any] = {}
         self._transport = transport
 
     # -- config -------------------------------------------------------------
@@ -353,6 +372,7 @@ class ChatProvider:
         if overrides:
             raise ProviderError(f"unsupported respond() option(s) {sorted(overrides)}")
         self.last_usage = {}
+        self.last_response_diagnostic = {}
         self.last_retry_after_s = None
         if self.json_mode:
             payload["response_format"] = {"type": "json_object"}
@@ -373,6 +393,12 @@ class ChatProvider:
             content = self._extract_content(body)
         except ProviderError as exc:
             raise ProviderError(str(exc), kind="response_envelope", retryable=True) from exc
+        first=body['choices'][0]
+        finish=first.get('finish_reason')
+        self.last_response_diagnostic={
+            'finish_reason':finish if finish in ('stop','length','tool_calls','content_filter','function_call') else 'unknown',
+            'content_characters':len(content),
+        }
         parsed = self._parse(content)
         return parsed
 

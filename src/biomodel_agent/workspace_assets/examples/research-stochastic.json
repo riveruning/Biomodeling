@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "model_type": "stochastic",
+  "id": "birth_death",
+  "units": {
+    "time": "second",
+    "state": "molecule_count"
+  },
+  "rate_convention": "stochastic_combinations",
+  "species": [
+    {
+      "id": "X",
+      "initial": 4
+    }
+  ],
+  "reactions": [
+    {
+      "id": "birth",
+      "reactants": {},
+      "products": {
+        "X": 1
+      },
+      "rate": 5.0
+    },
+    {
+      "id": "death",
+      "reactants": {
+        "X": 1
+      },
+      "products": {},
+      "rate": 0.5
+    }
+  ],
+  "note": "Synthetic development example, not a literature reproduction."
+}

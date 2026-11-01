@@ -60,6 +60,16 @@ _UNIT_ALIASES = {
     "second": UNIT_SECOND,
     "seconds": UNIT_SECOND,
     "sec": UNIT_SECOND,
+    "s": UNIT_SECOND,
+    "inverse_second": "inverse_second",
+    "second^-1": "inverse_second",
+    "s^-1": "inverse_second",
+    "1/s": "inverse_second",
+    "inverse_minute": "inverse_minute",
+    "minute^-1": "inverse_minute",
+    "min^-1": "inverse_minute",
+    "inverse_hour": "inverse_hour",
+    "hour^-1": "inverse_hour",
     "minute": "minute",
     "minutes": "minute",
     "min": "minute",
@@ -81,6 +91,9 @@ _UNIT_ALIASES = {
 _DERIVED_UNIT_KINDS = {
     "minute": (libsbml.UNIT_KIND_SECOND, 60.0, 0, 1),
     "hour": (libsbml.UNIT_KIND_SECOND, 3600.0, 0, 1),
+    "inverse_second": (libsbml.UNIT_KIND_SECOND, 1.0, 0, -1),
+    "inverse_minute": (libsbml.UNIT_KIND_SECOND, 60.0, 0, -1),
+    "inverse_hour": (libsbml.UNIT_KIND_SECOND, 3600.0, 0, -1),
     UNIT_MOLE_PER_LITRE: None,  # built from two Unit parts (mole / litre)
 }
 
@@ -92,6 +105,8 @@ def canonical_unit(unit: object) -> str | None:
     """Canonical SBML unit id for ``unit`` or ``None`` when unknown/absent."""
     if not isinstance(unit, str):
         return None
+    if unit == 'M':
+        return UNIT_MOLE_PER_LITRE
     key = unit.strip().lower()
     return _UNIT_ALIASES.get(key, None)
 
