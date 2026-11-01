@@ -106,6 +106,7 @@ def _model_brief(store,ref):
 
 def messages(store,request_ref):
     from .evidence import source_summary
+    from .capabilities import catalog
     request=tasks.load(store,request_ref);spec=request['spec'];excerpts=[];omitted=[]
     for ref in spec['source_refs']:
         pages=store.get(ref)['payload']['pages']
@@ -114,13 +115,27 @@ def messages(store,request_ref):
                 end=min(1600,len(text)),text=text[:1600],full_page_characters=len(text),truncated=len(text)>1600))
         if len(pages)>2:omitted.append(dict(source_ref=ref,omitted_pages=len(pages)-2))
     packet=[dict(role='system',content=PROMPT),dict(role='user',content=json.dumps(dict(
-        goal=spec['goal'],request_ref=request_ref,supplied_type=spec['model_type'],
+        goal=spec['goal'],request_ref=request_ref,supplied_type=spec['model_type'],capabilities=catalog(),
         supplied_model=_model_brief(store,spec['model_ref']),supplied_execution=spec['execution'],
         source_excerpts=excerpts,omitted=omitted,source_metadata=[dict(source_summary(store,r),source_ref=r,
             parser=store.get(r)['payload'].get('parser','unknown')) for r in spec['source_refs']],
         scientific_support='unknown'),ensure_ascii=False))]
     context.build_context(packet,context.policy(spec['context_max_chars']))
     return packet
+
+
+class CitationError(ValueError):
+    def __init__(self,message,raw,text):
+        matches=[];cursor=0;quote=raw['quote']
+        while len(matches)<5:
+            start=text.find(quote,cursor)
+            if start<0:break
+            matches.append(dict(start=start,end=start+len(quote)));cursor=start+1
+        self.citation_diagnostic=dict(anchor_id=raw['id'],source_ref=raw.get('source_ref'),page=raw.get('page'),
+            provided_start=raw.get('start'),provided_end=raw.get('end'),matches=matches,
+            matches_truncated=len(matches)==5 and text.find(quote,cursor)>=0,
+            instruction='Inspect the authorized source and explicitly correct the anchor, or omit offsets for a unique literal quote. No citation was adopted.')
+        super().__init__(message+f' (anchor {raw["id"]}; inspect citation matches; no automatic rebinding)')
 
 
 def _anchor(store,raw,request):
@@ -146,10 +161,10 @@ def _anchor(store,raw,request):
     out=deepcopy(raw)
     if 'start' not in out:
         start=text.find(quote)
-        if start<0 or text.find(quote,start+1)>=0:raise ValueError('citation quote is absent or repeated; supply exact offsets')
+        if start<0 or text.find(quote,start+1)>=0:raise CitationError('citation quote is absent or repeated; supply exact offsets',raw,text)
         out.update(start=start,end=start+len(quote))
     c.integer(out['start'],0,len(text),'start');c.integer(out['end'],out['start']+1,len(text),'end')
-    if text[out['start']:out['end']]!=quote:raise ValueError('proposal citation does not match its source slice')
+    if text[out['start']:out['end']]!=quote:raise CitationError('proposal citation does not match its source slice',raw,text)
     return out
 
 

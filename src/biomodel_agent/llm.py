@@ -204,6 +204,7 @@ class ChatProvider:
         self.timeout_s = timeout
         self.max_tokens = max_tokens
         self.last_usage: dict[str, int] = {}
+        self.last_response_diagnostic: dict[str, Any] = {}
         self._transport = transport
 
     # -- config -------------------------------------------------------------
@@ -371,6 +372,7 @@ class ChatProvider:
         if overrides:
             raise ProviderError(f"unsupported respond() option(s) {sorted(overrides)}")
         self.last_usage = {}
+        self.last_response_diagnostic = {}
         self.last_retry_after_s = None
         if self.json_mode:
             payload["response_format"] = {"type": "json_object"}
@@ -391,6 +393,12 @@ class ChatProvider:
             content = self._extract_content(body)
         except ProviderError as exc:
             raise ProviderError(str(exc), kind="response_envelope", retryable=True) from exc
+        first=body['choices'][0]
+        finish=first.get('finish_reason')
+        self.last_response_diagnostic={
+            'finish_reason':finish if finish in ('stop','length','tool_calls','content_filter','function_call') else 'unknown',
+            'content_characters':len(content),
+        }
         parsed = self._parse(content)
         return parsed
 

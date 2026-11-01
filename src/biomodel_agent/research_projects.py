@@ -10,6 +10,8 @@ from uuid import uuid4
 
 from . import model_contracts as c, recovery, research_tasks as tasks
 from .storage import canonical_bytes,REF_RE
+from .action_response import normalize_action
+from .research_schema import MODES, EVIDENCE_KINDS, CRITERION_KINDS, LIMITS
 
 PROJECT='research_project'
 FRAME='research_frame'
@@ -22,18 +24,27 @@ SNAPSHOT='research_project_snapshot'
 STEP='research_project_operation'
 RETURN='research_project_return'
 RESPONSE='research_project_response'
+PROVIDER_FAILURE='research_project_provider_failure'
 RECOVERY='research_project_recovery'
 REFERENCE='research_project_reference'
 FBA_TASK='research_project_fba_task'
 FBA_ATTEMPT='research_project_fba_attempt'
 FBA_BINDING='research_project_fba_binding'
 FBA_RETURN='research_project_fba_return'
-MODES=('strict_reproduction','reconstruction','application_modeling','mechanism_exploration')
 OPERATIONS=('respond','invalid_response','revise_frame','inspect_source','search_sources','search_literature','fetch_literature','scenario_source',
             'reference_from_source','open_iteration','run_iteration','resume_iteration','inspect_iteration','assess_iteration','ask_alignment','reply_alignment','reply_source','conclude')
 DEFAULTS=dict(planner_max_calls=0,max_iterations=3,max_native_calls=18,native_calls_per_iteration=6,
               max_literature_requests=0,context_max_chars=60000,assumptions='agent_scoped')
 TERMINAL=('completed_with_limits','insufficient_evidence','unsupported','stopped')
+
+
+class SourceBindingError(ValueError):
+    """Retain bounded validator findings without adopting or repairing a model."""
+    def __init__(self,message,check):
+        issues=check.get('issues',[])
+        self.source_binding_diagnostic=dict(state=check['state'],issues=deepcopy(issues[:32]),
+                                            issues_truncated=len(issues)>32)
+        super().__init__(message)
 
 
 def text(value,maximum=4000):
@@ -42,8 +53,9 @@ def text(value,maximum=4000):
     return value
 
 
-def strings(value,maximum=16,limit=2000):
-    if not isinstance(value,list) or len(value)>maximum:raise ValueError('invalid bounded text list')
+def strings(value,maximum=16,limit=2000,*,label=None):
+    if not isinstance(value,list) or len(value)>maximum:
+        raise ValueError('invalid bounded text list'+(f': {label} expects at most {maximum} strings' if label else ''))
     for item in value:text(item,limit)
     return value
 
@@ -212,10 +224,29 @@ def inspect(store,project_ref):
     outcome=own(store,conclusion,CONCLUSION,project_ref)['outcome'] if conclusion else None
     state='needs_recovery' if pending else 'awaiting_alignment' if waiting else outcome or 'ready'
     consumed={p.get('response_ref') for _,p in attempts if p.get('response_ref')}
-    actionable=any(p['operation']=='respond' and ref in returned and returned[ref][1]['state']=='returned'
-        and returned[ref][1]['result']['response_ref'] not in consumed for ref,p in attempts)
+    saved=next((returned[ref][1]['result'] for ref,p in attempts
+        if p['operation']=='respond' and ref in returned and returned[ref][1]['state']=='returned'
+        and returned[ref][1]['result']['response_ref'] not in consumed),None)
+    actionable=saved is not None
     if state=='ready' and used_planner>0 and used_planner>=project['policy']['planner_max_calls'] and not actionable:state='planner_budget_exhausted'
+    remaining=used_planner<project['policy']['planner_max_calls']
+    can_advance=state=='ready' and len(attempts)<200 and (actionable or remaining)
+    native_needed=False
+    if can_advance and saved:
+        response=saved['response'];args=response.get('args') if isinstance(response,dict) else None
+        if isinstance(args,dict) and response.get('action') in ('run_iteration','resume_iteration') and args.get('iteration_ref') in iterations:
+            iteration=own(store,args['iteration_ref'],ITERATION,project_ref)
+            if iteration['executor']=='research_task':
+                native=tasks.status(store,iteration['task_ref'])
+                native_needed=(response['action']=='resume_iteration' and native['state']=='awaiting_input'
+                               or response['action']=='run_iteration' and native['state']=='ready_to_run')
+    continuation=dict(can_advance=can_advance,has_saved_response=actionable,
+        requires_planner=can_advance and remaining,requires_native_provider=native_needed,
+        requires_provider=can_advance and (remaining or native_needed),
+        reason='saved_response' if can_advance and actionable else 'planner_available' if can_advance else
+            'operation_limit_exhausted' if len(attempts)>=200 else 'planner_budget_exhausted' if state=='ready' else state)
     return dict(project_ref=project_ref,scenario=project['scenario'],mode=project['mode'],state=state,
+        continuation=continuation,
         frame_ref=frames[-1] if frames else None,frame=frame,frame_refs=frames,iteration_refs=iterations,
         assessment_refs=assessments,question_refs=questions,reply_refs=replies,pending_questions=waiting,
         source_refs=sources,model_refs=project['model_refs'],reference_refs=references,conclusion_ref=conclusion,
@@ -230,27 +261,28 @@ def _frame(store,project_ref,spec):
     if len(canonical_bytes(spec))>128000:raise ValueError('research frame exceeds 128KB')
     c.fields(spec,{'objective','mode','granularity','modeling_targets','rationale','evidence_needs','assumptions','criteria','evidence','unresolved'})
     text(spec['objective']);text(spec['granularity']);text(spec['rationale'])
-    if spec['mode'] not in MODES:raise ValueError('invalid study mode')
+    if spec['mode'] not in MODES:raise ValueError('invalid study mode; frame.mode must be one of '+', '.join(MODES))
     if len(view['frame_refs'])>=8:raise ValueError('frame revision limit exceeded')
-    strings(spec['modeling_targets'],8)
+    strings(spec['modeling_targets'],LIMITS['modeling_targets'],label='frame.modeling_targets')
     if not spec['modeling_targets']:raise ValueError('agent must identify at least one modeling target')
-    strings(spec['unresolved'],12)
+    strings(spec['unresolved'],LIMITS['unresolved'],label='frame.unresolved')
     from .task_proposals import _anchor
-    if not isinstance(spec['evidence'],list) or len(spec['evidence'])>32:raise ValueError('at most 32 literal evidence anchors')
+    if not isinstance(spec['evidence'],list) or len(spec['evidence'])>LIMITS['evidence']:raise ValueError('at most 32 literal evidence anchors')
     anchors=[];ids=set()
     for raw in spec['evidence']:
         eid=c.identifier(raw.get('id'))
         if eid in ids or raw.get('kind')=='model':raise ValueError('evidence needs unique literal source/goal IDs')
         ids.add(eid)
         anchors.append(_anchor(store,raw,dict(spec=dict(goal=project['scenario'],source_refs=view['source_refs']))))
-    if not isinstance(spec['evidence_needs'],list) or len(spec['evidence_needs'])>16:raise ValueError('invalid evidence plan')
+    if not isinstance(spec['evidence_needs'],list) or len(spec['evidence_needs'])>LIMITS['evidence_needs']:raise ValueError('invalid evidence plan')
     seen=set()
     for need in spec['evidence_needs']:
         c.fields(need,{'id','question','kind','queries'});nid=c.identifier(need['id'])
         if nid in seen:raise ValueError('duplicate evidence need')
-        seen.add(nid);text(need['question']);strings(need['queries'],4,256)
-        if need['kind'] not in ('literature','data','mathematics','validation'):raise ValueError('invalid evidence need kind')
-    if not isinstance(spec['assumptions'],list) or len(spec['assumptions'])>16:raise ValueError('invalid assumption list')
+        seen.add(nid);text(need['question']);strings(need['queries'],LIMITS['queries'],256,label=f'frame.evidence_needs[{nid}].queries')
+        if need['kind'] not in EVIDENCE_KINDS:
+            raise ValueError(f'frame.evidence_needs[{nid}].kind must be literature, data, mathematics or validation')
+    if not isinstance(spec['assumptions'],list) or len(spec['assumptions'])>LIMITS['assumptions']:raise ValueError('invalid assumption list')
     seen=set()
     for assumption in spec['assumptions']:
         c.fields(assumption,{'id','statement','rationale','evidence_ids','decision'})
@@ -259,13 +291,13 @@ def _frame(store,project_ref,spec):
         seen.add(aid);text(assumption['statement']);text(assumption['rationale']);strings(assumption['evidence_ids'],32,48)
         if set(assumption['evidence_ids'])-ids:raise ValueError('assumption cites absent evidence')
         if assumption['decision'] not in ('adopt','defer','reject'):raise ValueError('invalid assumption decision')
-    if not isinstance(spec['criteria'],list) or not 1<=len(spec['criteria'])<=8:raise ValueError('agent must define 1..8 criteria')
+    if not isinstance(spec['criteria'],list) or not 1<=len(spec['criteria'])<=LIMITS['criteria']:raise ValueError('agent must define 1..8 criteria')
     seen=set()
     for criterion in spec['criteria']:
         c.fields(criterion,{'id','kind','description','required'},{'question_ref'});cid=c.identifier(criterion['id'])
         if cid in seen:raise ValueError('duplicate criterion')
         seen.add(cid);text(criterion['description'])
-        if criterion['kind'] not in ('native_checks','reference_comparison','source_coverage','alignment','external_review'):
+        if criterion['kind'] not in CRITERION_KINDS:
             raise ValueError('unsupported criterion evaluator')
         if type(criterion['required']) is not bool:raise ValueError('criterion required must be bool')
         if criterion.get('question_ref'):
@@ -328,9 +360,15 @@ def _open_iteration(store,project_ref,args):
         raise ValueError('hypotheses cannot enter strict reproduction or a forbidden-assumption project')
     config=deepcopy(args['config'])
     if not isinstance(config,dict):raise ValueError('config must be an object')
+    execution=config.get('execution',{})
+    if not isinstance(execution,dict):raise ValueError('config.execution must be an object')
+    if 'settings' in execution and not isinstance(execution['settings'],dict):
+        raise ValueError('config.execution.settings must be an object')
     if any(k in config.get('execution',{}) for k in ('reference','scales')):
         raise ValueError('use a frozen authorized reference_ref, not agent-generated reference values')
     if 'reference' in config.get('execution',{}).get('settings',{}):raise ValueError('nested reference answers cannot be agent-generated')
+    if config.get('model_type') in tasks.TYPES[1:] and set(execution)-{'settings'}:
+        raise ValueError('Native settings belong in config.execution.settings; Boolean uses steps, not sweeps.')
     reference=args.get('reference_ref')
     if reference is not None:
         if reference not in view['reference_refs']:raise ValueError('reference outside project')
@@ -351,11 +389,14 @@ def _open_iteration(store,project_ref,args):
     native_draft=args.get('native_draft');binding=None
     if native_draft is not None:
         if args.get('decision_plan') is not None or config.get('model_ref'):raise ValueError('choose one mathematical input')
-        if config.get('model_type')!=native_draft.get('model_type',native_draft.get('kind')):raise ValueError('native draft type mismatch')
+        if not isinstance(native_draft,dict):raise ValueError('native_draft must be a native model object')
+        if config.get('model_type')!=native_draft.get('model_type',native_draft.get('kind')):
+            field='kind' if config.get('model_type')=='fba' else 'model_type'
+            raise ValueError(f'native draft type mismatch: native_draft.{field} must equal {config.get("model_type")!r}; use the supplied native schema')
         if mode=='strict_reproduction':
             check=_source_check(store,config.get('model_type'),native_draft,frame['spec']['evidence'],
                 args.get('source_evidence_map',{}),config['source_refs'],args.get('stochastic_rate_units',{}))
-            if check['state']!='source_bound':raise ValueError('strict draft lacks complete source bindings')
+            if check['state']!='source_bound':raise SourceBindingError('strict draft lacks complete source bindings',check)
             binding=check.get('binding',dict(profile='literal_boolean_declarations_v1'))
         elif not hypotheses:raise ValueError('a new mathematical model must link to explicit adopted hypotheses')
         config['model_ref']=_import_draft(store,project_ref,view['frame_ref'],native_draft,mode,hypotheses,binding)
@@ -373,6 +414,7 @@ def _open_iteration(store,project_ref,args):
                     'stochastic_rate_units':args.get('stochastic_rate_units',previous['stochastic_rate_units'])}
             check=_source_check(store,config['model_type'],mp['model'],frame['spec']['evidence'],
                 args.get('source_evidence_map',{}),config['source_refs'],args.get('stochastic_rate_units',{}))
+            if check['state']!='source_bound':raise SourceBindingError('reused mathematical input lacks the frozen source binding',check)
             if check['state']!='source_bound' or check.get('binding',dict(profile='literal_boolean_declarations_v1'))!=mp['source_binding']:
                 raise ValueError('reused mathematical input lacks the frozen source binding')
     if args.get('decision_plan') is not None:
@@ -705,7 +747,7 @@ def _operate_owned(store,project_ref,operation,args,*,key=None,provider=None,act
     if response_ref is not None:
         response=own(store,response_ref,RESPONSE,project_ref)
         if any(p.get('response_ref')==response_ref for _,p in attempts):raise ValueError('planner response already consumed')
-        if operation!='invalid_response' and canonical_bytes(response['response'])!=canonical_bytes(dict(action=operation,args=args)):
+        if operation!='invalid_response' and canonical_bytes(normalize_action(response['response']))!=canonical_bytes(dict(action=operation,args=args)):
             raise ValueError('action differs from the saved planner response')
     if operation in ('run_iteration','resume_iteration'):
         c.fields(args,{'iteration_ref','reply_ref'} if operation=='resume_iteration' else {'iteration_ref'})
@@ -742,14 +784,29 @@ def _operate_owned(store,project_ref,operation,args,*,key=None,provider=None,act
         result=callback(attempt) if callback is not None else perform(store,project_ref,operation,args,
             provider=provider,actor=actor,literature_transport=literature_transport)
     except Exception as exc:
+        failure_ref=getattr(exc,'project_failure_ref',None)
+        failure=None
+        if failure_ref:
+            failure=own(store,failure_ref,PROVIDER_FAILURE,project_ref)
+            if operation!='respond' or failure['attempt_ref']!=attempt or failure['request_ref']!=args['request_ref']:
+                raise ValueError('provider failure receipt binding mismatch') from None
         confirmed=getattr(exc,'receipt_ref',None)
         if confirmed:
             receipt=store.get(confirmed)
             if receipt['kind']!='research_literature_request' or receipt['payload'].get('project_ref')!=project_ref:confirmed=None
         state='rejected' if confirmed or operation not in ('respond','run_iteration','resume_iteration','search_literature','fetch_literature') else 'unknown'
         diagnostic=dict(stage=operation,code=type(exc).__name__,message=str(exc)[:800]) if state=='rejected' else None
+        citation=getattr(exc,'citation_diagnostic',None)
+        if diagnostic is not None and citation is not None:diagnostic['citation']=citation
+        binding=getattr(exc,'source_binding_diagnostic',None)
+        if diagnostic is not None and binding is not None:diagnostic['source_binding']=binding
+        if failure:
+            diagnostic=dict(stage=operation,code=failure['error_kind'],message='Provider request failed; inspect the saved diagnostic without resending.',
+                            response=failure['response_diagnostic'])
         store.put(RETURN,dict(version=1,project_ref=project_ref,attempt_ref=attempt,state=state,result=None,
-                            error_type=type(exc).__name__,diagnostic=diagnostic),refs=(project_ref,attempt,*([confirmed] if confirmed else [])))
+                            error_type=type(exc).__name__,diagnostic=diagnostic,
+                            **({'provider_failure_ref':failure_ref} if failure_ref else {})),
+                  refs=(project_ref,attempt,*([confirmed] if confirmed else []),*([failure_ref] if failure_ref else [])))
         raise
     refs=[]
     if isinstance(result,dict):

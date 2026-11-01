@@ -37,7 +37,7 @@ def command(args):
         elif cmd=='research-project-snapshot':out=dict(snapshot_ref=projects.snapshot(store,args.ref))
         elif cmd=='research-project-run':
             project=projects.load(store,args.ref)
-            provider=_provider(args) if project['policy']['planner_max_calls']>projects.inspect(store,args.ref)['budget']['planner_calls'] else None
+            provider=_provider(args) if projects.inspect(store,args.ref)['continuation']['requires_provider'] else None
             ref=supervisor.run(store,provider,args.ref);out=dict(snapshot_ref=ref,**projects.inspect(store,args.ref),usage=supervisor.usage(store,args.ref))
         elif cmd=='research-batch-create':
             ref=pipeline.create(store,read_json(args.config));out=pipeline.inspect(store,ref)

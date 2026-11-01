@@ -14,8 +14,9 @@ from uuid import uuid4
 
 from . import model_contracts as c
 from .storage import canonical_bytes
+from .capabilities import TYPED_TYPES
 
-TYPES = ('stochastic', 'pde', 'boolean', 'individual')
+TYPES = TYPED_TYPES
 VERSION = 1
 
 
@@ -26,14 +27,8 @@ def backend(model_type):
 
 
 def capabilities():
-    result = [dict(model_type='ode', profile='existing bounded SBML ODE', entrypoint='agent/run and existing ODE CLI'),
-              dict(model_type='fba', profile='existing bounded steady-state LP/FBC v2', entrypoint='agent-fba/fba-run')]
-    for name in TYPES:
-        b = backend(name)
-        result.append(dict(model_type=name, profile=b.PROFILE, entrypoint='typed-import/typed-prepare/typed-execute/typed-run/typed-replay/agent-typed',
-                           limitations=b.LIMITATIONS, agent_recovery='opt_in_typed_agent_v2; legacy_not_supported; unknown effects block retry',
-                           scientific_support='unknown'))
-    return result
+    from .capabilities import catalog
+    return catalog()
 
 
 def _pairs(pairs):

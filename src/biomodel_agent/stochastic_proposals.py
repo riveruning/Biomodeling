@@ -90,8 +90,12 @@ def inspect(store,model,rate_units,evidence,evidence_map,source_refs):
     issues=[]
     def issue(target,message):issues.append(dict(target=target,message=message))
     if not isinstance(evidence_map,dict) or set(evidence_map)!=set(expected):
+        actual=set(evidence_map) if isinstance(evidence_map,dict) else set()
+        extra=actual-set(expected)
         return dict(state='blocked',issues=[dict(target='evidence_map',
-            message='Map every initial, reaction, stochastic rate/unit, time/state unit, rate convention, mixing and kinetics declaration exactly.')],scientific_support='unknown')
+            message='Map every initial, reaction, stochastic rate/unit, time/state unit, rate convention, mixing and kinetics declaration exactly.',
+            missing_targets=sorted(set(expected)-actual),extra_targets=[str(x)[:120] for x in sorted(extra,key=str)[:16]],
+            extra_target_count=len(extra))],scientific_support='unknown')
     # Every allowed source is a complete raw text snapshot; no unsupported
     # extraction, source subset or hidden page can certify absence of conflicts.
     texts=[];size=0

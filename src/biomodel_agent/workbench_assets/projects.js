@@ -59,6 +59,7 @@ async function createEditor(){
  const choices=(overview.sources||[]).map(s=>({ref:s.source_ref,input:node("input",{type:"checkbox"}),name:s.filename}));
  const models=(overview.models||[]).map(m=>({ref:m.model_ref,input:node("input",{type:"checkbox"}),name:m.id+" · "+m.model_type}));
  editor("提出应用场景",[field("应用场景",scenario),field("任务类型",mode),small("Agent 负责提出研究目标、粒度、证据、假设和验证方案。创建项目不会发送模型请求。"),
+  details("当前支持范围",node("div",{},(overview.capabilities||[]).map(c=>node("div",{},node("strong",{},c.label),node("p",{},c.summary),small(c.source_note))))),
   details("已有资料",choices.length?node("div",{},choices.map(x=>field(x.name,x.input))):"可先在原生任务页面导入资料。"),
   details("可选的已准备模型",models.length?node("div",{},models.map(x=>field(x.name,x.input))):"未提供模型时，Agent 可在支持范围内提出显式假设模型。"),
   details("调用额度",node("div",{},field("研究规划调用上限",calls),field("文献请求上限（0 表示关闭）",literature),small("最多 3 个模型/实验版本，每版原生调用最多 6 次，项目原生调用总分配上限 18。")))],async()=>{
@@ -77,9 +78,10 @@ function render(data){
  $("project-scenario").textContent=data.scenario;$("project-state").textContent=names[data.state]||data.state;
  const b=data.budget;clear("project-metrics",...[["规划调用",b.planner_calls+" / "+b.planner_max_calls],["迭代版本",b.iterations+" / "+b.max_iterations],["原生额度分配",b.native_reserved+" / "+b.max_native_calls],["文献请求",b.literature_requests+" / "+b.max_literature_requests]].map(([n,v])=>node("div",{class:"metric"},small(n),node("strong",{},v))));
  const active=Object.values(pending).some(x=>x.project_ref===selected&&x.operation==="run_project");
- $("advance-project").disabled=active||data.state!=="ready"||b.planner_calls>=b.planner_max_calls;
+ const continuation=data.continuation;
+ $("advance-project").disabled=active||!continuation?.can_advance;
  $("project-export").disabled=Object.values(pending).some(x=>(x.project_ref===selected||x.operation==="export_bundle")&&["submitting","queued","running"].includes(x.state));
- $("project-status-note").textContent=active?"Agent 正在推进研究。页面只读取进度。":data.state==="awaiting_alignment"?"回答下面的问题，再继续本项目。":data.state==="needs_recovery"?"操作结果尚未确认；请核对已保存返回，不要重新发起原请求。":b.planner_calls>=b.planner_max_calls?"研究规划额度已用完。已有证据和结果均保留。":"Agent 会在项目额度内选择下一步；新证据和新假设将产生新版本。";
+ $("project-status-note").textContent=active?"Agent 正在推进研究。页面只读取进度。":data.state==="awaiting_alignment"?"回答下面的问题，再继续本项目。":data.state==="needs_recovery"?"操作结果尚未确认；请核对已保存返回，不要重新发起原请求。":continuation?.can_advance&&continuation.has_saved_response?"已有保存的研究决定可以继续执行；该决定无需再次请求研究规划。":!continuation?.can_advance?(names[continuation?.reason]||names[data.state]||"当前无法推进研究。")+"。已有证据和结果均保留。":"Agent 会在项目额度内选择下一步；新证据和新假设将产生新版本。";
  const frame=data.frame?.spec;
  clear("research-frame",...(frame?[node("h3",{},frame.objective),small("研究模式："+frame.mode),node("p",{},frame.granularity),node("p",{},frame.rationale),details("研究对象",frame.modeling_targets),details("证据需求与检索计划",frame.evidence_needs),details("本轮判据",frame.criteria),details("尚未解决",frame.unresolved)]:[small("尚未提出研究方案。你可以让 Agent 从应用场景开始推进。")]));
  clear("research-evidence",...(frame?[details("建模假设与采纳理由",frame.assumptions),...(frame.evidence||[]).map(a=>node("div",{},small(a.id+" · "+a.kind),node("p",{},a.quote||""),...(a.kind==="source"?[button("核对原文",()=>source(a),{class:"small"})]:[])))]:[small("来源与假设将在研究方案中记录。")]));

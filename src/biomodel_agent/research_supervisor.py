@@ -2,11 +2,14 @@
 from copy import deepcopy
 import hashlib
 import json
+import math
 import time
 from pathlib import Path
 
 from . import context,model_contracts as c,research_projects as p
 from .storage import canonical_bytes
+from .action_response import normalize_action
+from .llm import ProviderError
 
 PROMPT="""You are the research lead for a biological-modeling project.
 The human supplies an application scenario or a reproduction objective.
@@ -42,9 +45,20 @@ Criterion kind: native_checks,reference_comparison,source_coverage,alignment,
 external_review. External review remains unknown; you cannot sign it.
 An alignment criterion needs its exact question_ref; a reply is attributed input,
 not an approval of biological validity. Unrelated replies do not satisfy it.
+Use question_ref only for alignment criteria, never for source evidence IDs.
+Frame limits: modeling_targets at most 8 strings; unresolved at most 12 strings;
+evidence_needs at most 16 entries, each with at most 4 queries of 256 characters;
+assumptions at most 16 entries; criteria 1..8 entries, at least one required;
+evidence at most 32 anchors, each literal quote at most 4000 characters.
+The project mode reproduction is not a frame mode: use strict_reproduction in
+the frame for faithful reproduction. Preserve exact field paths in tool feedback.
 Anchors: {id,kind:'source',source_ref,page,quote,start?,end?} or
 {id,kind:'goal',quote,start?,end?}. Cite exact unique text; goal is not empirical
 evidence. Source quotes are checked for literal matching, not semantic truth.
+Prefer anchors with only quote and omit start/end: the tool computes offsets.
+Never estimate character offsets. For repeated quotes, inspect the source and
+explicitly select the occurrence. action_schemas in the latest state describes
+exact fields, enums and bounds for the current research stage.
 
 open_iteration {reason,config,parent_iteration_ref?,native_draft?,
 hypothesis_ids?,source_evidence_map?,stochastic_rate_units?,reference_ref?,decision_plan?,native_agent?}.
@@ -117,6 +131,8 @@ def _messages(store,project_ref):
     state=dict(project=view,constraints=project['constraints'],policy=project['policy'],source_catalog=material,iterations=iterations,
                prepared_models=[dict(model_ref=r,model=store.get(r)['payload'].get('model')) for r in project['model_refs']])
     state['researcher_replies']=[p.own(store,r,p.REPLY,project_ref) for r in view['reply_refs']]
+    from .research_schema import schemas
+    state['action_schemas']=schemas(view)
     root=Path(__file__).parent/'workspace_assets'
     templates=(root/'templates').is_dir();assets=root/('templates' if templates else 'examples')
     state['native_model_schema_examples']={kind:json.loads((assets/((kind if templates else 'research-'+kind)+'.json')).read_text(encoding='utf-8'))
@@ -127,6 +143,8 @@ def _messages(store,project_ref):
         constraints=project['constraints'],initial_source_refs=project['source_refs'],reference_refs=project['reference_refs'],
         prepared_models=state.pop('prepared_models'),native_model_schema_examples=state.pop('native_model_schema_examples'),
         ode_decision_plan_example=state.pop('ode_decision_plan_example'),schema_notice=state.pop('schema_notice'))
+    from .capabilities import catalog
+    frozen['capabilities']=catalog()
     from .research_references import metadata
     frozen['reference_metadata']=[metadata(store,r) for r in project['reference_refs']]
     state['reference_catalog']=[metadata(store,r) for r in view['reference_refs']]
@@ -151,6 +169,17 @@ def _usage(provider):
     if not isinstance(value,dict):return {}
     return {k:v for k,v in value.items() if k in ('prompt_tokens','completion_tokens','total_tokens')
             and type(v) is int and 0<=v<=10**12}
+
+
+def _response_diagnostic(provider):
+    value=getattr(provider,'last_response_diagnostic',{})
+    if not isinstance(value,dict):return {}
+    result={}
+    if value.get('finish_reason') in ('stop','length','tool_calls','content_filter','function_call','unknown'):
+        result['finish_reason']=value['finish_reason']
+    count=value.get('content_characters')
+    if type(count) is int and 0<=count<=10**9:result['content_characters']=count
+    return result
 
 
 def _pending_response(store,project_ref):
@@ -182,7 +211,15 @@ def run(store,provider,project_ref,*,native_provider_factory=None,literature_tra
                 request=store.put('research_project_prompt',dict(project_ref=project_ref,messages=messages,scope_sha256=scope,
                     provider=identity),refs=(project_ref,*view['source_refs'],*([view['frame_ref']] if view['frame_ref'] else [])))
                 def respond(attempt_ref):
-                    started=time.monotonic();response=provider.respond(messages)
+                    started=time.monotonic()
+                    try:response=provider.respond(messages)
+                    except ProviderError as exc:
+                        kind=exc.kind if exc.kind in ('provider_error','transport','http','response_envelope','model_response') else 'provider_error'
+                        exc.project_failure_ref=store.put(p.PROVIDER_FAILURE,dict(version=1,project_ref=project_ref,
+                            attempt_ref=attempt_ref,request_ref=request,provider=identity,error_kind=kind,
+                            usage=_usage(provider),elapsed_s=time.monotonic()-started,
+                            response_diagnostic=_response_diagnostic(provider)),refs=(project_ref,attempt_ref,request))
+                        raise
                     if len(canonical_bytes(response))>128000:raise ValueError('planner response exceeds 128KB')
                     usage=_usage(provider)
                     ref=store.put(p.RESPONSE,dict(version=1,project_ref=project_ref,attempt_ref=attempt_ref,request_ref=request,
@@ -195,7 +232,7 @@ def run(store,provider,project_ref,*,native_provider_factory=None,literature_tra
                     raise ValueError('planner request failed; inspect the saved project records') from None
             response=pending['response'];response_ref=pending['response_ref']
             try:
-                c.fields(response,{'action','args'})
+                response=normalize_action(response)
                 if response['action'] not in p.OPERATIONS or response['action'] in ('respond','reply_alignment','invalid_response'):
                     raise ValueError('unsupported or researcher-only action')
                 if not isinstance(response['args'],dict):raise ValueError('action args must be an object')
@@ -217,17 +254,29 @@ def run(store,provider,project_ref,*,native_provider_factory=None,literature_tra
 
 def usage(store,project_ref):
     attempts,returns,_=p.history(store,project_ref)
-    reported=0;missing=0
+    reported=0;missing=0;elapsed=0.;missing_elapsed=0
     for ref,attempt in attempts:
         if attempt['operation']!='respond':continue
         result=returns.get(ref)
-        tokens=result[1].get('result',{}).get('usage',{}).get('total_tokens') if result and result[1]['state']=='returned' else None
+        receipt=(p.own(store,result[1]['result']['response_ref'],p.RESPONSE,project_ref)
+                 if result and result[1]['state']=='returned' else {})
+        if result and result[1].get('provider_failure_ref'):
+            receipt=p.own(store,result[1]['provider_failure_ref'],p.PROVIDER_FAILURE,project_ref)
+            if receipt['attempt_ref']!=ref or receipt['request_ref']!=attempt['args']['request_ref']:
+                raise ValueError('provider failure usage binding mismatch')
+        tokens=receipt.get('usage',{}).get('total_tokens')
+        if type(tokens) is not int or not 0<=tokens<=10**12:tokens=None
         if tokens is None:missing+=1
         else:reported+=tokens
+        duration=receipt.get('elapsed_s')
+        if type(duration) in (int,float) and math.isfinite(duration) and duration>=0:elapsed+=duration
+        else:missing_elapsed+=1
     actual=[p.facts(store,r) for r in p.inspect(store,project_ref)['iteration_refs']]
     native_calls=None if any(x['native_provider_calls'] is None for x in actual) else sum(x['native_provider_calls'] for x in actual)
     return dict(planner_calls=sum(v['operation']=='respond' for _,v in attempts),
                 reported_total_tokens=reported,missing_usage_calls=missing,
+                planner_recorded_elapsed_s=elapsed,planner_missing_elapsed_calls=missing_elapsed,
+                planner_complete_elapsed_s=elapsed if missing_elapsed==0 else None,
                 native_provider_calls=native_calls,scientific_executions=sum(x['executed'] for x in actual),
                 planner_complete_total_tokens=reported if missing==0 else None,
                 complete_total_tokens=reported if missing==0 and native_calls==0 else None)

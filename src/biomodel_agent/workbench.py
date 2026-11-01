@@ -22,6 +22,7 @@ import zipfile
 from . import evidence, model_contracts as c, recovery, research_tasks as tasks, task_proposals as proposals
 from .storage import ArtifactStore, REF_RE, canonical_bytes
 from .read_views import verified_read
+from .capabilities import catalog as capability_catalog
 
 OPERATION='workbench_operation'
 TERMINAL='workbench_operation_terminal'
@@ -156,7 +157,8 @@ class Workbench:
             try:projects.append(dict(project_ref=r,scenario=p['scenario'],state=research_projects.inspect(store,r)['state']))
             except (ValueError,KeyError,TypeError,OSError):projects.append(dict(project_ref=r,scenario=p.get('scenario','研究项目'),state='unavailable'))
         return dict(requests=requests,projects=projects,sources=sources,models=models,jobs=[self.job(r,store=store) for r,_ in jobs[:30]],issues=issues,
-            request_total=len(rows),request_limit=100,provider=self.provider_info,model_types=list(tasks.TYPES),scientific_support='unknown')
+            request_total=len(rows),request_limit=100,provider=self.provider_info,model_types=list(tasks.TYPES),
+            capabilities=capability_catalog(),scientific_support='unknown')
 
     def task(self,request_ref):
         ref(request_ref);request=tasks.load(self.readonly,request_ref);view=tasks.status(self.readonly,request_ref)
@@ -243,7 +245,7 @@ class Workbench:
             from . import research_projects
             view=research_projects.inspect(self.readonly,params['project_ref'])
             if view['state'] in ('needs_recovery','awaiting_alignment'):raise ValueError('请先核对已确认返回或回答对齐问题')
-            return view['state'] not in research_projects.TERMINAL and view['budget']['planner_calls']<view['budget']['planner_max_calls']
+            return view['continuation']['requires_provider']
         view=tasks.status(self.readonly,params['request_ref'])
         if operation=='run_task' and view['state']!='ready_to_run':raise ValueError('任务尚未就绪或已有执行；请查看状态与已有结果')
         if operation=='resume_task' and view['state']!='awaiting_input':raise ValueError('任务当前没有等待回答的问题')

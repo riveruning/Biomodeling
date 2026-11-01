@@ -1,0 +1,45 @@
+{
+  "source_commit": "593affca82ee2b16afd798752d0623536fd4434c",
+  "network_requests": 0,
+  "product_code_modified": false,
+  "findings": [
+    {
+      "id": "BUG-01",
+      "confirmed": true,
+      "http_requests_mocked": 1,
+      "adapter_result_keys": [
+        "action",
+        "args",
+        "reason"
+      ],
+      "invalid_responses": 1,
+      "sources_created": 0,
+      "scripted_control_sources": 1,
+      "final_state": "planner_budget_exhausted"
+    },
+    {
+      "id": "BUG-02",
+      "confirmed": true,
+      "http_requests_mocked": 1,
+      "parser_error": "ModelResponseError: model response has unknown key(s) ['lessons']",
+      "pipeline_error": "lesson response unconfirmed; inspect the reservation and do not resend",
+      "repeat_call_error": "lesson request outcome unknown; do not resend",
+      "saved_lesson_responses": 0,
+      "candidates": 0
+    },
+    {
+      "id": "BUG-03",
+      "confirmed": true,
+      "state_before": "ready",
+      "planner_calls": 1,
+      "planner_limit": 1,
+      "actual_render_function": {
+        "disabled": true,
+        "notice": "研究规划额度已用完。已有证据和结果均保留。"
+      },
+      "backend_resume_created_source": true,
+      "extra_provider_calls": 0,
+      "validation": "Node VM DOM stub; not real browser"
+    }
+  ]
+}

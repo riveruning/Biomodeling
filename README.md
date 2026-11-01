@@ -63,6 +63,10 @@ python3.12 -m venv .venv
 
 ## 文档与测试
 
+- [问题与优化任务完成情况（2026-11-01）](docs/completion-status-20261101.md)
+- [当前架构、功能与工具盘点及优化规划（2026-11-01）](docs/project-audit-20261101.md)
+- [具体开发任务与已确认问题（2026-11-01）](docs/execution-plan-20261101.md)
+- [首批改进交付与真实服务先导（2026-11-01）](docs/validation/20261101/improvements.md)
 - [整体项目进度与下一阶段（2026-10-30）](docs/project-status-20261030.md)
 - [本次整理与验证记录](docs/validation/20261030/README.md)
 - [文档分类索引](docs/README.md)

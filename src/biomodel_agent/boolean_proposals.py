@@ -46,7 +46,11 @@ def inspect(store,model,evidence,evidence_map,source_refs):
         expected[n['id']+'/initial']=n['initial']
         expected[n['id']+'/rule']=ast.dump(boolean.parse_rule(n['rule'],names))
     if not isinstance(evidence_map,dict) or set(evidence_map)!=set(expected):
-        return dict(state='blocked',issues=[dict(target='evidence_map',message='Map every initial, rule, update, time_unit and clamps target exactly once.')],scientific_support='unknown')
+        actual=set(evidence_map) if isinstance(evidence_map,dict) else set()
+        extra=actual-set(expected)
+        return dict(state='blocked',issues=[dict(target='evidence_map',message='Map every initial, rule, update, time_unit and clamps target exactly once.',
+            missing_targets=sorted(set(expected)-actual),extra_targets=[str(x)[:120] for x in sorted(extra,key=str)[:16]],
+            extra_target_count=len(extra))],scientific_support='unknown')
     by_id={e['id']:e for e in evidence}
     for target,value in expected.items():
         anchors=evidence_map[target]

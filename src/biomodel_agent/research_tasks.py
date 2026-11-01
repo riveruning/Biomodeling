@@ -14,12 +14,12 @@ from . import context, model_contracts as contracts, recovery, typed_models
 from .domain.contracts import ExperimentSpec, ObservationSpec, SimulationResult, SolverConfig
 from .domain.serialization import from_dict, to_dict
 from .storage import canonical_bytes, REF_RE
+from .capabilities import TYPES
 
 REQUEST='research_task'
 EXECUTION='research_task_execution'
 BINDING='research_task_binding'
 RUN='research_task_run'
-TYPES=('ode','fba',*typed_models.TYPES)
 
 
 def _normalize(store,config):
