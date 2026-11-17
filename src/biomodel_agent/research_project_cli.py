@@ -34,6 +34,10 @@ def command(args):
             out=projects.operate(store,args.ref,'reply_alignment',dict(question_ref=view['pending_questions'][-1],
                 reply=Path(args.reply_file).read_text(encoding='utf-8'),respondent=args.respondent),key=args.key,actor='operator')
         elif cmd=='research-project-recover':out=projects.recover(store,args.ref,args.attempt_ref)
+        elif cmd=='research-project-stop':
+            from .research_control import request_stop
+            ref=request_stop(store,args.ref,actor=args.actor,reason=args.reason)
+            out=dict(stop_ref=ref,**projects.inspect(store,args.ref))
         elif cmd=='research-project-snapshot':out=dict(snapshot_ref=projects.snapshot(store,args.ref))
         elif cmd=='research-project-run':
             project=projects.load(store,args.ref)
@@ -63,14 +67,20 @@ def register(sub,add_store):
         add_store(parser);parser.add_argument('--config',required=True);parser.set_defaults(func=command)
         if name=='research-project-reference':parser.add_argument('--actor',required=True)
     for name in ('research-project-show','research-project-run','research-project-step','research-project-reply',
-                 'research-project-recover','research-project-snapshot','research-batch-show','research-batch-run','research-batch-lessons'):
+                 'research-project-recover','research-project-stop','research-project-snapshot','research-batch-show','research-batch-run','research-batch-lessons'):
         parser=sub.add_parser(name,help='inspect or explicitly advance the agent-led research workflow')
         add_store(parser);parser.add_argument('ref');parser.set_defaults(func=command)
         if name in ('research-project-run','research-batch-run','research-batch-lessons'):
             parser.add_argument('--base-url');parser.add_argument('--model');parser.add_argument('--api-key-env',default='BIOMODEL_API_KEY')
+        if name=='research-project-run':
+            parser.add_argument('--reasoning-effort',default=None)
+            parser.add_argument('--max-output-tokens',type=int,default=4000)
+            parser.add_argument('--provider-timeout',type=float,default=None)
         if name in ('research-project-step','research-project-reply'):parser.add_argument('--key')
         if name=='research-project-step':parser.add_argument('--action-file',required=True)
         if name=='research-project-reply':
             parser.add_argument('--reply-file',required=True);parser.add_argument('--respondent',required=True)
         if name=='research-project-recover':parser.add_argument('--attempt-ref',required=True)
+        if name=='research-project-stop':
+            parser.add_argument('--actor',required=True);parser.add_argument('--reason',required=True)
 

@@ -1,5 +1,51 @@
 # 六类建模的当前接口
 
+## PDE 反应扩散系统（2026-11-12）
+
+`model_type="pde"` 的 `reaction_diffusion_cartesian_v1` 配置支持一维／二维均匀笛卡尔网格、1–8 个耦合场、逐场常数扩散系数及非线性局部反应。反应式复用受限数学表达式语法，可引用同格的其他场、参数、`time`、`x` 及二维的 `y`。
+
+模型声明 `grid.shape`、`grid.lengths`、`boundary`、`parameters` 和 `fields`。每个场包含 `id`、`diffusion`、`initial`、`reaction`、`nonnegative`。空间数组按 `[x,y]` 排列，完整轨迹按 `[time,field,x,y]` 排列，一维对应 `[time,field,x]`。每轴 3–128 格，总格数最多 4096，轨迹及相关输出标量合计最多 100 万。
+
+`no_flux`、`periodic` 与 `dirichlet_zero` 共用单元中心网格，间距为轴长除以格数。零 Dirichlet 值施加在区域边界面。状态的空间积分按单元体积计算。`nonnegative` 为每个场显式声明的约束，有符号状态可用于电位等数学变量。单位和生物学适用性由具体模型审查。
+
+默认采用稀疏 Jacobian 结构的 BDF 时间推进，也可选择 RK45。求解设置如下。
+
+| 参数 | 默认值 | 有效范围 |
+| --- | --- | --- |
+| `duration` | 1 | 大于 0，最多 100 万 |
+| `samples` | 21 | 2–1001 |
+| `method` | `BDF` | `BDF`、`RK45` |
+| `rtol` | 1e-6 | 1e-10–1e-2 |
+| `atol` | 1e-9 | 1e-12–1e-3 |
+| `max_rhs_evaluations` | 10000 | 1–100000，包含 Jacobian 差分评估 |
+| `timeout_s` | 60 | 0.1–600 秒，覆盖计算 worker 启动与求解 |
+
+可直接导入 [二维双场 Gray–Scott 示例](../examples/model-types/pde-system.json)，并采用[配套设置](../examples/model-types/pde-system-settings.json)。这是合成数学演示。研究 Agent 的配置模板采用零反应表达式，具体任务的机制和数值需从其证据或显式假设构建。
+
+```bash
+.venv/bin/python -m biomodel_agent typed-import examples/model-types/pde-system.json --store runs/pde-system
+# 将返回 ref 填入 MODEL_REF
+.venv/bin/python -m biomodel_agent typed-run MODEL_REF --config examples/model-types/pde-system-settings.json --store runs/pde-system
+```
+
+`typed-import/prepare/execute/status/report/export/replay`、`agent-typed` 和研究任务／项目入口均按具体模型选择计算配置。`length/diffusion/decay/initial` 格式对应 `linear_reaction_diffusion_1d_v1`。
+
+外部参考配置 `field_system_rmse_v1` 包含 `times`、`axes`、`field_ids`、`values`、逐场正尺度 `scales`、`threshold` 及相同的单位声明。参考在执行前冻结，在同一坐标与字段次序上分别计算归一化 RMSE，每个场均达阈值后整体通过。二维结果视图提供指定 y 位置的 x 切片，完整轨迹保存在返回收据中。
+
+三网格收敛协议接受一维／二维多场输入，按给定次序将每轴格数翻倍。物理参数、边界、字段次序、时间设置、参考尺度和阈值须一致。先为三个网格准备带外部参考的输入，再冻结协议，随后执行三个输入并读取收敛结果。
+
+```bash
+.venv/bin/python -m biomodel_agent pde-convergence-prepare COARSE_INPUT MEDIUM_INPUT FINE_INPUT --store runs/pde-system
+# 将返回 ref 填入 PROTOCOL_REF，再分别 typed-execute 三个输入
+.venv/bin/python -m biomodel_agent pde-convergence-show PROTOCOL_REF --store runs/pde-system
+```
+
+多场协议版本为 2，输出逐场三网格误差及两级观测阶。整体通过要求所有场满足冻结阶数区间且全部参考比较通过。零误差导致的未定义阶数保留为 unknown。每个网格初值须匹配其参考的零时刻，共同连续初值的认证仍需操作者提供依据。读取结果只使用已有确认运行。旧节点网格采用版本 1 协议。
+
+数值控制包括非线性 logistic 解析解、双场转化与不同扩散系数下的积分守恒、非方形二维网格的连续 Fourier 解及空间加密误差。方法接口见 [SciPy solve_ivp](https://docs.scipy.org/doc/scipy/reference/generated/scipy.integrate.solve_ivp.html) 与 [SciPy Kronecker 和](https://docs.scipy.org/doc/scipy/reference/generated/scipy.sparse.kronsum.html)。
+
+## 首版记录
+
 后续增量（2026-10-30）：[统一任务入口](research-tasks.md)已接入六类工作流；新增 `agent-typed --recoverable` / typed v2，支持原任务暂停、回复和确认返回认领。旧默认 v1 保持不支持恢复，未知效果不重试。以下正文保留首版范围及其验收。
 
 2026-10-27 用户核对六类清单后要求“全补了”，本次为剩余四类接上实际执行架构。原有 ODE 与稳态 FBA 保留各自协议；新增类型有原生 JSON、独立检查和真实计算，不转换成 ODE。以下是有明确边界的首版，不是任意生物论文的自动建模能力。

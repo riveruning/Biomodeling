@@ -8,7 +8,7 @@ import uuid
 from copy import deepcopy
 from typing import Any
 
-from . import agent_tools, application, time_units, validation, memory, skills, studies, context, workstate, diagnostics
+from . import agent_read_tools, agent_model_tools, agent_scientific_tools, agent_tools, application, time_units, validation, memory, skills, studies, context, workstate, diagnostics
 from .domain.contracts import (
     ExperimentSpec, FrozenMap, ModelArtifact, ObservationSpec, SolverConfig,
     SimulationResult,
@@ -300,12 +300,8 @@ def run_agent(store: Any, provider: Any, source_refs: list[str], experiment: Exp
 
 
 def _provider_identity(provider):
-    # An explicit allowlist: credentials, headers and transport objects are never serialized.
-    endpoint = getattr(provider, 'base_url', None)
-    return {"endpoint_sha256": hashlib.sha256(endpoint.encode()).hexdigest() if endpoint else None,
-            "class": type(provider).__module__ + "." + type(provider).__qualname__,
-            **{k: getattr(provider, k) for k in ("model", "json_mode", "timeout_s", "max_tokens")
-               if hasattr(provider, k)}}
+    from .provider_identity import identity
+    return identity(provider)
 
 
 def _reply_message(question, respondent, source_ref, reply):
@@ -588,6 +584,18 @@ def _execute_agent(store, provider, source_refs, experiment, observations, solve
         finally:
             calls, run_count = journal.calls, journal.runs
 
+    def inspect_progress():
+        # Evaluated inside the journal reservation so the snapshot sees the
+        # current loop state, events and call count rather than a stale copy.
+        return workstate.project(store, source_refs=source_refs, events=events,
+            draft_ref=draft_ref, model_ref=model_ref, run_ref=run_ref, state=state,
+            study_plan_ref=study_plan_ref, calls=calls, max_calls=max_calls,
+            planning=planning, failure_policy=failure_policy,
+            skill_protocol=skill_protocol, estimation_plan_ref=estimation_plan_ref)
+
+    def source_text(ref, page):
+        return _source_text(store, ref, page)
+
     def save_checkpoint(_store, current_state, call, repair, history, model, run, sources, draft):
         refs = [task_ref, *sources, *clarification_refs]
         refs.extend(r for r in (draft, model, run) if r)
@@ -820,48 +828,32 @@ def _execute_agent(store, provider, source_refs, experiment, observations, solve
             messages.append(_user(_json(feedback)))
             continue
 
+        # Estimation actions stay ahead of the failure-fingerprint and plan
+        # guards; their handler-local gates keep the original rejection paths.
         if action == 'request_estimation':
-            try:
-                if not task_config.get('estimation_requests') or run_count:
-                    raise ValueError('estimation requests require the enabled ordinary task before scientific evaluation')
-                from . import estimation_workflow as workflow
-                request_ref = invoke(action, lambda: workflow.request(store, task_ref, source_refs, args),
-                    details={'args': args, 'source_refs': source_refs}, summarize=lambda r: {'request_ref': r}, result_refs=lambda r: [r])
-                events.append(dict(type='tool_result', tool=action, call=calls, ok=True,
-                    request_ref=request_ref, artifact_refs=[request_ref]))
-                events.append(dict(type='awaiting_input', call=calls, origin='estimation_request',
-                    request_ref=request_ref, question='Review the proposed estimation targets and explicitly freeze a separate estimation protocol; this request does not run fitting.'))
-                state = 'awaiting_input'
+            outcome = agent_scientific_tools.execute_request_estimation(
+                args, store=store, task_ref=task_ref, source_refs=source_refs,
+                estimation_requests=bool(task_config.get('estimation_requests')),
+                invoke=invoke, call_count=lambda: calls, run_count=lambda: run_count)
+            events.extend(outcome.events)
+            if outcome.message is not None:
+                messages.append(outcome.message)
+            if outcome.stop:
+                state = outcome.state or state
                 break
-            except (ValueError, TypeError) as exc:
-                feedback = dict(tool=action, ok=False, error=str(exc))
-                events.append(dict(type='tool_error', call=calls, **feedback))
-                messages.append(_user(_json(feedback)))
-                continue
+            continue
 
         if action == 'run_estimation':
-            if args or estimation_plan_ref is None or run_count:
-                feedback = dict(tool=action, ok=False, error='run_estimation requires empty args and an operator-bound frozen estimation plan, at most once.')
-                events.append(dict(type='tool_error', call=calls, **feedback))
-                messages.append(_user(_json(feedback)))
-                continue
-            try:
-                from . import estimation, estimation_workflow as workflow
-                result_ref = invoke(action, lambda: estimation.execute(store, estimation_plan_ref),
-                    details={'plan_ref': estimation_plan_ref}, summarize=lambda r: {'result_ref': r}, result_refs=lambda r: [r])
-                workflow.check_result(store, result_ref, plan_ref=estimation_plan_ref)
-                facts = estimation.result_summary(store, result_ref)
-                events.append(dict(type='tool_result', tool=action, call=calls, ok=True,
-                    result_ref=result_ref, **facts, artifact_refs=[result_ref]))
-                messages.append(_user(_json(dict(tool=action, ok=True, result_ref=result_ref, **facts))))
-                state = 'awaiting_input' if facts['execution_status'] == 'succeeded' else 'incomplete'
-                if state == 'awaiting_input':
-                    events.append(dict(type='awaiting_input', call=calls, origin='estimation_review', result_ref=result_ref,
-                        question='Review the recorded estimate candidates and unresolved items with estimate-review; no automatic adoption or strict reproduction completion.'))
-            except Exception as exc:
-                events.append(dict(type='tool_error', tool=action, call=calls, error=f'{type(exc).__name__}: {exc}'))
-                state = 'incomplete'
-            break
+            outcome = agent_scientific_tools.execute_run_estimation(
+                args, store=store, estimation_plan_ref=estimation_plan_ref,
+                invoke=invoke, call_count=lambda: calls, run_count=lambda: run_count)
+            events.extend(outcome.events)
+            if outcome.message is not None:
+                messages.append(outcome.message)
+            if outcome.stop:
+                state = outcome.state or state
+                break
+            continue
 
         if failure_policy:
             fingerprint = failure_routes.request_hash(action, args, source_refs)
@@ -873,23 +865,17 @@ def _execute_agent(store, provider, source_refs, experiment, observations, solve
                     failure_code='duplicate_failed_request', error='The identical failed request has already been processed; no tool was invoked.'))
                 continue
 
+        # Plan revision stays ahead of the planning guard; its callback reads
+        # live call/run counts and projects only after the revision event.
         if action == 'revise_plan':
-            try:
-                from . import task_plans
-                if planning is None or set(args) != {'expected_plan_ref', 'reason', 'steps'}:
-                    raise ValueError('revise_plan requires enabled task planning and exactly expected_plan_ref/reason/steps')
-                current_plan = task_plans.current_ref(planning, events)
-                out = invoke(action, lambda: task_plans.revise(store, planning, current_plan,
-                    args['expected_plan_ref'], args['steps'], args['reason'], calls, run_count=run_count),
-                    details={'args': args}, result_refs=lambda r: [r['plan_ref']])
-                events.append(dict(type='tool_result', tool=action, ok=True, call=calls,
-                                   **out, artifact_refs=[out['plan_ref']]))
-                feedback = dict(tool=action, ok=True, task_plan=task_plans.project(store, planning, events,
-                    source_refs=source_refs, draft_ref=draft_ref, model_ref=model_ref, run_ref=run_ref, calls=calls))
-            except (ValueError, TypeError) as exc:
-                feedback = dict(tool=action, ok=False, error=str(exc))
-                events.append(dict(type='tool_error', call=calls, **feedback))
-            messages.append(_user(_json(feedback)))
+            outcome = agent_scientific_tools.execute_revise_plan(
+                args, store=store, planning=planning, events=events,
+                source_refs=source_refs, draft_ref=draft_ref, model_ref=model_ref,
+                run_ref=run_ref, invoke=invoke, call_count=lambda: calls,
+                run_count=lambda: run_count)
+            events.extend(outcome.events)
+            if outcome.message is not None:
+                messages.append(outcome.message)
             checkpoints.append(save_checkpoint(store, state, calls, repairs, messages,
                                                model_ref, run_ref, source_refs, draft_ref))
             continue
@@ -912,179 +898,51 @@ def _execute_agent(store, provider, source_refs, experiment, observations, solve
                 continue
 
         if action == 'run_study':
-            if args or mode != 'hypothesis' or study_plan_ref is None or run_count:
-                feedback = {'tool': action, 'ok': False,
-                            'error': 'run_study requires empty args, an authorized hypothesis study plan, and no previous evaluation.'}
-                events.append({'type': 'tool_error', 'call': calls, **feedback})
-                messages.append(_user(_json(feedback)))
-                continue
-            try:
-                # The journal's scientific-execution reservation is persisted
-                # before the fitting begins; on failure the journal records
-                # error/interrupted and the original exception propagates.
-                run_ref = invoke('run_study', lambda: studies.execute_study(store, study_plan_ref),
-                                 details={'plan_ref': study_plan_ref},
-                                 summarize=lambda r: {'result_ref': r},
-                                 result_refs=lambda r: [r])
-                facts = studies.result_summary(store, run_ref)
-            except Exception as exc:
-                failure_ref = store.put('study_execution_failure',
-                    {'plan_ref': study_plan_ref, 'error': f'{type(exc).__name__}: {exc}'}, refs=(study_plan_ref,))
-                events.append({'type': 'tool_error', 'call': calls, 'tool': action,
-                               'error': 'Frozen study execution failed; see internal diagnostic artifact.',
-                               'artifact_refs': [failure_ref]})
-                state = 'incomplete'
+            outcome = agent_scientific_tools.execute_run_study(
+                args, store=store, mode=mode, study_plan_ref=study_plan_ref,
+                invoke=invoke, call_count=lambda: calls, run_count=lambda: run_count)
+            events.extend(outcome.events)
+            if outcome.message is not None:
+                messages.append(outcome.message)
+            if outcome.run_ref is not None:
+                run_ref = outcome.run_ref
+            if outcome.stop:
+                state = outcome.state or state
                 break
-            feedback = {'tool': action, 'ok': True, 'run_ref': run_ref, **facts}
-            events.append({'type': 'tool_result', 'call': calls, **feedback})
-            messages.append(_user(_json(feedback)))
-            checkpoints.append(save_checkpoint(store, state, calls, repairs, messages,
-                                               model_ref, run_ref, source_refs, draft_ref))
+            if outcome.checkpoint:
+                checkpoints.append(save_checkpoint(store, state, calls, repairs, messages,
+                                                   model_ref, run_ref, source_refs, draft_ref))
             continue
 
         if action == 'assess_parameter':
-            try:
-                from .parameter_applicability import assess
-                if set(args) != {'target', 'source_ref', 'page', 'start', 'end'} or args['target'] not in parameter_requirements:
-                    raise ValueError('assess_parameter requires a frozen target and source_ref/page/start/end')
-                out = invoke(action, lambda: assess(store, source_refs, args['target'], parameter_requirements[args['target']],
-                                                    args['source_ref'], args['page'], args['start'], args['end']),
-                             details={'args': args}, result_refs=lambda r: [r['assessment_ref']])
-                feedback = {'tool': action, 'ok': True, **out}
-                events.append({'type': 'tool_result', 'call': calls, 'tool': action, 'status': out['status'],
-                               'target': out['target'], 'artifact_refs': [out['assessment_ref']]})
-            except (ValueError, TypeError) as exc:
-                feedback = {'tool': action, 'ok': False, 'error': str(exc)}
-                events.append({'type': 'tool_error', 'call': calls, **feedback})
-            messages.append(_user(_json(feedback)))
-            checkpoints.append(save_checkpoint(store, state, calls, repairs, messages,
-                                               model_ref, run_ref, source_refs, draft_ref))
+            outcome = agent_scientific_tools.execute_assess_parameter(
+                args, store=store, source_refs=source_refs,
+                parameter_requirements=parameter_requirements, invoke=invoke,
+                call_count=lambda: calls)
+            events.extend(outcome.events)
+            if outcome.message is not None:
+                messages.append(outcome.message)
+            if outcome.checkpoint:
+                checkpoints.append(save_checkpoint(store, state, calls, repairs, messages,
+                                                   model_ref, run_ref, source_refs, draft_ref))
             continue
 
-        if action in ('inspect_progress', 'investigate_parameter'):
-            try:
-                if action == 'inspect_progress':
-                    if args:
-                        raise ValueError('inspect_progress takes no arguments')
-                    out = invoke(action, lambda: workstate.project(store, source_refs=source_refs,
-                        events=events, draft_ref=draft_ref, model_ref=model_ref, run_ref=run_ref,
-                        state=state, study_plan_ref=study_plan_ref, calls=calls, max_calls=max_calls, planning=planning, failure_policy=failure_policy, skill_protocol=skill_protocol,
-                        estimation_plan_ref=estimation_plan_ref))
-                else:
-                    from .parameter_investigation import investigate
-                    if set(args) != {'target', 'query'}:
-                        raise ValueError('investigate_parameter requires exactly target and query')
-                    out = invoke(action, lambda: investigate(store, source_refs, args['target'], args['query'], method=retrieval_method),
-                                 details={'args': args}, result_refs=lambda r: [r['investigation_ref']])
-                feedback = {'tool': action, 'ok': True, **out}
-                events.append({'type': 'tool_result', 'call': calls, 'tool': action,
-                               'artifact_refs': [out['investigation_ref']] if action == 'investigate_parameter' else []})
-            except (ValueError, TypeError) as exc:
-                feedback = {'tool': action, 'ok': False, 'error': str(exc)}
-                events.append({'type': 'tool_error', 'call': calls, **feedback})
-            messages.append(_user(_json(feedback)))
-            checkpoints.append(save_checkpoint(store, state, calls, repairs, messages,
-                                               model_ref, run_ref, source_refs, draft_ref))
-            continue
-
-        if action == 'search_knowledge':
-            try:
-                if set(args) != {'database', 'query'} or args['database'] not in knowledge_databases:
-                    raise ValueError('search_knowledge requires an enabled database and query')
-                out = invoke(action, lambda: knowledge.search(store, args['database'], args['query']),
-                             details={'args': args}, result_refs=lambda result: (result['search_ref'],))
-                feedback = {'tool': action, 'ok': True, **out}
-                events.append({'type': 'tool_result', 'call': calls, 'tool': action,
-                               'search_ref': out['search_ref'], 'artifact_refs': [out['search_ref']]})
-            except (ValueError, TypeError) as exc:
-                feedback = {'tool': action, 'ok': False, 'error': str(exc)}
-                events.append({'type': 'tool_error', 'call': calls, **feedback})
-            messages.append(_user(_json(feedback)))
-            checkpoints.append(save_checkpoint(store, state, calls, repairs, messages,
-                                               model_ref, run_ref, source_refs, draft_ref))
-            continue
-
-        if action in ('search_sources', 'recall_memory', 'load_skill'):
-            try:
-                expected = {'name'} if action == 'load_skill' else {'query'}
-                if set(args) != expected:
-                    raise ValueError(f'{action} requires exactly {sorted(expected)}')
-                if action == 'search_sources':
-                    from .retrieval import search_sources
-                    out = invoke(action, lambda: search_sources(store, source_refs, args['query'],
-                                                                method=retrieval_method),
-                                 details={'args': args})
-                elif action == 'recall_memory':
-                    if memory_scope is None:
-                        raise ValueError('memory is not enabled for this task')
-                    out = invoke(action, lambda: memory.recall(store, memory_scope, args['query'],
-                                                               source_refs=source_refs),
-                                 details={'args': args})
-                else:
-                    advertised = {item['name']: item['version'] for item in skill_catalog}
-                    if args['name'] not in advertised:
-                        raise ValueError('skill is not in the frozen task catalog; start a new task')
-                    def load_procedure():
-                        if skill_protocol and args['name'] in skill_protocol['entries']:
-                            from . import scientific_skills as procedures
-                            return procedures.load(store, skill_protocol, args['name'])
-                        return skills.load_skill(args['name'])
-                    out = invoke('load_skill', load_procedure, details={'args': args},
-                                 result_refs=lambda r: [r['scientific_skill_ref']] if r.get('scientific_skill_ref') else [])
-                    if advertised.get(out['name']) != out['version']:
-                        raise ValueError('skill is not in the frozen task catalog; start a new task')
-                feedback = {'tool': action, 'ok': True, **out}
-                event = {key: value for key, value in feedback.items() if key not in ('results', 'steps')}
-                if action in ('search_sources', 'recall_memory'):
-                    event['results'] = [{key: value for key, value in hit.items() if key not in ('text', 'content')}
-                                        for hit in out['results']]
-                if out.get('scientific_skill_ref'):
-                    event['artifact_refs'] = [out['scientific_skill_ref']]
-                events.append({'type': 'tool_result', 'call': calls, **event})
-            except (ValueError, TypeError) as exc:
-                feedback = {'tool': action, 'ok': False, 'error': str(exc)}
-                events.append({'type': 'tool_error', 'call': calls, **feedback})
-            messages.append(_user(_json(feedback)))
-            checkpoints.append(save_checkpoint(store, state, calls, repairs, messages,
-                                               model_ref, run_ref, source_refs, draft_ref))
-            continue
-
-        if action == "inspect_source":
-            if set(args) != {"source_ref", "page", "start", "end"}:
-                events.append({"type": "tool_error", "call": calls, "tool": action,
-                               "error": "inspect_source args must be exactly source_ref,page,start,end"})
-                messages.append(_user(_json({"tool": action, "ok": False,
-                                             "error": "inspect_source args must be exactly source_ref,page,start,end"})))
-                state = "failed"
+        if action in agent_read_tools.READ_ACTIONS:
+            outcome = agent_read_tools.execute_read_tool(action, args, store=store,
+                source_refs=source_refs, retrieval_method=retrieval_method,
+                knowledge_databases=knowledge_databases, memory_scope=memory_scope,
+                skill_catalog=skill_catalog, skill_protocol=skill_protocol,
+                read_limit=READ_LIMIT, invoke=invoke,
+                inspect_progress=inspect_progress, source_text=source_text,
+                call_count=lambda: calls)
+            events.append({**outcome.event, 'call': calls})
+            messages.append(outcome.message)
+            if outcome.stop:
+                state = outcome.state or state
                 break
-            ref, page, start, end = args["source_ref"], args["page"], args["start"], args["end"]
-            if ref not in source_refs or not _is_int(page) or not _is_int(start) or not _is_int(end) or start < 0 or end <= start or end - start > READ_LIMIT:
-                events.append({"type": "tool_error", "call": calls, "tool": action,
-                               "error": "source/page/start/end outside task bounds"})
-                messages.append(_user(_json({"tool": action, "ok": False,
-                                             "error": "source/page/start/end outside task bounds"})))
-                state = "failed"
-                break
-            text = invoke('inspect_source', lambda: _source_text(store, ref, page),
-                             details={'args': args},
-                             summarize=lambda t: {'page_found': t is not None})
-            if text is None or page < 1 or end > len(text):
-                error = {'type':'tool_error','call':calls,'tool':action,'error':'invalid source span',
-                         'available_pages': [{'page':p['number'],'chars':len(p['text'])}
-                                             for p in store.get(ref)['payload']['pages']]}
-                events.append(error)
-                messages.append(_user(_json(error)))
-                # A bounded technical retry can correct coordinates; scope remains fixed.
-                continue
-            excerpt = text[start:end]
-            out = {"tool": action, "ok": bool(excerpt), "source_ref": ref, "page": page,
-                   "start": start, "end": end, "length": len(excerpt), "text": excerpt}
-            from .pdf_adapter import locate
-            locator = locate(store, ref, page, start, end)
-            if locator is not None:
-                out['locator'] = locator
-            events.append({"type": "tool_result", "call": calls, **{k: v for k, v in out.items() if k != "text"}})
-            messages.append(_user(_json(out)))
+            if outcome.checkpoint:
+                checkpoints.append(save_checkpoint(store, state, calls, repairs, messages,
+                    model_ref, run_ref, source_refs, draft_ref))
             continue
 
         if action in ("submit_draft", "submit_plan"):
@@ -1092,75 +950,37 @@ def _execute_agent(store, provider, source_refs, experiment, observations, solve
                 state = 'incomplete'
                 events.append({'type':'tool_error','error':'cannot revise a model after evaluating it in this frozen task'})
                 break
+            # A rejected replacement must not keep executing the old model.
             artifact = None
             model_ref = None
-            if action == 'submit_plan':
-                parent_plan_ref = native_modeling.latest_ref(events)
-                result = invoke('submit_plan', lambda: native_modeling.submit(store, args, source_refs,
-                    task_ref=task_ref, parent_ref=parent_plan_ref),
-                    details=dict(args=args, source_refs=list(source_refs), parent_modeling_plan_ref=parent_plan_ref),
-                    summarize=lambda r: {k: v for k, v in r.items() if k != 'artifact'}, result_refs=native_modeling.refs)
-            else:
-                result = invoke('submit_draft', lambda: agent_tools.submit_draft(store, args, source_refs, mode, tuple(allowed_mechanisms),
-                            **({'parameter_requirements': parameter_requirements} if parameter_requirements else {})),
-                         details={'args': args},
-                         summarize=lambda r: {k: v for k, v in r.items() if k != 'artifact'},
-                         result_refs=lambda r: [ref for ref in (r.get('draft_ref'), r.get('model_ref'),
-                                                              r.get('hypothesis_ref'), r.get('source_review_ref'), *r.get('assessment_refs', [])) if ref])
-            if result['state'] == 'ready':
-                clock = time_units.check_experiment_time(result['artifact'].sbml, experiment.time_unit)
-                result['checks'].append(to_dict(clock))
-                if clock.status == 'fail':
-                    result.update(state='invalid', artifact=None, model_ref=None, problems=[clock.message])
-            draft_ref = result.get('draft_ref') if action == 'submit_plan' else result.get("draft_ref") or draft_ref
-            validation_feedback = diagnostics.draft_feedback(result)
-            events.append({"type": "tool_result", "call": calls, "tool": action,
-                           "validation_feedback": validation_feedback,
-                           "parameter_diagnostics": result.get('parameter_diagnostics', []),
-                           "state": result["state"], "problems": list(result["problems"]),
-                           "citation_diagnostics": result.get("citation_diagnostics", []),
-                           "binding_diagnostics": result.get("binding_diagnostics", []),
-                           "checks": result["checks"], "source_review": result.get("source_review"),
-                           **({k: result.get(k) for k in ('modeling_plan_ref', 'compilation_ref', 'submission_ref', 'decision_feedback')} if action == 'submit_plan' else {}),
-                           "artifact_refs": native_modeling.refs(result) if action == 'submit_plan' else [result.get(k) for k in ("draft_ref","model_ref","hypothesis_ref","source_review_ref")]})
-            if result["state"] == "ready":
-                artifact = result["artifact"]
-                model_ref, draft_ref = result["model_ref"], result["draft_ref"]
-                summary = {"id": artifact.id, "format": artifact.format, "kind": artifact.kind,
-                           "sha256": artifact.sha256,
-                           "element_map_targets": sorted(artifact.element_map.keys()),
-                           "checks": result["checks"], "model_ref": model_ref,
-                           **({'decision_feedback': result['decision_feedback']} if action == 'submit_plan' else {}),
-                           "note": "artifact data held internally; only this summary is shown"}
-                messages.append(_user(_json({"tool": action, "ok": True, **summary})))
+            outcome = agent_model_tools.execute_model_submission(action, args, store=store,
+                source_refs=source_refs, time_unit=experiment.time_unit, mode=mode,
+                allowed_mechanisms=allowed_mechanisms,
+                parameter_requirements=parameter_requirements, task_ref=task_ref,
+                events=events, draft_ref=draft_ref, invoke=invoke, call_count=lambda: calls)
+            events.append(outcome.event)
+            if outcome.state == "ready":
+                artifact = outcome.artifact
+                model_ref, draft_ref = outcome.model_ref, outcome.result["draft_ref"]
+                messages.append(outcome.message)
                 continue
-            if result["state"] == "invalid":
+            draft_ref = outcome.draft_ref
+            if outcome.state == "invalid":
                 repairs += 1
-                messages.append(_user(_json({"tool": action, "ok": False, "state": "invalid",
-                                             "validation_feedback": validation_feedback,
-                                             **({'decision_feedback': result['decision_feedback']} if action == 'submit_plan' else {}),
-                                             "problems": list(result["problems"]),
-                                             "citation_diagnostics": result.get("citation_diagnostics", []),
-                                             "binding_diagnostics": result.get("binding_diagnostics", [])})))
+                messages.append(outcome.message)
                 if failure_policy:
                     continue
                 if repairs > max_repairs:
                     state = "incomplete"
                     break
                 continue
-            if action == 'submit_plan':
-                messages.append(_user(_json(dict(tool=action, ok=False, state=result['state'],
-                    decision_feedback=result['decision_feedback'], validation_feedback=validation_feedback,
-                    problems=list(result['problems'])))))
+            if outcome.message is not None:
+                messages.append(outcome.message)
             if failure_policy:
                 continue
-            state = result["state"]
-            if state == "awaiting_input":
-                events.append({"type":"awaiting_input","call":calls,
-                               "origin":"validation",
-                               "question":"Please resolve: " + "; ".join(result["problems"]),
-                               "problems": list(result["problems"]),
-                               "source_review_ref": result.get("source_review_ref")})
+            state = outcome.state
+            if outcome.awaiting_event is not None:
+                events.append(outcome.awaiting_event)
             break
 
         if action == "run":
@@ -1177,36 +997,20 @@ def _execute_agent(store, provider, source_refs, experiment, observations, solve
                                              "error": "run requires exactly one ready draft and cannot repeat after a prior run or draft change"})))
                 state = "incomplete"
                 break
-            try:
-                if decision_options:
-                    artifact = native_modeling.active_model(store, task_ref, events, source_refs, model_ref, draft_ref)
-                    from .modeling_workflow import _config as check_decision_execution
-                    submission = next(e for e in reversed(events) if e.get('tool') == 'submit_plan')
-                    check_decision_execution(store, submission['compilation_ref'], dict(
-                        experiment=to_dict(experiment), solver=to_dict(solver),
-                        observations=[to_dict(o) for o in observations],
-                        reference=to_dict(reference) if reference is not None else None, scales=scales))
-                draft_data = store.get(draft_ref)['payload']
-                nonnegative = tuple(s['id'] for s in draft_data['states'] if s.get('nonnegative'))
-                # The journal's scientific-execution reservation is persisted
-                # before the evaluation; let it account the run budget.
-                run_ref = invoke('run', lambda: application.run_reproduction(store, artifact, experiment, observations,
-                                                                             solver, reference, scales, strict=(mode == "reproduction"),
-                                                                             nonnegative=nonnegative),
-                                 details={'model_ref': model_ref, 'draft_ref': draft_ref},
-                                 summarize=lambda r: {'result_ref': r},
-                                 result_refs=lambda r: [r])
-                run = store.get(run_ref)["payload"]
-            except Exception as exc:
-                events.append({"type": "tool_error", "call": calls, "tool": action,
-                               "error": f"{type(exc).__name__}: {exc}"})
-                messages.append(_user(_json({"tool": action, "ok": False,
-                                             "error": "run tool failed"})))
-                state = "incomplete"
+            outcome = agent_model_tools.execute_run(store=store, artifact=artifact,
+                experiment=experiment, observations=observations, solver=solver,
+                reference=reference, scales=scales, mode=mode, task_ref=task_ref,
+                decision_options=decision_options, events=events, source_refs=source_refs,
+                model_ref=model_ref, draft_ref=draft_ref, invoke=invoke,
+                call_count=lambda: calls, run_facts=_run_facts)
+            if outcome.run_ref is not None:
+                run_ref = outcome.run_ref
+            events.extend(outcome.events)
+            if outcome.message is not None:
+                messages.append(outcome.message)
+            if outcome.stop:
+                state = outcome.state or state
                 break
-            out = {"tool": action, "ok": True, "run_ref": run_ref, **_run_facts(run)}
-            events.append({"type": "tool_result", "call": calls, **{k: v for k, v in out.items()}})
-            messages.append(_user(_json(out)))
             continue
 
         if action == "finish":

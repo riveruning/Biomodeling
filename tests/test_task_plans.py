@@ -28,7 +28,8 @@ def act(name, **args): return dict(action=name, args=args)
 
 def setup(tmp_path, text='Initial x = 1.\nParameter k = 0.4.\nEquation dx/dt = -k*x.\n'):
     store = ArtifactStore(tmp_path/'store')
-    path = tmp_path/'source.txt'; path.write_text(text)
+    # Byte-exact fixture: UTF-8, no OS newline translation; offsets assume LF lines.
+    path = tmp_path/'source.txt'; path.write_text(text, encoding='utf-8', newline='')
     source = evidence.ingest_source(store, path)
     return store, source
 

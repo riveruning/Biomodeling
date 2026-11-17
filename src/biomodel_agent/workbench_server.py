@@ -35,7 +35,7 @@ class Handler(BaseHTTPRequestHandler):
         self.send_header('Content-Type',content_type);self.send_header('Content-Length',str(len(data)))
         self.send_header('Cache-Control','no-store');self.send_header('X-Content-Type-Options','nosniff')
         self.send_header('Referrer-Policy','no-referrer')
-        self.send_header('Content-Security-Policy',"default-src 'none'; script-src 'self'; style-src 'self'; connect-src 'self'; img-src 'self'; base-uri 'none'; frame-ancestors 'none'; form-action 'self'")
+        self.send_header('Content-Security-Policy',"default-src 'none'; script-src 'self'; style-src 'self'; connect-src 'self'; img-src 'self' blob:; base-uri 'none'; frame-ancestors 'none'; form-action 'self'")
         if filename:self.send_header('Content-Disposition','attachment; filename="'+filename+'"')
         self.send_header('Connection','close');self.end_headers()
         try:self.wfile.write(data)
@@ -61,8 +61,8 @@ class Handler(BaseHTTPRequestHandler):
         api=path.startswith('/api/') or path.startswith('/downloads/')
         if not self._guard(api):return
         try:
-            if path in ('/','/app.js','/style.css','/projects','/projects.js'):
-                filename={'/':'index.html','/app.js':'app.js','/style.css':'style.css','/projects':'projects.html','/projects.js':'projects.js'}[path]
+            if path in ('/','/app.js','/style.css','/projects','/projects.js','/scientific-results.js'):
+                filename={'/':'index.html','/app.js':'app.js','/style.css':'style.css','/projects':'projects.html','/projects.js':'projects.js','/scientific-results.js':'scientific-results.js'}[path]
                 raw=(ASSETS/filename).read_bytes()
                 if path in ('/','/projects'):raw=raw.replace(b'__WORKBENCH_TOKEN__',self.server.workbench.token.encode('ascii'))
                 self._send(200,raw,'text/html; charset=utf-8' if path in ('/','/projects') else 'text/css; charset=utf-8' if path=='/style.css' else 'text/javascript; charset=utf-8');return
@@ -77,6 +77,8 @@ class Handler(BaseHTTPRequestHandler):
                     out['questions']=[dict(question_ref=r,**research_projects.own(store,r,research_projects.QUESTION,root)) for r in out['pending_questions']]
                     out['assessments']=[research_projects.own(store,r,research_projects.ASSESSMENT,root) for r in out['assessment_refs']]
                     out['usage']=research_supervisor.usage(store,root)
+                    from .research_results import collect
+                    out['results']=collect(store,root,out)
             elif len(parts)==3 and parts[:2]==['api','task']:out=app.task(parts[2])
             elif len(parts)==3 and parts[:2]==['api','proposal']:
                 from . import task_proposals
@@ -89,6 +91,9 @@ class Handler(BaseHTTPRequestHandler):
                     if not value.isascii() or not value.isdigit() or len(value)>9:raise ValueError('来源偏移须为非负整数')
                     values[key]=int(value)
                 out=app.source(parts[2],**values)
+            elif len(parts)==3 and parts[:2]==['api','region']:out=app.region_info(parts[2])
+            elif len(parts)==3 and parts[:2]==['downloads','region'] and parts[2].endswith('.png'):
+                self._send(200,app.region_png(parts[2][:-4]),'image/png');return
             elif len(parts)==3 and parts[:2]==['api','job']:out=app.job(parts[2])
             elif len(parts)==3 and parts[:2]==['api','job-key']:out=app.job_by_key(parts[2])
             elif len(parts)==3 and parts[:2]==['api','report']:out=dict(text=app.report(parts[2]))
@@ -141,6 +146,8 @@ class Handler(BaseHTTPRequestHandler):
             payload=decode(raw);path=urlsplit(self.path).path;app=self.server.workbench
             if path=='/api/preview':
                 c.fields(payload,{'operation','params'});out=app.preview(**payload);code=200
+            elif path=='/api/project-stop':
+                c.fields(payload,{'project_ref','actor','reason'});out=app.stop_project(**payload);code=200
             elif path=='/api/parse-json':
                 c.fields(payload,{'text'})
                 if not isinstance(payload['text'],str):raise ValueError('JSON 内容须为文本')

@@ -15,7 +15,10 @@ def test_template_only_package_initializes_an_empty_workspace(tmp_path,monkeypat
     result=workspace_tools.initialize(tmp_path/'workspace');store=ArtifactStore(tmp_path/'workspace/store')
     assert not store.list() and result['example_source_refs']=={} and result['provider_calls']==result['scientific_runs']==0
     manifest=json.loads((tmp_path/'workspace/workspace.json').read_text())
-    assert 'Empty user workspace' in manifest['note'] and len(list((tmp_path/'workspace/templates').glob('*.json')))==6
+    assert 'Empty user workspace' in manifest['note']
+    templates={path.name for path in (tmp_path/'workspace/templates').glob('*.json')}
+    assert templates=={'ode-plan.json','fba.json','stochastic.json','pde.json',
+                       'pde-system.json','boolean.json','individual.json'}
 def test_internal_records_are_utf8_with_a_non_utf8_system_default(tmp_path,monkeypatch):
     from pathlib import Path
     from biomodel_agent import typed_models

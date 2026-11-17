@@ -30,6 +30,11 @@ def _declaration(line,names):
     return None
 
 
+def parse_declaration(line,names):
+    """Public literal parser; the existing inspector remains the adoption gate."""
+    return _declaration(line,names)
+
+
 def inspect(store,model,evidence,evidence_map,source_refs):
     """Read-only recheck of every initial/rule and finite whole-source scope."""
     issues=[]

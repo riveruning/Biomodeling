@@ -8,11 +8,24 @@ def _provider(args,identity=None):
     from .llm import ChatProvider
     base=args.base_url or os.environ.get('BIOMODEL_BASE_URL')
     model=(identity or {}).get('model') or args.model or os.environ.get('BIOMODEL_MODEL')
+    if identity is None:
+        max_tokens=getattr(args,'max_output_tokens',None)
+        max_tokens=4000 if max_tokens is None else max_tokens
+        reasoning_effort=getattr(args,'reasoning_effort',None)
+        timeout_s=getattr(args,'provider_timeout',None)
+        timeout_s=60 if timeout_s is None else timeout_s
+    else:
+        # A frozen task keeps the provider contract it was created with.  Older
+        # identities without these keys keep the old 60/None/4000 defaults
+        # rather than being silently upgraded by new CLI options.
+        max_tokens=identity.get('max_tokens',4000)
+        reasoning_effort=identity.get('reasoning_effort')
+        timeout_s=identity.get('timeout_s',60)
     if not base or not model or not os.environ.get(args.api_key_env):
         raise ValueError('missing provider base URL/model/key environment variable; no service called')
     return ChatProvider(base,model,args.api_key_env,
-        timeout_s=(identity or {}).get('timeout_s',60),max_tokens=(identity or {}).get('max_tokens',4000),
-        json_mode=(identity or {}).get('json_mode',False))
+        timeout_s=timeout_s,max_tokens=max_tokens,
+        json_mode=(identity or {}).get('json_mode',False),reasoning_effort=reasoning_effort)
 
 
 def command(args):

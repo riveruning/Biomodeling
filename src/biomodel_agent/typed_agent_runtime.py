@@ -19,8 +19,8 @@ PROFILE = 'typed_agent_v2'
 
 
 def identity(provider):
-    from .agent import _provider_identity
-    return _provider_identity(provider)
+    from .provider_identity import identity as provider_identity
+    return provider_identity(provider)
 
 
 def _text(value, name, maximum):
@@ -49,7 +49,7 @@ def brief(store,task):
     inp,model=models.load_input(store,task['input_ref'])
     return dict(model_type=task['model_type'],model_ref=task['model_ref'],input_ref=task['input_ref'],
         profile=inp['profile'],units=model['units'],settings=inp['settings'],protocol=PROFILE,
-        scientific_support='unknown',limitations=models.backend(task['model_type']).LIMITATIONS)
+        scientific_support='unknown',limitations=models.backend(task['model_type'], model=model).LIMITATIONS)
 
 def bound_result(store,task,ref):
     obj=store.get(ref)

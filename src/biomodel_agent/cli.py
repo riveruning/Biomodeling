@@ -680,7 +680,7 @@ def _cmd_typed(args):
         else:
             settings = _load_json(args.config, 'native model settings') if args.config else None
             if args.command=='typed-prepare':
-                ref = models.prepare(store,args.ref,settings)
+                ref = models.prepare(store,args.ref,settings,reference_ref=args.reference_ref)
                 print(json.dumps(dict(ref=ref,state='ready'))); return 0
             if args.command=='agent-typed':
                 from .agent import run_model_agent
@@ -712,6 +712,8 @@ def main(argv: list[str] | None = None) -> int:
     from .research_cli import register as register_research_commands
     register_research_commands(sub,_add_store)
     from .research_project_cli import register as register_project_commands
+    from .spatial_convergence import register as register_convergence_commands
+    register_convergence_commands(sub,_add_store)
     register_project_commands(sub,_add_store)
     from .task_proposal_cli import register as register_proposal_commands
     register_proposal_commands(sub,_add_store)
@@ -726,6 +728,7 @@ def main(argv: list[str] | None = None) -> int:
         _add_store(p); p.add_argument('ref')
         if command in ('typed-prepare', 'typed-run', 'agent-typed'):
             p.add_argument('--config', help='JSON settings for the explicit native profile')
+        if command=='typed-prepare':p.add_argument('--reference-ref',help='frozen external native observation protocol')
         if command=='agent-typed':
             from .typed_models import TYPES
             p.add_argument('--model-type', choices=TYPES, required=True)

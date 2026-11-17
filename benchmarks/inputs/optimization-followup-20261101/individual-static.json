@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "model_type": "individual",
+  "id": "no_event_population_control",
+  "units": {
+    "time": "sweep",
+    "space": "lattice_site"
+  },
+  "width": 8,
+  "height": 8,
+  "boundary": "closed",
+  "initial": [
+    [
+      3,
+      3
+    ],
+    [
+      4,
+      4
+    ]
+  ],
+  "probabilities": {
+    "death": 0.0,
+    "move": 0.0,
+    "divide": 0.0
+  },
+  "note": "Synthetic spatial cell model; probabilities are not measured biological parameters."
+}

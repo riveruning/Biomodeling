@@ -18,7 +18,7 @@ REQUIRED_INPUTS={
     'ode':['Authorized explicit equations, initial values and parameters with units','Explicit execution.experiment sampling grid/time unit'],
     'fba':['Prepared native steady-state LP/FBC model with stoichiometry, bounds and objective'],
     'stochastic':['Prepared native mass-action SSA model, or fully source-bound draft with integer counts, reactions, stochastic rates/units and explicit assumptions'],
-    'pde':['Prepared native 1D scalar diffusion/decay model with grid, initial field and boundary conditions'],
+    'pde':['Prepared native PDE model with declared profile, grid, initial fields and boundaries: 1D scalar diffusion/decay or 1D/2D coupled nonlinear reaction-diffusion'],
     'boolean':['Prepared explicit Boolean nodes, initial states, rules and update mode, or fully source-bound draft'],
     'individual':['Prepared native 2D lattice model with grid/cells, state-transition and movement parameters']}
 
@@ -314,7 +314,7 @@ def _decode_return(store,request_ref,r):
 
 
 def propose(store,provider,request_ref):
-    from .agent import _provider_identity
+    from .provider_identity import identity as provider_identity
     from .llm import ChatProvider
     request=tasks.load(store,request_ref)
     with tasks._owner(store,request['family_id']):
@@ -328,7 +328,7 @@ def propose(store,provider,request_ref):
         if view['call_count']>=quota:raise ValueError('proposal call budget is disabled or exhausted')
         packet=messages(store,request_ref)
         attempt=store.put(ATTEMPT,dict(version=1,id=uuid4().hex,phase='reserved',request_ref=request_ref,
-            family_id=request['family_id'],provider=_provider_identity(provider),messages=packet,
+            family_id=request['family_id'],provider=provider_identity(provider),messages=packet,
             implementation_sha256=recovery.implementation_fingerprint()),refs=(request_ref,))
         try:
             provider.last_usage={}

@@ -215,6 +215,8 @@ class InvocationJournal:
         if name not in REPLAY_CLASSES:
             raise ValueError(f"unknown invocation name: {name!r}")
         _require_json(details if details is not None else {}, "details")
+        from .research_control import checkpoint
+        checkpoint()
         reserved_ref, operation_id, call_count, run_count = self._reserve(
             name, {} if details is None else details)
         try:

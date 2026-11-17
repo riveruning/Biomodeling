@@ -3,9 +3,9 @@ const $ = id => document.getElementById(id);
 const token = document.querySelector('meta[name="workbench-token"]').content;
 const storageKey = "biomodel-workbench:" + location.host;
 const state = {overview: null, current: /^[a-f0-9]{64}$/.test(location.hash.slice(1)) ? location.hash.slice(1) : null, task: null, refreshing: false, pending: {}, saving: false};
-const names = {ode: "ODE · 常微分方程", fba: "FBA · 稳态通量", stochastic: "随机反应", pde: "PDE · 一维扩散衰减", boolean: "布尔网络", individual: "二维格点个体"};
+const names = {ode: "ODE · 常微分方程", fba: "FBA · 稳态通量", stochastic: "随机反应", pde: "PDE · 反应扩散", boolean: "布尔网络", individual: "二维格点个体"};
 const states = {awaiting_type: "待选择模型", awaiting_input: "待补充 / 待回答", ready_to_run: "可以执行", completed: "流程已完成", incomplete: "流程未完成", failed: "执行失败", needs_recovery: "待核对恢复", needs_proposal_recovery: "建议请求待核对", unknown_effects: "结果未确认", another_revision_dispatched: "其他修订已执行", unavailable: "版本或记录不可用", proposed: "已有推荐候选", awaiting_selection: "待选择候选", invalid: "建议无效", queued: "已排队", running: "执行中", returned: "操作已完成"};
-const operationNames = {import_source: "导入资料", import_model: "导入原生模型", create_task: "保存任务", prepare_proposal: "导入建议", select_proposal: "采纳候选", recover_proposal: "认领建议返回", export_bundle: "导出结果包", propose_task: "请求模型建议", run_task: "执行任务", resume_task: "回答并继续", recover_task: "恢复原生执行"};
+const operationNames = {review_observations:"审阅观测映射",import_pdf:"导入 PDF",prepare_region:"生成原文区域",transcribe_region:"保存转录修订",import_source: "导入资料", import_model: "导入原生模型", create_task: "保存任务", prepare_proposal: "导入建议", select_proposal: "采纳候选", recover_proposal: "认领建议返回", export_bundle: "导出结果包", propose_task: "请求模型建议", run_task: "执行任务", resume_task: "回答并继续", recover_task: "恢复原生执行"};
 try {const saved = JSON.parse(localStorage.getItem(storageKey) || "{}");if (saved && typeof saved === "object" && !Array.isArray(saved)) state.pending = saved;} catch (_) {}
 function persist() {try {localStorage.setItem(storageKey, JSON.stringify(state.pending));} catch (_) {}}
 function el(tag, attrs = {}, ...children) {
@@ -102,7 +102,7 @@ async function source(anchor) {
     button("后一段", () => source({source_ref: data.source_ref, page: data.page, start: data.end}), {class: "small", disabled: data.end >= data.page_characters}));
   reader("核对来源原文", muted("来源 " + short(data.source_ref) + " · 第 " + data.page + " 页 · 字符 " + data.start + "–" + data.end), pages,
     el("div", {class: "quote-context"}, data.before, el("mark", {}, data.quote), data.after),
-    navigation, muted("高亮来自服务端核对的原文切片；未显示部分不代表不存在其他内容。"), detail("来源信息", JSON.stringify(data.metadata, null, 2)));
+    navigation,...(data.metadata.parser==="utf8"?[button("审阅 CSV/TSV 观测映射",()=>observationEditor(data.source_ref))]:[]),...(["pypdf","pymupdf"].includes(data.metadata.parser)?[button("核对 PDF 页面 / 公式区域",()=>regionEditor(data.source_ref,data.page))]:[]), muted("高亮来自服务端核对的原文切片；未显示部分不代表不存在其他内容。"), detail("来源信息", JSON.stringify(data.metadata, null, 2)));
 }
 async function taskEditor(revision = false) {
   const original = revision && state.task ? structuredClone(state.task.config) : {schema_version: 1, goal: "", model_type: null, source_refs: [], model_ref: null, execution: {}, max_calls: 6, proposal_max_calls: 0};
@@ -132,10 +132,13 @@ async function taskEditor(revision = false) {
   });
 }
 function importEditor() {
-  const type = el("select", {}, el("option", {value: "source"}, "资料 · UTF-8 TXT / Markdown"), Object.entries(names).filter(([kind]) => kind !== "ode").map(([value, title]) => el("option", {value}, "原生模型 · " + title)));
-  const file = el("input", {type: "file", accept: ".txt,.md,.json", required: true, class: "file-input"});
-  editor("导入资料或原生模型", [muted("选择本地文件，最多 1 MB。导入后在任务配置中明确选择，不自动扩大已有任务范围。"), field("内容类型", type), field("文件", file)], async () => {
-    const selected = file.files[0];if (!selected || selected.size > 1000000) throw new Error("请选择最多 1 MB 的文件。");
+  const type = el("select", {}, el("option", {value: "source"}, "资料 · TXT / Markdown / CSV / TSV / PDF"), Object.entries(names).filter(([kind]) => kind !== "ode").map(([value, title]) => el("option", {value}, "原生模型 · " + title)));
+  const file = el("input", {type: "file", accept: ".txt,.md,.csv,.tsv,.pdf,.json", required: true, class: "file-input"});
+  const parser=el("select",{},el("option",{value:"pypdf"},"PDF 文本（默认）"),el("option",{value:"pymupdf"},"PDF 布局与表格（需安装 pdf 依赖）"));
+  editor("导入资料或原生模型", [field("PDF 解析方式",parser),muted("文本最多 1 MB，PDF 最多 8 MB。导入后在任务配置中明确选择，不自动扩大已有任务范围。"), field("内容类型", type), field("文件", file)], async () => {
+    const selected = file.files[0];const pdf=type.value==="source"&&selected?.name.toLowerCase().endsWith(".pdf");
+    if(!selected||selected.size>(pdf?8000000:1000000))throw Error("文本最多 1 MB，PDF 最多 8 MB。");
+    if(pdf){const bytes=new Uint8Array(await selected.arrayBuffer());let binary="";for(let i=0;i<bytes.length;i+=32768)binary+=String.fromCharCode(...bytes.subarray(i,i+32768));await submit("import_pdf",{filename:selected.name,content:btoa(binary),parser:parser.value});return;}
     const content = new TextDecoder("utf-8", {fatal: true}).decode(await selected.arrayBuffer());
     await submit(type.value === "source" ? "import_source" : "import_model", {filename: selected.name, content, ...(type.value === "source" ? {} : {model_type: type.value})});
   }, "导入到工作区");
@@ -239,6 +242,7 @@ async function handleJob(job) {
   if (job.state === "returned" || job.state === "failed" || job.state === "unknown_effects") {
     delete state.pending[job.key];persist();
     if (job.state === "returned" && job.result?.request_ref) {state.current = job.result.request_ref;location.hash = state.current;}
+    if(job.state==="returned"&&job.result?.region_ref)await showRegion(job.result.region_ref);
     if (job.state === "failed") notice(job.error?.message || "操作失败，请查看已保存状态。");
     if (job.state === "unknown_effects") notice("操作结果未确认，不会自动重新提交。请查看任务和账本。");
   }
@@ -249,6 +253,7 @@ function renderJobs(jobs) {
     const actions = el("div", {class: "job-actions"});
     if (job.result?.request_ref || job.request_ref) actions.append(button("查看任务", () => choose(job.result?.request_ref || job.request_ref), {class: "small"}));
     if (job.state === "returned" && job.operation === "export_bundle") actions.append(button("下载结果包", () => download("/downloads/bundle/" + job.job_ref + ".zip", "biomodel-bundle.zip"), {class: "small"}));
+    if(job.result?.region_ref)actions.append(button("核对区域 / 转录",()=>showRegion(job.result.region_ref),{class:"small"}));
     actions.append(button("记录详情", () => reader("操作记录", el("pre", {}, JSON.stringify(job, null, 2))), {class: "small"}));
     $("jobs").append(el("div", {class: "job-row"}, el("div", {class: "job-label"}, el("strong", {}, operationNames[job.operation] || job.operation), muted(short(job.job_ref)), ...(job.error ? [muted(job.error.message)] : [])), badge(job.state), actions));
   }
@@ -287,3 +292,28 @@ document.querySelectorAll("[data-close]").forEach(node => node.addEventListener(
 window.addEventListener("hashchange", guard(async () => {const r = location.hash.slice(1);if (/^[a-f0-9]{64}$/.test(r)) {state.current = r;await refresh();}}));
 guard(refresh)();
 setInterval(() => {if (Object.keys(state.pending).length || state.overview?.jobs.some(j => j.state === "queued" || j.state === "running")) guard(refresh)();}, 2500);
+
+function regionEditor(source_ref,page){
+ const bounds=el("input",{placeholder:"整页留空；或 x0,y0,x1,y1（PDF 点）"}),ocr=checkbox("尝试本地英文 OCR 候选（需 Tesseract；公式和表格必须核对）");
+ editor("选择 PDF 核对区域",[field("区域坐标",bounds),ocr.node,muted("输出仅是候选；保存人工转录会创建新来源，原 PDF 保留。")],async()=>{
+  const bbox=bounds.value.trim()?bounds.value.split(",").map(Number):null;
+  await submit("prepare_region",{source_ref,page,bbox,dpi:144,ocr:ocr.input.checked});
+ });
+}
+async function showRegion(region_ref){
+ const value=await api("/api/region/"+region_ref);
+ const response=await fetch("/downloads/region/"+region_ref+".png",{headers:{"X-Workbench-Token":token}});
+ if(!response.ok)throw Error("区域图片不可用");
+ const image=el("img",{alt:"冻结的 PDF 原文区域",class:"material-region"});
+ const url=URL.createObjectURL(await response.blob());image.src=url;image.onload=()=>URL.revokeObjectURL(url);
+ reader("核对原图与转录",image,muted("OCR 状态："+value.ocr_status+"；候选方法："+value.candidate_method),el("pre",{},value.candidate_text),button("审阅并保存新转录来源",()=>{
+  $("reader").close();const content=el("textarea",{rows:12,required:true}),actor=el("input",{required:true}),note=el("input",{required:true});content.value=value.candidate_text;
+  editor("审阅转录",[field("核对后的文字 / 公式 / 表格",content),field("审阅者",actor),field("修订依据与范围",note),muted("这是有署名的转录，不代表独立领域审核；不会自动替换已有项目来源。")],async()=>submit("transcribe_region",{region_ref,content:content.value,actor:actor.value,note:note.value}));
+ }));
+}
+
+function observationEditor(source_ref){
+ const spec=el("textarea",{rows:16,required:true,class:"code"}),actor=el("input",{required:true}),note=el("input",{required:true});
+ spec.value=JSON.stringify({delimiter:",",time:{column:"time [minute]",source_unit:"minute",target_unit:"second",multiplier:60,offset:0},observables:{X:{column:"signal [mM]",source_unit:"mM",target_unit:"uM",multiplier:1000,offset:0}},scales:{X:1000},threshold:.001,conditions:{}},null,2);
+ $("reader").close();editor("审阅观测映射",[muted("下方仅为语法示例。按实际列名、原始单位、目标单位和实验条件修改，并核对每个转换系数；不填补缺失数据。"),field("映射与固定比较协议",spec),field("审阅者",actor),field("依据与限制",note)],async()=>submit("review_observations",{source_ref,spec:await parseJson(spec.value),actor:actor.value,note:note.value}));
+}

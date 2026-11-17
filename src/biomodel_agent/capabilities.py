@@ -12,8 +12,8 @@ _DESCRIPTIONS = {
             '可运行已有网络或提出显式假设网络；严格来源自动构建尚未接通。'),
     'stochastic': ('随机反应', '整数分子数、充分混合的质量作用 SSA。',
                    '可核对完整文本反应声明；不自动换算浓度速率常数。'),
-    'pde': ('空间扩散', '一维单场、常数系数的线性扩散与衰减。',
-            '使用已有输入或显式假设；尚不支持非线性、多维或多场。'),
+    'pde': ('空间反应扩散', '一维线性扩散衰减，以及一维／二维多场非线性反应扩散。',
+            '提供完整原生模型或显式假设；空间单位、边界与数值误差须核查。'),
     'boolean': ('布尔网络', '显式逻辑规则、同步或随机顺序更新。',
                 '可核对完整文本规则；不从含糊的激活/抑制描述推断规则。'),
     'individual': ('格点细胞', '二维格点中的死亡、迁移、分裂与空间占位。',
@@ -34,7 +34,7 @@ def catalog():
             source_construction=dict(strict_supported=strict_source,
                 route='bounded_ode_draft_or_decision_plan' if kind=='ode' else
                     'literal_complete_declarations' if strict_source else 'prepared_or_explicit_hypothesis_only'),
-            project_reference_types=['time_series'] if kind=='ode' else ['fba_objective'] if kind=='fba' else [],
+            project_reference_types=['time_series'] if kind=='ode' else ['fba_objective'] if kind=='fba' else ['typed_observations'],
             tools=dict(project_literature=['europe_pmc'],
                        native_knowledge=['biomodels','sabiork'] if kind=='ode' else []))
         if kind=='ode':
@@ -51,6 +51,12 @@ def catalog():
                 entrypoint='typed-import/typed-prepare/typed-execute/typed-run/typed-replay/agent-typed',
                 limitations=list(backend.LIMITATIONS),
                 agent_recovery='opt_in_typed_agent_v2; legacy_not_supported; unknown effects block retry')
+            if kind=='pde':
+                from . import pde_system
+                row['profiles']=[
+                    dict(profile=backend.PROFILE,limitations=list(backend.LIMITATIONS)),
+                    dict(profile=pde_system.PROFILE,limitations=list(pde_system.LIMITATIONS)),
+                ]
         result.append(row)
     return result
 

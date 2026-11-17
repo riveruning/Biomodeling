@@ -45,6 +45,7 @@ def build(destination):
     for name in ('setup.ps1','start.ps1','setup.cmd','start.cmd','setup.sh','start.sh'):
         copy(ROOT/'scripts/runtime'/name,name)
     copy(ROOT/'scripts/runtime/README.md','README.md')
+    copy(ROOT/'scripts/prepare_ocr_data.py','prepare_ocr_data.py')
     (destination/'.gitignore').write_text('.venv/\nruns/\n__pycache__/\n*.py[cod]\n*.egg-info/\nbuild/\ndist/\n.env\n.env.*\n')
     paths=[p for p in destination.rglob('*') if p.is_file()]
     forbidden={'tests','artifacts','runs','tasks','discussion-notes','benchmarks','examples','.git','.venv','__pycache__'}

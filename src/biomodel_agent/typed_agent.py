@@ -25,7 +25,7 @@ def run_agent(store, provider, model_ref, *, model_type, settings=None, max_call
     inp, _ = models.load_input(store, input_ref)
     brief = dict(model_type=model_type, profile=inp['profile'], model_ref=model_ref, input_ref=input_ref,
                  units=model['units'], settings=inp['settings'], scientific_support='unknown',
-                 limitations=models.backend(model_type).LIMITATIONS)
+                 limitations=models.backend(model_type, model=model).LIMITATIONS)
     task_ref = store.put('agent_task', dict(resume_version=1, mode='native_typed', model_type=model_type,
         model_ref=model_ref, input_ref=input_ref, max_calls=max_calls, max_runs=1,
         provider={'class':type(provider).__module__+'.'+type(provider).__qualname__},

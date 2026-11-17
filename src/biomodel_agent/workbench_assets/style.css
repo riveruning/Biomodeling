@@ -802,3 +802,9 @@ ul{
 #project-jobs .muted{
   overflow-wrap:anywhere
 }
+
+.scientific-chart{width:100%;background:#fff;color:#172033}
+.material-region{max-width:100%;height:auto}
+.scientific-series[aria-pressed="false"]{opacity:.5;text-decoration:line-through}
+.series-0{color:#0072B2}.series-1{color:#D55E00}.series-2{color:#009E73}
+.series-3{color:#CC79A7}.series-4{color:#6C4BA4}.series-5{color:#865900}

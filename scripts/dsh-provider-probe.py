@@ -17,6 +17,7 @@ def main():
     parser.add_argument('--mode', choices=['metadata', 'models', 'chat', 'chat-tool', 'stream', 'responses', 'responses-stream', 'responses-tool'], default='metadata')
     parser.add_argument('--timeout', type=int, default=30)
     parser.add_argument('--model')
+    parser.add_argument('--reasoning', choices=['minimal', 'low', 'medium', 'high', 'xhigh', 'max'])
     parser.add_argument('--auto-tool', action='store_true')
     args = parser.parse_args()
     patches = yaml.safe_load(Path('/home/riveruning/tools/dsh-acp-ustc.patch.yml').read_text())
@@ -66,6 +67,8 @@ def main():
                         tool_choice={'type': 'function', 'function': {'name': 'emit_ready'}})
             if args.auto_tool:
                 body.pop('tool_choice')
+        if args.reasoning:
+            body['reasoning_effort'] = args.reasoning
         payload = json.dumps(body).encode()
     elif args.mode in ['responses', 'responses-stream', 'responses-tool']:
         endpoint = '/responses'
@@ -79,6 +82,8 @@ def main():
                         tool_choice={'type': 'function', 'name': 'emit_ready'})
             if args.auto_tool:
                 body.pop('tool_choice')
+        if args.reasoning:
+            body['reasoning'] = {'effort': args.reasoning}
         payload = json.dumps(body).encode()
     request = urllib.request.Request(base + endpoint, data=payload, headers=headers)
     started = time.monotonic()

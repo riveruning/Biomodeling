@@ -4,8 +4,9 @@ import { existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'no
 import { resolve } from 'node:path';
 import { tmpdir } from 'node:os';
 import { pathToFileURL } from 'node:url';
+import { nightlyEnvironmentValid } from './dsh-nightly.mjs';
 
-export function providerOverlay(original, { api, model, idleMs = 60000 }) {
+export function providerOverlay(original, { api, model, reasoning, reasoningEfforts, idleMs = 60000, taskTimeoutMs = 1800000, proposalOnly = false }) {
   const rows = structuredClone(original);
   const llm = rows.find(row => row.id === 'llm-pi-ai');
   const acp = rows.find(row => row.id === 'acp');
@@ -14,7 +15,26 @@ export function providerOverlay(original, { api, model, idleMs = 60000 }) {
   if (api && !['openai-completions', 'openai-responses'].includes(api)) throw new Error('Unsupported provider transport');
   const selected = model || acp.config.model;
   if (!route.models?.some(entry => entry.id === selected)) throw new Error('Model not present in trusted provider catalog');
-  if (!Number.isInteger(idleMs) || idleMs < 10000 || idleMs > 180000) throw new Error('Invalid provider idle deadline');
+  const entry = route.models.find(entry => entry.id === selected);
+  if (reasoningEfforts !== undefined) {
+    const levels = ['minimal', 'low', 'medium', 'high', 'xhigh', 'max'];
+    if (!reasoningEfforts || typeof reasoningEfforts !== 'object' || Array.isArray(reasoningEfforts)
+        || Object.keys(reasoningEfforts).length === 0
+        || Object.entries(reasoningEfforts).some(([level, wire]) => !levels.includes(level) || wire !== level)) {
+      throw new Error('Invalid per-run reasoning capability declaration');
+    }
+    entry.reasoningEfforts = structuredClone(reasoningEfforts);
+  }
+  if (reasoning === 'none') {
+    delete route.reasoning;
+  } else if (reasoning !== undefined) {
+    if (!['minimal', 'low', 'medium', 'high', 'xhigh', 'max'].includes(reasoning)) throw new Error('Unsupported reasoning effort');
+    if (!entry.reasoningEfforts || !Object.hasOwn(entry.reasoningEfforts, reasoning)) throw new Error('Reasoning effort not declared by trusted model configuration');
+    route.reasoning = reasoning;
+  }
+  if (!Number.isInteger(idleMs) || idleMs < 10000 || idleMs > 2147483647 - 15000) throw new Error('Invalid provider idle deadline');
+  if (!Number.isInteger(taskTimeoutMs) || taskTimeoutMs < 1000 || taskTimeoutMs > 2147483647) throw new Error('Invalid task deadline');
+  if (typeof proposalOnly !== 'boolean') throw new Error('Invalid proposal capability mode');
   if (Object.keys(route).some(key => /^(apiKey|token|secret|password|headers)$/i.test(key))) throw new Error('Provider overlay must use a credential reference, not copied secret values');
   route.api = api || route.api;
   route.streamIdleTimeoutMs = idleMs;
@@ -23,14 +43,27 @@ export function providerOverlay(original, { api, model, idleMs = 60000 }) {
   acp.config.model = selected;
   // Implementation delegates receive file tools only. Removing capabilities here
   // prevents avoidable requests; the original approval gate still reviews each file.
+  const delegatedExecution = !proposalOnly
+    && ((process.env.BIOMODEL_DSH_DELEGATION_UNTIL === '2026-11-18T15:07:27Z'
+      && Date.now() < Date.parse(process.env.BIOMODEL_DSH_DELEGATION_UNTIL))
+      || nightlyEnvironmentValid());
   const disabledTools = ['tool-bash', 'tool-pwsh', 'tool-jobs', 'tool-fs-search',
     'tool-skill', 'tool-todo', 'tool-goal', 'tool-workflow', 'tool-web',
     'tool-subagent', 'tool-subagent-fork', 'tool-subagent-control',
-    'tool-subagent-list-agents', 'tool-plugin-manager'];
+    'tool-subagent-list-agents', 'tool-plugin-manager', 'tool-working-directory',
+    'tool-cordis', 'tool-workspace-dependencies', 'tool-present', 'tool-ask-user', 'tool-schedule'];
+  if (proposalOnly) disabledTools.push('tool-fs', 'tool-str-replace-editor');
   return { patch: [{ id: llm.id, config: { providers: { ustc: route } } },
                    { id: acp.id, config: { provider: 'ustc', model: selected } },
-                   ...disabledTools.map(id => ({ id, disabled: true }))],
-           metadata: { provider: 'ustc', model: selected, api: route.api, idleMs, maxRetries: 0 } };
+                   ...disabledTools.filter(id => !(delegatedExecution && id === 'tool-bash'))
+                     .map(id => ({ id, disabled: true })),
+                   ...(delegatedExecution ? [
+                     { id: 'tool-bash', disabled: false },
+                     { id: 'bash-sandbox', config: { maxTimeoutMs: 3600000 } },
+                   ] : [])],
+           metadata: { provider: 'ustc', model: selected, api: route.api, reasoning: route.reasoning ?? null,
+             reasoningEfforts: entry.reasoningEfforts ?? null, idleMs, taskTimeoutMs, proposalOnly,
+             delegatedExecution, maxRetries: 0 } };
 }
 
 function shellQuote(value) { return "'" + value.replaceAll("'", "'\\''") + "'"; }
@@ -64,7 +97,7 @@ export async function prepareRuntime(bridgeRoot, options = {}) {
 import { PRECONFIGURED_AGENTS } from ${JSON.stringify(pathToFileURL(trustedConfig).href)};
 import { StdioServerTransport } from ${JSON.stringify(pathToFileURL(serverTransport).href)};
 const agents = { ...PRECONFIGURED_AGENTS, dsh_ustc: { ...PRECONFIGURED_AGENTS.dsh_ustc, command: 'bash', args: [${JSON.stringify(launcher)}] } };
-const server = new ACPServer({ agents });
+const server = new ACPServer({ agents, taskTimeoutMs: ${configured.metadata.taskTimeoutMs} });
 await server.server.connect(new StdioServerTransport());
 `;
     writeFileSync(entry, bootstrap, { mode: 0o600 });

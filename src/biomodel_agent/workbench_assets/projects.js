@@ -5,7 +5,7 @@ const localKey="biomodel-projects:"+location.host;
 let selected=/^[a-f0-9]{64}$/.test(location.hash.slice(1))?location.hash.slice(1):null;
 let overview=null,current=null,refreshing=false,formSave=null,pending={};
 try{pending=JSON.parse(localStorage.getItem(localKey)||"{}");if(!pending||typeof pending!=="object"||Array.isArray(pending))pending={};}catch(_){}
-const names={ready:"可以推进",awaiting_alignment:"等待讨论与对齐",needs_recovery:"待核对已保存返回",completed_with_limits:"已形成有限结论",insufficient_evidence:"证据不足",unsupported:"当前工具不支持",stopped:"研究已停止",planner_budget_exhausted:"规划额度已用完",operation_limit_exhausted:"操作额度已用完",unavailable:"版本或记录不可用"};
+const names={ready:"可以推进",awaiting_alignment:"等待讨论与对齐",needs_recovery:"待核对已保存返回",completed_with_limits:"已形成有限结论",insufficient_evidence:"证据不足",unsupported:"当前工具不支持",stopped:"研究已停止",deadline_exhausted:"研究总期限已到",planner_budget_exhausted:"规划额度已用完",operation_limit_exhausted:"操作额度已用完",unavailable:"版本或记录不可用"};
 function node(tag,attrs={},...children){const n=document.createElement(tag);for(const[k,v]of Object.entries(attrs)){if(k.startsWith("on"))n.addEventListener(k.slice(2),v);else if(k==="checked"||k==="disabled")n[k]=Boolean(v);else if(v!==undefined&&v!==null)n.setAttribute(k,v);}for(const x of children.flat())if(x!==null&&x!==undefined)n.append(x instanceof Node?x:document.createTextNode(String(x)));return n;}
 function clear(id,...items){$(id).replaceChildren(...items);}
 function note(message){$("notice").textContent=message;$("notice").hidden=!message;}
@@ -29,7 +29,7 @@ async function follow(job){
  const old=pending[job.key];if(!old)return;old.state=job.state;persist();
  if(job.state==="returned"){
   const result=job.result||{};delete pending[job.key];persist();
-  if(result.project_ref){selected=result.project_ref;location.hash=selected;}
+  if(old.operation==="create_project"&&result.project_ref){selected=result.project_ref;location.hash=selected;}
   if(old.operation==="snapshot_project"&&result.snapshot_ref)await submit("export_bundle",{ref:result.snapshot_ref});
   if(old.operation==="export_bundle"){
    const r=await fetch("/downloads/bundle/"+job.job_ref+".zip",{headers:{"X-Workbench-Token":token}});if(!r.ok)throw Error("结果包下载未完成");
@@ -55,16 +55,19 @@ async function createEditor(){
  const scenario=node("textarea",{rows:5,required:true,placeholder:"描述应用场景、关注的问题以及你已经知道的限制。研究对象和粒度可以由 Agent 提出。"});
  const mode=node("select",{},node("option",{value:"application"},"应用场景建模"),node("option",{value:"reproduction"},"论文复现"));
  const calls=node("input",{type:"number",min:0,max:50,value:20,required:true});
+ const timeout=node("input",{type:"number",min:1,max:604800,value:3600,required:true});
  const literature=node("input",{type:"number",min:0,max:20,value:0,required:true});
  const choices=(overview.sources||[]).map(s=>({ref:s.source_ref,input:node("input",{type:"checkbox"}),name:s.filename}));
+ const references=(overview.references||[]).map(r=>({ref:r.reference_ref,input:node("input",{type:"checkbox"}),name:r.note+" · "+r.reference_type}));
  const models=(overview.models||[]).map(m=>({ref:m.model_ref,input:node("input",{type:"checkbox"}),name:m.id+" · "+m.model_type}));
  editor("提出应用场景",[field("应用场景",scenario),field("任务类型",mode),small("Agent 负责提出研究目标、粒度、证据、假设和验证方案。创建项目不会发送模型请求。"),
   details("当前支持范围",node("div",{},(overview.capabilities||[]).map(c=>node("div",{},node("strong",{},c.label),node("p",{},c.summary),small(c.source_note))))),
   details("已有资料",choices.length?node("div",{},choices.map(x=>field(x.name,x.input))):"可先在原生任务页面导入资料。"),
   details("可选的已准备模型",models.length?node("div",{},models.map(x=>field(x.name,x.input))):"未提供模型时，Agent 可在支持范围内提出显式假设模型。"),
-  details("调用额度",node("div",{},field("研究规划调用上限",calls),field("文献请求上限（0 表示关闭）",literature),small("最多 3 个模型/实验版本，每版原生调用最多 6 次，项目原生调用总分配上限 18。")))],async()=>{
+  details("冻结的外部参考协议",references.length?node("div",{},references.map(x=>field(x.name,x.input))):"可先在资料页面审阅观测表，或通过 CLI 注册参考协议。"),
+  details("调用额度",node("div",{},field("研究规划调用上限",calls),field("文献请求上限（0 表示关闭）",literature),field("研究总期限（秒，含暂停等待）",timeout),small("最多 3 个模型/实验版本，每版原生调用最多 6 次，项目原生调用总分配上限 18。")))],async()=>{
    await submit("create_project",{config:{scenario:scenario.value,mode:mode.value,source_refs:choices.filter(x=>x.input.checked).map(x=>x.ref),
-    model_refs:models.filter(x=>x.input.checked).map(x=>x.ref),policy:{planner_max_calls:Number(calls.value),max_literature_requests:Number(literature.value)}}});
+    model_refs:models.filter(x=>x.input.checked).map(x=>x.ref),reference_refs:references.filter(x=>x.input.checked).map(x=>x.ref),policy:{planner_max_calls:Number(calls.value),max_literature_requests:Number(literature.value),total_timeout_s:Number(timeout.value)}}});
    $("project-editor").close();await refresh();
  });
 }
@@ -80,6 +83,7 @@ function render(data){
  const active=Object.values(pending).some(x=>x.project_ref===selected&&x.operation==="run_project");
  const continuation=data.continuation;
  $("advance-project").disabled=active||!continuation?.can_advance;
+ $("stop-project").disabled=Boolean(data.control?.stop_requested)||["completed_with_limits","insufficient_evidence","unsupported","stopped","deadline_exhausted"].includes(data.state);
  $("project-export").disabled=Object.values(pending).some(x=>(x.project_ref===selected||x.operation==="export_bundle")&&["submitting","queued","running"].includes(x.state));
  $("project-status-note").textContent=active?"Agent 正在推进研究。页面只读取进度。":data.state==="awaiting_alignment"?"回答下面的问题，再继续本项目。":data.state==="needs_recovery"?"操作结果尚未确认；请核对已保存返回，不要重新发起原请求。":continuation?.can_advance&&continuation.has_saved_response?"已有保存的研究决定可以继续执行；该决定无需再次请求研究规划。":!continuation?.can_advance?(names[continuation?.reason]||names[data.state]||"当前无法推进研究。")+"。已有证据和结果均保留。":"Agent 会在项目额度内选择下一步；新证据和新假设将产生新版本。";
  const frame=data.frame?.spec;
@@ -89,9 +93,15 @@ function render(data){
   const reply=node("textarea",{required:true,rows:4}),who=node("input",{required:true});
   editor("回答并记录对齐",[field("回答",reply),field("回答者",who)],async()=>{await submit("reply_project",{project_ref:selected,question_ref:q.question_ref,reply:reply.value,respondent:who.value});$("project-editor").close();await refresh();});
  }))):[small("当前没有等待研究者回答的问题。")]));
- clear("research-iterations",...Object.entries(data.iteration_facts||{}).map(([ref,f],i)=>node("div",{},node("h3",{},"实验版本 "+(i+1)),small(ref),details("实际执行与检查",f))));
+ clear("research-iterations",...Object.entries(data.iteration_facts||{}).map(([ref,f],i)=>{
+  const result=data.results?.iterations?.find(x=>x.iteration_ref===ref);
+  return node("div",{},node("h3",{},"实验版本 "+(i+1)),small(ref),details("实际执行与检查",f),
+   ...(result?.model_diff?[details("相对父版本的数学模型变更",result.model_diff),details("实验设置变更",result.execution_diff)]:[]),
+   ...(result?.scalar_result?[details("稳态通量与目标（无时间轨迹）",result.scalar_result)]:[]),
+   ...(typeof scientificPlot==="function"?(result?.plots||[]).map(scientificPlot):[]));
+ }));
  clear("research-assessments",...(data.assessments.length?data.assessments.map(a=>node("div",{},node("h3",{},a.interpretation),node("p",{},a.rationale),details("冻结判据与实际结果",{criteria:a.criteria,mandatory_checks:a.mandatory_checks,facts:a.facts}))):[small("运行后由 Agent 解释结果，检查状态由工具产生。")]));
- clear("research-usage",details("实际调用用量",data.usage),small("完整模型直接调用计算工具，不增加内层模型服务请求。缺失 usage 保持未知；有内层模型服务调用时，总 token 保持未知。"));
+ clear("research-usage",details("实际调用用量",data.usage),small("完整模型直接调用计算工具，不增加内层模型服务请求。缺失 usage 保持未知；内层调用按收据汇总；任何调用缺失 usage 时，总 token 保持未知。"));
 }
 async function refresh(){
  if(refreshing)return;refreshing=true;
@@ -108,6 +118,21 @@ async function refresh(){
 }
 $("new-project").onclick=$("start-project").onclick=safe(createEditor);
 $("refresh-projects").onclick=safe(refresh);$("advance-project").onclick=safe(advance);
+$("admit-project-source").onclick=safe(async()=>{
+ if(!selected)return;
+ const sources=(overview?.sources||[]).filter(x=>!current.source_refs.includes(x.source_ref));
+ const choose=node("select",{},sources.map(x=>node("option",{value:x.source_ref},x.filename))),reason=node("input",{required:true});
+ editor("补充已审阅来源",[field("来源",choose),field("采纳依据与范围",reason),small("新增来源会改变下次模型请求的发送范围；已有模型和运行记录保留。")],async()=>{
+  await submit("admit_project_source",{project_ref:selected,source_ref:choose.value,reason:reason.value});$("project-editor").close();await refresh();
+ });
+});
+$("stop-project").onclick=safe(async()=>{
+ if(!selected)return;
+ const who=node("input",{required:true}),reason=node("input",{required:true,maxlength:1000});
+ editor("停止研究",[small("停止请求立即保存；当前调用完成并保存结果后，在下一安全边界停止。未知结果仍须核对，不会自动重试。"),field("操作者",who),field("停止原因",reason)],async()=>{
+  await api("/api/project-stop",{project_ref:selected,actor:who.value,reason:reason.value});$("project-editor").close();await refresh();
+ });
+});
 $("project-report").onclick=safe(async()=>show("研究报告",node("pre",{},(await api("/api/report/"+selected)).text)));
 $("project-export").onclick=safe(async()=>{await submit("snapshot_project",{project_ref:selected});await refresh();});
 $("close-project-reader").onclick=()=>$("project-reader").close();

@@ -19,8 +19,8 @@ PROFILE = 'fba_agent_v2'
 
 
 def identity(provider):
-    from .agent import _provider_identity
-    return _provider_identity(provider)
+    from .provider_identity import identity as provider_identity
+    return provider_identity(provider)
 
 
 def _text(value, name, maximum):

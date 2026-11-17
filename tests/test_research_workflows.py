@@ -115,7 +115,7 @@ class Scripted:
 
 def source_proposal(tmp_path,store):
     text='x initial 1.0\nd value 0.5\ndx/dt = -d*x\n'
-    p=tmp_path/'model.txt';p.write_text(text)
+    p=tmp_path/'model.txt';p.write_text(text,encoding='utf-8',newline='')
     ref=evidence.ingest_source(store,p)
     draft=ModelDraft('decay',(State('x',1.),),(Parameter('d',.5),),rate_rules=(RateRule('x','-d*x'),))
     items=[]

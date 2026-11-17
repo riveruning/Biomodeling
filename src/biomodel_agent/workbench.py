@@ -4,6 +4,7 @@ This adapter delegates scientific decisions, budgets and recovery to their
 existing authorities. Browser requests never choose credentials or file paths.
 """
 from copy import deepcopy
+import base64
 import hashlib
 import hmac
 import io
@@ -26,12 +27,17 @@ from .capabilities import catalog as capability_catalog
 
 OPERATION='workbench_operation'
 TERMINAL='workbench_operation_terminal'
-MAX_BODY=2_100_000
+MAX_BODY=11_000_000
 MAX_UPLOAD=1_000_000
 MAX_BUNDLE=64*1024*1024
 KEY=re.compile(r'[A-Za-z0-9_-]{16,80}')
 PROVIDER_ACTIONS={'propose_task','run_task','resume_task','recover_task','run_project'}
 FIELDS={
+    'admit_project_source':({'project_ref','source_ref','reason'},set()),
+    'review_observations':({'source_ref','spec','actor','note'},set()),
+    'import_pdf':({'filename','content'},{'parser'}),
+    'prepare_region':({'source_ref','page'},{'bbox','dpi','ocr'}),
+    'transcribe_region':({'region_ref','content','actor','note'},{'parent_ref'}),
     'create_project':({'config'},set()),
     'run_project':({'project_ref'},set()),
     'reply_project':({'project_ref','question_ref','reply','respondent'},set()),
@@ -52,7 +58,7 @@ FIELDS={
 
 def decode(raw):
     """HTTP JSON accepts no duplicate keys, nonfinite numbers or deep nesting."""
-    if len(raw)>MAX_BODY:raise ValueError('请求超过 2.1 MB')
+    if len(raw)>MAX_BODY:raise ValueError('请求超过 11 MB')
     def pairs(items):
         out={}
         for k,v in items:
@@ -126,7 +132,7 @@ class Workbench:
     def authenticate(self,token):
         return isinstance(token,str) and hmac.compare_digest(token,self.token)
 
-    def _rows(self,kind,*,store=None,**matches):return tasks._records(self.readonly if store is None else store,kind,**matches)
+    def _rows(self,kind,*,store=None,**matches):return tasks.records(self.readonly if store is None else store,kind,**matches)
 
     def overview(self):
         with verified_read(self.readonly) as store:
@@ -156,7 +162,12 @@ class Workbench:
         for r,p in self._rows(research_projects.PROJECT,store=store)[-100:]:
             try:projects.append(dict(project_ref=r,scenario=p['scenario'],state=research_projects.inspect(store,r)['state']))
             except (ValueError,KeyError,TypeError,OSError):projects.append(dict(project_ref=r,scenario=p.get('scenario','研究项目'),state='unavailable'))
-        return dict(requests=requests,projects=projects,sources=sources,models=models,jobs=[self.job(r,store=store) for r,_ in jobs[:30]],issues=issues,
+        from .research_references import metadata
+        references=[]
+        for r,_ in self._rows(research_projects.REFERENCE,store=store)[-32:]:
+            try:references.append(metadata(store,r))
+            except (ValueError,KeyError,TypeError,OSError):issues.append(dict(ref=r,message='参考协议不可用'))
+        return dict(requests=requests,projects=projects,sources=sources,models=models,references=references,jobs=[self.job(r,store=store) for r,_ in jobs[:30]],issues=issues,
             request_total=len(rows),request_limit=100,provider=self.provider_info,model_types=list(tasks.TYPES),
             capabilities=capability_catalog(),scientific_support='unknown')
 
@@ -194,6 +205,24 @@ class Workbench:
             before=text[max(0,start-180):start],quote=text[start:end],after=text[end:end+180],
             metadata=evidence.source_summary(self.readonly,source_ref))
 
+    def stop_project(self,project_ref,*,actor,reason):
+        """Independent authenticated control channel; never queues behind a run."""
+        from .research_control import request_stop
+        ref(project_ref)
+        return dict(stop_ref=request_stop(self.store,project_ref,actor=actor,reason=reason),project_ref=project_ref)
+
+    def region_png(self,region_ref):
+        from .material_review import REGION
+        obj=self.readonly.get(ref(region_ref))
+        if obj['kind']!=REGION or obj['payload']['image_blob_ref'] not in obj['refs']:raise ValueError('region image binding mismatch')
+        return self.readonly.get_blob(obj['payload']['image_blob_ref'])
+
+    def region_info(self,region_ref):
+        from .material_review import REGION
+        obj=self.readonly.get(ref(region_ref))
+        if obj['kind']!=REGION:raise ValueError('PDF region required')
+        return obj['payload']
+
     def report(self,artifact_ref):
         with verified_read(self.readonly) as store:
             from . import reporting
@@ -204,17 +233,34 @@ class Workbench:
     def _validate(self,operation,params):
         if operation not in FIELDS:raise ValueError('不支持的工作台操作')
         required,optional=FIELDS[operation];c.fields(params,required,optional)
-        for key in ('request_ref','proposal_ref','attempt_ref','ref','parent_ref','project_ref','question_ref'):
+        for key in ('request_ref','proposal_ref','attempt_ref','ref','parent_ref','project_ref','question_ref','source_ref','region_ref'):
             if params.get(key) is not None:ref(params[key]);self.readonly.get(params[key])
         if operation=='create_project':
             from .research_projects import normalize
             normalize(self.readonly,params['config'])
+        elif operation=='import_pdf':
+            _filename(params['filename'],('.pdf',));_text(params['content'],10_700_000)
+            if params.get('parser','pypdf') not in ('pypdf','pymupdf'):raise ValueError('请选择支持的 PDF 解析器')
+            try:raw=base64.b64decode(params['content'],validate=True)
+            except ValueError as exc:raise ValueError('PDF 需要完整 base64 内容') from exc
+            if not raw.startswith(b'%PDF-') or len(raw)>8_000_000:raise ValueError('请选择最多 8 MB 的 PDF')
+        elif operation=='prepare_region':
+            ref(params['source_ref']);c.integer(params['page'],1,10000,'page')
+            if self.readonly.get(params['source_ref'])['kind']!='source':raise ValueError('source required')
+        elif operation=='transcribe_region':
+            ref(params['region_ref']);_text(params['content'],100000);c.label(params['actor'],200);c.label(params['note'],2000)
+        elif operation=='review_observations':
+            from .observation_data import build
+            build(self.readonly,params['source_ref'],params['spec']);c.label(params['actor'],200);c.label(params['note'],2000)
         elif params.get('project_ref'):
             from . import research_projects
             research_projects.load(self.readonly,params['project_ref'])
             if operation=='reply_project':_text(params['reply'],4000);c.label(params['respondent'],200)
+            if operation=='admit_project_source':
+                _text(params['reason'],2000)
+                if self.readonly.get(params['source_ref'])['kind']!='source':raise ValueError('source required')
         elif operation.startswith('import_'):
-            _filename(params['filename'],('.txt','.md') if operation=='import_source' else ('.json',))
+            _filename(params['filename'],('.txt','.md','.csv','.tsv','.json') if operation=='import_source' else ('.json',))
             _text(params['content'],MAX_UPLOAD)
             if len(params['content'].encode('utf-8'))>MAX_UPLOAD:raise ValueError('上传文件最多 1 MB')
             if operation=='import_model' and params['model_type'] not in tasks.TYPES[1:]:raise ValueError('上传原生模型需指定 FBA 或四类原生类型')
@@ -311,7 +357,7 @@ class Workbench:
             if family and any(s.get('family_id')==family and s['state'] in ('queued','running') for s in self._states.values()):
                 raise ValueError('此任务已有排队或执行中的操作，请查看作业状态')
             refs=[]
-            for field in ('request_ref','proposal_ref','attempt_ref','ref','parent_ref','project_ref','question_ref'):
+            for field in ('request_ref','proposal_ref','attempt_ref','ref','parent_ref','project_ref','question_ref','source_ref','region_ref'):
                 if params.get(field):refs.append(params[field])
             if operation=='create_task':
                 refs.extend(params['config'].get('source_refs',[]))
@@ -369,10 +415,22 @@ class Workbench:
         except Exception:raise ValueError('模型服务初始化失败，请在服务端检查配置与凭证环境变量。') from None
 
     def _perform(self,operation,params):
-        if operation in ('create_project','run_project','reply_project','recover_project','snapshot_project'):
+        if operation=='review_observations':
+            from .observation_data import prepare
+            return prepare(self.store,**params)
+        if operation=='prepare_region':
+            from .material_review import region
+            return dict(region_ref=region(self.store,**params))
+        if operation=='transcribe_region':
+            from .material_review import transcribe
+            return transcribe(self.store,**params)
+        if operation in ('create_project','run_project','reply_project','recover_project','snapshot_project','admit_project_source'):
             from . import research_projects,research_supervisor
             if operation=='create_project':return dict(project_ref=research_projects.create(self.store,params['config']))
             project=params['project_ref']
+            if operation=='admit_project_source':
+                result=research_projects.operate(self.store,project,'admit_source',dict(source_ref=params['source_ref'],reason=params['reason']),actor='operator')
+                return dict(project_ref=project,**result)
             if operation=='run_project':
                 provider=self._provider(params) if self._service_needed(operation,params) else None
                 return dict(project_ref=project,snapshot_ref=research_supervisor.run(self.store,provider,project))
@@ -386,7 +444,9 @@ class Workbench:
             return dict(project_ref=project,snapshot_ref=research_projects.snapshot(self.store,project))
         if operation.startswith('import_'):
             with tempfile.TemporaryDirectory(prefix='biomodel-workbench-') as directory:
-                path=Path(directory)/params['filename'];path.write_bytes(params['content'].encode('utf-8'))
+                path=Path(directory)/params['filename']
+                path.write_bytes(base64.b64decode(params['content'],validate=True) if operation=='import_pdf' else params['content'].encode('utf-8'))
+                if operation=='import_pdf':return dict(source_ref=evidence.ingest_source(self.store,path,pdf_parser=params.get('parser','pypdf')))
                 if operation=='import_source':return dict(source_ref=evidence.ingest_source(self.store,path))
                 from . import fba,typed_models
                 if params['model_type']=='fba':model=fba.import_model(self.store,path)

@@ -71,7 +71,7 @@ def essential_indices(messages):
     return selected
 
 
-def build_context(messages, frozen_policy):
+def build_context(messages, frozen_policy, *, required_indices=()):
     """Return a fresh request packet and selection audit; never modify history."""
     settings = validate_policy(frozen_policy)
     if not isinstance(messages, list) or len(messages) < 2:
@@ -85,13 +85,16 @@ def build_context(messages, frozen_policy):
         raise ValueError('context must start with system instructions and the frozen task')
     if any(m['role'] == 'system' for m in messages[1:]):
         raise ValueError('additional system messages are not part of the task protocol')
+    required_indices = tuple(required_indices)
+    if any(type(index) is not int or not 0 <= index < len(messages) for index in required_indices):
+        raise ValueError('required context index outside message history')
     original_chars = size(messages)
     maximum = settings['max_chars']
     if original_chars <= maximum:
         return deepcopy(messages), {'method': 'bounded_context_v1', 'compacted': False,
             'original_chars': original_chars, 'sent_chars': original_chars,
             'max_chars': maximum, 'omitted_messages': 0, 'retained_indices': list(range(len(messages)))}
-    selected = essential_indices(messages)
+    selected = essential_indices(messages) | set(required_indices)
     def packet(indices):
         ordered = sorted(indices)
         return [deepcopy(messages[i]) for i in ordered[:2]] + [deepcopy(NOTICE)] + [deepcopy(messages[i]) for i in ordered[2:]]

@@ -38,3 +38,13 @@ for(const state of ['needs_recovery','awaiting_alignment','completed_with_limits
 render('ready',{can_advance:true,has_saved_response:true,requires_provider:true,reason:'saved_response'});
 assert.equal(elements['advance-project'].disabled,false); // Consent is handled by preview, not by a budget guess.
 console.log('Project UI: saved decisions, exhausted budget and blocked/terminal states passed.');
+
+// A late terminal reply from a previously selected project must not hijack navigation.
+sandbox.oldProject=project;sandbox.newProject='b'.repeat(64);
+await vm.runInContext(`(async()=>{
+ selected=newProject;location.hash='#'+newProject;
+ pending.late={operation:'run_project',project_ref:oldProject};
+ await follow({key:'late',state:'returned',result:{project_ref:oldProject}});
+ if(selected!==newProject||location.hash!=='#'+newProject)throw Error('Late job changed selected project');
+})()`,sandbox);
+console.log('Project UI: late background job completion preserves current navigation.');

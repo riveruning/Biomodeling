@@ -151,6 +151,7 @@ def validate(store, spec, source_refs):
 
 def prepare(store, spec, source_refs, *, parent_ref=None, reason=None):
     """Freeze a new proposal; revision explicitly replaces, never mutates, scope."""
+    spec = normalize_citations(store, spec, source_refs)
     normalized = validate(store, spec, source_refs)
     revision = 0
     if parent_ref is not None:
@@ -166,6 +167,36 @@ def prepare(store, spec, source_refs, *, parent_ref=None, reason=None):
     return store.put(PLAN, dict(version=1, profile=PROFILE, spec=normalized, source_refs=list(source_refs),
         parent_ref=parent_ref, revision=revision, revision_reason=reason, scientific_support='unknown'),
         refs=tuple(source_refs) + ((parent_ref,) if parent_ref else ()))
+
+
+def normalize_citations(store, spec, source_refs):
+    """Locate unique literal quotes; never repair supplied offsets or ambiguity."""
+    from .task_proposals import CitationError
+    out = deepcopy(spec)
+    if not isinstance(out, dict) or not isinstance(out.get('evidence'), list):
+        raise ValueError('decision_plan.evidence must be a list')
+    for item in _items(out['evidence'], 64, 'evidence'):
+        fields(item, {'id', 'source_ref', 'page', 'quote', 'interpretation', 'conditions'}, {'start', 'end'})
+        if item['source_ref'] not in source_refs:
+            raise ValueError('evidence source outside frozen plan scope')
+        integer(item['page'], 1, 100000, 'page')
+        quote = item['quote']
+        if (not isinstance(quote, str) or not quote.strip() or len(quote) > 8000
+                or any(ord(c) < 32 and c not in '\n\r\t' for c in quote)):
+            raise ValueError('quote must be bounded source text')
+        source = evidence._source_page_text(store, item['source_ref'], item['page'])
+        if ('start' in item) != ('end' in item):
+            raise ValueError('citation needs both offsets or a unique quote')
+        if 'start' not in item:
+            start = source.find(quote)
+            if start < 0 or source.find(quote, start + 1) >= 0:
+                raise CitationError('decision plan quote is absent or repeated; select exact offsets', item, source)
+            item.update(start=start, end=start+len(quote))
+        integer(item['start'], 0, len(source), 'start')
+        integer(item['end'], item['start']+1, len(source), 'end')
+        if source[item['start']:item['end']] != quote:
+            raise CitationError('decision plan quote differs from exact frozen source slice', item, source)
+    return out
 
 
 def load(store, ref):

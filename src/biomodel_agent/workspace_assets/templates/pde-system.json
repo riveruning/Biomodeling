@@ -1,0 +1,82 @@
+{
+  "schema_version": 1,
+  "model_type": "pde",
+  "profile": "reaction_diffusion_cartesian_v1",
+  "id": "pde_system_schema_example",
+  "units": {
+    "time": "arbitrary time unit (uncalibrated)",
+    "space": "arbitrary length unit (uncalibrated)",
+    "state": "dimensionless synthetic concentration"
+  },
+  "grid": {
+    "shape": [
+      4,
+      3
+    ],
+    "lengths": [
+      2.5,
+      2.5
+    ]
+  },
+  "boundary": "periodic",
+  "parameters": {},
+  "fields": [
+    {
+      "id": "u",
+      "diffusion": 0.16,
+      "initial": [
+        [
+          1.0,
+          1.0,
+          1.0
+        ],
+        [
+          1.0,
+          1.0,
+          1.0
+        ],
+        [
+          1.0,
+          1.0,
+          1.0
+        ],
+        [
+          1.0,
+          1.0,
+          1.0
+        ]
+      ],
+      "reaction": "0",
+      "nonnegative": true
+    },
+    {
+      "id": "v",
+      "diffusion": 0.08,
+      "initial": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0
+        ]
+      ],
+      "reaction": "0",
+      "nonnegative": true
+    }
+  ],
+  "note": "Schema-only example. Supply source-based reactions, values and units for the actual scientific question."
+}

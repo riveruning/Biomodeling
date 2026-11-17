@@ -180,6 +180,16 @@ def _ode_args(spec):
                 reference=reference,scales=scales,modeling_decisions=True,modeling_context=spec['modeling_context'],max_retries=0)
 
 
+def records(store,kind,**matches):
+    """Public verified journal query, shared by execution/control adapters."""
+    return _records(store,kind,**matches)
+
+
+def owner(store,family):
+    """Public application ownership entry over the existing local family lock."""
+    return _owner(store,family)
+
+
 def preflight(store,ref):
     p=load(store,ref);s=p['spec'];kind=s['model_type'];gaps=[]
     def gap(code,target,question):gaps.append(dict(code=code,input=target,question=question))
@@ -202,8 +212,9 @@ def preflight(store,ref):
                 fba.config(s['execution'].get('settings'))
                 if s['model_ref']:fba.load(store,s['model_ref'])
             else:
-                backend=typed_models.backend(kind);settings=backend.config(s['execution'].get('settings'))
-                if s['model_ref']:backend.compatible(typed_models.load(store,s['model_ref'],model_type=kind),settings)
+                loaded=typed_models.load(store,s['model_ref'],model_type=kind) if s['model_ref'] else None
+                backend=typed_models.backend(kind,model=loaded);settings=backend.config(s['execution'].get('settings'))
+                if loaded is not None:backend.compatible(loaded,settings)
         except (ValueError,KeyError,TypeError) as exc:gap('invalid_native_input','model_ref/execution',str(exc))
     if p['implementation_sha256']!=recovery.implementation_fingerprint():
         gap('implementation_changed','implementation','Source changed since this request; prepare a new request revision before dispatch.')
@@ -268,8 +279,10 @@ def _validate_native(store,request_ref,native_ref):
     else:
         from . import typed_agent_runtime
         checked=typed_agent_runtime.validate_task(store,p['task_ref'])
-        if (checked['model_ref']!=spec['model_ref'] or checked['model_type']!=kind
-                or checked['settings']!=typed_models.backend(kind).config(spec['execution'].get('settings'))):
+        if checked['model_ref']!=spec['model_ref'] or checked['model_type']!=kind:
+            raise ValueError('native typed input changed')
+        model=typed_models.load(store,checked['model_ref'],model_type=kind)
+        if checked['settings']!=typed_models.backend(kind,model=model).config(spec['execution'].get('settings')):
             raise ValueError('native typed input changed')
         if p['run_ref']:typed_agent_runtime.bound_result(store,checked,p['run_ref'])
     diagnostic=recovery.diagnose_execution(store,p['execution_ref'])
@@ -394,9 +407,10 @@ def execute(store,provider,request_ref):
         if frozen and (request['spec']['max_calls']!=frozen['max_calls'] or request['spec'].get('proposal_max_calls',0)!=frozen.get('proposal_max_calls',0)):
             raise ValueError('native/proposal budgets differ from the family reservation')
         from . import agent
+        from .provider_identity import identity as provider_identity
         spec=request['spec'];kind=spec['model_type']
         execution_ref=store.put(EXECUTION,dict(version=1,phase='reserved',family_id=request['family_id'],request_ref=request_ref,
-            provider=agent._provider_identity(provider)),refs=(request_ref,))
+            provider=provider_identity(provider)),refs=(request_ref,))
         scoped=_BindingStore(store,request_ref,execution_ref)
         args=dict(max_calls=spec['max_calls'],context_max_chars=spec['context_max_chars'])
         if kind=='ode':args.update(_ode_args(spec))

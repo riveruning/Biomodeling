@@ -24,6 +24,8 @@ def positive_seconds(value, name='timeout_s', maximum=None):
 class Deadline:
     def __init__(self, timeout_s, *, maximum=None):
         self.timeout_s = positive_seconds(timeout_s, maximum=maximum)
+        from .research_control import remaining_s
+        self.timeout_s = remaining_s(self.timeout_s)
         self.started = time.monotonic()
 
     def elapsed(self):

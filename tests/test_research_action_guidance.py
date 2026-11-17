@@ -9,8 +9,68 @@ from biomodel_agent.storage import ArtifactStore
 from test_research_projects import frame,opened,step
 
 
+def test_optional_lineage_schema_matches_absent_and_owned_references():
+    from biomodel_agent import research_schema
+    empty = research_schema.optional_reference([])
+    assert empty['type'] == 'null'
+    owned = research_schema.optional_reference(['owned_ref'])
+    assert owned['anyOf'] == [dict(enum=['owned_ref']), dict(type='null')]
+    view = dict(iteration_refs=[], frame_ref='frame', source_refs=['source'], reference_refs=[])
+    args = research_schema.schemas(view)['open_iteration']['properties']['args']['properties']
+    assert args['parent_iteration_ref']['type'] == 'null'
+    assert args['reference_ref']['type'] == 'null'
+    bindings = args['source_evidence_map']['additionalProperties']
+    assert bindings['type'] == 'array'
+    assert bindings['minItems'] == 1 and bindings['maxItems'] == 4
+
+
+def test_complete_ode_schema_and_unique_quotes_compile_and_execute(tmp_path):
+    from test_modeling_plan import setup as ode_setup
+    from biomodel_agent import research_schema,modeling_plan
+    store,source,plan=ode_setup(tmp_path)
+    root=p.create(store,dict(scenario='Reproduce the explicit decay model.',mode='reproduction',source_refs=[source]))
+    f=frame('strict_reproduction');f['assumptions']=[]
+    step(store,root,'revise_frame',frame=f,reason='Freeze native checks.')
+    schema=research_schema.schemas(p.inspect(store,root))['open_iteration']['properties']['args']['properties']['decision_plan']
+    assert schema['properties']['context']['type']=='object'
+    assert 'conditions' in schema['properties']['evidence']['items']['required']
+    original=deepcopy(plan)
+    for anchor in plan['evidence']:del anchor['start'];del anchor['end']
+    it=step(store,root,'open_iteration',reason='Use exact unique source quotes.',decision_plan=plan,
+        config=dict(model_type='ode',source_refs=[source],execution=dict(experiment=dict(times=[0.,1.,2.],time_unit='second'))))['iteration_ref']
+    step(store,root,'run_iteration',iteration_ref=it)
+    assert p.facts(store,it)['numeric_status']=='pass'
+    saved=store.get(store.list(modeling_plan.PLAN)[0])['payload']['spec']
+    assert saved['evidence']==original['evidence']
+    assert all('start' not in anchor for anchor in plan['evidence'])
+
+
+def test_ode_citation_diagnostics_do_not_silently_fix_explicit_offsets(tmp_path):
+    from test_modeling_plan import setup as ode_setup
+    from biomodel_agent import modeling_plan
+    store,source,plan=ode_setup(tmp_path)
+    plan['evidence'][1]['start']=0;plan['evidence'][1]['end']=17
+    with pytest.raises(ValueError) as caught:modeling_plan.prepare(store,plan,[source])
+    assert caught.value.citation_diagnostic['matches']==[dict(start=15,end=33)]
+    assert not store.list(modeling_plan.PLAN)
+
+
+def test_source_free_schema_uses_false_instead_of_invalid_empty_enums(tmp_path):
+    from biomodel_agent import research_schema
+    store=ArtifactStore(tmp_path/'s');root=p.create(store,dict(scenario='No sources yet.'))
+    step(store,root,'revise_frame',frame=frame(),reason='Freeze an exploratory scope.')
+    schema=research_schema.schemas(p.inspect(store,root))
+    def walk(item):
+        if isinstance(item,dict):
+            if 'enum' in item:assert item['enum']
+            for child in item.values():walk(child)
+        elif isinstance(item,list):
+            for child in item:walk(child)
+    walk(schema)
+
+
 def test_source_anchor_error_reports_candidates_but_never_rebinds(tmp_path):
-    store=ArtifactStore(tmp_path/'s');path=tmp_path/'source.txt';path.write_text('Header.\nInitial A = False.\n',encoding='utf-8')
+    store=ArtifactStore(tmp_path/'s');path=tmp_path/'source.txt';path.write_text('Header.\nInitial A = False.\n',encoding='utf-8',newline='\n')
     source=evidence.ingest_source(store,path)
     root=p.create(store,dict(scenario='Inspect declarations.',source_refs=[source]))
     f=frame();f['evidence']=[dict(id='initial',kind='source',source_ref=source,page=1,quote='Initial A = False.',start=0,end=17)]
@@ -27,7 +87,7 @@ def test_source_anchor_error_reports_candidates_but_never_rebinds(tmp_path):
 
 
 def test_repeated_source_quote_still_requires_operator_or_agent_selection(tmp_path):
-    store=ArtifactStore(tmp_path/'s');path=tmp_path/'source.txt';path.write_text('same\nsame\n')
+    store=ArtifactStore(tmp_path/'s');path=tmp_path/'source.txt';path.write_text('same\nsame\n',encoding='utf-8',newline='\n')
     source=evidence.ingest_source(store,path);root=p.create(store,dict(scenario='Ambiguous quote.',source_refs=[source]))
     f=frame();f['evidence']=[dict(id='repeat',kind='source',source_ref=source,page=1,quote='same')]
     with pytest.raises(ValueError,match='repeated'):step(store,root,'revise_frame',frame=f,reason='Ambiguous.')

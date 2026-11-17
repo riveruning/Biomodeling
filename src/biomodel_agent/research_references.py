@@ -55,10 +55,10 @@ def _extract(store,args):
         values={name:[float(row[header.index(column)]) for row in records[1:]] for name,column in columns.items()}
         config['reference']=dict(times=times,values=values,time_unit=units[1],backend='source_literal_csv',status='succeeded')
     else:raise ValueError('reference format must be json_reference or csv_series')
-    if config.get('model_type')!='fba':
+    if config.get('model_type','ode')=='ode':
         config['scales']={key:1. for key in config['reference']['values']}
         if 'threshold' in args:config['threshold']=args['threshold']
-    elif 'threshold' in args:raise ValueError('FBA uses its existing fixed scalar tolerance')
+    elif 'threshold' in args:raise ValueError('Native references freeze tolerances inside their protocol')
     return p._reference_payload(config,'research_agent','agent_source_literal_copy_not_independent_review')
 
 
@@ -75,6 +75,20 @@ def metadata(store,ref):
     out=dict(reference_ref=ref,reference_type=value['reference_type'],note=value['note'],authority=value['authority'],independent=False)
     if value['reference_type']=='time_series':
         out.update(times=value['reference']['times'],time_unit=value['reference']['time_unit'],observables=list(value['reference']['values']))
+    elif value['reference_type']=='typed_observations':
+        spec=value['reference'];kind=spec['model_type']
+        out.update(model_type=kind,profile=spec['profile'],units=spec['units'])
+        out['observables']=spec.get('species',spec.get('nodes',['values'] if kind=='pde' else ['population']))
+        key='times' if kind in ('pde','stochastic') else 'steps';out[key]=spec[key]
+        if kind=='pde':
+            from .typed_references import PDE_SYSTEM_PROFILE
+            if spec['profile']==PDE_SYSTEM_PROFILE:
+                out.update(axes=spec['axes'],field_ids=spec['field_ids'],
+                           observables=list(spec['field_ids']),scales=spec['scales'],
+                           threshold=spec['threshold'])
+            else:
+                out['x']=spec['x']
+        if kind=='stochastic':out['min_trajectories']=spec['min_trajectories']
     else:out['observables']=['objective']
     if value.get('source_provenance'):out['source_provenance']=value['source_provenance']
     return out

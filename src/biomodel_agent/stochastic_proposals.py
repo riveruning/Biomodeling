@@ -58,6 +58,11 @@ def _declaration(line,names):
     return None
 
 
+def parse_declaration(line,names):
+    """Public complete-line parser; no rate conversion or qualitative inference."""
+    return _declaration(line,names)
+
+
 def _expected(model,rate_units):
     stochastic.validate(model)
     if len(model['species'])>8 or len(model['reactions'])>16:

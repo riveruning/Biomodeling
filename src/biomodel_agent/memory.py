@@ -41,8 +41,9 @@ def invalidate_dependency(store, project_id, dependency_ref, *, author, reason):
     _scope(store, project_id, None)
     _text(author, 'author', 200); _text(reason, 'invalidation reason', 1000)
     obj = store.get(dependency_ref)
-    if obj['kind'] not in ('source', 'model', KIND):
-        raise ValueError('memory invalidation requires a source, ODE model or memory')
+    if obj['kind'] not in ('source', 'model', 'typed_model', 'fba_model', KIND):
+        raise ValueError('memory invalidation requires a source, model or memory')
+    if obj['kind'] in ('model','typed_model','fba_model'):_scope(store,project_id,dependency_ref)
     if obj['kind'] == KIND and obj['payload']['project_id'] != project_id:
         raise ValueError('memory invalidation cannot cross projects')
     return store.put(INVALIDATIONS, dict(version=1, project_id=project_id,
@@ -111,8 +112,15 @@ def _text(value, name, limit):
 
 def _scope(store, project_id, model_ref):
     _text(project_id, 'project_id', 128)
-    if model_ref is not None and store.get(model_ref)['kind'] != 'model':
-        raise ValueError('model_ref must identify a model artifact')
+    if model_ref is not None:
+        kind=store.get(model_ref)['kind']
+        if kind=='typed_model':
+            from .typed_models import load
+            load(store,model_ref)
+        elif kind=='fba_model':
+            from .fba import load
+            load(store,model_ref)
+        elif kind!='model':raise ValueError('model_ref must identify a model artifact')
 
 
 def _sources(store, refs):

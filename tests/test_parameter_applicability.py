@@ -23,7 +23,9 @@ TEXT = ('Initial x = 1.\nParameter k = 0.4.\nEquation dx/dt = -k*x.\n'
 def setup(tmp_path, text=TEXT):
     store = ArtifactStore(tmp_path / 'store')
     path = tmp_path / 'source.txt'
-    path.write_text(text)
+    # Byte-exact fixture: UTF-8, no OS newline translation, so the ingested page
+    # text equals `text` character for character and character offsets stay valid.
+    path.write_text(text, encoding='utf-8', newline='')
     source = evidence.ingest_source(store, path)
     return store, source, text
 
@@ -157,6 +159,19 @@ def test_partial_source_line_cannot_hide_a_qualifier(tmp_path):
     end = text.rfind(' for condition B')
     with pytest.raises(ValueError, match='complete source lines'):
         assess(store, [source], 'k/value', SPEC, source, 1, 0, end)
+
+
+@pytest.mark.parametrize('newline', ['\n', '\r\n'])
+def test_lf_and_crlf_sources_keep_exact_offsets_and_complete_lines(tmp_path, newline):
+    raw = TEXT.replace('\n', newline)
+    store, source, text = setup(tmp_path, raw)
+    assert [p['text'] for p in store.get(source)['payload']['pages']] == [raw]
+    result = check(store, source, text)
+    assert result['source'] == dict(source_ref=source, page=1, start=0, end=len(raw))
+    assert result['status'] == 'declared_fields_match' and result['semantic_support'] == 'unknown'
+    truncated = raw[:len(raw) - len(newline) - 1]  # Ends inside the last line: drops the final '1' and terminator.
+    with pytest.raises(ValueError, match='complete source lines'):
+        check(store, source, truncated)
 
 
 def test_selected_excerpt_cannot_hide_metadata_conflict_elsewhere(tmp_path):

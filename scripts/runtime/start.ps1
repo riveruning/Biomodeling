@@ -8,6 +8,9 @@ $Root = $PSScriptRoot
 $Python = Join-Path $Root ".venv\Scripts\python.exe"
 if (-not (Test-Path -LiteralPath $Python)) { throw "Run setup.ps1 first." }
 if (-not $Store) { $Store = Join-Path $Root "runs\workbench" }
+if (-not $env:BIOMODEL_TESSDATA -and (Test-Path -LiteralPath (Join-Path $Root "runs\ocr-data\eng.traineddata"))) {
+    $env:BIOMODEL_TESSDATA = Join-Path $Root "runs\ocr-data"
+}
 if ($Port -lt 1 -or $Port -gt 65535) { throw "Port must be between 1 and 65535." }
 $Arguments = @("-m", "biomodel_agent", "workbench", "--store", $Store, "--port", "$Port")
 if ($AllowProvider) { $Arguments += "--allow-provider" }

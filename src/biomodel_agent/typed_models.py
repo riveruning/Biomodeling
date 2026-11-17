@@ -20,10 +20,25 @@ TYPES = TYPED_TYPES
 VERSION = 1
 
 
-def backend(model_type):
+def backend(model_type, *, model=None):
+    """Select the native backend module.
+
+    Ordinary entrances keep ``model_type='pde'``; a model declaring the
+    multi-field profile selects :mod:`pde_system`. The declared model_type and
+    the model's own model_type must agree; any other profile stays with the
+    frozen legacy backend, whose real validator rejects invalid models.
+    """
     if model_type not in TYPES:
         raise ValueError('unsupported native model_type; choose '+', '.join(TYPES))
-    return importlib.import_module('.'+model_type, __package__)
+    if model is not None and (
+            not isinstance(model, dict) or model.get('model_type') != model_type):
+        raise ValueError('model_type does not match the declared native model')
+    module = importlib.import_module('.'+model_type, __package__)
+    if model_type == 'pde' and model is not None:
+        from . import pde_system
+        if model.get('profile') == pde_system.PROFILE:
+            return pde_system
+    return module
 
 
 def capabilities():
@@ -47,14 +62,14 @@ def _decode(raw):
     canonical_bytes(value)  # rejects JSON NaN and infinity before any simulation
     if not isinstance(value, dict):
         raise ValueError('native model must be a JSON object')
-    backend(value.get('model_type')).validate(value)
+    backend(value.get('model_type'), model=value).validate(value)
     return value
 
 
 def import_model(store, path):
     with Path(path).open('rb') as handle:
         raw = handle.read(2_000_001)
-    model = _decode(raw); b = backend(model['model_type']); blob = store.put_blob(raw)
+    model = _decode(raw); b = backend(model['model_type'], model=model); blob = store.put_blob(raw)
     return store.put('typed_model', dict(version=VERSION, model_type=b.MODEL_TYPE, profile=b.PROFILE,
         model=model, blob_ref=blob, origin='operator_supplied_native_json', scientific_support='unknown'), refs=(blob,))
 
@@ -63,7 +78,7 @@ def load(store, ref, *, model_type=None):
     obj = store.get(ref); p = obj['payload']
     if obj['kind']!='typed_model' or type(p.get('version')) is not int or p['version']!=VERSION:
         raise ValueError('model_type requires a native typed_model artifact')
-    b = backend(p['model_type'])
+    b = backend(p['model_type'], model=p['model'])
     if model_type is not None and model_type!=b.MODEL_TYPE:
         raise ValueError('model_type does not match the frozen native model')
     if p['profile']!=b.PROFILE or p['blob_ref'] not in obj['refs']:
@@ -74,14 +89,21 @@ def load(store, ref, *, model_type=None):
     return b.validate(p['model'])
 
 
-def prepare(store, model_ref, settings=None, *, replay_of=None):
-    model = load(store, model_ref); b = backend(model['model_type']); s = b.config(settings); b.compatible(model, s)
+def prepare(store, model_ref, settings=None, *, replay_of=None, reference_ref=None):
+    model = load(store, model_ref); b = backend(model['model_type'], model=model); s = b.config(settings); b.compatible(model, s)
     from .application import environment_fingerprint
     refs = [model_ref]
+    if reference_ref is not None:
+        from .research_projects import _reference
+        from .typed_references import compatible
+        reference=_reference(store,reference_ref)
+        if reference['reference_type']!='typed_observations':raise ValueError('native reference type mismatch')
+        compatible(reference['reference'],model,s)
+        refs.append(reference_ref)
     if replay_of is not None:
         summary(store, replay_of); refs.append(replay_of)
     return store.put('typed_input', dict(version=VERSION, id=uuid4().hex, model_type=b.MODEL_TYPE, profile=b.PROFILE,
-        model_ref=model_ref, settings=s, environment=environment_fingerprint(), replay_of=replay_of,
+        model_ref=model_ref, settings=s, environment=environment_fingerprint(), replay_of=replay_of,reference_ref=reference_ref,
         execution_policy='one_reservation_per_plan_in_this_store; unknown_or_partial_effects_block_retry',
         timeout_scope='worker_wall_time_including_startup; not_entire_research_task'), refs=tuple(refs))
 
@@ -90,18 +112,25 @@ def load_input(store, ref):
     obj = store.get(ref); p = obj['payload']
     if obj['kind']!='typed_input' or type(p.get('version')) is not int or p['version']!=VERSION or p['model_ref'] not in obj['refs']:
         raise ValueError('invalid typed execution input')
-    model = load(store, p['model_ref'], model_type=p['model_type']); b = backend(p['model_type'])
+    model = load(store, p['model_ref'], model_type=p['model_type']); b = backend(p['model_type'], model=model)
     if p['profile']!=b.PROFILE or canonical_bytes(p['settings'])!=canonical_bytes(b.config(p['settings'])):
         raise ValueError('typed input profile/settings mismatch')
     if p.get('replay_of') and p['replay_of'] not in obj['refs']:
         raise ValueError('typed replay provenance missing from input')
     b.compatible(model, p['settings'])
+    if p.get('reference_ref'):
+        from .research_projects import _reference
+        from .typed_references import compatible
+        if p['reference_ref'] not in obj['refs']:raise ValueError('missing native reference dependency')
+        rp=_reference(store,p['reference_ref'])
+        if rp['reference_type']!='typed_observations':raise ValueError('native reference type mismatch')
+        compatible(rp['reference'],model,p['settings'])
     return p, model
 
 
 def _worker(model, settings, connection):
     try:
-        data = backend(model['model_type']).execute(model, settings)
+        data = backend(model['model_type'], model=model).execute(model, settings)
         canonical_bytes(data)
         connection.send(dict(status='succeeded', data=data))
     except c.WorkLimit:
@@ -116,10 +145,11 @@ def _worker(model, settings, connection):
 
 def solve(model, settings):
     # Revalidate at the public boundary, even when called outside the lifecycle.
-    b = backend(model['model_type']); b.validate(model); settings = b.config(settings); b.compatible(model, settings)
+    b = backend(model['model_type'], model=model); b.validate(model); settings = b.config(settings); b.compatible(model, settings)
     ctx = mp.get_context('spawn'); parent, child = ctx.Pipe(duplex=False)
     process = ctx.Process(target=_worker, args=(model, settings, child), daemon=True)
-    stop = time.monotonic()+settings['timeout_s']
+    from .research_control import remaining_s
+    stop = time.monotonic()+remaining_s(settings['timeout_s'])
     try:
         process.start(); child.close()
         remaining = max(0., stop-time.monotonic())
@@ -145,7 +175,7 @@ def solve(model, settings):
 
 
 def verification(model, settings, result):
-    b = backend(model['model_type']); checks = []
+    b = backend(model['model_type'], model=model); checks = []
     if result.get('status')=='succeeded' and isinstance(result.get('data'), dict):
         try:
             checks = b.checks(model, settings, result['data'])
@@ -202,7 +232,7 @@ def execute(store, input_ref):
             raise ValueError('frozen typed environment changed; prepare a new plan')
         execution_ref = store.put('typed_execution', dict(version=VERSION, input_ref=input_ref, phase='reserved', id=uuid4().hex), refs=(input_ref,))
         result = solve(model, inp['settings'])
-        verified = verification(model, inp['settings'], result)
+        verified = _verified(store,inp,model,result)
         receipt_ref = store.put('typed_execution_receipt', dict(version=VERSION, input_ref=input_ref, execution_ref=execution_ref,
             phase='returned', result=result), refs=(input_ref, execution_ref))
         return store.put('typed_run', dict(version=VERSION, model_type=inp['model_type'], input_ref=input_ref, model_ref=inp['model_ref'],
@@ -232,7 +262,18 @@ def result(store, run_ref):
 
 def summary(store, run_ref):
     inp, model, data = result(store, run_ref)
-    return verification(model, inp['settings'], data)
+    return _verified(store,inp,model,data)
+
+
+def _verified(store,inp,model,data):
+    verified=verification(model, inp['settings'], data)
+    if inp.get('reference_ref'):
+        from .research_projects import _reference
+        from .typed_references import compare
+        verified['comparison']=(compare(_reference(store,inp['reference_ref'])['reference'],model,inp['settings'],data)
+            if verified['completion_eligible'] else dict(status='not_run',reason='Numerical checks did not pass.'))
+        verified['completion_eligible']=verified['completion_eligible'] and verified['comparison']['status']=='pass'
+    return verified
 
 
 def status(store, input_ref):
@@ -249,7 +290,27 @@ def status(store, input_ref):
 def replay(store, run_ref):
     # A new explicit scientific execution, never recovery of an interrupted Agent.
     inp, _, _ = result(store, run_ref); summary(store, run_ref)
-    return execute(store, prepare(store, inp['model_ref'], inp['settings'], replay_of=run_ref))
+    return execute(store, prepare(store, inp['model_ref'], inp['settings'], replay_of=run_ref,reference_ref=inp.get('reference_ref')))
+
+
+def _bounded_head(values, limit=8):
+    """Bound every preview dimension; the returned receipt keeps the full field."""
+    if isinstance(values, list):
+        return [_bounded_head(item, limit) for item in values[:limit]]
+    return values
+
+
+def _system_pde_preview(verified, d):
+    """Readable preview for reaction_diffusion_cartesian_v1 outputs.
+
+    Multi-field grids never reuse the legacy scalar mass/dx layout; the
+    trajectory preview is bounded per dimension.
+    """
+    return dict(profile=verified['profile'], fields=d['field_ids'], dimension=len(d['axes']),
+        grid={name: dict(points=len(axis), first=axis[0], last=axis[-1]) for name, axis in d['axes'].items()},
+        spacing=d['spacing'], grid_kind=d['grid_kind'], time_integration=d['time_integration'],
+        solver=d['solver'], final_time=d['times'][-1], initial_mass=d['mass'][0], final_mass=d['mass'][-1],
+        final_values_preview=_bounded_head(d['values'][-1]))
 
 
 def report_lines(store, ref):
@@ -275,14 +336,14 @@ def report_lines(store, ref):
                     lines.append('Reply by '+cell(clarification['respondent'])+': '+cell(clarification['reply']))
         return lines+(['']+report_lines(store, p['run_ref']) if p['run_ref'] else ['', 'No confirmed scientific result. Scientific support: **unknown**.'])
     if obj['kind']=='typed_model':
-        model = load(store, ref); b = backend(model['model_type'])
+        model = load(store, ref); b = backend(model['model_type'], model=model)
         return [f"Native {model['model_type']} model: `{model['id']}`", f"Profile: `{b.PROFILE}`",
                 'Scientific support: **unknown**; units and input provenance are declared, not independently validated.',
                 '', '```json', json.dumps(model, indent=2, ensure_ascii=False), '```', *b.LIMITATIONS]
     inp, model, outcome = result(store, ref); verified = summary(store, ref)
     lines = [f"Native {model['model_type']} simulation: **{verified['status']}**", f"Profile: `{verified['profile']}`",
              'Scientific support: **unknown**; independent domain review: **not_run**.',
-             'Reference comparison: **not_requested**. Numerical checks are not scientific certification.',
+             'Reference comparison: **'+verified['comparison']['status']+'**. Numerical checks are not scientific certification.',
              f"Model: `{inp['model_ref']}`", f"Frozen input: `{p['input_ref']}`", f"Returned receipt: `{p['receipt_ref']}`",
              f"Replay of: `{inp['replay_of']}`", f"Settings: `{json.dumps(inp['settings'], sort_keys=True)}`",
              f"Units (declared): `{json.dumps(model['units'], sort_keys=True)}`",
@@ -295,7 +356,11 @@ def report_lines(store, ref):
         if model['model_type']=='stochastic':
             preview = dict(species=d['species'], final_mean=d['mean'][-1], final_variance=d['variance'][-1], events=d['event_count'])
         elif model['model_type']=='pde':
-            preview = dict(grid_kind=d['grid_kind'], dx=d['dx'], initial_mass=d['mass'][0], final_mass=d['mass'][-1], final_values=d['values'][-1][:12])
+            from . import pde_system
+            if verified['profile']==pde_system.PROFILE:
+                preview = _system_pde_preview(verified, d)
+            else:
+                preview = dict(grid_kind=d['grid_kind'], dx=d['dx'], initial_mass=d['mass'][0], final_mass=d['mass'][-1], final_values=d['values'][-1][:12])
         elif model['model_type']=='boolean':
             preview = {k:d[k] for k in ('nodes','terminal_fixed_point','synchronous_cycle','asynchronous_attractor')}; preview['final_state']=d['states'][-1]
         else:

@@ -176,16 +176,19 @@ def test_timeline_cannot_be_rewritten_in_a_confirmed_run(tmp_path):
     with pytest.raises(ValueError): workflow.load_run(store, forged)
 
 
-def test_explicit_missing_input_revision_reaches_actual_simulation(tmp_path):
+@pytest.mark.parametrize('newline', ['\n', '\r\n'], ids=['lf', 'crlf'])
+def test_explicit_missing_input_revision_reaches_actual_simulation(tmp_path, newline):
     from test_modeling_plan import TEXT
     from biomodel_agent import evidence
     store, source, spec = setup(tmp_path, TEXT.replace('Parameter k = 0.4.', 'Parameter k is not reported.'))
     spec['candidates'][0]['draft']['parameters'][0]['value'] = None
     original = plans.prepare(store, spec, [source])
     assert plans.inspect(store, original)['state'] == 'awaiting_input'
-    path = tmp_path/'reply.txt'; path.write_text(TEXT)
+    reply_text = TEXT.replace('\n', newline)
+    path = tmp_path/'reply.txt'; path.write_text(reply_text, encoding='utf-8', newline='')
     supplied = evidence.ingest_source(store, path)
-    _, _, updated = setup(tmp_path/'updated')
+    assert [p['text'] for p in store.get(supplied)['payload']['pages'] if p['number'] == 1] == [reply_text]
+    _, _, updated = setup(tmp_path/'updated', reply_text)
     for anchor in updated['evidence']:
         anchor['source_ref'] = supplied
     revised = plans.prepare(store, updated, [supplied], parent_ref=original, reason='User supplied an explicit complete specification.')
@@ -223,15 +226,17 @@ def test_reference_columns_must_match_frozen_observed_outputs(tmp_path):
     assert store.list('agent_task') == before and not store.list('run')
 
 
-def test_two_state_conversion_preserves_mapping_and_analytic_mass_balance(tmp_path):
+@pytest.mark.parametrize('newline', ['\n', '\r\n'], ids=['lf', 'crlf'])
+def test_two_state_conversion_preserves_mapping_and_analytic_mass_balance(tmp_path, newline):
     from biomodel_agent import evidence
     from biomodel_agent.domain.contracts import ModelDraft, Parameter, RateRule, State
     store = ArtifactStore(tmp_path/'store')
     declarations = ['Initial x = 1.', 'Initial y = 0.', 'Parameter k = 0.4.',
                     'Equation dx/dt = -k*x.', 'Equation dy/dt = k*x.']
-    text = '\n'.join(declarations) + '\nTime is measured in seconds.\n'
-    path = tmp_path/'conversion.txt'; path.write_text(text)
+    text = newline.join(declarations) + newline + 'Time is measured in seconds.' + newline
+    path = tmp_path/'conversion.txt'; path.write_text(text, encoding='utf-8', newline='')
     source = evidence.ingest_source(store, path)
+    assert [p['text'] for p in store.get(source)['payload']['pages'] if p['number'] == 1] == [text]
     targets = ['x/initial', 'y/initial', 'k/value', 'rule:x/expression', 'rule:y/expression']
     anchors = [dict(id=f'E{i}', source_ref=source, page=1, start=text.index(q), end=text.index(q)+len(q),
                     quote=q, interpretation='Supplied mathematical declaration.', conditions={'organism': 'synthetic'})

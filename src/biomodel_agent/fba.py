@@ -176,11 +176,13 @@ def _worker(model,settings,connection):
 def solve(model,settings,*,_target=None):
     """Spawn-isolated LP with a parent wall-clock limit including startup."""
     model=validate(model);settings=config(settings)
+    from .research_control import remaining_s
+    effective_timeout=remaining_s(settings['timeout_s'])
     start=time.monotonic();ctx=mp.get_context('spawn');receiver,sender=ctx.Pipe(duplex=False)
     process=ctx.Process(target=_target or _worker,args=(model,settings,sender),daemon=True)
     try:
         process.start();sender.close()
-        if receiver.poll(max(0.,settings['timeout_s']-(time.monotonic()-start))):
+        if receiver.poll(max(0.,effective_timeout-(time.monotonic()-start))):
             try:result=receiver.recv()
             except EOFError:result=dict(status='solver_error',message='worker exited without a result',fluxes=None,solver_objective=None)
         else:result=dict(status='time_limit',message='parent wall-clock deadline reached',fluxes=None,solver_objective=None)

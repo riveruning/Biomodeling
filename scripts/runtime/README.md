@@ -4,7 +4,7 @@
 
 ## 下载与环境
 
-[下载 Windows / Linux 纯运行版 ZIP](https://github.com/FrostingMaple/Biomodeling/archive/refs/heads/codex/runtime-windows-20261031.zip)
+在[当前仓库的 Offline tests 工作流](https://github.com/riveruning/Biomodeling/actions/workflows/tests.yml)中选择对应提交的成功运行，从 Artifacts 下载 `biomodel-runtime`。运行包只会在 Linux 和 Windows 检查均通过后生成；源码仓库的 ZIP 含开发材料，不是纯运行版。
 
 需要 **64 位 Python 3.12**，无需 GPU。Windows 可以原生运行，不要求 WSL；Linux / WSL2 也可运行。请解压到本地磁盘上的普通目录，建议路径简短，不放在网络共享或云同步目录。
 
@@ -55,7 +55,7 @@ Linux / WSL2 使用 `export BIOMODEL_API_KEY=...` 等环境变量，然后执行
 
 ## 使用自己的资料
 
-1. 在首页 `/` 导入 UTF-8 TXT / Markdown 或原生模型 JSON，单文件不超过 1 MB。没有预置文献与结果。
+1. 在首页 `/` 导入 UTF-8 TXT / Markdown、原生模型 JSON 或 PDF。文本与 JSON 单文件不超过 1 MB，PDF 不超过 8 MB。没有预置文献与结果。
 2. 在 `/projects` 描述应用场景或复现目标，选择资料，设置规划、文献和迭代额度。
 3. Agent 提出对象、粒度、证据、假设和实验；查看具体讨论并回答后继续。
 4. 查看版本、实际计算检查、来源和结论；可导出报告及 ZIP 研究包。
@@ -72,4 +72,12 @@ Linux / WSL2 使用 `export BIOMODEL_API_KEY=...` 等环境变量，然后执行
 .\.venv\Scripts\python.exe -m pip install '.[pdf,figures]'
 ```
 
-浏览器上传支持上述文本与 JSON；PDF 使用 `source-ingest` CLI。公开全文导入保留原响应和提取警告；任意图表、复杂公式与补充数据自动建模尚未覆盖。开发用 POSIX 进程组评测监督器未随本运行版分发。
+浏览器与 `source-ingest` CLI 均支持 PDF 导入。公开全文导入保留原响应和提取警告；任意图表、复杂公式与补充数据自动建模尚未覆盖。开发用 POSIX 进程组评测监督器未随本运行版分发。
+
+## PDF、区域审阅与可选本地 OCR
+
+默认安装可导入 PDF 文本；布局、区域图像与候选表格需要可选 PDF 依赖。Windows 使用 `setup.ps1 -Pdf`，Linux 使用 `bash setup.sh --pdf`。需要英文 OCR 时分别使用 `setup.ps1 -Ocr` / `bash setup.sh --ocr`，会额外下载并校验固定版本的英文识别数据和许可证，约 4 MB；不上传文档。后续启动会自动使用该运行目录的识别数据。
+
+也可自行准备已有本地数据并设置 `BIOMODEL_TESSDATA` 指向包含 `eng.traineddata` 的目录。OCR 只生成候选，公式、复杂表格和跨页关系必须核对；保存转录时需填写审阅者与依据，创建新来源并保留原 PDF。
+
+研究项目支持创建时的 `policy.total_timeout_s` 总期限，以及界面的“停止研究”。停止在安全边界生效，保留当前返回；未知操作结果仍需核对，不会自动重试。图表显示保存的数值与单位，版本差异只比较明确链接的父版本。

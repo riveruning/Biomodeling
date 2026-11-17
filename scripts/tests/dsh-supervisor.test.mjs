@@ -8,6 +8,14 @@ import { buildPrompt, DEFAULT_BUDGET, deliverySummary, permissionScope, scopedPa
 const workspace = resolve(import.meta.dirname, '../..');
 const task = { schema_version: '1', id: 'test-task', objective: 'one behavior', context: 'frozen interface', instructions: 'write one file',
   read_files: ['README.md'], write_files: ['src/example.py'], expected_files: ['src/example.py'], acceptance: ['actual behavior'], budget: { ...DEFAULT_BUDGET } };
+
+test('explicit long-task budgets are bounded at two hours', () => {
+  const budget = Object.fromEntries(Object.keys(DEFAULT_BUDGET).map(key => [key, 7200000]));
+  assert.deepEqual(validateTask({ ...task, budget }, workspace).budget, budget);
+  assert.equal(validateTask({ ...task, budget: { ...budget, total_ms: 43200000 } }, workspace).budget.total_ms, 43200000);
+  assert.throws(() => validateTask({ ...task, budget: { ...budget, total_ms: 2147423648 } }, workspace), /Invalid budget/);
+  assert.deepEqual(validateTask(task, workspace).budget, DEFAULT_BUDGET);
+});
 const state = (status = 'generating', extra = {}) => ({ status, sessionId: 'session', task: { taskId: 'task' }, response: '', toolCallCount: 0, pendingPermissions: [], ...extra });
 const request = (overrides = {}) => ({ requestId: 'permission', taskId: 'task', sessionId: 'session',
   toolCall: { rawInput: { file_path: resolve(workspace, 'src/example.py'), content: '# code\n' } },
@@ -34,11 +42,31 @@ function harness(snapshots, options = {}) {
   };
   return {
     calls, records, notifications, sleeps, responses,
-    run: () => supervise({ task: { ...task, budget: { ...task.budget, ...options.budget } }, workspace,
+    run: () => supervise({ task: { ...task, ...options.taskOverrides, budget: { ...task.budget, ...options.budget } }, workspace,
       connectionId: 'connection', taskId: 'task', call, snapshotFiles: () => ({ ...files }), now: () => time,
       sleep: async ms => { sleeps.push(ms); time += ms; }, record: e => records.push(e), notify: e => notifications.push(e), saveResponse: r => responses.push(r) }),
   };
 }
+
+test('proposal tasks deliver source text without requiring file writes', async () => {
+  const proposal = { delivery_mode: 'proposal', read_files: [], write_files: [], expected_files: [] };
+  assert.equal(validateTask({ ...task, ...proposal }, workspace).delivery_mode, 'proposal');
+  assert.throws(() => validateTask({ ...task, delivery_mode: 'proposal' }, workspace), /no writable/);
+  for (const delivery_mode of [null, false, 'unknown']) {
+    assert.throws(() => validateTask({ ...task, delivery_mode }, workspace), /delivery mode/);
+  }
+  const h = harness([state('generating', { response: '# proposed code\n' }),
+    state('complete', { response: 'def example():\n    return 1\n' })],
+  { taskOverrides: proposal, budget: { first_write_ms: 1 } });
+  const result = await h.run();
+  assert.equal(result.outcome, 'ready_for_review');
+  assert.equal(result.deliveryMode, 'proposal');
+  assert.deepEqual(result.changedFiles, []);
+  assert.equal(result.acceptance, 'not_run');
+  const empty = harness([state('complete')], { taskOverrides: proposal });
+  assert.equal((await empty.run()).outcome, 'no_delivery');
+  assert.equal(permissionScope(request(), { ...task, ...proposal }, workspace).allowed, false);
+});
 
 test('quiet polling backs off, requests no full histories, prints only changes', async () => {
   const h = harness([state(), state(), state(), state(), state('complete', { write: 'sha', response: 'done' })]);
