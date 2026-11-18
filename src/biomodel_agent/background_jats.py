@@ -423,6 +423,25 @@ def _citation_record(xref, xref_path):
     return {"xml_path": xref_path, "rids": rids}
 
 
+def _canonical_paragraph_text(p_elem) -> str:
+    """One paragraph's text in the ONE shared canonical JATS projection.
+
+    The stored source page (research_literature._extract) and the indexed
+    paragraph must carry the very same text, so an indexed paragraph keeps the
+    visible [unreadable-formula:...] markers the page keeps and can be bound
+    against it verbatim.  A private re-implementation here is exactly the
+    divergence that dropped image formulas from the index: _element_text
+    flattens a textless <inline-graphic>/<math> to nothing and the paragraph
+    then reads as complete with an invisible hole.  Readable MathML/TeX stays
+    text, a readable <alternatives> sibling wins over its parallel graphic and
+    the skipped graphic stays a recorded unread asset on the source side; the
+    structured gap ledger stays on the source, this index carries the visible
+    markers, not a second asset list.
+    """
+    from .research_literature import _project_element
+    return _project_element(p_elem, [], [])
+
+
 def _make_block(p_elem, p_path, section_titles, section_sec_types, in_intro):
     """Build one body-paragraph block dict."""
     citations = []
@@ -432,7 +451,7 @@ def _make_block(p_elem, p_path, section_titles, section_sec_types, in_intro):
         if _norm_space(node.get("ref-type")).lower() != "bibr":
             continue
         citations.append(_citation_record(node, node_path))
-    text = _element_text(p_elem)
+    text = _canonical_paragraph_text(p_elem)
     return {
         "xml_path": p_path,
         "paragraph_id": _element_id(p_elem),

@@ -186,5 +186,7 @@ test('task prompt is specific and never includes executable test command', () =>
   const prompt = buildPrompt({ ...task, verification_commands: [['dangerous-test-command']] }, workspace);
   assert.ok(prompt.includes(resolve(workspace, 'src/example.py')));
   assert.ok(prompt.includes('Codex'));
+  assert.ok(prompt.includes('原生工具名称为read、write、edit、bash'));
+  assert.equal(prompt.includes('read_file、write_file、edit_file'), false);
   assert.equal(prompt.includes('dangerous-test-command'), false);
 });

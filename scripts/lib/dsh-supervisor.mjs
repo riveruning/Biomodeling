@@ -115,6 +115,7 @@ export function buildPrompt(task, workspace) {
   const nightly = task.delegation?.purpose === 'nightly_release';
   return [
     '你是 DSH 实现者，Codex 负责指挥、独立审查和验收。',
+    '原生工具名称为read、write、edit、bash。read使用file_path及可选offset/limit，write使用file_path/content，edit使用file_path/old_string/new_string。请发起实际原生工具调用。',
     '用户要求DSH及全部新增推理请求只用DeepSeek或GLM，并请求实际支持的最高推理档。复用历史证据保留原模型标记，新增调用遵循当前模型要求。',
     `任务 ${task.id}；工作区 ${workspace}。只完成本次单一目标：${task.objective}`,
     `必要背景：${task.context}`,
@@ -125,10 +126,10 @@ export function buildPrompt(task, workspace) {
     nightly
       ? `用户已授权每日午夜整理、验证并提交推送riveruning/Biomodeling当前工作分支。本轮目的授权截止${task.delegation.until}。只可执行已审计scripts/nightly_release.py的inspect、verify、publish模式，日期必须为${process.env.NIGHTLY_DATE}。可读取任务明确文件与当日发布审计输出。`
       : delegatedTask(task, workspace)
-      ? `用户48小时全权委派有效至${DELEGATION_UNTIL}。可读写任务相关路径前缀${DELEGATION_PREFIXES.join(', ')}，以及明确列出的只读文件。控制面、凭证、冻结评测与原始证据受保护。可通过bash运行授权Python/pytest/SDK/Node单命令，所有操作保留门控。write_files仅为监督器监测文件。`
+      ? `用户48小时全权委派有效至${DELEGATION_UNTIL}。可读写任务相关路径前缀${DELEGATION_PREFIXES.join(', ')}，以及明确列出的只读文件。这只是外层授权上限，具体要求中的更窄写入范围必须遵守；隔离任务只能修改指定baseline/variant，禁止直接修改生产src或tests，工具放行不代表本轮允许。写文件前确认绝对目标路径，Python脚本也必须遵守同一范围。控制面、凭证、冻结评测与原始证据受保护。可通过bash运行授权Python/pytest/SDK/Node单命令，所有操作保留门控。write_files仅为监督器监测文件。`
       : task.delivery_mode === 'proposal'
       ? '必要代码片段已完整提供，只返回代码提案；本任务没有文件工具操作。'
-      : '只使用明确路径的 read_file、write_file、edit_file 工具；不要使用 todo_write、规划工具、glob、目录扫描、shell、联网或安装工具。',
+      : '只使用明确路径的read、write、edit原生工具。',
     nightly
       ? '由DSH按inspect→verify→publish执行，保留真实检查结果并核对远端SHA。只使用已审计助手，执行失败报告实际诊断。Codex审计。'
       : delegatedTask(task, workspace)

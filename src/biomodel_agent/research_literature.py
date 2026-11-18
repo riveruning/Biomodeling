@@ -39,6 +39,11 @@ MAX_TRANSCRIPTION_OUTPUT_CHARS=8000
 TRANSCRIPTION_OUTPUT_TOKEN_LIMIT=1000
 _CLOUDPMC_PATH=re.compile(r'<\?cloudpmc-path\s+([^?>]*?/'
                           r'(?P<asset>[^?/>]+))\s*\?>')
+# The one visible placeholder the text projection writes for every textless
+# formula/graphic location (_project_element below).  The stored page text and
+# anything that binds against it (research_background intro blocks) must share
+# this single marker syntax; group(1) is the bare asset name.
+FORMULA_MARKER=re.compile(r'\[unreadable-formula:([^\]]+)\]')
 
 
 class LiteratureError(ValueError):
@@ -403,7 +408,7 @@ def _reported_assets(source):
     known |= {entry['asset'] for entry in source.get('formula_assets', []) if entry.get('asset')}
     if source.get('unresolved_formula_truncated'):
         for page in source.get('pages', []):
-            known |= set(re.findall(r'\[unreadable-formula:([^\]]+)\]', page.get('text', '')))
+            known |= set(FORMULA_MARKER.findall(page.get('text', '')))
     known.discard('unidentified')
     return known
 

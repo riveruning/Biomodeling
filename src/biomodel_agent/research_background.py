@@ -7,6 +7,7 @@ These MM-linked artifacts stay on the reproduction/curator side of an A/B study.
 from copy import deepcopy
 from collections import Counter
 from itertools import zip_longest
+import hashlib
 import json
 import re
 
@@ -24,14 +25,159 @@ class UnsupportedDocument(ValueError):
     """The admitted material needs another complete-document representation."""
 
 
+# Said once, in the packet, for every introduction block that has no unique
+# source anchor: compact selectors exist only for the blocks that bound, and
+# the honest route for the rest is a direct literal anchor, never an invented ID.
+_UNBOUND_INTRO_NOTICE = (
+    'Compact mm_context_id selectors are supplied only for the introduction blocks listed '
+    'in intro_contexts. Every block in unbound_intro_blocks has no unique verbatim anchor '
+    'in the stored source pages (reason, occurrence count and text recorded per block); '
+    'bind such a block with a direct literal mm_context anchor taken from the stored source '
+    'page text instead of inventing a selector for it.')
+
+
+def _core_text(text):
+    """Marker-free, whitespace-collapsed text: what a pre-projection index kept.
+
+    The index builder before background_jats._canonical_paragraph_text
+    flattened a textless formula to nothing, so a saved index block text is its
+    paragraph's textual content WITHOUT the [unreadable-formula:...] markers.
+    """
+    from .research_literature import FORMULA_MARKER
+    return ' '.join(FORMULA_MARKER.sub('', text).split())
+
+
+def _raw_spans(text, quote):
+    """Every (start, end) span where quote occurs, overlapping ones included."""
+    spans = []
+    at = text.find(quote)
+    while at >= 0:
+        spans.append((at, at + len(quote)))
+        at = text.find(quote, at + 1)
+    return spans
+
+
+def _page_lines(page_text):
+    """Newline-delimited stored lines with their raw ``(start, end)`` offsets.
+
+    A stored full-text page is a newline-joined list of canonical block
+    projections (research_literature._extract), so a line is the only unit that
+    can prove "this whole indexed paragraph IS this whole stored paragraph".
+    Leading/trailing whitespace is trimmed off the returned raw span, which
+    keeps every line anchor a tight verbatim page slice.
+    """
+    lines = []
+    start = 0
+    for raw in page_text.split('\n'):
+        end = start + len(raw)
+        left = start + len(raw) - len(raw.lstrip())
+        right = start + len(raw.rstrip())
+        if left < right:
+            lines.append((left, right))
+        start = end + 1
+    return lines
+
+
+def _index_is_legacy(document):
+    """True when this saved index cannot carry the canonical projection's markers.
+
+    The pre-projection index builder never emitted a formula marker, so ONE
+    marker anywhere in the indexed block texts proves the index already carries
+    the same canonical text as the stored pages.  Such an index gets no legacy
+    compensation: a marker-free block of it must not be bound to a marked
+    paragraph that another block of the same index claims canonically.  An
+    index without any marker stays on the safe legacy route, which is what the
+    saved caches need.
+    """
+    from .research_literature import FORMULA_MARKER
+    blocks = (document or {}).get('blocks') or []
+    return not any(isinstance(block, dict) and FORMULA_MARKER.search(block.get('text') or '')
+                   for block in blocks)
+
+
+def _page_matches(page_text, quote, legacy):
+    """Raw page spans one block quote can anchor to on one stored page.
+
+    Three routes, in decreasing order of what they prove about identity:
+
+    1. a whole page line whose canonical text equals the quote: the indexed
+       paragraph IS that stored paragraph, formula markers and all;
+    2. only for a legacy index (see _index_is_legacy) whose quote carries no
+       marker: a whole page line whose marker-free text equals the quote and
+       which DOES carry markers.  The old index dropped exactly those markers
+       out of this paragraph, so the binding must cover them instead of
+       stopping at the text the quote happens to name;
+    3. a verbatim quote occurrence that is not a strict sub-span of a route 1/2
+       line: kept for indexes whose block text is genuinely narrower than any
+       stored line (a nested paragraph, a divergent saved index).
+
+    A verbatim occurrence nested inside a whole-line candidate is never
+    returned on its own: that line is this block's paragraph and the sub-span
+    would silently drop its edge formula markers (the reported edge case).
+    """
+    from .research_literature import FORMULA_MARKER
+    core = _core_text(quote)
+    marked_quote = bool(FORMULA_MARKER.search(quote))
+    complete = set()
+    for start, end in _page_lines(page_text):
+        line = page_text[start:end]
+        if ' '.join(line.split()) == quote:
+            complete.add((start, end))
+        elif (legacy and not marked_quote and FORMULA_MARKER.search(line)
+              and _core_text(line) == core):
+            complete.add((start, end))
+    spans = set(complete)
+    for start, end in _raw_spans(page_text, quote):
+        if any(lo <= start and end <= hi and (lo, hi) != (start, end) for lo, hi in complete):
+            continue
+        spans.add((start, end))
+    return sorted(spans)
+
+
+def _unbound_block(position, matches, quote):
+    """Honest diagnosis for one introduction block with no unique source anchor."""
+    from .research_literature import FORMULA_MARKER
+
+    def markers(text):
+        return [f'[unreadable-formula:{name}]' for name in dict.fromkeys(FORMULA_MARKER.findall(text))]
+
+    entry = dict(block=position,
+                 reason='ambiguous_source_anchor' if len(matches) > 1 else 'no_source_anchor',
+                 matches=len(matches),
+                 formula_markers=markers(quote),
+                 text_head=quote[:400], text_truncated=len(quote) > 400,
+                 text_sha256=hashlib.sha256(quote.encode('utf-8')).hexdigest())
+    if len(matches) > 1:
+        # Facts about every competing region, not byte-presence: an operator
+        # can only bind the right one literally when the candidates say which
+        # unknown formula content each of them would contribute.
+        entry['candidates'] = [dict(page=match['page'], start=match['start'], end=match['end'],
+                                    formula_markers=markers(match['quote']))
+                               for match in matches[:16]]
+    return entry
+
+
 def _bind_intro_contexts(store, index):
     """Bind every indexed introduction block to a unique literal anchor.
 
     Each entry keeps the original text, source page offsets, citation reference
     IDs and a stable context_id scoped to the index (i0, i1, ...). The IDs follow
     the original block order, with long blocks contributing one ID per segment.
-    Returns None when any block is empty or does not bind to exactly one place.
+    An index built by background_jats._canonical_paragraph_text carries the same
+    canonical text as the stored pages, so its blocks bind whole lines verbatim,
+    markers included.  A saved legacy index (no marker anywhere in its block
+    texts) keeps the compensation route of _page_matches: its marker-free block
+    text still identifies the whole stored line, whose edge formula markers the
+    binding then covers.  A returned anchor is always a raw page slice and
+    therefore keeps those markers verbatim (listed per entry in
+    formula_markers).  A block with no unique source anchor cannot fake one: it
+    is reported in unbound_intro_blocks with its reason, its competing
+    candidate regions and its text, while the blocks that do bind keep their
+    stable selectors, and the packet notice points at the direct literal
+    mm_context anchor route.  Returns None only when nothing can be bound at
+    all (no blocks, over budget, an empty block, or every block unbound).
     """
+    from .research_literature import FORMULA_MARKER
     from .research_reading import segments
     document = index.get('document')
     blocks = document.get('intro_blocks', []) if document else []
@@ -39,35 +185,49 @@ def _bind_intro_contexts(store, index):
         return None
     source_ref = index['source_ref']
     source = store.get(source_ref)['payload']
+    pages = source['pages']
+    legacy = _index_is_legacy(document)
+
     contexts = []
-    for block in blocks:
+    unbound = []
+    for position, block in enumerate(blocks):
         quote = block['text']
         if not quote:
             return None
         matches = []
-        for page in source['pages']:
-            start = page['text'].find(quote)
-            if start >= 0:
-                if page['text'].find(quote, start + 1) >= 0:
-                    return None
+        for page in pages:
+            for start, end in _page_matches(page['text'], quote, legacy):
                 matches.append(dict(source_ref=source_ref, page=page['number'],
-                                    start=start, end=start + len(quote), quote=quote))
+                                    start=start, end=end, quote=page['text'][start:end]))
         if len(matches) != 1:
-            return None
+            unbound.append(_unbound_block(position, matches, quote))
+            continue
         anchor = matches[0]
         anchors = [anchor]
-        if len(quote) > 4000:
+        if len(anchor['quote']) > 4000:
             anchors = [dict(source_ref=source_ref, page=part['page'], start=part['start'],
                             end=part['end'], quote=part['text']) for part in segments(anchor)]
         ids = list(dict.fromkeys(rid for citation in block.get('citations', [])
                                  for rid in citation.get('rids', [])))
         for part in anchors:
-            contexts.append(dict(context_id=f'i{len(contexts)}', mm_context=part, reference_ids=ids))
-    return dict(source_ref=source_ref,
-                identity=document.get('identity'), intro_contexts=contexts,
-                all_indexed_intro_blocks_supplied=True, indexed_intro_blocks=len(blocks),
-                document_issues=document.get('issues', []),
-                source_warnings=source.get('warnings', []), scientific_support='unknown')
+            entry = dict(context_id=f'i{len(contexts)}', mm_context=part, reference_ids=ids)
+            markers = [f'[unreadable-formula:{name}]' for name
+                       in dict.fromkeys(FORMULA_MARKER.findall(part['quote']))]
+            if markers:
+                entry['formula_markers'] = markers
+            contexts.append(entry)
+    if not contexts:
+        return None
+    packet = dict(source_ref=source_ref,
+                  identity=document.get('identity'), intro_contexts=contexts,
+                  all_indexed_intro_blocks_supplied=not unbound,
+                  indexed_intro_blocks=len(blocks),
+                  document_issues=document.get('issues', []),
+                  source_warnings=source.get('warnings', []), scientific_support='unknown')
+    if unbound:
+        packet['unbound_intro_blocks'] = unbound
+        packet['intro_binding_notice'] = _UNBOUND_INTRO_NOTICE
+    return packet
 
 
 def intro_packet(store, project_ref, index_ref):
@@ -83,7 +243,13 @@ def intro_packet(store, project_ref, index_ref):
 
 
 def requirements_packet(store, project_ref, view):
-    """Supply every indexed introduction block when all bind within a small packet."""
+    """Supply every indexed introduction block when all bind within a small packet.
+
+    An index whose packet reports unbound introduction blocks (see
+    intro_packet's unbound_intro_blocks) is not silently shortened here: it
+    falls back to the generic reading path, and its honest diagnostics stay
+    available through intro_packet.
+    """
     if view.get('mode') != 'reproduction' or view.get('frame_ref'):
         return None
     from . import research_projects as projects
@@ -93,7 +259,7 @@ def requirements_packet(store, project_ref, view):
     if not pending:
         return None
     packet = intro_packet(store, project_ref, pending[-1])
-    if packet is None:
+    if packet is None or not packet['all_indexed_intro_blocks_supplied']:
         return None
     return dict(packet)
 
