@@ -8,6 +8,11 @@ Rules (task v01-04-storage):
 - ``.txt`` / ``.md`` are decoded as UTF-8; ``.pdf`` defaults to legacy pypdf.
   An explicit pymupdf backend provides bounded local layout/table extraction
   and referenced provenance. Neither backend executes document instructions.
+  The default pypdf path also enumerates image objects per page and records
+  that their content stays untranscribed (or that image coverage is unknown
+  when enumeration fails), so mixed text/image PDFs surface the gap upward.
+- ``.html`` / ``.htm`` PMC articles retain the raw HTML and canonical text
+  pages with section, identity and original element-location evidence.
 - Unknown suffixes are rejected.
 - The source object payload is::
 
@@ -35,8 +40,9 @@ from .storage import ArtifactError, ArtifactStore
 
 MAX_SOURCE_BYTES = 20 * 1024 * 1024
 
-TEXT_SUFFIXES = {".txt": "utf8", ".md": "utf8"}
+TEXT_SUFFIXES = {suffix: "utf8" for suffix in (".txt", ".md", ".csv", ".tsv", ".json")}
 PDF_SUFFIX = ".pdf"
+HTML_SUFFIXES = {'.html', '.htm'}
 
 CLAIM_TYPES = (
     "experimental_observation",
@@ -90,6 +96,22 @@ def _pdf_page_texts(data: bytes, warnings: list[str]) -> list[str]:
                 warnings.append(f"page {i}: text extraction failed: {exc}")
                 text = ""
             pages.append(text)
+            # Mixed pages still need a record of untranscribed image content.
+            try:
+                image_keys = page.images.keys()
+            except Exception as exc:
+                warnings.append(
+                    f"Image coverage is unknown for PDF page {i}. "
+                    f"Image object enumeration failed ({type(exc).__name__}). "
+                    "Review the page visually against the original PDF."
+                )
+            else:
+                if image_keys:
+                    warnings.append(
+                        f"PDF page {i} contains image objects whose contents were "
+                        "not transcribed. Review their content visually against "
+                        "the original PDF."
+                    )
     except ArtifactError:
         raise
     except Exception as exc:
@@ -104,8 +126,8 @@ def ingest_source(store: ArtifactStore, path: str | os.PathLike, source_url: str
     """Ingest a raw source file into the store; returns the source object ref.
 
     The raw bytes are stored verbatim as a blob (immutable, no overwrite).
-    Only ``.txt``, ``.md`` (UTF-8) and ``.pdf`` (pypdf text extraction) are
-    accepted; anything else is rejected. ``pdf_parser='pymupdf'`` opts into
+    Text files, PDF files and native PMC article HTML are accepted.
+    ``pdf_parser='pymupdf'`` opts into
     native geometry/table extraction; scanned content remains untranscribed.
     """
     from . import pdf_adapter
@@ -127,6 +149,8 @@ def ingest_source(store: ArtifactStore, path: str | os.PathLike, source_url: str
         parser = "utf8"
     elif suffix == PDF_SUFFIX:
         parser = pdf_parser
+    elif suffix in HTML_SUFFIXES:
+        parser = 'pmc_html'
     else:
         raise ArtifactError(f"unsupported source suffix {suffix!r} for {p.name}")
 
@@ -142,10 +166,26 @@ def ingest_source(store: ArtifactStore, path: str | os.PathLike, source_url: str
         except UnicodeDecodeError as exc:
             raise ArtifactError(f"source {p.name} is not valid UTF-8: {exc}") from exc
         pages = [{"number": 1, "text": text}]
+        parser_version = '1'
     elif parser == 'pypdf':
         pages = [
             {"number": n, "text": t} for n, t in enumerate(_pdf_page_texts(data, warnings), start=1)
         ]
+        parser_version = _pypdf_version()
+    elif parser == 'pmc_html':
+        from . import background_html
+        try:
+            document = background_html.extract_background(data)
+        except ValueError as exc:
+            raise ArtifactError(f'unsupported PMC HTML source: {exc}') from exc
+        pages = document['pages']
+        warnings = [issue['code'] + ': ' + issue.get('detail', '') for issue in document['issues']]
+        parser_version = background_html.VERSION
+        formula_payload = {
+            'formula_sources': document['formula_sources'],
+            'formula_source_count': document['formula_source_count'],
+            'formula_sources_truncated': document['formula_sources_truncated'],
+        }
     else:
         try:
             extraction = pdf_adapter.parse(data, timeout_s=pdf_timeout_s, limits=pdf_limits)
@@ -162,17 +202,20 @@ def ingest_source(store: ArtifactStore, path: str | os.PathLike, source_url: str
             raise ArtifactError(f'{exc}; raw PDF and failure retained: {failure}') from exc
         output_ref = store.put('pdf_extraction', extraction, refs=[blob_ref])
         pages, warnings = extraction['pages'], extraction['warnings']
+        parser_version = extraction['engine_version']
 
     payload = {
         "blob_ref": blob_ref,
         "filename": p.name,
         "url": source_url,
         "parser": parser,
-        "parser_version": (_pypdf_version() if parser == "pypdf" else extraction['engine_version'] if parser == 'pymupdf' else '1'),
+        "parser_version": parser_version,
         "pages": pages,
         "warnings": warnings,
     }
     refs = [blob_ref]
+    if parser == 'pmc_html':
+        payload.update(formula_payload)
     if parser == 'pymupdf':
         payload.update(parser_output_ref=output_ref, adapter_version=pdf_adapter.ADAPTER_VERSION,
                        capabilities=extraction['capabilities'])
@@ -187,6 +230,21 @@ def _source_page_text(store: ArtifactStore, source_ref: str, page: int) -> str:
     payload = env.get("payload")
     if not isinstance(payload, dict):
         raise ArtifactError(f"{source_ref}: malformed source payload")
+    from .parameter_sources import validate as validate_parameter_source
+    try:
+        validate_parameter_source(store, source_ref)
+    except ValueError as exc:
+        raise ArtifactError(f'{source_ref}: invalid native parameter provenance: {exc}') from exc
+    from .jats_sources import validate as validate_jats
+    try:
+        validate_jats(store, source_ref)
+    except (ValueError, KeyError, TypeError) as exc:
+        raise ArtifactError(f'{source_ref}: invalid JATS provenance: {exc}') from exc
+    from .material_review import validate_source as validate_transcription_source
+    try:
+        validate_transcription_source(store, source_ref)
+    except (ValueError, KeyError, TypeError) as exc:
+        raise ArtifactError(f'{source_ref}: invalid transcription provenance: {exc}') from exc
     pages = payload.get("pages")
     if not isinstance(pages, list):
         raise ArtifactError(f"{source_ref}: malformed source pages")
@@ -197,6 +255,48 @@ def _source_page_text(store: ArtifactStore, source_ref: str, page: int) -> str:
                 raise ArtifactError(f"{source_ref} page {page}: text is not a string")
             return text
     raise ArtifactError(f"{source_ref}: page {page} not found")
+
+
+def source_summary(store, source_ref):
+    """Adapter-neutral metadata; absent page capabilities remain unknown."""
+    obj = store.get(source_ref)
+    if obj['kind'] != SOURCE_KIND or not isinstance(obj['payload'], dict):
+        raise ArtifactError('source summary requires a source object')
+    p = obj['payload']
+    pages = p.get('pages')
+    if not isinstance(pages, list) or not pages:
+        raise ArtifactError('source summary requires stored pages')
+    _source_page_text(store, source_ref, pages[0]['number'])
+    result = {'parser': p.get('parser','unknown'), 'pages': [{'page': page['number'], 'chars': len(page['text'])} for page in pages]}
+    if p.get('transcription_ref'):
+        result.update(transcription_ref=p['transcription_ref'],original_source_ref=p['original_source_ref'],
+            authority='attributed_human_transcription_not_independent_review')
+    if p.get('parser_output_ref') or p.get('capabilities') or p.get('warnings'):
+        capabilities = p.get('capabilities', {})
+        warnings = p.get('warnings', [])
+        if not isinstance(capabilities, dict) or not isinstance(warnings, list) or any(not isinstance(w, str) for w in warnings):
+            raise ArtifactError('invalid source capability metadata')
+        result.update(parser=p.get('parser', 'unknown'), parser_version=p.get('parser_version', 'unknown'),
+            capabilities=capabilities, warnings=[w[:240] for w in warnings[:10]], warning_count=len(warnings),
+            page_status=[{'page': page['number'], 'status': page.get('status', 'unknown'),
+                          'tables': page.get('table_status', 'not_reported')} for page in pages])
+    return result
+
+
+def _locate(store, source_ref, page, start, end):
+    from .jats_sources import PARSERS, locate as locate_jats
+    p = store.get(source_ref)['payload']
+    if p.get('parser') in PARSERS:
+        try:
+            return locate_jats(store, source_ref, page, start, end)
+        except (ValueError, KeyError, TypeError) as exc:
+            raise ArtifactError(f'invalid JATS locator: {exc}') from exc
+    if p.get('parser') == 'pymupdf':
+        from .pdf_adapter import locate
+        return locate(store, source_ref, page, start, end)
+    if p.get('parser_output_ref'):
+        raise ArtifactError('structured source adapter has no registered citation locator')
+    return None
 
 
 def add_claim(
@@ -260,8 +360,7 @@ def add_claim(
         "relation": relation,
         "review_status": review_status,
     }
-    from .pdf_adapter import locate
-    locator = locate(store, source_ref, page, start, end)
+    locator = _locate(store, source_ref, page, start, end)
     if locator is not None:
         payload['locator'] = locator
     if allowed_symbols is not None:
@@ -402,8 +501,7 @@ def _claim_exists_quoted(store: ArtifactStore, claim_ref: str) -> bool:
         return False
     if end > len(text):
         return False
-    from .pdf_adapter import locate
     try:
-        return text[start:end] == quote and payload.get('locator') == locate(store, source_ref, page, start, end)
+        return text[start:end] == quote and payload.get('locator') == _locate(store, source_ref, page, start, end)
     except ArtifactError:
         return False

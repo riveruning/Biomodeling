@@ -1,0 +1,2 @@
+# ArtifactStore builds a local lookup index when this immutable fixture is read.
+index.sqlite*

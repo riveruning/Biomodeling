@@ -1,0 +1,14 @@
+{
+  "experiment": {
+    "times": [
+      0.0,
+      0.5,
+      1.0,
+      2.0
+    ],
+    "time_unit": "second"
+  },
+  "solver": {
+    "timeout_s": 15.0
+  }
+}

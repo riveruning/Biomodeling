@@ -95,12 +95,17 @@ def _ordered_sources(store, source_refs):
     return ordered
 
 
-def review_sources(store, source_refs, targets):
+def review_sources(store, source_refs, targets, *, parameter_requirements=None):
     targets = sorted(set(targets))
     missing = {}; numeric = {}; alternatives = {}; unit_labels = {}; resolved = {}
     for source_ref in _ordered_sources(store, source_refs):
         source = store.get(source_ref)
         if source['kind'] != 'source':raise ValueError('source review requires source artifacts')
+        from .parameter_sources import validate as validate_source, context_exclusion
+        derived = validate_source(store, source_ref)
+        active_targets = ([target for target in targets if not context_exclusion(
+            store, source_ref, target, (parameter_requirements or {}).get(target))]
+            if derived else targets)
         attributed = _researcher_assertion(store, source) is not None
         clarification = False
         for page in source['payload']['pages']:
@@ -112,7 +117,7 @@ def review_sources(store, source_refs, targets):
                 if not line.strip():clarification = False
                 if _HEADER.search(line):clarification = True
                 explicit_author = bool(_AUTHOR.search(line))
-                for target in targets:
+                for target in active_targets:
                     name,field = target.rsplit('/',1)
                     if name.startswith('rule:'):
                         state = name.removeprefix('rule:')

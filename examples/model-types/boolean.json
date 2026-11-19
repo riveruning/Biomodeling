@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "model_type": "boolean",
+  "id": "negative_feedback",
+  "units": {
+    "time": "sweep"
+  },
+  "nodes": [
+    {
+      "id": "A",
+      "initial": false,
+      "rule": "not B"
+    },
+    {
+      "id": "B",
+      "initial": false,
+      "rule": "A"
+    }
+  ],
+  "update": "synchronous",
+  "clamps": {},
+  "note": "Synthetic feedback network, hand-enumerated cycle has period four."
+}

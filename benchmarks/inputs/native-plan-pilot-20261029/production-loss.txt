@@ -1,0 +1,7 @@
+Synthetic development specification; not a paper or experimental evidence.
+State p is a normalized variable.
+Initial p = 1.
+Parameter b = 0.6.
+Parameter k = 0.3.
+Equation dp/dt = b-k*p.
+Time is measured in seconds.

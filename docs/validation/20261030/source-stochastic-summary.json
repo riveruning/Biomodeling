@@ -1,0 +1,43 @@
+{
+  "state": "passed",
+  "full": {
+    "tests": 2580,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "time_s": 857.659
+  },
+  "targeted": {
+    "tests": 229,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "time_s": 117.579
+  },
+  "new_tests": 73,
+  "unchanged_existing_test_files": 92,
+  "product_files": 91,
+  "implementation_sha256": "17e0266c1c9b47f0bc4d6e06b9301a53f4cdec05e97a0a0dc16358a5d89ddd59",
+  "wheel_sha256": "a10b9011bb508db568fe61c4321d8c1e8474959857fc1e2e13d02d66162aa2a9",
+  "source_drift": [],
+  "stochastic_backend_unchanged": true,
+  "dependency_metadata_unchanged": true,
+  "source_installed_comparison": {
+    "same_model": true,
+    "same_settings": true,
+    "same_seeded_paths_and_statistics": true,
+    "same_source_units_and_assumptions": true,
+    "scientific_support": "unknown"
+  },
+  "online_model_effectiveness": "not_evaluated",
+  "scientific_support": "unknown",
+  "independent_domain_review": "not_performed",
+  "evidence_scope": "Selected fields from the retained local acceptance; not the full immutable result bundle.",
+  "raw_evidence_sha256": {
+    "acceptance.json": "f974df95816850aadddb9c38033d16a4de1f9e545968e96296bafc55b3560582",
+    "full.xml": "967ddb2894a2b1ab5cb95623248e5921a57172b9632fabfb3afbf170f9f686d1",
+    "full.log": "accd4912b4b0aa102d0e842b4ac14d86e31891a55b6566f927819dcf0111afa8",
+    "targeted-final.xml": "88b21df0d9dda05ff02030bd154d7aa13231f6d219b22a4571116a19cd088ec6",
+    "tested-source-hashes.json": "d12a61e51584ba42f8ff7ea6561512224e458894c7f0c352f197672cab1bcfae"
+  }
+}

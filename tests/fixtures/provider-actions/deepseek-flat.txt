@@ -1,0 +1,10 @@
+I'll start by reading the attached paper to identify its main scientific results and what is actually reproducible with the available model types.
+
+<｜DSML｜ calls>
+<｜DSML｜ invoke name="inspect_source">
+<｜DSML｜ parameter name="source_ref" string="true">760cd9935f5b6f295371c96eae12ae4bee5a1f789f36c8a3c081e995bc708563</｜DSML｜ parameter>
+<｜DSML｜ parameter name="page" string="false">1</｜DSML｜ parameter>
+<｜DSML｜ parameter name="start" string="false">0</｜DSML｜ parameter>
+<｜DSML｜ parameter name="end" string="false">3449</｜DSML｜ parameter>
+</｜DSML｜ invoke>
+</｜DSML｜ calls>

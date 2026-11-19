@@ -1,0 +1,5 @@
+{
+  "model": "YOUR_TRUSTED_PROVIDER_MODEL",
+  "provider_api": "openai-completions",
+  "stream_idle_ms": 60000
+}

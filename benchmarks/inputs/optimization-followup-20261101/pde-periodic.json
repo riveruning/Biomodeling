@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "model_type": "pde",
+  "id": "periodic_uniform_control",
+  "units": {
+    "time": "second",
+    "space": "millimeter",
+    "state": "arbitrary_concentration"
+  },
+  "length": 1.0,
+  "diffusion": 0.25,
+  "decay": 0.1,
+  "boundary": "periodic",
+  "initial": [
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0
+  ],
+  "note": "Synthetic sine eigenmode with an independent continuum analytic solution."
+}

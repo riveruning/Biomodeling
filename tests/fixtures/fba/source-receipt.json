@@ -1,0 +1,9 @@
+{
+  "url": "https://raw.githubusercontent.com/opencobra/cobrapy/devel/src/cobra/data/textbook.xml.gz",
+  "github_blob_sha1": "f9bd11ca03cebb89db21626f1ecdcacb5289e468",
+  "compressed_sha256": "c674befd7a8199f037fd851c4f8ea8502730d0328ef51b1c46946f19fb44f72a",
+  "sbml_sha256": "0abebb806ce94922d7c7eb6cadca8c2fa5c4500d0db8e119d3c6224ae59e212d",
+  "reference_url": "https://cobrapy.readthedocs.io/en/latest/simulating.html",
+  "reference_objective": 0.8739215069684307,
+  "scope": "public_seen_development_model_not_holdout"
+}

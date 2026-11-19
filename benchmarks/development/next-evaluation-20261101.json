@@ -1,0 +1,87 @@
+{
+  "version": 1,
+  "partition": "development",
+  "independent_evalset_accessed": false,
+  "unique_papers": 0,
+  "provider": {
+    "base_url": "https://api.llm.ustc.edu.cn/v1",
+    "model": "qwen3.8-chat",
+    "max_tokens": 5000,
+    "timeout_s": 45
+  },
+  "arms": [
+    "baseline_without_new_guidance",
+    "stage_guidance",
+    "stage_guidance_and_scoped_advice"
+  ],
+  "cases": [
+    {
+      "id": "ode_logistic",
+      "model_type": "ode",
+      "family": "density_dependence",
+      "path": "benchmarks/inputs/optimization-followup-20261101/logistic-source.txt",
+      "input_type": "source",
+      "expected": "numerical_and_analytic_reference",
+      "sha256": "0cf028919bd08646ec15dad63651a363924b4252189b3a474744e8642255bc76"
+    },
+    {
+      "id": "boolean_source",
+      "model_type": "boolean",
+      "family": "logic_feedback",
+      "path": "examples/task-proposals/boolean-source.txt",
+      "input_type": "source",
+      "expected": "complete_source_binding_and_numerical_checks",
+      "sha256": "0a200e6fd322aa19e759d1723988547fbc24b6fc11bd5c708e0dd4e25deb9049"
+    },
+    {
+      "id": "ssa_source",
+      "model_type": "stochastic",
+      "family": "stochastic_reactions",
+      "path": "examples/source-stochastic/birth-death.txt",
+      "input_type": "source",
+      "expected": "complete_source_binding_and_numerical_checks",
+      "sha256": "fc23df58d349814994d853189af1bffba840d3b32da45defaa36ad89ce74f571"
+    },
+    {
+      "id": "pde_periodic",
+      "model_type": "pde",
+      "family": "spatial_diffusion",
+      "path": "benchmarks/inputs/optimization-followup-20261101/pde-periodic.json",
+      "input_type": "prepared_model",
+      "expected": "continuum_field_comparison",
+      "sha256": "f970f0a00f66e9c2dfc069b27a68640109c6b40afd33c681a08ce3ed8262e442"
+    },
+    {
+      "id": "individual_static",
+      "model_type": "individual",
+      "family": "lattice_population",
+      "path": "benchmarks/inputs/optimization-followup-20261101/individual-static.json",
+      "input_type": "prepared_model",
+      "expected": "constant_population_comparison",
+      "sha256": "ec9729127741a45e1ff945c92a020998b8039b1c3e3dde30976db0bdab2e7124"
+    },
+    {
+      "id": "fba_prepared",
+      "model_type": "fba",
+      "family": "stoichiometry",
+      "path": "examples/fba-v1/chain.json",
+      "input_type": "prepared_model",
+      "expected": "optimality_certificate",
+      "sha256": "687759d272109dc1ffb463d2bfc9d4dc646d9a9d748e58af194dfd4045d04a66"
+    }
+  ],
+  "limits": {
+    "projects": 18,
+    "planner_calls_per_project": 10,
+    "native_calls_per_project": 4,
+    "total_timeout_s_per_project": 300,
+    "planner_calls_total": 180,
+    "native_calls_total": 72,
+    "literature_requests": 0
+  },
+  "disclosure": "Includes system guidance, exact input schemas/examples, scoped synthetic operator advice and runtime feedback. Original eight-case authorization is not extended or reset. No credentials or independent evaluation material is included.",
+  "interpretation": "Small paired developmental pilot, not an independent/generalization evaluation or a causal statistical estimate.",
+  "approval": "user_approved_20261101",
+  "scientific_support": "unknown",
+  "approval_record": "用户明确回复：允许，按冻结范围运行。"
+}

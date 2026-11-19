@@ -1,0 +1,9 @@
+{
+  "timeout_s": 60.0,
+  "duration": 1.0,
+  "samples": 5,
+  "method": "BDF",
+  "rtol": 1e-06,
+  "atol": 1e-09,
+  "max_rhs_evaluations": 10000
+}

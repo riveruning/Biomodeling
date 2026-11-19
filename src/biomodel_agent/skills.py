@@ -2,6 +2,19 @@
 from copy import deepcopy
 
 _SKILLS = {
+    'parameter_applicability': {
+        'version': 1, 'purpose': 'Check frozen parameter metadata requirements before adopting a value.',
+        'steps': [
+            'Read parameter_requirements frozen in the task; never relax them or infer missing conditions.',
+            'For a source prepared by parameter-source, inspect its derivation: original record, parameter index/name, target mapping, conditions and rational conversion. All required native context fields must appear in the frozen requirements, including enzyme variants. Preparing this source does not authorize new sources in an active task.',
+            'Search and inspect current source material. The bounded assessment grammar uses complete lines: Parameter k = 0.4.; Parameter k unit: second^-1; Parameter k context.organism: synthetic-system; Parameter k context.temperature_c: 37. Metadata labels are target-specific.',
+            'Use assess_parameter with the target and full source-line span. A declared_fields_match checks only explicit fields; semantic support remains unknown.',
+            'Submit the assessed value declaration as evidence and parameter_assessments mapping target to assessment_ref. Native converted declarations remain derived_from the original record; draft value and unit must match the assessed source.',
+            'If metadata are absent, conflicting or require conversion, keep the issue unresolved and request the missing source or target-specific clarification. Reassess after a source-scope change.',
+        ],
+        'limitations': ['No scientific certification or arbitrary prose/table interpretation.',
+                        'Only explicit supported native unit conversions; no inferred volume, parameter estimation or modification of a frozen study.'],
+    },
     'constrained_study': {
         'version': 1, 'purpose': 'Execute one operator-frozen adaptation candidate study.',
         'steps': [

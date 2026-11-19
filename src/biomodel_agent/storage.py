@@ -36,6 +36,7 @@ import json
 import os
 import re
 import sqlite3
+from contextlib import contextmanager
 import tempfile
 from datetime import datetime, timezone
 from pathlib import Path
@@ -135,11 +136,19 @@ class ArtifactStore:
 
     # -- index plumbing -----------------------------------------------------
 
-    def _db(self) -> sqlite3.Connection:
+    @contextmanager
+    def _db(self):
+        """Finish transactions and release SQLite/WAL ownership immediately."""
         conn = sqlite3.connect(self.index_path)
-        conn.execute("PRAGMA journal_mode=WAL")
-        conn.row_factory = sqlite3.Row
-        return conn
+        try:
+            conn.execute("PRAGMA journal_mode=WAL")
+            conn.row_factory = sqlite3.Row
+            with conn:
+                yield conn
+        finally:
+            # Connection.__exit__ commits/rolls back; it does not close.
+            # Deferred GC closure can checkpoint WAL during unrelated reads.
+            conn.close()
 
     def _index_exists(self, ref: str) -> bool:
         with self._db() as conn:

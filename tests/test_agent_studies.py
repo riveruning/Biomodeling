@@ -213,6 +213,36 @@ def test_failure_diagnostic_is_saved_without_leaking_into_model_context(setup, m
     assert 'PRIVATE_INTERNAL_CANARY' not in json.dumps(run['events'])
 
 
+def test_summary_failure_after_execution_keeps_run_ref_and_internal_diagnostic(setup, monkeypatch):
+    store, _, plan, _ = setup
+    execute = studies.execute_study
+    summarize = studies.result_summary
+    executed = []
+    failed = []
+    def execute_then_arm(*args, **kwargs):
+        result_ref = execute(*args, **kwargs)
+        executed.append(result_ref)
+        return result_ref
+    def fail_first_summary(*args, **kwargs):
+        if executed and not failed:
+            failed.append(True)
+            raise RuntimeError('summary failed after execution')
+        return summarize(*args, **kwargs)
+    monkeypatch.setattr(studies, 'execute_study', execute_then_arm)
+    monkeypatch.setattr(studies, 'result_summary', fail_first_summary)
+    agent_ref = start(setup, Scripted([act('run_study')]))
+    run = store.get(agent_ref)['payload']
+    assert run['state'] == 'incomplete'
+    assert run['run_ref'] == executed[0]
+    assert store.get(run['run_ref'])['payload']['plan_ref'] == plan
+    assert store.get(run['checkpoint_ref'])['payload']['run_count'] == 1
+    failures = store.list('study_execution_failure')
+    assert len(failures) == 1
+    assert 'summary failed after execution' in store.get(failures[0])['payload']['error']
+    assert failures[0] in store.get(agent_ref)['refs']
+    assert 'summary failed after execution' not in json.dumps(run['events'])
+
+
 def test_cli_prepare_and_offline_run(setup, tmp_path, capsys):
     store, _, _, _ = setup; data = config()
     train = tmp_path / 'training.json'; train.write_text(json.dumps(data['training']))

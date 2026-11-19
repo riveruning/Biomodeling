@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="workbench-token" content="__WORKBENCH_TOKEN__">
+  <title>BioModel · 研究工作台</title><link rel="stylesheet" href="/style.css"><script src="/app.js" defer></script>
+</head>
+<body>
+  <aside class="sidebar">
+    <a class="brand" href="/" aria-label="BioModel 首页"><span class="brand-mark">B</span><span>BioModel<small>研究工作台</small></span></a>
+    <button id="new-task" class="primary full">＋ 新建研究任务</button>
+    <a href="/projects" class="muted">应用场景与 Agent 研究项目 →</a>
+    <div class="sidebar-heading"><span>研究任务</span><button id="refresh" class="icon-button" aria-label="刷新任务">↻</button></div>
+    <nav id="task-list" aria-label="任务列表"></nav>
+    <div class="sidebar-bottom"><span class="status-dot"></span>本地工作区 <span id="provider-state" class="muted">模型服务未启用</span></div>
+  </aside>
+  <main>
+    <header class="topbar"><span>工作区 / <strong id="breadcrumb">研究概览</strong></span><span class="tag quiet">科研原型 · 科学支持待验证</span></header>
+    <div id="notice" role="alert" hidden></div>
+    <section id="welcome" class="welcome">
+      <div class="eyebrow">从问题到可检查的模型</div><h1>让每一步研究有据可循。</h1>
+      <p class="lead">整理资料，比较模型方案，核对未知项。由你确认选择，再进入计算。</p>
+      <div class="welcome-actions"><button id="start-task" class="primary">新建研究任务 →</button><button id="import-material">导入资料或原生模型</button></div>
+      <div class="overview-grid">
+        <article class="card"><span class="step-number">01</span><h3>提出研究问题</h3><p>记录目标和输入。ODE、FBA、随机、PDE、布尔、个体模型共用任务入口。</p></article>
+        <article class="card"><span class="step-number">02</span><h3>核对证据与方案</h3><p>查看原文、候选模型和未知项。完整文本布尔与随机反应声明支持有限的来源构建。</p></article>
+        <article class="card"><span class="step-number">03</span><h3>执行并保留过程</h3><p>查看预算、回答追问、检查运行和报告。中断的操作保留记录。</p></article>
+      </div>
+    </section>
+    <section id="task-view" hidden>
+      <div class="task-heading"><div><div class="eyebrow" id="task-meta"></div><h1 id="task-goal"></h1></div><span id="task-status" class="tag"></span></div>
+      <div id="stages" class="stages" aria-label="研究阶段"></div>
+      <div class="metrics" id="metrics"></div>
+      <div class="toolbar"><button id="revise-task">补充输入 / 修订</button><button id="make-proposal">请求模型建议</button><button id="upload-proposal">导入已有建议</button><button id="view-task-report">查看任务报告</button></div>
+      <div id="next-action" class="next-action"></div>
+      <div class="workspace-grid">
+        <div class="main-column">
+          <section class="panel"><div class="panel-heading"><h2>模型建议与输入草稿</h2><span class="muted">先核对，再选择</span></div><div id="proposals"></div></section>
+          <section class="panel"><div class="panel-heading"><h2>执行与研究者追问</h2><span id="execution-status" class="muted"></span></div><div id="execution"></div></section>
+          <section class="panel"><div class="panel-heading"><h2>过程与结果</h2><button id="export-task">导出结果包</button></div><div id="result"></div><div id="timeline"></div></section>
+        </div>
+        <aside class="detail-column">
+          <section class="panel"><div class="panel-heading"><h2>任务资料</h2><button id="add-material" class="small">导入</button></div><div id="sources"></div></section>
+          <section class="panel"><h2>任务修订</h2><div id="revisions"></div></section>
+          <section class="panel"><h2>建议调用记录</h2><div id="attempts"></div></section>
+        </aside>
+      </div>
+    </section>
+    <section class="panel jobs-panel"><div class="panel-heading"><h2>操作记录</h2><span class="muted">刷新页面只读取状态</span></div><div id="jobs"></div></section>
+    <footer>计算完成表示受支持流程已结束，仍需核验模型与生物学适用性。</footer>
+  </main>
+  <dialog id="editor"><form id="editor-form"><div class="dialog-heading"><h2 id="editor-title"></h2><button type="button" data-close="editor" class="icon-button" aria-label="关闭">×</button></div><div id="editor-body"></div><div class="dialog-actions"><button type="button" data-close="editor">取消</button><button type="submit" class="primary" id="editor-submit">保存</button></div></form></dialog>
+  <dialog id="reader"><div class="dialog-heading"><h2 id="reader-title"></h2><button data-close="reader" class="icon-button" aria-label="关闭">×</button></div><div id="reader-body"></div><div class="dialog-actions"><button data-close="reader">关闭</button></div></dialog>
+</body>
+</html>

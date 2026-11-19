@@ -6,6 +6,7 @@ import { dirname, resolve } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { buildPrompt, scopedPath, supervise, unwrap, validateTask } from './lib/dsh-supervisor.mjs';
 import { prepareRuntime } from './lib/dsh-runtime.mjs';
+import { delegationEnvironment } from './lib/dsh-nightly.mjs';
 
 const workspace = realpathSync(resolve(dirname(fileURLToPath(import.meta.url)), '..'));
 function argsOf(argv) {
@@ -13,9 +14,9 @@ function argsOf(argv) {
   for (let i = 0; i < argv.length; i++) {
     const flag = argv[i];
     if (flag === '--dry-run') args.dryRun = true;
-    else if (['--task', '--bridge-root', '--provider-api', '--model'].includes(flag)) {
+    else if (['--task', '--bridge-root', '--provider-api', '--model', '--reasoning', '--stream-idle-ms'].includes(flag)) {
       if (!argv[i + 1] || argv[i + 1].startsWith('--')) throw new Error(`Missing value for ${flag}`);
-      args[{ '--task': 'task', '--bridge-root': 'bridgeRoot', '--provider-api': 'providerApi', '--model': 'model' }[flag]] = argv[++i];
+      args[{ '--task': 'task', '--bridge-root': 'bridgeRoot', '--provider-api': 'providerApi', '--model': 'model', '--reasoning': 'reasoning', '--stream-idle-ms': 'streamIdleMs' }[flag]] = argv[++i];
     } else throw new Error(`Unknown argument ${flag}`);
   }
   if (!args.task) throw new Error('Usage: node scripts/dsh-workflow.mjs --task tasks/example.json [--bridge-root /trusted/bridge] [--dry-run]');
@@ -56,12 +57,27 @@ async function main() {
   record({ event: 'configured', taskId: task.id, bridgeRoot, bridgeEntrypointHash: createHash('sha256').update(readFileSync(entry)).digest('hex') });
   const runtimeConfig = JSON.parse(readFileSync(resolve(workspace, 'config/development-runtime.json'), 'utf8'));
   if (runtimeConfig.schema_version !== '1') throw new Error('Unsupported development runtime config');
+  const model = args.model || runtimeConfig.model;
+  const families = runtimeConfig.allowed_model_families;
+  if (families !== undefined) {
+    if (!Array.isArray(families) || !families.length || families.some(family => typeof family !== 'string' || !/^[a-z][a-z0-9-]*$/.test(family))) {
+      throw new Error('Invalid configured model family policy');
+    }
+    if (!families.some(family => model.toLowerCase().startsWith(family))) {
+      throw new Error('Model family is outside the user-configured DSH selection');
+    }
+  }
   const runtime = await prepareRuntime(bridgeRoot, { api: args.providerApi || runtimeConfig.provider_api,
-    model: args.model || runtimeConfig.model, idleMs: runtimeConfig.stream_idle_ms });
+    model, reasoning: args.reasoning || runtimeConfig.reasoning,
+    reasoningEfforts: (!args.model || args.model === runtimeConfig.model) ? runtimeConfig.reasoning_efforts : undefined,
+    idleMs: args.streamIdleMs === undefined ? runtimeConfig.stream_idle_ms : Number(args.streamIdleMs),
+    taskTimeoutMs: task.budget.total_ms + 60000, proposalOnly: task.delivery_mode === 'proposal' });
   record({ event: 'provider_runtime', ...runtime.metadata });
-  console.log(JSON.stringify({ event: 'started', task: task.id, output }));
+  console.log(JSON.stringify({ event: 'started', task: task.id, pid: process.pid, output }));
   const client = new Client({ name: 'biomodel-development-supervisor', version: '0.1' }, { capabilities: {} });
-  const transport = new StdioClientTransport({ command: process.execPath, args: [runtime.entry], cwd: bridgeRoot, stderr: 'pipe' });
+  const transport = new StdioClientTransport({ command: process.execPath, args: [runtime.entry], cwd: bridgeRoot,
+    env: delegationEnvironment(task),
+    stderr: 'pipe' });
   let stderrBytes = 0;
   transport.stderr?.on('data', chunk => {
     stderrBytes += chunk.length;

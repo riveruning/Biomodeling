@@ -43,8 +43,15 @@ def test_compaction_preserves_whole_messages_order_and_original_history():
     assert context.size(packet) == audit['sent_chars'] <= 8000
     assert audit['retained_indices'] == sorted(audit['retained_indices'])
     assert packet[:2] == history[:2] and packet[-1] == history[-1]
-    assert packet[2] == context.NOTICE
-    assert all(m in history or m == context.NOTICE for m in packet)
+    notice=json.loads(packet[2]['content'])
+    selection=notice['context_selection']
+    assert selection['total_messages']==len(history)
+    assert selection['retained_messages']==len(audit['retained_indices'])
+    assert selection['omitted_messages']==audit['omitted_messages']
+    assert selection['retained_message_fraction']==len(audit['retained_indices'])/len(history)
+    assert selection['omitted_tool_counts']=={'inspect_source':audit['omitted_messages']}
+    assert selection['source_coverage']=='unknown'
+    assert all(m in history for m in packet[:2]+packet[3:])
     assert original == history
 
 
@@ -81,6 +88,24 @@ def test_essential_overflow_fails_instead_of_truncating_a_decision():
     with pytest.raises(context.ContextBudgetExceeded) as exc:
         context.build_context(history, context.policy(8000))
     assert exc.value.required_chars > exc.value.max_chars == 8000 and history == original
+
+
+def test_explicit_required_observation_survives_newer_small_messages():
+    observation = message('user', dict(tool='inspect_mm_background', text='evidence ' + 'x' * 4500))
+    history = base() + [observation] + noisy_history()[2:] + [message('user', dict(tool='inspect_progress'))]
+    packet, audit = context.build_context(history, context.policy(8000), required_indices=[2])
+    assert observation in packet and 2 in audit['retained_indices']
+    assert context.size(packet) <= 8000
+    oversized = deepcopy(history)
+    oversized[2]['content'] += 'x' * 4000
+    with pytest.raises(context.ContextBudgetExceeded):
+        context.build_context(oversized, context.policy(8000), required_indices=[2])
+
+
+@pytest.mark.parametrize('index', [-1, True, 2, '0'])
+def test_required_observation_indices_are_validated(index):
+    with pytest.raises(ValueError, match='required context index'):
+        context.build_context(base(), context.policy(8000), required_indices=[index])
 
 
 @pytest.mark.parametrize('maximum', [True, None, '60000', 7999, 500001, 9000.])

@@ -371,7 +371,7 @@ def test_ingest_source_rejects_oversized(tmp_path, store):
 
 def test_ingest_source_md(tmp_path, store):
     p = tmp_path / "notes.md"
-    p.write_text("# Title\n\nBody.", encoding="utf-8")
+    p.write_text("# Title\n\nBody.", encoding="utf-8", newline="")
     ref = evidence.ingest_source(store, p)
     env = store.get(ref)
     assert env["payload"]["pages"][0]["text"] == "# Title\n\nBody."
@@ -385,7 +385,7 @@ def test_ingest_source_md(tmp_path, store):
 def _source_with_pages(tmp_path: Path, store) -> tuple[str, str]:
     text = "Line one.\nLine two has the key phrase about biology here."
     p = tmp_path / "paper.txt"
-    p.write_text(text, encoding="utf-8")
+    p.write_text(text, encoding="utf-8", newline="")
     return evidence.ingest_source(store, p), text
 
 
@@ -620,20 +620,26 @@ def test_validate_links_fake_coverage_rejected(tmp_path, store):
 # evidence: pdf (pypdf-dependent)
 # ---------------------------------------------------------------------------
 
-def _write_pdf(path: Path, page_texts: list[str | None], *, font: bool = True) -> bytes:
+def _write_pdf(path: Path, page_texts: list[str | None], *, font: bool = True,
+               images: dict[int, int] | None = None) -> bytes:
     """Write a real PDF with pypdf's writer (correct xref/trailer/EOF).
 
     ``page_texts`` gives one entry per page: a string is drawn with a real
     Helvetica font reference, ``None`` leaves the page textless (scanned
-    style).  Returns the exact bytes written.
+    style).  ``images`` optionally maps 1-based page numbers to how many
+    1x1 DeviceRGB image XObjects to draw on that page through a real
+    ``Do`` operation, built from standard pypdf dictionaries/streams only
+    (no Pillow, no pymupdf).  Returns the exact bytes written.
     """
     from pypdf import PdfWriter
     from pypdf.generic import (
         DecodedStreamObject,
         DictionaryObject,
         NameObject,
+        NumberObject,
     )
 
+    image_counts = dict(images or {})
     writer = PdfWriter()
     font_ref = None
     if font:
@@ -645,18 +651,43 @@ def _write_pdf(path: Path, page_texts: list[str | None], *, font: bool = True) -
         })
         font_ref = writer._add_object(font_dict)
 
-    for text in page_texts:
+    image_ref = None
+    if image_counts:
+        image_stream = DecodedStreamObject()
+        image_stream.set_data(b"\xff\x00\x00")  # one literal 1x1 RGB pixel
+        image_stream.update({
+            NameObject("/Type"): NameObject("/XObject"),
+            NameObject("/Subtype"): NameObject("/Image"),
+            NameObject("/Width"): NumberObject(1),
+            NameObject("/Height"): NumberObject(1),
+            NameObject("/ColorSpace"): NameObject("/DeviceRGB"),
+            NameObject("/BitsPerComponent"): NumberObject(8),
+        })
+        image_ref = writer._add_object(image_stream)
+
+    for number, text in enumerate(page_texts, start=1):
         page = writer.add_blank_page(width=200, height=200)
-        if text is None:
-            continue
-        if font_ref is not None:
-            page[NameObject("/Resources")] = DictionaryObject({
-                NameObject("/Font"): DictionaryObject({NameObject("/F1"): font_ref}),
+        count = image_counts.get(number, 0)
+        resources = DictionaryObject()
+        if font_ref is not None and text is not None:
+            resources[NameObject("/Font")] = DictionaryObject({NameObject("/F1"): font_ref})
+        if image_ref is not None and count > 0:
+            resources[NameObject("/XObject")] = DictionaryObject({
+                NameObject(f"/Im{index}"): image_ref for index in range(count)
             })
+        if resources:
+            page[NameObject("/Resources")] = resources
+        if text is None and count == 0:
+            continue
+        operations = []
+        for index in range(count):
+            operations.append(f"q 200 0 0 200 0 0 cm /Im{index} Do Q")
+        if text is not None:
+            # Escape PDF string metacharacters so the literal text survives.
+            escaped = text.replace("\\", r"\\").replace("(", r"\(").replace(")", r"\)")
+            operations.append(f"BT /F1 12 Tf 20 100 Td ({escaped}) Tj ET")
         stream = DecodedStreamObject()
-        # Escape PDF string metacharacters so the literal text survives.
-        escaped = text.replace("\\", r"\\").replace("(", r"\(").replace(")", r"\)")
-        stream.set_data(f"BT /F1 12 Tf 20 100 Td ({escaped}) Tj ET".encode("latin-1"))
+        stream.set_data("\n".join(operations).encode("latin-1"))
         page[NameObject("/Contents")] = writer._add_object(stream)
 
     with open(path, "wb") as fh:
@@ -701,3 +732,73 @@ def test_ingest_source_pdf_multi_page_claim(tmp_path, store):
     e = s + len("mitochondria")
     claim = evidence.add_claim(store, ref, page=2, start=s, end=e, statement="mito")
     assert store.get(claim)["payload"]["quote"] == "mitochondria"
+
+
+def test_ingest_source_pdf_text_with_image_warns_untranscribed(tmp_path, store):
+    # Mixed text+image page: the default pypdf path must disclose, per page,
+    # that image content is not transcribed -- including in the public
+    # source_summary output consumed above the storage layer.
+    pytest.importorskip("pypdf")
+    p = tmp_path / "mixed.pdf"
+    raw = _write_pdf(
+        p,
+        ["Text only on page one.", "Text beside a figure on page two."],
+        images={2: 1},
+    )
+    ref = evidence.ingest_source(store, p)
+    payload = store.get(ref)["payload"]
+    assert payload["parser"] == "pypdf"
+    assert payload["pages"][0]["text"].strip() == "Text only on page one."
+    assert payload["pages"][1]["text"].strip() == "Text beside a figure on page two."
+    assert store.get_blob(payload["blob_ref"]) == raw == p.read_bytes()
+    image_warnings = [w for w in payload["warnings"] if "image" in w.lower()]
+    assert len(image_warnings) == 1
+    assert "page 2" in image_warnings[0]
+    assert "page 1" not in image_warnings[0]
+    assert "not transcribed" in image_warnings[0].lower()
+    assert "visual" in image_warnings[0].lower()
+    summary = evidence.source_summary(store, ref)
+    assert any("not transcribed" in w.lower() for w in summary["warnings"])
+
+
+def test_ingest_source_pdf_image_only_page_keeps_scanned_warning(tmp_path, store):
+    # Image-only page: no extractable text, so the original scanned hint must
+    # stay, plus a page-specific untranscribed-image warning. Two image drawing
+    # operations yield one warning for the page.
+    pytest.importorskip("pypdf")
+    p = tmp_path / "imageonly.pdf"
+    raw = _write_pdf(p, [None], images={1: 2})
+    ref = evidence.ingest_source(store, p)
+    payload = store.get(ref)["payload"]
+    assert payload["pages"][0]["text"] == ""
+    assert store.get_blob(payload["blob_ref"]) == raw == p.read_bytes()
+    assert any("scanned" in w.lower() for w in payload["warnings"])
+    image_warnings = [w for w in payload["warnings"] if "image" in w.lower()]
+    assert len(image_warnings) == 1
+    assert "page 1" in image_warnings[0]
+    assert "not transcribed" in image_warnings[0].lower()
+
+
+def test_ingest_source_pdf_image_enumeration_failure_records_unknown(tmp_path, store, monkeypatch):
+    # Preserve extracted text and raw bytes when image enumeration fails.
+    pytest.importorskip("pypdf")
+    import io
+
+    import pypdf
+
+    p = tmp_path / "paper.pdf"
+    raw = _write_pdf(p, ["Kinetics are shown in figure three."], images={1: 1})
+    page_class = type(pypdf.PdfReader(io.BytesIO(raw)).pages[0])
+
+    def broken_images(self):
+        raise RuntimeError("image enumeration unavailable")
+
+    monkeypatch.setattr(page_class, "images", property(broken_images))
+    ref = evidence.ingest_source(store, p)
+    payload = store.get(ref)["payload"]
+    assert payload["pages"][0]["text"].strip() == "Kinetics are shown in figure three."
+    assert store.get_blob(payload["blob_ref"]) == raw == p.read_bytes()
+    unknown = [w for w in payload["warnings"] if "image coverage" in w.lower() and "unknown" in w.lower()]
+    assert len(unknown) == 1
+    assert "page 1" in unknown[0]
+    assert payload["warnings"] == unknown

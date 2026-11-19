@@ -1,0 +1,547 @@
+{
+  "date": "2026-11-01",
+  "baseline_commit": "593affca82ee2b16afd798752d0623536fd4434c",
+  "implementation_sha256": "cda64db5ae922ef6e473a9e384f06bca5bcdcc6b953e32d9885d1c290fd5b963",
+  "scope": "First implementation batch plus explicitly authorized seen-development service pilot; not independent scientific evaluation.",
+  "milestones": {
+    "FIX-01": "implemented_and_regression_verified",
+    "FIX-02": "implemented_and_regression_verified",
+    "FIX-03": "implemented_http_and_node_vm_verified_browser_pending",
+    "INT-01": "implemented_and_verified",
+    "CAP-01": "implemented_and_verified",
+    "EVAL-01": "prepared_8_seen_cases",
+    "EVAL-02": "first_pilot_and_bounded_diagnostics_completed_44_planner_calls_one_prepared_synthetic_fba_execution_no_paper_reproduction",
+    "RUN-01": "partial_failure_usage_and_elapsed_diagnostics",
+    "REL-01": "windows_ci_configured_not_executed_locally",
+    "GUIDE-01": "stage_schemas_and_citation_preflight_verified",
+    "GUIDE-02": "source_binding_feedback_verified_offline",
+    "DATA-01": "not_implemented_complex_material_parsing",
+    "UI-01": "partial_continuation_and_capability_display_no_scientific_charts_or_pdf_import",
+    "SCI-01": "not_implemented_new_typed_external_reference_protocols",
+    "MAINT-01": "partial_helper_extraction_large_orchestrators_not_refactored",
+    "MEMORY-EVAL": "not_performed_cross_family_or_ablation_study",
+    "R02": "deferred_per_prior_plan"
+  },
+  "tests": {
+    "before": {
+      "tests": 13,
+      "failures": 11,
+      "errors": 0,
+      "skipped": 0,
+      "junit_seconds": 18.438,
+      "junit_sha256": "b4e561f0eee18390774f9d1d30eb57b7bbf9ad65b9bca3d9f5b1c9ab4df580df",
+      "log_sha256": "a5dcc4f5fa8bcccb2af0fb71bfa08d029ffaf88db3ecd1c52e7fccbc21c4a254"
+    },
+    "protocol": {
+      "tests": 71,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "junit_seconds": 131.232,
+      "junit_sha256": "34ec8f908a9f860eba269cc3709da012e7ee30e963ed2d18653e003383bdea15",
+      "log_sha256": "cec18a42967ef126948c32b47eb7b1c12482ac39967bcd37fdb15091221940b5"
+    },
+    "integration": {
+      "tests": 22,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "junit_seconds": 30.676,
+      "junit_sha256": "0ff0f125d3ab9023a703889bb50b05d037f7f4137bca9c5d4a2645603bffc23e",
+      "log_sha256": "cdb347dc0b81f5a0a6f71db394f86c91d6317e39071f5df1f52803edb8057d6c"
+    },
+    "regression": {
+      "tests": 336,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "junit_seconds": 279.059,
+      "junit_sha256": "b6a9fc4d3840f3113d9e8e624c302cddd7f5729ca370ac73eb48d370f22169cb",
+      "log_sha256": "7e736610f5a9092ac9aa2ede6f9b7c6966216443d5e5ae39d897562e0f78d196"
+    },
+    "diagnostics": {
+      "tests": 82,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "junit_seconds": 157.321,
+      "junit_sha256": "1f5f342971f74b638da562d568568a49b8ad38f8bef138f3b9c606850662cabf",
+      "log_sha256": "e9f499364d9bdbaae08d0291397487fbaa546a826f99525e3036a4b0a4ea8945"
+    },
+    "full": {
+      "tests": 2719,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 1,
+      "passed": 2718,
+      "seconds": 1048.46,
+      "junit_sha256": "6d9d7a5b271fda4b098c8c545602bed071aa1027ce5bc4ed3700a78473d9c2a6",
+      "log_sha256": "221b1c51fdea5893e0723a18dc78afcf8e6445908e79dd839614d10b12b50b92"
+    },
+    "schema_full": {
+      "tests": 2724,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 1,
+      "passed": 2723,
+      "seconds": 1044.21,
+      "junit_sha256": "ab24861b76b0b3a36f1584f6f0ea5af6094f6a96e28b167f9332faaca441cc2b",
+      "log_sha256": "572b548f655c10af9eb9cc317a47bdf0efb5cc2b4a2c53d9069e0640e1fe2396",
+      "implementation_sha256": "074a98c4595db33f0fa87d5ce7267a9d36b4f3858cddd321b5173ef067e15300"
+    },
+    "binding_feedback_delta": {
+      "tests": 204,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "passed": 204,
+      "seconds": 141.14,
+      "junit_sha256": "bb684cc08a048e4b580d4f12548b0c6ee29852830dde3452cd42fa80d0c5e871",
+      "log_sha256": "d5c90e95bd029d7e6b1a70bdd2cd5b48f7d955026ac805ff82e789e9b2912244",
+      "implementation_sha256": "cda64db5ae922ef6e473a9e384f06bca5bcdcc6b953e32d9885d1c290fd5b963"
+    }
+  },
+  "node_ui": "passed_actual_render_function_in_node_vm",
+  "real_browser_performed": false,
+  "windows_execution_performed": false,
+  "online": {
+    "provider_base_url": "https://api.llm.ustc.edu.cn/v1",
+    "model": "qwen3.8-chat",
+    "explicit_user_authorization": true,
+    "unique_cases": 8,
+    "unique_papers": 1,
+    "unique_families": 4,
+    "planner_call_reservations": 44,
+    "native_provider_calls": 0,
+    "scientific_executions": 1,
+    "known_reported_tokens": 329172,
+    "missing_usage_calls": 5,
+    "complete_total_tokens": null,
+    "cumulative_planner_calls_by_case": {
+      "production_loss": 8,
+      "transfer": 7,
+      "missing_rate": 2,
+      "goodwin_jats": 2,
+      "goodwin_assisted": 2,
+      "boolean_source": 8,
+      "ssa_source": 7,
+      "fba_prepared": 8
+    },
+    "per_case_planner_authorization": 8,
+    "all_cases_within_authorized_calls": true,
+    "phases": [
+      {
+        "phase": "live-trial",
+        "implementation_sha256": "150dbdc04b33d5259d60ea5e30cc0cdeecb984c4cfe32aba64686d04540a835f",
+        "manifest_sha256": "424edd3f675153402d117006d3263ee2ab24e6d31a80c8c2f8466c29c78a31f9",
+        "results_sha256": "63bb12dbf19b06f9bc7921df9a4f3f479358c8fcb9383d12b6608754a53ba5fa",
+        "max_tokens": 3000,
+        "states": {
+          "needs_recovery": 5,
+          "awaiting_alignment": 2,
+          "ready": 1
+        },
+        "cases": [
+          {
+            "id": "production_loss",
+            "state": "needs_recovery",
+            "planner_calls": 2,
+            "scientific_executions": 0,
+            "reported_tokens": 6420,
+            "missing_usage_calls": 1,
+            "diagnostics": [
+              {
+                "operation": "respond",
+                "state": "unknown",
+                "diagnostic": null
+              }
+            ]
+          },
+          {
+            "id": "transfer",
+            "state": "needs_recovery",
+            "planner_calls": 2,
+            "scientific_executions": 0,
+            "reported_tokens": 6441,
+            "missing_usage_calls": 1,
+            "diagnostics": [
+              {
+                "operation": "respond",
+                "state": "unknown",
+                "diagnostic": null
+              }
+            ]
+          },
+          {
+            "id": "missing_rate",
+            "state": "awaiting_alignment",
+            "planner_calls": 2,
+            "scientific_executions": 0,
+            "reported_tokens": 12091,
+            "missing_usage_calls": 0,
+            "diagnostics": []
+          },
+          {
+            "id": "goodwin_jats",
+            "state": "awaiting_alignment",
+            "planner_calls": 2,
+            "scientific_executions": 0,
+            "reported_tokens": 12789,
+            "missing_usage_calls": 0,
+            "diagnostics": []
+          },
+          {
+            "id": "goodwin_assisted",
+            "state": "needs_recovery",
+            "planner_calls": 2,
+            "scientific_executions": 0,
+            "reported_tokens": 5884,
+            "missing_usage_calls": 1,
+            "diagnostics": [
+              {
+                "operation": "respond",
+                "state": "unknown",
+                "diagnostic": null
+              }
+            ]
+          },
+          {
+            "id": "boolean_source",
+            "state": "ready",
+            "planner_calls": 4,
+            "scientific_executions": 0,
+            "reported_tokens": 28432,
+            "missing_usage_calls": 0,
+            "diagnostics": [
+              {
+                "operation": "revise_frame",
+                "state": "rejected",
+                "diagnostic": {
+                  "code": "ValueError",
+                  "message": "invalid study mode",
+                  "stage": "revise_frame"
+                }
+              },
+              {
+                "operation": "revise_frame",
+                "state": "rejected",
+                "diagnostic": {
+                  "code": "ValueError",
+                  "message": "invalid bounded text list",
+                  "stage": "revise_frame"
+                }
+              },
+              {
+                "operation": "revise_frame",
+                "state": "rejected",
+                "diagnostic": {
+                  "code": "ValueError",
+                  "message": "invalid bounded text list",
+                  "stage": "revise_frame"
+                }
+              }
+            ]
+          },
+          {
+            "id": "ssa_source",
+            "state": "needs_recovery",
+            "planner_calls": 2,
+            "scientific_executions": 0,
+            "reported_tokens": 5846,
+            "missing_usage_calls": 1,
+            "diagnostics": [
+              {
+                "operation": "respond",
+                "state": "unknown",
+                "diagnostic": null
+              }
+            ]
+          },
+          {
+            "id": "fba_prepared",
+            "state": "needs_recovery",
+            "planner_calls": 3,
+            "scientific_executions": 0,
+            "reported_tokens": 12700,
+            "missing_usage_calls": 1,
+            "diagnostics": [
+              {
+                "operation": "revise_frame",
+                "state": "rejected",
+                "diagnostic": {
+                  "code": "ValueError",
+                  "message": "alignment criterion needs an owned question",
+                  "stage": "revise_frame"
+                }
+              },
+              {
+                "operation": "respond",
+                "state": "unknown",
+                "diagnostic": null
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "phase": "live-followup",
+        "implementation_sha256": "3cd200dc325045d058e832ea4cc5c2c567abfa5335a47da6002540aee940c360",
+        "manifest_sha256": "1ac39eecd705273b904daa47ceda8ad4af535ade53a002135f4f1a6b45cf4a60",
+        "results_sha256": "e79d27061095ae4543cc2c383a41773244f86c91f0a92dad3458d1890a5851ea",
+        "max_tokens": 6000,
+        "states": {
+          "planner_budget_exhausted": 2
+        },
+        "cases": [
+          {
+            "id": "production_loss",
+            "state": "planner_budget_exhausted",
+            "planner_calls": 6,
+            "scientific_executions": 0,
+            "reported_tokens": 52529,
+            "missing_usage_calls": 0,
+            "diagnostics": [
+              {
+                "operation": "revise_frame",
+                "state": "rejected",
+                "error_type": "ValueError",
+                "diagnostic": {
+                  "code": "ValueError",
+                  "message": "proposal citation does not match its source slice",
+                  "stage": "revise_frame"
+                }
+              },
+              {
+                "operation": "revise_frame",
+                "state": "rejected",
+                "error_type": "ValueError",
+                "diagnostic": {
+                  "code": "ValueError",
+                  "message": "proposal citation does not match its source slice",
+                  "stage": "revise_frame"
+                }
+              },
+              {
+                "operation": "revise_frame",
+                "state": "rejected",
+                "error_type": "ValueError",
+                "diagnostic": {
+                  "code": "ValueError",
+                  "message": "frame.evidence_needs[EN1].kind must be literature, data, mathematics or validation",
+                  "stage": "revise_frame"
+                }
+              },
+              {
+                "operation": "revise_frame",
+                "state": "rejected",
+                "error_type": "ValueError",
+                "diagnostic": {
+                  "code": "ValueError",
+                  "message": "assumption cites absent evidence",
+                  "stage": "revise_frame"
+                }
+              }
+            ]
+          },
+          {
+            "id": "boolean_source",
+            "state": "planner_budget_exhausted",
+            "planner_calls": 4,
+            "scientific_executions": 0,
+            "reported_tokens": 28755,
+            "missing_usage_calls": 0,
+            "diagnostics": [
+              {
+                "operation": "revise_frame",
+                "state": "rejected",
+                "error_type": "ValueError",
+                "diagnostic": {
+                  "code": "ValueError",
+                  "message": "frame.evidence_needs[ev_source_rules].kind must be literature, data, mathematics or validation",
+                  "stage": "revise_frame"
+                }
+              },
+              {
+                "operation": "open_iteration",
+                "state": "rejected",
+                "error_type": "ValueError",
+                "diagnostic": {
+                  "code": "ValueError",
+                  "message": "native draft type mismatch",
+                  "stage": "open_iteration"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "phase": "live-schema-followup",
+        "implementation_sha256": "074a98c4595db33f0fa87d5ce7267a9d36b4f3858cddd321b5173ef067e15300",
+        "manifest_sha256": "16dd253c94e104b249de2fa15bd6eed8a4d7a5ceaeff4fd51b92d36f4505d34d",
+        "results_sha256": "65026e29aa18a5e19d65e69f254df78d28b08c8b046113b022d155c289491618",
+        "max_tokens": 6000,
+        "cases": [
+          {
+            "id": "transfer",
+            "state": "ready",
+            "planner_calls": 5,
+            "scientific_executions": 0,
+            "actual_iterations": [],
+            "reported_tokens": 59686,
+            "missing_usage_calls": 0,
+            "diagnostics": [
+              {
+                "operation": "open_iteration",
+                "state": "rejected",
+                "error_type": "ValueError",
+                "diagnostic": {
+                  "code": "ValueError",
+                  "message": "expected fields ['candidates', 'context', 'entities', 'evidence', 'id', 'mechanisms', 'mode', 'model_type', 'schema_version', 'selected_candidate']; optional []",
+                  "stage": "open_iteration"
+                }
+              },
+              {
+                "operation": "open_iteration",
+                "state": "rejected",
+                "error_type": "ValueError",
+                "diagnostic": {
+                  "code": "ValueError",
+                  "message": "expected fields ['conditions', 'end', 'id', 'interpretation', 'page', 'quote', 'source_ref', 'start']; optional []",
+                  "stage": "open_iteration"
+                }
+              },
+              {
+                "operation": "open_iteration",
+                "state": "rejected",
+                "error_type": "ValueError",
+                "diagnostic": {
+                  "code": "ValueError",
+                  "message": "context must be a mapping of at most 16 explicit conditions",
+                  "stage": "open_iteration"
+                }
+              }
+            ]
+          },
+          {
+            "id": "ssa_source",
+            "state": "ready",
+            "planner_calls": 5,
+            "scientific_executions": 0,
+            "actual_iterations": [],
+            "reported_tokens": 49640,
+            "missing_usage_calls": 0,
+            "diagnostics": [
+              {
+                "operation": "open_iteration",
+                "state": "rejected",
+                "error_type": "ValueError",
+                "diagnostic": {
+                  "code": "ValueError",
+                  "message": "strict draft lacks complete source bindings",
+                  "stage": "open_iteration"
+                }
+              },
+              {
+                "operation": "open_iteration",
+                "state": "rejected",
+                "error_type": "ValueError",
+                "diagnostic": {
+                  "code": "ValueError",
+                  "message": "strict draft lacks complete source bindings",
+                  "stage": "open_iteration"
+                }
+              },
+              {
+                "operation": "open_iteration",
+                "state": "rejected",
+                "error_type": "ValueError",
+                "diagnostic": {
+                  "code": "ValueError",
+                  "message": "strict draft lacks complete source bindings",
+                  "stage": "open_iteration"
+                }
+              }
+            ]
+          },
+          {
+            "id": "fba_prepared",
+            "state": "planner_budget_exhausted",
+            "planner_calls": 5,
+            "scientific_executions": 1,
+            "actual_iterations": [
+              {
+                "iteration_ref": "dd5ef25f792a285b075430ebc6faf541c6e8cd7e93c8455be98e5b9321222d9a",
+                "state": "completed",
+                "executed": true,
+                "scientific_attempt_reserved": true,
+                "native_provider_calls": 0,
+                "numeric_status": "pass",
+                "comparison_status": "not_requested",
+                "source_binding_status": "unknown",
+                "application_run_ref": "9462606c43cc951e6709bf08c5f955b6e98c3a80bd714214db7d806bda37b261",
+                "pending_question": null,
+                "scientific_support": "unknown"
+              }
+            ],
+            "reported_tokens": 47959,
+            "missing_usage_calls": 0,
+            "diagnostics": []
+          }
+        ]
+      }
+    ]
+  },
+  "independent_evalset_accessed": false,
+  "scientific_support": "unknown",
+  "raw_artifacts": "runs/project-improvements-20261101 (local, ignored by Git)",
+  "credentials_persisted": false,
+  "node_checks": {
+    "supervisor": {
+      "state": "passed",
+      "log_sha256": "b083ad0ed8d8c37a17609712213b040632825cb5c6bb5d19d4f6f829dc198d7e",
+      "tests": 15
+    },
+    "runtime": {
+      "state": "passed",
+      "log_sha256": "a3f32b6a2e66646bb464574145790d0c7a96da4c6f606199da6b8fe5ec86ad9f",
+      "tests": 3
+    },
+    "ui": {
+      "state": "passed",
+      "log_sha256": "44486fd81eaee3ffae459e818c66614cc09cec17ac0902a88d7c3304ba27eb18",
+      "render_states_checked": 7
+    }
+  },
+  "runtime_smoke": {
+    "files": 113,
+    "zip_sha256": "293c44e880c1fb10028088eb0b8d7230351f62fea27d08fb65b5c3935fe51445",
+    "capabilities": 6,
+    "offline_project_creation": "passed",
+    "new_modules_included": true,
+    "path": "runs/project-improvements-20261101/runtime-final.zip (local, ignored by Git)"
+  },
+  "first_batch_implementation_sha256": "3cd200dc325045d058e832ea4cc5c2c567abfa5335a47da6002540aee940c360",
+  "schema_followup": {
+    "state": "implemented_and_verified",
+    "before_tests": {
+      "tests": 5,
+      "failed": 5
+    },
+    "changes": [
+      "stage_specific_action_schemas",
+      "bounded_source_citation_diagnostics",
+      "native_input_preflight_before_model_write"
+    ],
+    "live_trials": "transfer_ssa_fba_within_remaining_original_allocations",
+    "implementation_sha256": "074a98c4595db33f0fa87d5ce7267a9d36b4f3858cddd321b5173ef067e15300",
+    "full_regression": "2723_passed_1_skipped_before_final_source_binding_diagnostic_delta",
+    "source_binding_feedback": "bounded_issues_missing_and_extra_targets_verified_for_boolean_and_ssa",
+    "json_schema_meta_audit": "Draft_2020_12_passed_with_host_jsonschema_no_runtime_dependency_added",
+    "online_effect_of_final_binding_diagnostic": "not_evaluated"
+  },
+  "bug_regressions": "all_three_fixed_at_final_implementation",
+  "node_ui_final": "passed",
+  "completion_status_document": "docs/completion-status-20261101.md",
+  "all_optimization_tasks_completed": false
+}

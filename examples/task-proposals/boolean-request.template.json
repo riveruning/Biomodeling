@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "goal": "Execute the literal source-declared Boolean feedback network.",
+  "source_refs": [
+    "SOURCE_REF"
+  ],
+  "proposal_max_calls": 1,
+  "max_calls": 3,
+  "execution": {
+    "settings": {
+      "steps": 3,
+      "seed": 123,
+      "timeout_s": 15.0
+    }
+  }
+}

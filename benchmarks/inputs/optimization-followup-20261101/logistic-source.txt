@@ -1,0 +1,6 @@
+Synthetic development control; not a paper.
+Initial x = 1.
+Parameter r = 0.6.
+Parameter K = 10.
+Equation dx/dt = r*x*(1-x/K).
+Time is measured in seconds.

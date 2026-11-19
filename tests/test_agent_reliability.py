@@ -14,7 +14,9 @@ from biomodel_agent.storage import ArtifactStore
 
 
 def material(tmp_path,text,filename='source.txt'):
-    store=ArtifactStore(tmp_path/'store'); path=tmp_path/filename;path.write_text(text)
+    store=ArtifactStore(tmp_path/'store'); path=tmp_path/filename
+    path.write_text(text,encoding='utf-8',newline='')
+    assert path.read_bytes().decode('utf-8')==text
     return store,evidence.ingest_source(store,path)
 
 
@@ -116,10 +118,12 @@ def test_http_error_classification_usage_and_opt_in_json_wire(monkeypatch):
 
 @pytest.mark.parametrize('text,target',[
     ('Parameter k = 2.\nParameter k = 3.','k/value'),
+    ('Parameter k = 2.\r\nParameter k = 3.','k/value'),
     ('Initial x is not reported.','x/initial'),
     ('The source gives dx/dt = -k*x OR dx/dt = -k*x*x and does not specify which equation was used.','rule:x/expression'),
     ('The table labels k per second, but the legend labels k per minute.','k/value'),
     ('Parameter k = 0.2.\nParameter k = 0.2 per second.\nParameter k = 0.2 per minute.','k/value'),
+    ('Parameter k = 0.2.\r\nParameter k = 0.2 per second.\r\nParameter k = 0.2 per minute.','k/value'),
 ])
 def test_explicit_source_problems_are_flagged_with_exact_evidence(tmp_path,text,target):
     store,ref=material(tmp_path,text)
@@ -244,6 +248,40 @@ def test_rejected_replacement_cannot_execute_an_earlier_accepted_model(tmp_path)
     result=store.get(agent.run_agent(store,provider,[ref],ExperimentSpec((0.,1.))))['payload']
     assert result['state']=='incomplete' and result['run_ref'] is None and result['model_ref'] is None
     assert len(store.list('model'))==1 and not store.list('run')
+
+
+def test_result_read_failure_keeps_completed_run_ref_and_spent_run_budget(tmp_path, monkeypatch):
+    store,ref=material(tmp_path,'Initial x = 1.\nParameter k = 0.4.\nEquation dx/dt = -k*x.\n')
+    provider=Scripted(actions(ref))
+    get=store.get
+    original_run=application.run_reproduction
+    executed=[];fired=[]
+    def one_failed_read(target,*args,**kwargs):
+        record=get(target)
+        if record['kind']=='run' and not fired:
+            terms=[get(item)['payload'] for item in store.list('agent_invocation')]
+            if any(t['name']=='run' and t['phase']=='returned' for t in terms):
+                fired.append(target)
+                raise OSError('result read failed')
+        return record
+    def once(*args,**kwargs):
+        executed.append(original_run(*args,**kwargs))
+        return executed[-1]
+    monkeypatch.setattr(store,'get',one_failed_read)
+    monkeypatch.setattr(application,'run_reproduction',once)
+    result=store.get(agent.run_agent(store,provider,[ref],ExperimentSpec((0.,1.))))['payload']
+    assert len(executed)==1 and result['run_ref']==executed[0]==store.list('run')[0]
+    assert len(store.list('run'))==1
+    assert store.get(result['run_ref'])['payload']['status']=='succeeded'
+    assert result['state']=='incomplete' and result['model_ref'] is not None
+    assert result['call_count']==2 and store.get(result['checkpoint_ref'])['payload']['run_count']==1
+    assert result['events'][-1]['type']=='tool_error' and result['events'][-1]['tool']=='run'
+    assert result['events'][-1]['call']==2
+    assert result['events'][-1]['error']=='OSError: result read failed'
+    assert len(provider.calls)==2
+    checkpoint=store.get(result['checkpoint_ref'])['payload']
+    feedback=json.loads(checkpoint['messages'][-1]['content'])
+    assert feedback=={'tool':'run','ok':False,'error':'run tool failed'}
 
 
 

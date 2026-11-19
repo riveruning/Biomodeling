@@ -1,0 +1,44 @@
+{
+  "schema_version": 1,
+  "kind": "fba",
+  "id": "analytic_chain",
+  "formulation": "steady_state",
+  "flux_unit": "mmol_per_gDW_per_hour",
+  "metabolites": [
+    {
+      "id": "A",
+      "boundary_condition": false,
+      "compartment": "c"
+    },
+    {
+      "id": "B_ext",
+      "boundary_condition": true,
+      "compartment": "e"
+    }
+  ],
+  "reactions": [
+    {
+      "id": "uptake",
+      "stoichiometry": {
+        "A": 1.0,
+        "B_ext": -1.0
+      },
+      "lower_bound": 0.0,
+      "upper_bound": 10.0
+    },
+    {
+      "id": "biomass",
+      "stoichiometry": {
+        "A": -1.0
+      },
+      "lower_bound": 0.0,
+      "upper_bound": null
+    }
+  ],
+  "objective": {
+    "sense": "maximize",
+    "coefficients": {
+      "biomass": 1.0
+    }
+  }
+}

@@ -83,6 +83,36 @@ def validate_scales(scales: object, columns: object = ()) -> dict[str, float] | 
     return resolved
 
 
+def trajectory_diagnostic(simulation: dict) -> dict:
+    """Descriptive flat-trajectory warning, separate from scientific checks.
+
+    Constant observations can be correct for a steady-state target. Neither a
+    flat nor a varying trajectory establishes a mechanism or periodicity.
+    """
+    if not isinstance(simulation, dict) or simulation.get('status') != 'succeeded':
+        return dict(status='not_available', reason='No successful trajectory.')
+    times = simulation.get('times', [])
+    try:
+        _time_grid(times, 'trajectory diagnostic')
+        values = _series(simulation.get('values', {}), len(times), 'trajectory diagnostic')
+    except (TypeError, ValueError) as exc:
+        return dict(status='not_available', reason=str(exc))
+    if len(times) < 3 or not values:
+        return dict(status='not_available', reason='At least three samples and one observed column are required.')
+    flat = [name for name, column in values.items()
+            if math.isclose(min(column), max(column), rel_tol=1e-9, abs_tol=1e-12)]
+    suspicious = len(flat) == len(values)
+    return dict(status='suspicious' if suspicious else 'nonconstant',
+                reason='all_observed_columns_near_constant' if suspicious else 'observed_variation',
+                flat_columns=flat, observed_columns=len(values), samples=len(times),
+                tolerance=dict(relative=1e-9, absolute=1e-12),
+                scientific_support='unknown',
+                suggested_fix=('If the target is oscillatory, inspect equations, initial conditions, '
+                    'sampling and the saved comparison. A constant observation does not establish an oscillation. '
+                    'It may be a valid steady state; do not change evidence, thresholds or retry a consumed run silently.'
+                    if suspicious else 'Compare against the declared target; variation alone does not establish sustained oscillation.'))
+
+
 def validate_numeric(
     result: SimulationResult,
     nonnegative: tuple[str, ...] = (),

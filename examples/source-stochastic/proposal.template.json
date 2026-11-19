@@ -1,0 +1,193 @@
+{
+  "schema_version": 1,
+  "summary": "Synthetic source-declared integer birth/death model for bounded SSA.",
+  "evidence": [
+    {
+      "id": "E0",
+      "kind": "source",
+      "source_ref": "SOURCE_REF",
+      "page": 1,
+      "quote": "Mixing = well_mixed."
+    },
+    {
+      "id": "E1",
+      "kind": "source",
+      "source_ref": "SOURCE_REF",
+      "page": 1,
+      "quote": "Kinetics = time_homogeneous."
+    },
+    {
+      "id": "E2",
+      "kind": "source",
+      "source_ref": "SOURCE_REF",
+      "page": 1,
+      "quote": "Time unit = second."
+    },
+    {
+      "id": "E3",
+      "kind": "source",
+      "source_ref": "SOURCE_REF",
+      "page": 1,
+      "quote": "State unit = molecule_count."
+    },
+    {
+      "id": "E4",
+      "kind": "source",
+      "source_ref": "SOURCE_REF",
+      "page": 1,
+      "quote": "Rate convention = stochastic_combinations."
+    },
+    {
+      "id": "E5",
+      "kind": "source",
+      "source_ref": "SOURCE_REF",
+      "page": 1,
+      "quote": "Initial X = 4."
+    },
+    {
+      "id": "E6",
+      "kind": "source",
+      "source_ref": "SOURCE_REF",
+      "page": 1,
+      "quote": "Reaction birth: 0 -> X."
+    },
+    {
+      "id": "E7",
+      "kind": "source",
+      "source_ref": "SOURCE_REF",
+      "page": 1,
+      "quote": "Stochastic rate birth = 5."
+    },
+    {
+      "id": "E8",
+      "kind": "source",
+      "source_ref": "SOURCE_REF",
+      "page": 1,
+      "quote": "Stochastic rate unit birth = 1/second."
+    },
+    {
+      "id": "E9",
+      "kind": "source",
+      "source_ref": "SOURCE_REF",
+      "page": 1,
+      "quote": "Reaction death: X -> 0."
+    },
+    {
+      "id": "E10",
+      "kind": "source",
+      "source_ref": "SOURCE_REF",
+      "page": 1,
+      "quote": "Stochastic rate death = 0.5."
+    },
+    {
+      "id": "E11",
+      "kind": "source",
+      "source_ref": "SOURCE_REF",
+      "page": 1,
+      "quote": "Stochastic rate unit death = 1/second."
+    }
+  ],
+  "candidates": [
+    {
+      "id": "direct",
+      "model_type": "stochastic",
+      "rationale": "Explicit counts, channels, stochastic constants, units and assumptions are provided.",
+      "evidence_ids": [
+        "E0",
+        "E1",
+        "E2",
+        "E3",
+        "E4",
+        "E5",
+        "E6",
+        "E7",
+        "E8",
+        "E9",
+        "E10",
+        "E11"
+      ],
+      "unknowns": [
+        "Biological applicability and distributional validation remain unknown."
+      ],
+      "stochastic_draft": {
+        "schema_version": 1,
+        "model_type": "stochastic",
+        "id": "birth_death",
+        "units": {
+          "time": "second",
+          "state": "molecule_count"
+        },
+        "rate_convention": "stochastic_combinations",
+        "species": [
+          {
+            "id": "X",
+            "initial": 4
+          }
+        ],
+        "reactions": [
+          {
+            "id": "birth",
+            "reactants": {},
+            "products": {
+              "X": 1
+            },
+            "rate": 5.0
+          },
+          {
+            "id": "death",
+            "reactants": {
+              "X": 1
+            },
+            "products": {},
+            "rate": 0.5
+          }
+        ],
+        "note": "Synthetic development example, not a literature reproduction."
+      },
+      "stochastic_rate_units": {
+        "birth": "1/second",
+        "death": "1/second"
+      },
+      "evidence_map": {
+        "mixing": [
+          "E0"
+        ],
+        "kinetics": [
+          "E1"
+        ],
+        "time_unit": [
+          "E2"
+        ],
+        "state_unit": [
+          "E3"
+        ],
+        "rate_convention": [
+          "E4"
+        ],
+        "X/initial": [
+          "E5"
+        ],
+        "birth/reaction": [
+          "E6"
+        ],
+        "birth/rate": [
+          "E7"
+        ],
+        "birth/rate_unit": [
+          "E8"
+        ],
+        "death/reaction": [
+          "E9"
+        ],
+        "death/rate": [
+          "E10"
+        ],
+        "death/rate_unit": [
+          "E11"
+        ]
+      }
+    }
+  ],
+  "recommendation": "direct",
+  "questions": []
+}

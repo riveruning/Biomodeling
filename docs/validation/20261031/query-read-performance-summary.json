@@ -1,0 +1,229 @@
+{
+  "date": "2026-10-31",
+  "linux_full": {
+    "tests": 2695,
+    "errors": 0,
+    "failures": 0,
+    "skipped": 1,
+    "passed": 2694,
+    "seconds": 997.861
+  },
+  "linux_focused": {
+    "tests": 84,
+    "errors": 0,
+    "failures": 0,
+    "skipped": 0,
+    "passed": 84,
+    "seconds": 49.962
+  },
+  "windows_focused": {
+    "tests": 82,
+    "errors": 0,
+    "failures": 0,
+    "skipped": 0,
+    "passed": 82,
+    "seconds": 199.756
+  },
+  "distribution": {
+    "runtime_files": 110,
+    "installed_files": 99,
+    "windows_and_linux_file_hashes_equal": true,
+    "unicode_newline_imports": 3,
+    "python_core_matches_full_regression_freeze": true,
+    "asset_delta": "workbench_assets/projects.js",
+    "zip_sha256": "92ac8e326467a5561fbf42e63db4d099f71140a9225fa32fb9fa220c57958497",
+    "windows_implementation_sha256": "fb0ac41d837bf3cb27e85729523155195f61e53052b773f8b4fa4b0082bfa9f4"
+  },
+  "frontend_delta": {
+    "changed": [
+      "workbench_assets/projects.js"
+    ],
+    "sha256": "7a1d6f143f87dfd2f2d6582a5b30b78a73d7be124fa028f09383209e8d426065",
+    "python_sources_unchanged": true,
+    "reason": "Disable export until the current project operation has a confirmed terminal receipt.",
+    "acknowledgement_polling_race_guarded": true
+  },
+  "frontend_http_regression": {
+    "tests": 72,
+    "errors": 0,
+    "failures": 0,
+    "skipped": 0,
+    "passed": 72,
+    "seconds": 42.899
+  },
+  "same_store_linux": {
+    "plain": {
+      "seconds": 0.43913439800962806,
+      "reads": {
+        "artifact_bytes": 3541,
+        "source_bytes": 415,
+        "artifact_text": 1172
+      }
+    },
+    "scoped": {
+      "seconds": 0.27160255500348285,
+      "reads": {
+        "artifact_bytes": 292,
+        "source_bytes": 415,
+        "artifact_text": 1172
+      }
+    },
+    "identical_view": true
+  },
+  "same_store_windows": {
+    "plain": {
+      "seconds": 3.341246800002409,
+      "reads": {
+        "artifact_bytes": 3325,
+        "source_bytes": 405,
+        "artifact_text": 884
+      }
+    },
+    "scoped": {
+      "seconds": 1.2310883000027388,
+      "reads": {
+        "artifact_bytes": 220,
+        "source_bytes": 405,
+        "artifact_text": 884
+      }
+    },
+    "identical_view": true,
+    "probe_mode": "New query helper applied read-only to unchanged release records; no fingerprint changes or scientific execution.",
+    "live_model_requests": 0,
+    "helper_sha256": "1c2f0c847796bc41070a259491386b316e4079f8852398f27d9c66d94aa1eab3",
+    "release_implementation_sha256": "2ee94059883c782b1b1d84e0cb3b4575330f071e82157e07e70ca082fd63b5d1"
+  },
+  "demo_summaries": {
+    "accepted-source-demo": {
+      "implementation_sha256": "dc6589287c2e97be40e49a8b5a08d58cf4f342c484a0b23ec89d7a0ac6a6ecc8",
+      "project_ref": "99c7f84e07ac6119541422c113fa543d3255601482f607fc49f19c93241cf892",
+      "snapshot_ref": "facfea9441ebf6173fc06887a98379b4c822904bb8ef0acfcad8503022348f58",
+      "state": "completed_with_limits",
+      "planner_responses": 12,
+      "native_responses": 0,
+      "actual_scientific_calls": 2,
+      "linked_iterations": 2,
+      "native_reserved": 0,
+      "human_replies": 1,
+      "detached_report_matches": true,
+      "pipeline": {
+        "cases": 3,
+        "unique_materials": 2,
+        "unique_papers": 0,
+        "unique_families": 2,
+        "scripted_responses": 3,
+        "scientific_calls": 0,
+        "inactive_experience_candidates": 1,
+        "lesson_responses": 1
+      },
+      "live_model_requests": 0,
+      "scientific_support": "unknown"
+    },
+    "accepted-installed-demo": {
+      "implementation_sha256": "c3426fc13abed9d5f1580aae00fa99731df745aac564ab8d092444cb5ab80413",
+      "project_ref": "99738977ead48222747a7e4c960efb1e18c20d0feb1ee868f755f442061b5e47",
+      "snapshot_ref": "0f1ba5df74cd053b555c4e4589174efa4a4bbeb2c9e69bc150ba8222d54c5b11",
+      "state": "completed_with_limits",
+      "planner_responses": 12,
+      "native_responses": 0,
+      "actual_scientific_calls": 2,
+      "linked_iterations": 2,
+      "native_reserved": 0,
+      "human_replies": 1,
+      "detached_report_matches": true,
+      "pipeline": {
+        "cases": 3,
+        "unique_materials": 2,
+        "unique_papers": 0,
+        "unique_families": 2,
+        "scripted_responses": 3,
+        "scientific_calls": 0,
+        "inactive_experience_candidates": 1,
+        "lesson_responses": 1
+      },
+      "live_model_requests": 0,
+      "scientific_support": "unknown"
+    },
+    "native-accepted/demo": {
+      "implementation_sha256": "fb0ac41d837bf3cb27e85729523155195f61e53052b773f8b4fa4b0082bfa9f4",
+      "project_ref": "0cb59c2ee495c7d3b39566d8dd8533b541f197975587259acde10812c1f958fc",
+      "snapshot_ref": "0f91a8128dafc80ea113c332e14c2383715b3b3cd8064de34a4d09046564affe",
+      "state": "completed_with_limits",
+      "planner_responses": 12,
+      "native_responses": 0,
+      "actual_scientific_calls": 2,
+      "linked_iterations": 2,
+      "native_reserved": 0,
+      "human_replies": 1,
+      "detached_report_matches": true,
+      "pipeline": {
+        "cases": 3,
+        "unique_materials": 2,
+        "unique_papers": 0,
+        "unique_families": 2,
+        "scripted_responses": 3,
+        "scientific_calls": 0,
+        "inactive_experience_candidates": 1,
+        "lesson_responses": 1
+      },
+      "live_model_requests": 0,
+      "scientific_support": "unknown"
+    }
+  },
+  "math_settings_outputs_equal": true,
+  "rejected_post": {
+    "requests": 36,
+    "before_connection_errors": 13,
+    "after_connection_errors": 0,
+    "after_status_403": 36,
+    "mutations": 0
+  },
+  "live_model_requests": 0,
+  "independent_evalset_used": false,
+  "real_papers_reproduced": 0,
+  "scientific_support": "unknown",
+  "prior_failures_preserved": true,
+  "publication_local": {
+    "runtime": {
+      "sha": "53caf3ce6c5af694a65f6c629ca5bb96313f950c"
+    },
+    "main_update": {
+      "sha": "4e62f28e171a1112f47103d9547a80b0d7bb4f8c"
+    }
+  },
+  "windows_browser": {
+    "project_ref": "66f5b9a54cb084208b29bed5b123d5da2f7d4fbe41a0aef13fb8eaa98956ce30",
+    "state": "completed_with_limits",
+    "planner_responses": 12,
+    "native_model_requests": 0,
+    "scientific_calls": 2,
+    "human_replies": 1,
+    "linked_iterations": 2,
+    "consent_dialogs": 2,
+    "export_waited_for_receipt": true,
+    "creation_ack_poll_race_checked": true,
+    "reload_mutations": 0,
+    "external_page_requests": [],
+    "errors": [],
+    "downloaded_bytes": 180935,
+    "live_model_requests": 0,
+    "scientific_support": "unknown"
+  },
+  "publication": {
+    "repository": "FrostingMaple/Biomodeling",
+    "runtime_branch": "codex/runtime-windows-20261031",
+    "runtime_commit": "53caf3ce6c5af694a65f6c629ca5bb96313f950c",
+    "main_update_branch": "codex/agent-research-windows-20261031",
+    "main_update_commit": "4e62f28e171a1112f47103d9547a80b0d7bb4f8c",
+    "runtime_files": 110,
+    "all_remote_runtime_blob_hashes_verified": true,
+    "only_runtime_directory_changed_since_previous_pr_head": true,
+    "main_directly_modified": false,
+    "pull_request": {
+      "updated": true,
+      "url": "https://github.com/FrostingMaple/Biomodeling/pull/3",
+      "head_sha": "4e62f28e171a1112f47103d9547a80b0d7bb4f8c",
+      "state": "open"
+    }
+  }
+}

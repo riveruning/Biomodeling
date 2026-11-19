@@ -1,0 +1,44 @@
+{
+  "audited_baseline_commit": "593affca82ee2b16afd798752d0623536fd4434c",
+  "expect": "fixed",
+  "implementation_sha256": "cda64db5ae922ef6e473a9e384f06bca5bcdcc6b953e32d9885d1c290fd5b963",
+  "network_requests": 0,
+  "diagnostic_modifies_product_code": false,
+  "findings": [
+    {
+      "id": "BUG-01",
+      "status": "fixed",
+      "http_requests_mocked": 1,
+      "adapter_result_keys": [
+        "action",
+        "args",
+        "reason"
+      ],
+      "invalid_responses": 0,
+      "sources_created": 1,
+      "scripted_control_sources": 1,
+      "final_state": "planner_budget_exhausted"
+    },
+    {
+      "id": "BUG-02",
+      "status": "fixed",
+      "http_requests_mocked": 1,
+      "saved_lesson_responses": 1,
+      "candidates": 1
+    },
+    {
+      "id": "BUG-03",
+      "status": "fixed",
+      "state_before": "ready",
+      "planner_calls": 1,
+      "planner_limit": 1,
+      "actual_render_function": {
+        "disabled": false,
+        "notice": "已有保存的研究决定可以继续执行；该决定无需再次请求研究规划。"
+      },
+      "backend_resume_created_source": true,
+      "extra_provider_calls": 0,
+      "validation": "Node VM DOM stub; not real browser"
+    }
+  ]
+}

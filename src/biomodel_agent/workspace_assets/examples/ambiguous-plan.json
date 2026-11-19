@@ -1,0 +1,233 @@
+{
+  "schema_version": 1,
+  "id": "ambiguous_example",
+  "model_type": "ode",
+  "mode": "reproduction",
+  "context": {},
+  "entities": [
+    {
+      "id": "protein",
+      "label": "Supplied normalized state"
+    }
+  ],
+  "evidence": [
+    {
+      "id": "E0",
+      "source_ref": "SOURCE_REF",
+      "page": 1,
+      "start": 55,
+      "end": 69,
+      "quote": "Initial x = 1.",
+      "interpretation": "Candidate reading of the supplied declaration.",
+      "conditions": {}
+    },
+    {
+      "id": "E1",
+      "source_ref": "SOURCE_REF",
+      "page": 1,
+      "start": 70,
+      "end": 88,
+      "quote": "Parameter k = 0.4.",
+      "interpretation": "Candidate reading of the supplied declaration.",
+      "conditions": {}
+    },
+    {
+      "id": "E_degradation",
+      "source_ref": "SOURCE_REF",
+      "page": 1,
+      "start": 89,
+      "end": 143,
+      "quote": "Protein x is degraded; the kinetic law is unspecified.",
+      "interpretation": "Qualitative degradation only; no unique kinetic law.",
+      "conditions": {}
+    }
+  ],
+  "mechanisms": [
+    {
+      "id": "M_degradation",
+      "subject": "protein",
+      "relation": "degradation",
+      "object": "protein",
+      "evidence_ids": [
+        "E_degradation"
+      ],
+      "conditions": {},
+      "rationale": "Qualitative relation does not determine first-order or saturating mathematics."
+    }
+  ],
+  "candidates": [
+    {
+      "id": "first_order",
+      "label": "Explicit first-order candidate",
+      "variable_map": {
+        "protein": "x"
+      },
+      "draft": {
+        "id": "decay",
+        "states": [
+          {
+            "id": "x",
+            "initial": 1.0,
+            "unit": "unknown",
+            "quantity_kind": "variable",
+            "nonnegative": false
+          }
+        ],
+        "parameters": [
+          {
+            "id": "k",
+            "value": 0.4,
+            "unit": "unknown",
+            "origin": "unknown"
+          }
+        ],
+        "compartment": {
+          "id": "cell",
+          "size": 1.0,
+          "unit": "dimensionless"
+        },
+        "reactions": [],
+        "rate_rules": [
+          {
+            "state": "x",
+            "expression": "-k*x"
+          }
+        ],
+        "derived": [],
+        "time_unit": "second",
+        "element_map": {},
+        "hypothesis_refs": [],
+        "parent_ref": null
+      },
+      "decisions": [
+        {
+          "target": "x/initial",
+          "origin": "reported",
+          "evidence_ids": [
+            "E0"
+          ],
+          "mechanism_ids": [],
+          "rationale": "Use the explicit supplied declaration.",
+          "alternatives": []
+        },
+        {
+          "target": "k/value",
+          "origin": "reported",
+          "evidence_ids": [
+            "E1"
+          ],
+          "mechanism_ids": [],
+          "rationale": "Use the explicit supplied declaration.",
+          "alternatives": []
+        },
+        {
+          "target": "rule:x/expression",
+          "origin": "unresolved",
+          "evidence_ids": [],
+          "mechanism_ids": [
+            "M_degradation"
+          ],
+          "rationale": "Which parameter value or mathematical rate law is intended?",
+          "alternatives": [
+            "First-order decay: -k*x",
+            "Saturating degradation: -k*x/(K+x), with K still unspecified"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "saturating",
+      "label": "Alternative saturating degradation",
+      "variable_map": {
+        "protein": "x"
+      },
+      "draft": {
+        "id": "decay",
+        "states": [
+          {
+            "id": "x",
+            "initial": 1.0,
+            "unit": "unknown",
+            "quantity_kind": "variable",
+            "nonnegative": false
+          }
+        ],
+        "parameters": [
+          {
+            "id": "k",
+            "value": 0.4,
+            "unit": "unknown",
+            "origin": "unknown"
+          },
+          {
+            "id": "K",
+            "value": null,
+            "unit": "unknown",
+            "origin": "unknown"
+          }
+        ],
+        "compartment": {
+          "id": "cell",
+          "size": 1.0,
+          "unit": "dimensionless"
+        },
+        "reactions": [],
+        "rate_rules": [
+          {
+            "state": "x",
+            "expression": "-k*x/(K+x)"
+          }
+        ],
+        "derived": [],
+        "time_unit": "second",
+        "element_map": {},
+        "hypothesis_refs": [],
+        "parent_ref": null
+      },
+      "decisions": [
+        {
+          "target": "x/initial",
+          "origin": "reported",
+          "evidence_ids": [
+            "E0"
+          ],
+          "mechanism_ids": [],
+          "rationale": "Use the explicit supplied declaration.",
+          "alternatives": []
+        },
+        {
+          "target": "k/value",
+          "origin": "reported",
+          "evidence_ids": [
+            "E1"
+          ],
+          "mechanism_ids": [],
+          "rationale": "Use the explicit supplied declaration.",
+          "alternatives": []
+        },
+        {
+          "target": "rule:x/expression",
+          "origin": "unresolved",
+          "evidence_ids": [],
+          "mechanism_ids": [
+            "M_degradation"
+          ],
+          "rationale": "Which parameter value or mathematical rate law is intended?",
+          "alternatives": [
+            "First-order decay: -k*x",
+            "Saturating degradation: -k*x/(K+x), with K still unspecified"
+          ]
+        },
+        {
+          "target": "K/value",
+          "origin": "unresolved",
+          "evidence_ids": [],
+          "mechanism_ids": [],
+          "rationale": "What saturation constant and conditions are intended?",
+          "alternatives": []
+        }
+      ]
+    }
+  ],
+  "selected_candidate": null
+}

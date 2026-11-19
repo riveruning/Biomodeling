@@ -31,19 +31,26 @@ def _quote_locations(page, quote):
     return len(starts), exact, candidates
 
 
-def submit_draft(store,args,source_refs,mode='reproduction',allowed_mechanisms=()):
-    result = dict(state='invalid',artifact=None,model_ref=None,draft_ref=None,hypothesis_ref=None,checks=[],problems=[],source_review=None,source_review_ref=None,citation_diagnostics=[],binding_diagnostics=[])
+def submit_draft(store,args,source_refs,mode='reproduction',allowed_mechanisms=(), *, parameter_requirements=None):
+    result = dict(state='invalid',artifact=None,model_ref=None,draft_ref=None,hypothesis_ref=None,checks=[],problems=[],source_review=None,source_review_ref=None,citation_diagnostics=[],binding_diagnostics=[],parameter_diagnostics=[],assessment_refs=[])
     try:
         if mode not in {'reproduction','hypothesis'}:
             raise ValueError('unknown research mode')
-        if not isinstance(args,dict) or set(args)-{'draft','evidence','mechanism'}:
+        if not isinstance(args,dict) or set(args)-{'draft','evidence','mechanism','parameter_assessments'}:
             raise ValueError('unknown proposal arguments')
         if args['draft'].get('element_map') or args['draft'].get('hypothesis_refs') or args['draft'].get('parent_ref'):
             raise ValueError('lineage and evidence refs are assigned by tools')
         draft = from_dict(ModelDraft,args['draft'])
         required = bindings.draft_targets(draft)
         names = bindings.draft_symbols(draft)
-        review = review_sources(store, source_refs, required)
+        from .parameter_sources import validate as validate_parameter_source
+        for item in args.get('evidence', []):
+            if isinstance(item, dict) and item.get('source_ref') in source_refs:
+                derived = validate_parameter_source(store, item['source_ref'])
+                if derived and (item.get('target') not in {derived['target'], derived['target'].replace('/value', '/unit')}
+                                or derived['target'] not in (parameter_requirements or {})):
+                    raise ValueError('native parameter citation requires its mapped target and frozen parameter requirements')
+        review = review_sources(store, source_refs, required, parameter_requirements=parameter_requirements)
         review_ref = store.put('source_review', review, refs=tuple(source_refs))
         result.update(source_review=review, source_review_ref=review_ref)
         if mode == 'reproduction' and review['issues']:
@@ -51,6 +58,17 @@ def submit_draft(store,args,source_refs,mode='reproduction',allowed_mechanisms=(
                           draft_ref=store.put('model_draft',to_dict(draft),refs=(review_ref,)),
                           problems=[issue['question'] for issue in review['issues']])
             return result
+        if parameter_requirements or 'parameter_assessments' in args:
+            from .parameter_applicability import validate_proposal
+            checked = validate_proposal(store, draft, source_refs, parameter_requirements, args.get('parameter_assessments', {}))
+            result['parameter_diagnostics'] = checked
+            result['assessment_refs'] = [d['assessment_ref'] for d in checked if d['assessment_ref'] and d['status'] != 'invalid']
+            bad = [d for d in checked if d['status'] != 'declared_fields_match']
+            if bad:
+                result.update(state='awaiting_input' if any(d['status'] in ('unknown', 'mismatch', 'source_conflict', 'conversion_required') for d in bad) else 'invalid',
+                              problems=[d['target']+': parameter applicability '+d['reason'] for d in bad],
+                              draft_ref=store.put('model_draft', to_dict(draft), refs=(review_ref, *result['assessment_refs'])))
+                return result
         optional = {'time_unit',draft.compartment.id+'/size',draft.compartment.id+'/unit'}
         optional.update(s.id+'/unit' for s in draft.states)
         optional.update(p.id+'/unit' for p in draft.parameters)
@@ -101,11 +119,19 @@ def submit_draft(store,args,source_refs,mode='reproduction',allowed_mechanisms=(
             page = next((p['text'] for p in source_payload['pages'] if p['number']==item['page']),None)
             if page is None or not 0 <= item['start'] < item['end'] <= len(page):
                 raise ValueError('citation offsets outside the authorized source page')
-            claim_type = ('human_convention' if source_payload.get('clarification_ref')
+            claim_type = ('model_inference' if source_payload.get('derivation') else
+                          'human_convention' if source_payload.get('clarification_ref')
                           else item.get('claim_type','paper_assumption'))
             if claim_type not in evidence.CLAIM_TYPES:
                 raise ValueError(f'invalid claim_type {claim_type!r}; allowed: {list(evidence.CLAIM_TYPES)}')
             normalized.append((item, claim_type))
+        for target, ref in (args.get('parameter_assessments') or {}).items():
+            assessment = store.get(ref)['payload']
+            candidates = assessment.get('locations', {}).get('value', [])
+            if not any(item['target'] == target and item['source_ref'] == loc['source_ref']
+                       and item['page'] == loc['page'] and item['start'] <= loc['start'] and item['end'] >= loc['end']
+                       for item, _ in normalized for loc in candidates):
+                result['problems'].append(target+': cite the complete value declaration from the assessed source')
         if result['problems']:
             return result
         for item, _ in normalized:
@@ -125,6 +151,7 @@ def submit_draft(store,args,source_refs,mode='reproduction',allowed_mechanisms=(
                 return result
         for item,claim_type in normalized:
             ref = evidence.add_claim(store,item['source_ref'],item['page'],item['start'],item['end'],item['target'],claim_type,
+                                     relation='derived_from' if store.get(item['source_ref'])['payload'].get('derivation') else 'reported_as',
                                      expected=required.get(item['target']), allowed_symbols=names,
                                      symbol_map=item.get('symbol_map'))
             links.setdefault(item['target'],[]).append(ref)
@@ -137,7 +164,7 @@ def submit_draft(store,args,source_refs,mode='reproduction',allowed_mechanisms=(
             hypothesis = store.put('hypothesis',{'claim_type':'system_conjecture','mechanism':args['mechanism'],'assumptions':['Proposed equations and nominal parameters; not established biological facts'],'source_refs':list(source_refs)},refs=tuple(source_refs))
             draft = replace(draft,hypothesis_refs=(hypothesis,))
         draft = replace(draft,element_map=FrozenMap(links))
-        refs = [r for group in links.values() for r in group]+([hypothesis] if hypothesis else [])+[review_ref]
+        refs = [r for group in links.values() for r in group]+([hypothesis] if hypothesis else [])+[review_ref]+result['assessment_refs']
         result.update(draft_ref=store.put('model_draft',to_dict(draft),refs=refs),hypothesis_ref=hypothesis)
         static = modeling.validate_draft(draft)
         result['checks'] = [to_dict(c) for c in static.checks]

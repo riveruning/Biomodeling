@@ -1,1 +1,0 @@
-The k_bind parameter is specified in Supplement Table S2.
