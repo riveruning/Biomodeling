@@ -16,7 +16,9 @@ def test_cli_workbench_and_research_prompt_share_catalog(tmp_path,capsys):
         assert app.overview()['capabilities']==expected
         root=research_projects.create(app.store,dict(scenario='Capability control.'))
         task=json.loads(research_supervisor._messages(app.store,root)[1]['content'])
-        assert task['capabilities']==expected
+        assert task['guidance_sections']['capabilities']==dict(section='capabilities')
+        assert research_projects.operate(app.store,root,'inspect_research_guidance',
+            dict(section='capabilities'))['guidance']==expected
     finally:app.close()
 
 
@@ -45,7 +47,9 @@ def test_pde_system_capability_template_and_agent_brief_agree(tmp_path):
     store = ArtifactStore(tmp_path / 'pde-system')
     project = research_projects.create(store, dict(scenario='Inspect the PDE schema.'))
     prompt = json.loads(research_supervisor._messages(store, project)[1]['content'])
-    example = prompt['native_model_schema_examples']['pde_system']
+    assert 'pde_system' in prompt['guidance_sections']['model_example']['examples']
+    example = research_projects.operate(store, project, 'inspect_research_guidance',
+        dict(section='model_example',example='pde_system'))['guidance']
     assert example['profile'] == pde_system.PROFILE
     assert all(field['reaction'] == '0' for field in example['fields'])
     pde_system.validate(example)

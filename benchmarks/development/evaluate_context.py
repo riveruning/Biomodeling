@@ -46,7 +46,19 @@ def cases():
 def check_packet(original, packet, required, maximum):
     """Independent output checks using declared fixture expectations, not selector internals."""
     retained = sum(item in packet for item in required)
-    unmodified = all(item in original or item == context.NOTICE for item in packet)
+    def notice(item):
+        if item.get('role')!='user':return False
+        try:data=json.loads(item['content'])
+        except (ValueError,TypeError):return False
+        selected=data.get('context_selection',{})
+        return (data.get('tool')=='context_notice'
+            and data.get('notice')==json.loads(context.NOTICE['content'])['notice']
+            and selected.get('total_messages')==len(original)
+            and selected.get('retained_messages')==len(packet)-1
+            and selected.get('omitted_messages')==len(original)-len(packet)+1
+            and selected.get('retained_message_fraction')==(len(packet)-1)/len(original)
+            and selected.get('source_coverage')=='unknown')
+    unmodified = all(item in original or i==2 and notice(item) for i,item in enumerate(packet))
     prefix = packet[:2] == original[:2]
     return {'required_retained': retained, 'required_total': len(required),
             'all_required_retained': retained == len(required), 'no_rewritten_messages': unmodified,

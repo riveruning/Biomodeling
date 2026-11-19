@@ -317,10 +317,10 @@ def test_real_http_workbench_calls_adapter_and_executes_action(web,monkeypatch):
     assert status==200 and json.loads(body)['state']=='insufficient_evidence' and len(requests)==1
 
 
-def test_truncated_but_fully_received_answer_is_rejected_with_bounded_correction(monkeypatch,tmp_path):
+def test_truncated_answer_pauses_for_explicit_output_budget_plan(monkeypatch,tmp_path):
     """A complete HTTP envelope whose content is malformed is a received-but-
     refused response: usage stays bound, the raw blob is retained, and the
-    planner may correct within the original budget instead of an unknown stop."""
+    planner pauses for an explicit new budget plan instead of an unknown stop."""
     from biomodel_agent import bundles,reporting
     monkeypatch.setenv('BIOMODEL_TEST_PROVIDER_KEY','private-dummy-key')
     requests=[]
@@ -331,23 +331,21 @@ def test_truncated_but_fully_received_answer_is_rejected_with_bounded_correction
     provider=ChatProvider('https://offline.invalid/v1','offline-control',api_key_env='BIOMODEL_TEST_PROVIDER_KEY',transport=httpx.MockTransport(truncated))
     store=ArtifactStore(tmp_path/'s');root=p.create(store,dict(scenario='Synthetic.',policy=dict(planner_max_calls=2)))
     snapshot=supervisor.run(store,provider,root);view=p.inspect(store,root)
-    assert view['state']=='planner_budget_exhausted' and len(requests)==2
+    assert view['state']=='output_budget_exhausted' and len(requests)==1
     usage=supervisor.usage(store,root)
-    assert usage['reported_total_tokens']==246 and usage['missing_usage_calls']==0
-    assert usage['planner_calls']==2 and usage['planner_complete_elapsed_s'] is not None
+    assert usage['reported_total_tokens']==123 and usage['missing_usage_calls']==0
+    assert usage['planner_calls']==1 and usage['planner_complete_elapsed_s'] is not None
     returns=[v for _,v in p.rows(store,p.RETURN,root)]
-    assert len(returns)==2 and all(v['state']=='rejected' and v['provider_failure_ref'] for v in returns)
+    assert len(returns)==1 and all(v['state']=='rejected' and v['provider_failure_ref'] for v in returns)
     diagnostic=returns[0]['diagnostic']
-    assert diagnostic['code']=='model_response' and 'refused' in diagnostic['message']
-    assert diagnostic['response']==dict(finish_reason='length',content_characters=10)
+    assert diagnostic['code']=='output_budget' and 'Paused' in diagnostic['message']
+    assert diagnostic['response']==dict(finish_reason='length',content_characters=10,requested_max_tokens=4000)
     failure=store.get(returns[0]['provider_failure_ref'])
     assert failure['kind']==p.PROVIDER_FAILURE
     assert json.loads(store.get_blob(failure['payload']['model_content_json_blob_ref']))=='{"action":'
     assert failure['payload']['model_content_authority']=='untrusted_model_output_not_an_action'
-    feedback=[m for m in json.loads(requests[1].content)['messages'] if 'refused' in m['content']]
-    assert len(feedback)==1 and feedback[0]['role']=='user'
-    assert 'planner_response' in feedback[0]['content']
-    assert 'inspect the saved diagnostic' not in feedback[0]['content']
+    supervisor.run(store,provider,root)
+    assert len(requests)==1  # unchanged cap is never retried automatically
     bundles.export_bundle(store,snapshot,tmp_path/'export')
     assert reporting.render_report(store,snapshot)==reporting.render_report(ArtifactStore(tmp_path/'export'),snapshot)
     assert 'private-dummy-key' not in ''.join(x.read_text(encoding='utf-8') for x in store.objects_dir.glob('*.json'))
@@ -373,11 +371,13 @@ def test_reasoning_only_envelope_retains_safe_diagnostic(monkeypatch, tmp_path, 
     project = p.create(store, dict(scenario='Envelope diagnostic control.',
                                    policy=dict(planner_max_calls=2)))
     supervisor.run(store, provider, project)
-    assert len(requests) == 1 and p.inspect(store, project)['state'] == 'needs_recovery'
+    assert len(requests) == 1
+    assert p.inspect(store, project)['state'] == ('output_budget_exhausted' if finish_reason=='length' else 'needs_recovery')
     failure = p.rows(store, p.PROVIDER_FAILURE, project)[0][1]
-    assert failure['error_kind'] == 'response_envelope'
-    assert failure['response_diagnostic'] == dict(
-        finish_reason=finish_reason, content_characters=0, content_type='NoneType')
+    assert failure['error_kind'] == ('output_budget' if finish_reason=='length' else 'response_envelope')
+    expected=dict(finish_reason=finish_reason, content_characters=0, content_type='NoneType')
+    if finish_reason=='length':expected['requested_max_tokens']=4000
+    assert failure['response_diagnostic'] == expected
     assert failure['usage']['total_tokens'] == 6100
     assert failure['model_content_json_blob_ref'] is None
     assert reasoning not in ''.join(path.read_text() for path in store.objects_dir.glob('*.json'))

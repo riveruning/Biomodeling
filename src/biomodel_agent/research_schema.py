@@ -248,12 +248,11 @@ def schemas(view):
             source_evidence_map=dict(type='object',additionalProperties=dict(type='array',items=text(48),minItems=1,maxItems=4),description='Values are lists of 1..4 source anchor IDs from this frame. Boolean keys are <node>/initial, <node>/rule, update, time_unit, clamps. SSA keys are <species>/initial, <reaction>/reaction, <reaction>/rate, <reaction>/rate_unit, time_unit, state_unit, rate_convention, mixing, kinetics.'),
             stochastic_rate_units=dict(type='object',description='Map every reaction ID to its explicitly sourced inverse-time unit; do not infer concentration conversions.'))
         result['open_iteration']=action('open_iteration',record(properties,('reason','config')))
-    if view.get('background_index_refs') or view.get('background_reading_refs'):
-        from .research_guidance import EXAMPLES, LARGE_ACTIONS
-        action_names=[name for name in LARGE_ACTIONS if name in result]
-        guidance_args=dict(oneOf=[
-            record(dict(section=dict(const='action_schema'),action=choices(action_names)),('section','action')),
-            record(dict(section=dict(const='model_example'),example=dict(enum=list(EXAMPLES))),('section','example')),
-            record(dict(section=dict(enum=['capabilities','scientific_procedures'])),('section',))])
-        result['inspect_research_guidance']=action('inspect_research_guidance',guidance_args)
+    from .research_guidance import EXAMPLES, LARGE_ACTIONS
+    action_names=[name for name in LARGE_ACTIONS if name in result]
+    guidance_args=dict(oneOf=[
+        record(dict(section=dict(const='action_schema'),action=choices(action_names)),('section','action')),
+        record(dict(section=dict(const='model_example'),example=dict(enum=list(EXAMPLES))),('section','example')),
+        record(dict(section=dict(enum=['capabilities','scientific_procedures'])),('section',))])
+    result['inspect_research_guidance']=action('inspect_research_guidance',guidance_args)
     return result

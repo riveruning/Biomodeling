@@ -89,6 +89,7 @@ def _run_facts(run: dict) -> dict:
         "scientific_status": verdict,
         "verdict": verdict,
         "verdict_basis": application.blocking_verdict_basis(run),
+        "trajectory_diagnostic": validation.trajectory_diagnostic(sim),
         "note": "pass/fail facts come from the run tool, never from the model; "
                 "a stored status string is never trusted over the actual checks",
     }
@@ -568,7 +569,8 @@ def _execute_agent(store, provider, source_refs, experiment, observations, solve
         messages[1] = _user(_json({**json.loads(messages[1]['content']),
             'failure_handling': 'Typed failures are routed with inherited budgets. Missing parameter declarations '
             'may trigger one local lookup per target (four total); leads never adopt a value. Conflicts and units '
-            'require clarification. Repeating a failed request or three rounds without resolving blocking issue '
+            'require clarification. Repeating a failed request or '
+            f"{failure_policy['max_stagnant_failures']} rounds without resolving blocking issue "
             'keys stops the task. Scientific execution is never repeated.'}))
     journal = _journal or InvocationJournal(store, task_ref, parent_run_ref=parent_run_ref,
                                 calls=calls, runs=run_count, recovery=initial_snapshot,

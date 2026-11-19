@@ -43,8 +43,15 @@ def test_compaction_preserves_whole_messages_order_and_original_history():
     assert context.size(packet) == audit['sent_chars'] <= 8000
     assert audit['retained_indices'] == sorted(audit['retained_indices'])
     assert packet[:2] == history[:2] and packet[-1] == history[-1]
-    assert packet[2] == context.NOTICE
-    assert all(m in history or m == context.NOTICE for m in packet)
+    notice=json.loads(packet[2]['content'])
+    selection=notice['context_selection']
+    assert selection['total_messages']==len(history)
+    assert selection['retained_messages']==len(audit['retained_indices'])
+    assert selection['omitted_messages']==audit['omitted_messages']
+    assert selection['retained_message_fraction']==len(audit['retained_indices'])/len(history)
+    assert selection['omitted_tool_counts']=={'inspect_source':audit['omitted_messages']}
+    assert selection['source_coverage']=='unknown'
+    assert all(m in history for m in packet[:2]+packet[3:])
     assert original == history
 
 

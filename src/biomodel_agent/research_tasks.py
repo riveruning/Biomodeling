@@ -177,7 +177,8 @@ def _ode_args(spec):
     scales=validation.validate_scales(execution.get('scales'),reference.values if reference else ())
     if (reference is None)!=(scales is None):raise ValueError('reference and fixed scales must be supplied together')
     return dict(source_refs=spec['source_refs'],experiment=experiment,solver=solver,observations=observations,
-                reference=reference,scales=scales,modeling_decisions=True,modeling_context=spec['modeling_context'],max_retries=0)
+                reference=reference,scales=scales,modeling_decisions=True,modeling_context=spec['modeling_context'],
+                failure_handling=True,max_retries=0)
 
 
 def records(store,kind,**matches):
@@ -261,8 +262,10 @@ def _validate_native(store,request_ref,native_ref):
         raise ValueError('native result differs from selected workflow/budget')
     if kind=='ode':
         args=_ode_args(spec)
+        from .failure_handling import POLICY
         if (task.get('mode')!='reproduction' or task.get('source_refs')!=spec['source_refs']
-                or task.get('modeling_decisions')!={'version':1,'context':spec['modeling_context']}):
+                or task.get('modeling_decisions')!={'version':1,'context':spec['modeling_context']}
+                or canonical_bytes(task.get('failure_policy'))!=canonical_bytes(POLICY)):
             raise ValueError('ODE native task scope changed')
         for key in ('experiment','solver','reference'):
             expected_value=to_dict(args[key]) if args[key] is not None else None

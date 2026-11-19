@@ -12,10 +12,13 @@ from urllib.parse import urlparse
 __all__ = ["extract_background"]
 
 FORMAT = "pmc_html"
-VERSION = "1.0.0"
+VERSION = "1.1.0"
 MAX_INPUT_BYTES = 2 * 1024 * 1024
 MAX_NODES = 200000
 MAX_DEPTH = 64
+MAX_FORMULA_RECORDS = 100
+EQUATION_PREFIX = "[unreviewed-mathml] "
+IMAGE_FORMULA_PREFIX = "[unreviewed-formula]"
 
 _VOID = frozenset({"area", "base", "br", "col", "embed", "hr", "img", "input",
                    "link", "meta", "param", "source", "track", "wbr"})
@@ -39,6 +42,7 @@ _VALIDATION_MARKERS = ("verify you are human", "are you a robot", "captcha",
                        "enable javascript", "checking your browser",
                        "please complete the security check", "access denied")
 _REVIEW_CODES = {"inferred_unheaded_introduction", "duplicate_reference_ids",
+                 "unreviewed_formulas", "mathml_not_projected",
                  "conflicting_article_identity", "conflicting_article_titles",
                  "multiple_articles_main_selected", "body_section_not_found",
                  "no_reference_list", "identity_missing", "title_not_found",
@@ -166,9 +170,70 @@ def _count_images(node):
     return sum(1 for n in _iter_elements(node) if n.tag == "img")
 
 
+
+
+# --- MathML projection (source notation, never executable) ---------------
+
+_MATH_ATTRS = frozenset({"id", "class", "display", "alttext", "xmlns"})
+
+
+def _serialize_math(node):
+    """Serialize a <math> subtree as inert XML text (structure preserved)."""
+    import xml.etree.ElementTree as ET
+
+    def build(current):
+        attrs = {key: value for key, value in current.attrs.items()
+                 if key.lower() in _MATH_ATTRS and value is not None}
+        element = ET.Element(current.tag, attrs)
+        for child in current.children:
+            if isinstance(child, str):
+                if len(element):
+                    element[-1].tail = (element[-1].tail or "") + child
+                else:
+                    element.text = (element.text or "") + child
+            elif child.tag in _SKIP_TAGS:
+                continue
+            else:
+                element.append(build(child))
+        return element
+
+    return ET.tostring(build(node), encoding="unicode",
+                       short_empty_elements=True)
+
+
+def _math_token(node):
+    return EQUATION_PREFIX + _norm(_serialize_math(node))
+
+
+def _math_display(node):
+    if (node.attrs.get("display") or "").lower() == "block":
+        return True
+    ancestor = node.parent
+    while ancestor is not None:
+        if "disp-formula" in _classes(ancestor):
+            return True
+        if ancestor.tag == "section":
+            return node.parent is ancestor
+        ancestor = ancestor.parent
+    return False
+
+
+def _math_skipped(node):
+    """True when a <math> lives under site chrome/script/svg and must not be
+    projected into article text (it is reported as not projected instead)."""
+    ancestor = node.parent
+    while ancestor is not None:
+        if ancestor.tag in _SKIP_TAGS:
+            return True
+        ancestor = ancestor.parent
+    return False
+
+
 # --- text extraction (blocks are atomic; #anchors recorded as citations) ---
 
 def _inline_text(node, citations=None):
+    if node.tag == "math":
+        return _math_token(node)
     parts = []
 
     def walk(current):
@@ -181,6 +246,8 @@ def _inline_text(node, citations=None):
                 parts.append(" ")
             elif child.tag == "img":
                 continue
+            elif child.tag == "math":
+                parts.append(_math_token(child))
             elif child.tag == "a":
                 txt = _inline_text(child)
                 if citations is not None:
@@ -323,6 +390,15 @@ def _collect_body_blocks(body):
             elif "tw" in cls:
                 cites = []
                 emit(child, _tablewrap_text(child, cites), cites, "table")
+            elif tag == "table" and "disp-formula" in cls:
+                cites = []
+                text = _table_text(child, cites)
+                if not _norm(text):
+                    text = IMAGE_FORMULA_PREFIX
+                emit(child, text, cites, "table")
+            elif tag == "math":
+                cites = []
+                emit(child, _inline_text(child, cites), cites, "formula")
             elif tag == "section":
                 if cls & {"abstract", "ref-list", "kwd-group"}:
                     continue
@@ -769,6 +845,57 @@ def extract_background(raw: bytes) -> dict:
                               "quote": seg_text}]
     page_text = "".join(page_parts)
 
+    # MathML projection: locate every <math> in the article, project those that
+    # actually enter a kept block, and keep the rest explicitly unprojected.
+    math_nodes = [n for n in _iter_elements(article) if n.tag == "math"]
+    formula_records, by_node = [], {}
+    for index, node in enumerate(math_nodes, start=1):
+        record = {"formula_index": index,
+                  "formula_id": node.attrs.get("id") or None,
+                  "locator": _locator(node),
+                  "display": _math_display(node),
+                  "representation": "parsed_mathml_serialization",
+                  "status": "not_projected",
+                  "source_spans": []}
+        formula_records.append(record)
+        by_node[id(node)] = record
+
+    for unit in ([title_unit] if title_unit is not None else []) + units:
+        cursor = 0
+        candidates = ([unit["node"]] if unit["node"] is not None else [])
+        candidates = candidates + list(_iter_elements(unit["node"]))
+        for node in candidates:
+            if node.tag != "math" or _math_skipped(node):
+                continue
+            record = by_node.get(id(node))
+            if record is None or not unit.get("spans"):
+                continue
+            token = _math_token(node)
+            index = unit["text"].find(token, cursor)
+            if index < 0:
+                continue
+            cursor = index + len(token)
+            start = unit["spans"][0]["start"] + index
+            record["status"] = "unreviewed"
+            record["source_spans"] = [{"page": 1, "start": start,
+                                       "end": start + len(token), "quote": token}]
+
+    unprojected = [r for r in formula_records if r["status"] == "not_projected"]
+    if unprojected:
+        issues.append({"code": "mathml_not_projected",
+                       "detail": "%d <math> element(s) outside projected article text: %s"
+                                 % (len(unprojected),
+                                    "; ".join(r["locator"]["path"] for r in unprojected[:3]))})
+    projected = [r for r in formula_records if r["status"] == "unreviewed"]
+    if projected:
+        issues.append({"code": "unreviewed_formulas",
+                       "detail": "%d MathML formula(s) projected as unreviewed source notation; "
+                                 "fractions/scripts kept as structure, not flattened into an "
+                                 "executable equation" % len(projected)})
+    formula_source_count = len(formula_records)
+    formula_sources_truncated = formula_source_count > MAX_FORMULA_RECORDS
+    formula_sources = formula_records[:MAX_FORMULA_RECORDS]
+
     blocks_out = []
     for unit in ([title_unit] if title_unit is not None else []) + units:
         blocks_out.append({"text": unit["text"],
@@ -788,7 +915,11 @@ def extract_background(raw: bytes) -> dict:
             "blocks": blocks_out,
             "intro_blocks": [b for b in blocks_out if b["in_intro"]],
             "references": refs, "unresolved_citations": unresolved,
-            "duplicate_reference_ids": unique_dups, "status": status,
+            "duplicate_reference_ids": unique_dups,
+            "formula_sources": formula_sources,
+            "formula_source_count": formula_source_count,
+            "formula_sources_truncated": formula_sources_truncated,
+            "status": status,
             "issues": issues, "pages": [{"number": 1, "text": page_text}]}
 
 

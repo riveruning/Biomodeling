@@ -27,15 +27,26 @@ def frozen_model_guidance():
                 schema_notice='Examples describe syntax only. Example numbers/biological relations are not task evidence.')
 
 
+def guidance_sections():
+    from .capabilities import TYPES
+    return dict(retrieve='inspect_research_guidance', model_types=list(TYPES),
+        capabilities=dict(section='capabilities'),
+        scientific_procedures=dict(section='scientific_procedures'),
+        model_example=dict(section='model_example',examples=list(EXAMPLES)),
+        action_schema=dict(section='action_schema',action='<available action name>'),
+        notice='Retrieve capabilities before selecting a backend, and its full syntax before proposing a model. '
+               'These are normal counted operations at no literature/transcription budget cost. '
+               'Examples are syntax illustrations, never scientific evidence; retrieval does not change any execution limits.')
+
+
 def coordinator_schemas(view):
     from .research_schema import schemas
     result = schemas(view)
-    if view.get('background_index_refs') or view.get('background_reading_refs'):
-        for name in LARGE_ACTIONS:
-            if name in result:
-                result[name]['properties']['args'] = dict(type='object', description=(
-                    'Retrieve the complete argument schema with inspect_research_guidance, '
-                    'section=action_schema and action=' + name + '. All original backend validators apply.'))
+    for name in LARGE_ACTIONS:
+        if name in result:
+            result[name]['properties']['args'] = dict(type='object', description=(
+                'Retrieve the complete argument schema with inspect_research_guidance, '
+                'section=action_schema and action=' + name + '. All original backend validators apply.'))
     return result
 
 

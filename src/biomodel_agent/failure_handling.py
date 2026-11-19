@@ -6,8 +6,10 @@ import re
 from . import diagnostics
 from .storage import canonical_bytes
 
-POLICY = dict(version=1, max_auto_investigations=4, max_target_investigations=1,
-              max_stagnant_failures=3)
+LEGACY_POLICY = dict(version=1, max_auto_investigations=4, max_target_investigations=1,
+                     max_stagnant_failures=3)
+POLICY = dict(version=2, max_auto_investigations=4, max_target_investigations=1,
+              max_stagnant_failures=2)
 TARGET = re.compile(r'[A-Za-z_][A-Za-z0-9_]{0,127}/(?:value|initial)')
 
 
@@ -16,7 +18,10 @@ def digest(value):
 
 
 def validate_policy(policy):
-    if canonical_bytes(policy) != canonical_bytes(POLICY):
+    if not isinstance(policy, dict):
+        raise ValueError('unsupported failure handling policy')
+    canonical = canonical_bytes(policy)
+    if canonical != canonical_bytes(LEGACY_POLICY) and canonical != canonical_bytes(POLICY):
         raise ValueError('unsupported failure handling policy')
     return dict(policy)
 
@@ -85,6 +90,10 @@ def decide(policy, d):
     if d['repairs'] > d['max_repairs']:
         return route('stop', 'The inherited draft repair budget is exhausted.')
     if d['stagnant_failures'] >= policy['max_stagnant_failures']:
+        if policy['version']==2 and 'missing_information' in categories:
+            return route('ask', 'The same required inputs remain unresolved after two failures. '
+                         'Stop automatic repair and local lookup; request the missing evidence for '
+                         +(', '.join(targets) or 'the model')+'. No value is selected.')
         return route('stop', 'Blocking issue keys have not decreased within the bounded failure window; further automatic repair is stopped.')
     if 'missing_information' in categories:
         target = next((t for t in targets if TARGET.fullmatch(t)), None)

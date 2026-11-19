@@ -144,6 +144,28 @@ class ModelResponseError(ProviderError):
         super().__init__(message, kind="model_response", retryable=True)
 
 
+class OutputBudgetExhausted(ModelResponseError):
+    """Received and service-terminated response whose OUTPUT token
+    budget was exhausted before any parseable action was produced.
+
+    Proven only by a service-declared terminal ``finish_reason`` of ``length``
+    on an HTTP 200 chat-completion body: the request was answered, so this is a
+    KNOWN outcome, never an unknown unresponded POST.  It must therefore be
+    neither replayed nor retried at the same output cap, and its empty or
+    truncated content must never be parsed into a success action.  The
+    sanitized usage/finish evidence stays on the provider instance; no raw
+    response body travels inside the exception.
+    """
+
+    def __init__(self, message: str, *, finish_reason: str,
+                 usage: dict[str, int] | None = None,
+                 max_tokens: int | None = None):
+        ProviderError.__init__(self, message, kind="output_budget", retryable=False)
+        self.finish_reason = finish_reason
+        self.usage = dict(usage or {})
+        self.max_tokens = max_tokens
+
+
 def _retry_after(value: str | None) -> float | None:
     if not value:
         return None
@@ -447,6 +469,7 @@ class ChatProvider:
         transport: Any = None,
         json_mode: bool = False,
         reasoning_effort: str | None = None,
+        stream: bool = False,
     ) -> None:
         _require_public_https_or_localhost(base_url)
         if not isinstance(model, str) or not model.strip():
@@ -468,6 +491,8 @@ class ChatProvider:
 
         if type(json_mode) is not bool:
             raise ProviderError("json_mode must be a bool")
+        if type(stream) is not bool:
+            raise ProviderError("stream must be a bool")
         self.json_mode = json_mode
         self.last_retry_after_s = None
         self.base_url = base_url.rstrip("/")
@@ -477,6 +502,7 @@ class ChatProvider:
         self.timeout_s = timeout
         self.max_tokens = max_tokens
         self.reasoning_effort = reasoning_effort
+        self.stream = stream
         self.last_usage: dict[str, int] = {}
         self.last_response_diagnostic: dict[str, Any] = {}
         self.last_model_content: str | None = None
@@ -525,6 +551,70 @@ class ChatProvider:
         self.last_retry_after_s = _retry_after(response.headers.get("Retry-After"))
         return int(response.status_code), str(response.text)
 
+    def _post_stream(self, url: str, payload: dict, headers: dict) -> tuple[int, dict]:
+        """SSE transport for long reasoning traces.
+
+        A non-streaming gateway can hold a long ``reasoning_effort=max`` answer
+        until the client deadline while the same request streams back in about
+        two minutes. Deltas are assembled into the ordinary chat-completion
+        envelope so the rest of the adapter (usage, finish reason, output-budget
+        classification) is unchanged. One request, no retry.
+        """
+        from .research_control import remaining_s
+        timeout = remaining_s(self.timeout_s)
+        try:
+            import httpx
+        except ImportError as exc:  # pragma: no cover - hard requirement
+            raise ProviderError("httpx is required for live calls") from exc
+        content_parts: list[str] = []
+        usage = None
+        finish = None
+        try:
+            with httpx.Client(trust_env=False, timeout=timeout,
+                              follow_redirects=False,
+                              transport=self._transport) as client:
+                with client.stream("POST", url, json=payload,
+                                   headers=headers) as response:
+                    status = int(response.status_code)
+                    self.last_retry_after_s = _retry_after(
+                        response.headers.get("Retry-After"))
+                    if not 200 <= status < 300:
+                        response.read()
+                        return status, {}
+                    for line in response.iter_lines():
+                        if not line or not line.startswith("data:"):
+                            continue
+                        data = line[5:].strip()
+                        if data == "[DONE]":
+                            break
+                        try:
+                            event = json.loads(data)
+                        except (json.JSONDecodeError, TypeError):
+                            continue
+                        if isinstance(event.get("usage"), dict):
+                            usage = event["usage"]
+                        choices = event.get("choices") or []
+                        if not choices:
+                            continue
+                        first = choices[0] or {}
+                        if first.get("finish_reason"):
+                            finish = first["finish_reason"]
+                        delta = first.get("delta") or {}
+                        piece = delta.get("content")
+                        if isinstance(piece, str) and piece:
+                            content_parts.append(piece)
+        except ProviderError:
+            raise
+        except Exception as exc:  # timeout / connect / TLS / protocol
+            raise ProviderError(f"transport failure: {type(exc).__name__}",
+                                kind="transport", retryable=True) from exc
+        text = "".join(content_parts)
+        body = {"choices": [{"message": {"content": text if text else None},
+                             "finish_reason": finish or "stop"}]}
+        if usage is not None:
+            body["usage"] = usage
+        return status, body
+
     # -- protocol -----------------------------------------------------------
 
     def build_messages(self, messages: Sequence[dict] | None) -> list[dict]:
@@ -564,6 +654,42 @@ class ChatProvider:
                 continue
             out[key] = int(number)
         return out
+
+    def _output_budget_error(self, body: Any) -> OutputBudgetExhausted | None:
+        """Classify a received-but-unusable HTTP 200 chat-completion body.
+
+        Only a service-declared terminal ``finish_reason`` of ``length`` on an
+        otherwise complete envelope proves the output-token budget was
+        exhausted: the first choice must carry a ``message`` object with an
+        explicit ``content`` field whose value is ``None`` (the empty-output
+        shape this adapter receives as a failed ``_extract_content``).  A
+        missing or non-dict message, an absent content field, or an illegal
+        content type is a malformed envelope that must never be promoted to a
+        budget outcome merely because ``length`` and usage are present.
+        Any other, absent or unknown finish reason stays a generic envelope
+        failure so an unknown provider state is never misjudged as a budget
+        outcome; a transport timeout (no received body at all) never reaches
+        this classification.
+        """
+        finish = None
+        first: Any = None
+        if isinstance(body, dict):
+            choices = body.get("choices")
+            if isinstance(choices, list) and choices and isinstance(choices[0], dict):
+                first = choices[0]
+                finish = first.get("finish_reason")
+        if finish != "length":
+            return None
+        message = first.get("message")
+        if (not isinstance(message, dict) or "content" not in message
+                or message["content"] is not None):
+            return None
+        content_type = self.last_response_diagnostic.get("content_type", "unknown")
+        return OutputBudgetExhausted(
+            "model output budget exhausted before a parseable action "
+            f"(finish_reason=length, content_type={content_type})",
+            finish_reason="length", usage=dict(self.last_usage),
+            max_tokens=self.max_tokens)
 
     def _extract_content(self, body: Any) -> str:
         if not isinstance(body, dict):
@@ -700,22 +826,35 @@ class ChatProvider:
         if self.json_mode:
             payload["response_format"] = {"type": "json_object"}
 
-        status, text = self._post(self.url, payload, self._headers())
+        if self.stream:
+            payload["stream"] = True
+            payload["stream_options"] = {"include_usage": True}
+            status, body = self._post_stream(self.url, payload, self._headers())
+        else:
+            status, text = self._post(self.url, payload, self._headers())
+            body = None
+            if 200 <= status < 300:
+                try:
+                    body = json.loads(text)
+                except (json.JSONDecodeError, TypeError) as exc:
+                    raise ProviderError(f"provider returned a non-JSON body (HTTP {status})",
+                                        kind="response_envelope", retryable=True) from exc
         if status < 200 or status >= 300:
             self.last_response_diagnostic = {'http_status': status}
             raise ProviderError(f"HTTP {status} from provider", kind="http",
                                 retryable=status in (408, 429, 500, 502, 503, 504),
                                 retry_after_s=self.last_retry_after_s)
-        try:
-            body = json.loads(text)
-        except (json.JSONDecodeError, TypeError) as exc:
-            raise ProviderError(f"provider returned a non-JSON body (HTTP {status})",
-                                kind="response_envelope", retryable=True) from exc
 
         self.last_usage = self._usage(body)
         try:
             content = self._extract_content(body)
         except ProviderError as exc:
+            # usage/finish/diagnostic stay on this instance either way: a
+            # received-but-unusable response keeps its evidence.  Only a
+            # service-declared 'length' stop is a known output-budget outcome.
+            budget = self._output_budget_error(body)
+            if budget is not None:
+                raise budget from exc
             raise ProviderError(str(exc), kind="response_envelope", retryable=True) from exc
         first=body['choices'][0]
         if len(content)<=128000 and self.api_key() not in content:self.last_model_content=content
@@ -725,8 +864,20 @@ class ChatProvider:
             'finish_reason':finish if finish in ('stop','length','tool_calls','content_filter','function_call') else 'unknown',
             'content_characters':len(content),
         }
-        parsed = self._parse(content)
-        return parsed
+        try:
+            return self._parse(content)
+        except ModelResponseError as exc:
+            # A response the service itself terminated at the output-token cap
+            # should not be silently repeated at the same output cap.
+            # This is a known budget outcome rather than a format
+            # correction that would burn the same paid budget again.
+            if self.last_response_diagnostic.get("finish_reason") == "length":
+                raise OutputBudgetExhausted(
+                    "model output budget exhausted before a parseable action "
+                    f"(finish_reason=length, truncated non-empty content): {exc}",
+                    finish_reason="length", usage=dict(self.last_usage),
+                    max_tokens=self.max_tokens) from exc
+            raise
 
 
 def make_provider(config: dict, transport: Any = None) -> ChatProvider:

@@ -181,6 +181,11 @@ def ingest_source(store: ArtifactStore, path: str | os.PathLike, source_url: str
         pages = document['pages']
         warnings = [issue['code'] + ': ' + issue.get('detail', '') for issue in document['issues']]
         parser_version = background_html.VERSION
+        formula_payload = {
+            'formula_sources': document['formula_sources'],
+            'formula_source_count': document['formula_source_count'],
+            'formula_sources_truncated': document['formula_sources_truncated'],
+        }
     else:
         try:
             extraction = pdf_adapter.parse(data, timeout_s=pdf_timeout_s, limits=pdf_limits)
@@ -209,6 +214,8 @@ def ingest_source(store: ArtifactStore, path: str | os.PathLike, source_url: str
         "warnings": warnings,
     }
     refs = [blob_ref]
+    if parser == 'pmc_html':
+        payload.update(formula_payload)
     if parser == 'pymupdf':
         payload.update(parser_output_ref=output_ref, adapter_version=pdf_adapter.ADAPTER_VERSION,
                        capabilities=extraction['capabilities'])

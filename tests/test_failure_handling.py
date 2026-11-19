@@ -107,16 +107,44 @@ def test_identical_failed_request_stops_before_second_tool(tmp_path):
     assert len([e for e in p['events'] if e.get('failure_code')=='duplicate_failed_request'])==1
 
 
-def test_three_rounds_changing_quote_does_not_reset_failure_window(tmp_path):
+def test_two_rounds_changing_quote_does_not_reset_failure_window(tmp_path):
     store,source=setup(tmp_path)
     actions=[]
     for i in range(3):
         bad=proposal(source);bad['evidence'][1]['quote']='wrong quote '+str(i)
         actions.append(act('submit_draft',**bad))
     _,p=run(store,source,actions,max_repairs=5)
-    assert p['state']=='incomplete' and p['call_count']==3
-    assert [d['route'] for d in decisions(p)]==['repair','repair','stop']
+    assert p['state']=='incomplete' and p['call_count']==2
+    assert [d['route'] for d in decisions(p)]==['repair','stop']
     assert 'Blocking issue keys' in decisions(p)[-1]['reason']
+    assert store.get(p['task_ref'])['payload']['failure_policy']['version']==2
+
+
+def test_saved_legacy_policy_keeps_its_three_failure_threshold(tmp_path):
+    store,source=setup(tmp_path)
+    d=dict(issues=[dict(category='citation',code='invalid_quote',target='k/value',blocking=True)],
+        event={},repairs=0,max_repairs=5,stagnant_failures=2,remaining_calls=3,
+        source_refs=[source],auto_investigations=0,investigated_targets=[])
+    assert routes.decide(routes.LEGACY_POLICY,d)['route']=='repair'
+    assert routes.decide(routes.POLICY,d)['route']=='stop'
+    saved=routes.record(store,routes.LEGACY_POLICY,d)
+    assert routes.load(store,saved['decision_ref'],routes.LEGACY_POLICY)['policy']['max_stagnant_failures']==3
+    with pytest.raises(ValueError):routes.load(store,saved['decision_ref'],routes.POLICY)
+    d['stagnant_failures']=3
+    assert routes.decide(routes.LEGACY_POLICY,d)['route']=='stop'
+
+
+@pytest.mark.parametrize('change',[
+    {'version':True},{'version':1.0},{'version':3},{'max_stagnant_failures':3},
+    {'max_stagnant_failures':False},{'unknown':'override'},
+])
+def test_policy_versions_are_strict_and_cannot_be_weakened(change):
+    with pytest.raises(ValueError):routes.validate_policy(dict(routes.POLICY,**change))
+
+
+def test_policy_validation_returns_copy():
+    result=routes.validate_policy(routes.POLICY);result['max_stagnant_failures']=99
+    assert routes.POLICY['max_stagnant_failures']==2
 
 
 def test_zero_repairs_is_respected(tmp_path):

@@ -8,7 +8,7 @@ import time
 from . import context,model_contracts as c,research_projects as p,research_tasks
 from .storage import canonical_bytes
 from .action_response import normalize_action
-from .llm import ModelResponseError,ProviderError
+from .llm import ModelResponseError,OutputBudgetExhausted,ProviderError
 
 BACKGROUND_PROMPT="""You are the research lead for a biological-modeling project.
 The human supplies an application scenario or a reproduction objective.
@@ -309,6 +309,57 @@ Return one JSON action with action,args and an optional concise reason.
 """
 
 
+READ_OPERATIONS=('inspect_source','search_sources','inspect_mm_background',
+    'inspect_background_review','inspect_expt_reading','search_literature',
+    'fetch_literature','fetch_literature_asset','transcribe_literature_asset',
+    'inspect_research_guidance','inspect_transcription')
+
+
+def read_stall_directive(attempts,returns,threshold=3):
+    """Deterministic harness nudge after consecutive read-only calls.
+
+    A live Novak run spent 10 calls re-reading page ranges and never produced a
+    frame. This directive adds no evidence and edits no history; it tells the
+    planner that the read phase must end with a frame or an alignment question.
+    """
+    streak=[]
+    for ref,attempt in reversed(attempts):
+        if ref not in returns:continue
+        operation=attempt.get('operation')
+        if operation in READ_OPERATIONS:streak.append(operation)
+        elif operation=='respond':continue
+        else:break
+    if len(streak)<threshold:return None
+    return dict(role='user',content=json.dumps(dict(tool='planner_directive',
+        reason='consecutive_reads_without_a_frame',consecutive_reads=len(streak),
+        directive=('Stop reading the same source. Do not call inspect_source again in this '
+                   'round. Use the evidence already returned to either submit the target frame '
+                   '(equations, parameters, initial conditions, units, supplement status) or ask '
+                   'one precise alignment question naming the fields that are genuinely missing.')),
+        ensure_ascii=False))
+
+
+def execution_directive(view,attempts,returns):
+    """Deterministic nudge once a frame exists but no iteration was opened.
+
+    The authorized Novak run produced a frame, then spent the remaining calls
+    re-reading/searching and never called open_iteration. This directive adds
+    no evidence and edits no history; it states the next required phase.
+    """
+    if not view.get('frame_ref') or view.get('iteration_refs'):
+        return None
+    if any((attempt.get('operation') in ('open_iteration','open_source_iteration')
+            and ref in returns) for ref,attempt in attempts):
+        return None
+    return dict(role='user',content=json.dumps(dict(tool='planner_directive',
+        reason='frame_exists_without_iteration',
+        directive=('A frame already exists. Do not read or search further. The next action '
+                   'must open an iteration from this frame (open_iteration/open_source_iteration) '
+                   'with the authorized parameters and initial conditions, or conclude with '
+                   'explicit limitations if execution is impossible.')),
+        ensure_ascii=False))
+
+
 def _messages(store,project_ref):
     view=p.inspect(store,project_ref);project=p.load(store,project_ref)
     from . import research_reading
@@ -351,7 +402,7 @@ def _messages(store,project_ref):
     state=dict(project=view,constraints=project['constraints'],policy=project['policy'],source_catalog=material,iterations=iterations,
                prepared_models=[dict(model_ref=r,model=store.get(r)['payload'].get('model')) for r in project['model_refs']])
     state['researcher_replies']=[p.own(store,r,p.REPLY,project_ref) for r in view['reply_refs']]
-    from .research_guidance import coordinator_schemas,frozen_model_guidance
+    from .research_guidance import coordinator_schemas,guidance_sections
     state['action_schemas']=coordinator_schemas(view)
     from .research_background import requirements_packet
     needs=requirements_packet(store,project_ref,view)
@@ -363,8 +414,7 @@ def _messages(store,project_ref):
         constraints=project['constraints'],initial_source_refs=project['source_refs'],reference_refs=project['reference_refs'],
         prepared_models=state.pop('prepared_models'))
     from .research_advice import view as advice_view
-    embed_guidance=not (view.get('background_index_refs') or view.get('background_reading_refs'))
-    if embed_guidance:frozen.update(frozen_model_guidance())
+    frozen['guidance_sections']=guidance_sections()
     state['scoped_advice']=advice_view(store,project)
     from .research_references import metadata
     frozen['reference_metadata']=[metadata(store,r) for r in project['reference_refs']]
@@ -425,30 +475,13 @@ def _messages(store,project_ref):
             messages.append(dict(role='user',content=json.dumps(dict(tool=attempt['operation'],state=result['state'],result=result.get('result'),error_type=result.get('error_type'),diagnostic=result.get('diagnostic')),ensure_ascii=False)))
     # Latest verified state is essential even when older tool messages are omitted.
     messages.append(dict(role='user',content=json.dumps(dict(tool='inspect_progress',**state),ensure_ascii=False)))
+    required_indices=required_indices+[len(messages)-1]
+    directive=read_stall_directive(attempts,returns) or execution_directive(view,attempts,returns)
+    if directive is not None:
+        messages.append(directive)
+        required_indices=required_indices+[len(messages)-1]
     settings=context.policy(project['policy']['context_max_chars'])
-    try:
-        return context.build_context(messages,settings,required_indices=required_indices)[0]
-    except context.ContextBudgetExceeded:
-        if not embed_guidance:raise
-        # Segment-22 root cause of the run-20 essential overflow: the frozen
-        # message carried byte copies of exactly the guidance sections that
-        # inspect_research_guidance already serves on demand. When essential
-        # context is tight, only that duplicate is dropped and replaced by a
-        # retrieval pointer; no scientific state, schema, warning or evidence
-        # is truncated, and the budget itself is untouched.
-        slim=dict(frozen)
-        from .research_guidance import EXAMPLES
-        for key in ('native_model_schema_examples','ode_decision_plan_example','capabilities',
-                    'scientific_procedures','schema_notice'):slim.pop(key,None)
-        slim['guidance_sections']=dict(retrieve='inspect_research_guidance',
-            capabilities=dict(section='capabilities'),scientific_procedures=dict(section='scientific_procedures'),
-            model_example=dict(section='model_example',example='one of: '+','.join(EXAMPLES)),
-            action_schema=dict(section='action_schema',action='<available action name>'),
-            notice='Syntax guidance is retrievable with one normal inspect_research_guidance call at no '
-                   'literature or transcription budget cost. Example values are syntax illustrations, '
-                   'never task evidence.')
-        messages[1]=dict(role='user',content=json.dumps(slim,ensure_ascii=False))
-        return context.build_context(messages,settings,required_indices=required_indices)[0]
+    return context.build_context(messages,settings,required_indices=required_indices)[0]
 
 
 def _usage(provider):
@@ -483,6 +516,40 @@ def _pending_response(store,project_ref):
     return None
 
 
+def output_budget_status(store,project_ref):
+    """Read-only interpretable status for a PROVEN planner output-budget
+    exhaustion: the provider received, billed and service-terminated the
+    request at its output-token cap (finish_reason=length) before any
+    parseable action was produced.  Such a response is a known outcome, not an
+    unknown unresponded POST, and it is never replayed, never parsed into a
+    success action and never retried at the same cap.  The operator explicitly
+    chooses the next in-budget plan.  Returns None when no such receipt exists."""
+    attempts,returns,_=p.history(store,project_ref)
+    exhausted=[]
+    for ref,attempt in attempts:
+        result=returns.get(ref)
+        if not result or not result[1].get('provider_failure_ref'):continue
+        receipt=p.own(store,result[1]['provider_failure_ref'],p.PROVIDER_FAILURE,project_ref)
+        if receipt.get('error_kind')!='output_budget' or receipt.get('output_budget_verified') is not True:continue
+        from .research_output_budget import failure_closure
+        failure_closure(store,project_ref,attempt['args'],ref,result[1]['provider_failure_ref'])
+        diagnostic=receipt.get('response_diagnostic') or {}
+        exhausted.append(dict(attempt_ref=ref,failure_ref=result[1]['provider_failure_ref'],
+            request_ref=receipt.get('request_ref'),provider=receipt.get('provider'),
+            finish_reason=diagnostic.get('finish_reason'),usage=receipt.get('usage') or {},
+            requested_max_tokens=diagnostic.get('requested_max_tokens'),
+            content_type=diagnostic.get('content_type'),
+            content_characters=diagnostic.get('content_characters')))
+    if not exhausted:return None
+    return dict(version=1,project_state=p.inspect(store,project_ref)['state'],
+        planner_calls=sum(v['operation']=='respond' for _,v in attempts),
+        exhausted=exhausted,
+        next_step=('the exhausted request is a received, service-terminated response '
+        'with no parseable action; it is neither replayed nor retried at the same output '
+        'cap. The operator explicitly chooses an in-budget higher-cap plan using '
+        'research_output_budget.plan; this never replays the old request or refunds a call.'))
+
+
 def run(store,provider,project_ref,*,native_provider_factory=None,literature_transport=None):
     from . import research_control
     with research_control.scope(store,project_ref,p.load(store,project_ref)):
@@ -509,23 +576,33 @@ def _run(store,provider,project_ref,*,native_provider_factory=None,literature_tr
                 if provider is None:raise ValueError('planner provider required')
                 messages=_messages(store,project_ref)
                 from .provider_identity import identity as provider_identity
-                identity=provider_identity(provider);scope=hashlib.sha256(canonical_bytes(messages)).hexdigest()
+                identity=provider_identity(provider)
+                from .research_output_budget import validate_provider
+                validate_provider(store,project_ref,identity)
+                scope=hashlib.sha256(canonical_bytes(messages)).hexdigest()
                 request=store.put('research_project_prompt',dict(project_ref=project_ref,messages=messages,scope_sha256=scope,
                     provider=identity),refs=(project_ref,*view['source_refs'],*([view['frame_ref']] if view['frame_ref'] else [])))
                 def respond(attempt_ref):
                     started=time.monotonic()
                     try:response=provider.respond(messages)
                     except ProviderError as exc:
-                        kind=exc.kind if exc.kind in ('provider_error','transport','http','response_envelope','model_response') else 'provider_error'
+                        kind=exc.kind if exc.kind in ('provider_error','transport','http','response_envelope','model_response','output_budget') else 'provider_error'
                         raw=getattr(provider,'last_model_content',None)
                         # Only the extracted model message, never HTTP error bodies,
                         # headers or arbitrary exception text. Retain as untrusted data.
                         content_ref=(store.put_blob(json.dumps(raw,ensure_ascii=True).encode('ascii'))
-                            if kind=='model_response' and isinstance(raw,str) and len(raw)<=128000 else None)
+                            if kind in ('model_response','output_budget') and isinstance(raw,str) and len(raw)<=128000 else None)
+                        diagnostic=_response_diagnostic(provider)
+                        verified=(isinstance(exc,OutputBudgetExhausted) and exc.finish_reason=='length'
+                            and type(exc.max_tokens) is int and exc.max_tokens>0
+                            and exc.max_tokens==identity.get('max_tokens')
+                            and diagnostic.get('finish_reason')=='length')
+                        if verified:diagnostic['requested_max_tokens']=exc.max_tokens
                         exc.project_failure_ref=store.put(p.PROVIDER_FAILURE,dict(version=1,project_ref=project_ref,
                             attempt_ref=attempt_ref,request_ref=request,provider=identity,error_kind=kind,
                             usage=_usage(provider),elapsed_s=time.monotonic()-started,
-                            response_diagnostic=_response_diagnostic(provider),model_content_json_blob_ref=content_ref,
+                            response_diagnostic=diagnostic,model_content_json_blob_ref=content_ref,
+                            **({'output_budget_verified':True} if verified else {}),
                             model_content_authority='untrusted_model_output_not_an_action'),
                             refs=(project_ref,attempt_ref,request,*([content_ref] if content_ref else [])))
                         raise
@@ -547,6 +624,17 @@ def _run(store,provider,project_ref,*,native_provider_factory=None,literature_tr
                         refs=(project_ref,attempt_ref,request,*([derived['model_content_json_blob_ref']] if derived else ())))
                     return dict(response_ref=ref,response=response,usage=usage)
                 try:pending=p._operate_owned(store,project_ref,'respond',dict(request_ref=request,scope_sha256=scope,provider=identity),callback=respond)
+                except OutputBudgetExhausted as exc:
+                    # The provider RECEIVED, billed and service-terminated this
+                    # request at its output-token cap before any parseable
+                    # action: a KNOWN outcome, not an unknown unresponded POST.
+                    # It is never replayed, never parsed into a success action
+                    # and never retried at the same cap. The failure receipt
+                    # above keeps usage, finish reason, the requested cap and
+                    # attempt attribution; output_budget_status() reports the
+                    # interpretable state and the operator's explicit options.
+                    checkpoint()
+                    return p.snapshot(store,project_ref)
                 except ModelResponseError:
                     # A received-but-refused response is a bounded format
                     # correction, not an unknown outcome: the failure receipt and

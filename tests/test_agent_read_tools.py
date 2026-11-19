@@ -243,6 +243,14 @@ def test_inspect_source_invalid_span_is_retryable_without_checkpoint():
     expected = {'type': 'tool_error', 'tool': 'inspect_source',
                 'error': 'invalid source span',
                 'available_pages': [{'page': 1, 'chars': 3}]}
+    diagnostic=outcome.event['diagnostic']
+    assert set(diagnostic)=={'error_type','what_engine_supports','page_characters',
+                             'max_read_characters','suggested_fix','example'}
+    assert diagnostic['error_type']=='invalid_source_span'
+    assert diagnostic['page_characters']==3 and diagnostic['max_read_characters']==8
+    assert diagnostic['example']==dict(source_ref='src',page=1,start=0,end=3)
+    assert diagnostic['what_engine_supports'] and diagnostic['suggested_fix']
+    expected['diagnostic']=diagnostic
     assert outcome.event == expected
     assert content(outcome) == {**expected, 'call': 7}
 

@@ -160,6 +160,12 @@ def execute_read_tool(action, args, *, store, source_refs, retrieval_method,
                      'available_pages': [{'page': p['number'], 'chars': len(p['text'])}
                                          for p in store.get(ref)['payload']['pages']]}
             feedback = dict(error)
+            if text is not None:
+                from .diagnostics import SourceReadError, validate_source_span
+                try:validate_source_span(ref,page,start,end,len(text),read_limit)
+                except SourceReadError as exc:
+                    error['diagnostic']=exc.tool_diagnostic
+                    feedback['diagnostic']=exc.tool_diagnostic
             if call_count is not None:
                 feedback['call'] = call_count()
             return ReadToolOutcome(event=error, message=_user(_json(feedback)),

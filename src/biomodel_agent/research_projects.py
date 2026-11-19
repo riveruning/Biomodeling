@@ -281,6 +281,17 @@ def history(store,project_ref,*,historical=False):
             if rp.get('project_ref')!=project_ref or not {project_ref,ref}<=set(store.get(rr)['refs']):
                 raise ValueError('project return binding mismatch')
             if rp['state'] not in ('returned','rejected','unknown'):raise ValueError('invalid project return state')
+            failure_ref=rp.get('provider_failure_ref')
+            if failure_ref:
+                failure=own(store,failure_ref,PROVIDER_FAILURE,project_ref)
+                if (failure.get('output_budget_verified') is True
+                        or rp['state']=='rejected' and (rp.get('diagnostic') or {}).get('code')=='output_budget'):
+                    from .research_output_budget import failure_closure
+                    if (p['operation']!='respond' or rp['state']!='rejected'
+                            or failure_ref not in store.get(rr)['refs']
+                            or (rp.get('diagnostic') or {}).get('code')!='output_budget'):
+                        raise ValueError('invalid known output budget return')
+                    failure_closure(store,project_ref,p['args'],ref,failure_ref)
             results[ref]=(rr,rp)
         recovered=related[RECOVERY].get(ref,[])
         if len(recovered)>1:raise ValueError('conflicting recoveries')
@@ -360,6 +371,11 @@ def inspect(store,project_ref):
     frame=own(store,frames[-1],FRAME,project_ref) if frames else None
     outcome=own(store,conclusion,CONCLUSION,project_ref)['outcome'] if conclusion else None
     state='needs_recovery' if pending else 'awaiting_alignment' if waiting else outcome or 'ready'
+    from . import research_output_budget as output_budget
+    budget_failure=output_budget.pending(attempts,returned)
+    budget_plans=output_budget.plans(store,project_ref,attempts,returned)
+    if state=='ready' and budget_failure and budget_failure[0] not in budget_plans:
+        state='output_budget_exhausted'
     from .research_control import status as control_status
     control=control_status(store,project_ref,project)
     if not pending and not outcome and (control['stop_requested'] or control['deadline_exhausted']):
@@ -393,6 +409,9 @@ def inspect(store,project_ref):
         source_refs=sources,model_refs=project['model_refs'],reference_refs=references,conclusion_ref=conclusion,
         background_index_refs=background_indexes,background_review_refs=background_reviews,
         background_reading_refs=background_readings,transcription_refs=transcriptions,
+        output_budget_attempt_ref=budget_failure[0] if budget_failure else None,
+        output_budget_failure_ref=budget_failure[2] if budget_failure else None,
+        output_budget_plan_ref=budget_plans.get(budget_failure[0],(None,None))[0] if budget_failure else None,
         unresolved_operation_refs=pending,budget=dict(planner_calls=used_planner,planner_max_calls=limits['planner_max_calls'],
         literature_requests=used_literature,max_literature_requests=limits['max_literature_requests'],
         transcription_calls=used_transcription,max_transcription_calls=limits['max_transcription_calls'],
@@ -833,9 +852,42 @@ def perform(store,project_ref,operation,args,*,provider=None,actor='agent',liter
         if args['source_ref'] not in view['source_refs']:raise ValueError('source outside research scope')
         from .evidence import _source_page_text
         c.integer(args['page'],1,100000);source=_source_page_text(store,args['source_ref'],args['page'])
-        c.integer(args['start'],0,len(source));c.integer(args['end'],args['start']+1,len(source))
-        if args['end']-args['start']>8000:raise ValueError('source read exceeds 8000 characters')
-        return dict(**args,text=source[args['start']:args['end']],full_page_characters=len(source))
+        from .diagnostics import validate_source_span
+        validate_source_span(args['source_ref'],args['page'],args['start'],args['end'],len(source))
+        # Read ledger: repeated identical spans are the observed stall pattern
+        # (the same 0-8000 page window was re-read four times in one live run).
+        # The text stays available, but the result states that nothing new was
+        # learned and asks for a frame/alignment instead of another read.
+        prior, spans = 0, []
+        attempts_before, returns_before, _ = history(store, project_ref)
+        for _ref, attempt in attempts_before:
+            if _ref not in returns_before or attempt.get('operation') != 'inspect_source':
+                continue
+            earlier = attempt.get('args') or {}
+            if (earlier.get('source_ref') == args['source_ref']
+                    and earlier.get('page') == args['page']):
+                spans.append((earlier.get('start'), earlier.get('end')))
+        identical = [(s0, e0) for s0, e0 in spans
+                     if s0 == args['start'] and e0 == args['end']]
+        start, end = args['start'], args['end']
+        covered = sum(max(0, min(end, e0) - max(start, s0))
+                      for s0, e0 in spans if s0 is not None and e0 is not None)
+        new_characters = max(0, (end - start) - min(end - start, covered))
+        result = dict(**args, text=source[start:end], full_page_characters=len(source),
+                      read_ledger=dict(reads_of_this_page=len(spans) + 1,
+                                       prior_span_occurrences=len(identical),
+                                       new_characters=new_characters,
+                                       repeat_read=bool(identical)))
+        if identical:
+            result['diagnostic'] = (
+                'This exact span was already read (%d prior occurrence(s)). No new '
+                'characters were added. Do not call inspect_source for this span again: '
+                'use the retained text, submit the target frame, or ask a precise '
+                'alignment question about what is missing (parameters, initial '
+                'conditions, units, supplement).' % len(identical))
+            if len(identical) >= 2:
+                result['read_ledger']['repeated_read_blocked_recommended'] = True
+        return result
     if operation=='inspect_transcription':
         # Segment-23 reachability repair: the latest-state projection windows
         # the retained transcription texts, so once more than a few receipts
@@ -1010,6 +1062,9 @@ def _operate_owned(store,project_ref,operation,args,*,key=None,provider=None,act
     from .research_control import checkpoint
     checkpoint()
     if pending:raise ValueError('an operation outcome is unknown; no automatic replay')
+    if operation=='respond':
+        from .research_output_budget import validate_provider
+        validate_provider(store,project_ref,args.get('provider'))
     if view['state'] in TERMINAL:raise ValueError('project has concluded')
     if view['pending_questions'] and operation!='reply_alignment':raise ValueError('researcher alignment is pending')
     if len(attempts)>=200:raise ValueError('research operation limit exceeded')
@@ -1066,6 +1121,9 @@ def _operate_owned(store,project_ref,operation,args,*,key=None,provider=None,act
             if (failure['attempt_ref']!=attempt or failure['request_ref']!=args['request_ref']
                     or failure['provider']!=args.get('provider')):
                 raise ValueError('provider failure receipt binding mismatch') from None
+            if failure.get('output_budget_verified') is True:
+                from .research_output_budget import failure_closure
+                failure_closure(store,project_ref,args,attempt,failure_ref)
             if failure['error_kind']=='model_response' and failure.get('model_content_json_blob_ref'):
                 # A received-but-refused answer is only classified as such
                 # under the same full binding closure that recovery and
@@ -1090,6 +1148,8 @@ def _operate_owned(store,project_ref,operation,args,*,key=None,provider=None,act
         diagnostic=dict(stage=operation,code=type(exc).__name__,message=str(exc)[:800]) if state=='rejected' else None
         citation=getattr(exc,'citation_diagnostic',None)
         if diagnostic is not None and citation is not None:diagnostic['citation']=citation
+        tool_diagnostic=getattr(exc,'tool_diagnostic',None)
+        if diagnostic is not None and tool_diagnostic is not None:diagnostic['tool_diagnostic']=tool_diagnostic
         binding=getattr(exc,'source_binding_diagnostic',None)
         if diagnostic is not None and binding is not None:diagnostic['source_binding']=binding
         compilation=getattr(exc,'compilation_diagnostic',None)
@@ -1098,7 +1158,13 @@ def _operate_owned(store,project_ref,operation,args,*,key=None,provider=None,act
             diagnostic['compilation']=compilation
             compilation_refs=_compilation_evidence_refs(store,compilation)
         if failure:
-            if failure['error_kind']=='model_response' and failure.get('model_content_json_blob_ref'):
+            if failure.get('output_budget_verified') is True:
+                state='rejected'
+                diagnostic=dict(stage=operation,code='output_budget',
+                    message='The provider finished at its output cap without an executable action. '
+                            'Paused until an explicit higher-cap plan within remaining calls; no automatic retry.',
+                    response=failure['response_diagnostic'])
+            elif failure['error_kind']=='model_response' and failure.get('model_content_json_blob_ref'):
                 # The provider returned content and the extracted message is
                 # retained, but it was refused as a malformed planner action
                 # before any tool ran. Record it as received-but-rejected with
@@ -1342,6 +1408,8 @@ def snapshot(store,project_ref):
             status=tasks.status(store,task_ref)
             for key in ('native_run_ref','result_ref'):
                 if status.get(key):refs.append(status[key])
+    from .research_output_budget import PLAN as output_budget_plan
+    refs.extend(r for r,_ in rows(store,output_budget_plan,project_ref))
     refs.extend(view['control']['stop_refs'])
     refs.extend(view['planner_usage']['native_usage']['call_refs'])
     refs.extend(view['planner_usage']['native_usage']['return_refs'])

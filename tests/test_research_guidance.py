@@ -66,6 +66,23 @@ def test_guidance_rejects_invalid_selectors_and_unavailable_actions(tmp_path, ar
     assert projects.inspect(store, project)['state'] == 'ready'
 
 
+def test_nonindexed_reproduction_uses_reachable_guides_before_context_pressure(tmp_path,monkeypatch):
+    store,_,_,expt,_=indexed(tmp_path)
+    project=projects.create(store,dict(scenario='Reproduce one specific figure.',mode='reproduction',source_refs=[expt]))
+    def forbidden():raise AssertionError('Unrequested full examples were loaded.')
+    monkeypatch.setattr(guidance,'frozen_model_guidance',forbidden)
+    messages=supervisor._messages(store,project)
+    frozen=json.loads(messages[1]['content']);state=json.loads(messages[-1]['content'])
+    assert len(messages[1]['content'])<4000
+    assert {'capabilities','native_model_schema_examples','scientific_procedures','ode_decision_plan_example'}.isdisjoint(frozen)
+    assert frozen['guidance_sections']['model_types']==['ode','fba','stochastic','pde','boolean','individual']
+    assert 'inspect_research_guidance' in state['action_schemas']
+    projects.operate(store,project,'revise_frame',dict(frame=frame(),reason='Declare a bounded model.'))
+    state=json.loads(supervisor._messages(store,project)[-1]['content'])
+    assert 'properties' not in state['action_schemas']['open_iteration']['properties']['args']
+    assert inspect_guide(store,project,section='action_schema',action='open_iteration')==research_schema.schemas(projects.inspect(store,project))['open_iteration']
+
+
 def test_embedded_guidance_duplicate_gives_way_before_any_essential_overflow(tmp_path, monkeypatch):
     """Segment-22 regression (live run dsh48-normal-transcribe-20-01): the
     non-indexed planner context embedded byte copies of the guidance sections

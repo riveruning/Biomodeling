@@ -236,7 +236,14 @@ def test_context_contains_actual_human_reply_and_templates_without_fabricated_ev
     message=supervisor._messages(store,project)
     assert isinstance(message,list)
     raw=json.dumps(message)
-    assert 'Only population-level switching.' in raw and 'native_model_schema_examples' in raw and 'not task evidence' in raw
+    assert 'Only population-level switching.' in raw
+    frozen=json.loads(message[1]['content'])
+    assert 'native_model_schema_examples' not in frozen
+    assert frozen['guidance_sections']['model_example']['section']=='model_example'
+    guide=step(store,project,'inspect_research_guidance',section='model_example',example='boolean')
+    assert guide['scientific_support']=='unknown'
+    assert guide['authority']=='syntax_and_capability_guidance'
+    assert 'Only population-level switching.' in json.dumps(supervisor._messages(store,project))
 
 
 def test_supervisor_invalid_actions_consume_calls_and_stop_without_science(tmp_path):

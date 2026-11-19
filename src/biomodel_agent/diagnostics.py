@@ -2,6 +2,29 @@
 from __future__ import annotations
 
 
+class SourceReadError(ValueError):
+    """An invalid read is refused, with a factual, unexecuted repair example."""
+
+    def __init__(self, diagnostic):
+        super().__init__('invalid source span; inspect the recorded page bounds and repair example')
+        self.tool_diagnostic = diagnostic
+
+
+def validate_source_span(source_ref, page, start, end, length, limit=8000):
+    if (type(start) is int and type(end) is int
+            and 0 <= start < end <= length and end-start <= limit):
+        return
+    example = (dict(source_ref=source_ref, page=page, start=0, end=min(length, limit))
+               if length else None)
+    raise SourceReadError(dict(error_type='invalid_source_span',
+        what_engine_supports='Exact character slices of an authorized source page; no clipping or inferred text.',
+        page_characters=length, max_read_characters=limit,
+        suggested_fix=('Choose integer offsets 0 <= start < end <= page_characters, with end-start <= max_read_characters. '
+                       'The example is a new read proposal, not an executed correction.' if length else
+                       'This page has no extracted text. Inspect another page or the original page image; do not invent text.'),
+        example=example))
+
+
 def issue(category, code, message, *, target=None, source=None, blocking=True):
     routes = {
         'citation': ('repair', 'Inspect the cited page; submit an exact unique quote or explicit offsets.'),
